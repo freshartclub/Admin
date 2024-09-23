@@ -4,10 +4,9 @@ import { paths } from 'src/routes/paths';
 import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/config-global';
+import { useAppSelector } from 'src/store/typedReduxHooks';
 
 import { SplashScreen } from 'src/components/loading-screen';
-
-import { useAuthContext } from '../hooks';
 
 // ----------------------------------------------------------------------
 
@@ -20,9 +19,8 @@ export function AuthGuard({ children }: Props) {
 
   const pathname = usePathname();
 
+  const isAuthorized = useAppSelector((state) => state.user.isAuthorized);
   const searchParams = useSearchParams();
-
-  const { authenticated, loading } = useAuthContext();
 
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
@@ -37,11 +35,9 @@ export function AuthGuard({ children }: Props) {
   );
 
   const checkPermissions = async (): Promise<void> => {
-    if (loading) {
-      return;
-    }
+    console.log();
 
-    if (!authenticated) {
+    if (!isAuthorized) {
       const { method } = CONFIG.auth;
 
       const signInPath = {
@@ -54,7 +50,7 @@ export function AuthGuard({ children }: Props) {
 
       const href = `${signInPath}?${createQueryString('returnTo', pathname)}`;
 
-      router.replace(href);
+      router.replace(paths.auth.jwt.signIn);
       return;
     }
 
@@ -63,8 +59,9 @@ export function AuthGuard({ children }: Props) {
 
   useEffect(() => {
     checkPermissions();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated, loading]);
+  }, []);
 
   if (isChecking) {
     return <SplashScreen />;

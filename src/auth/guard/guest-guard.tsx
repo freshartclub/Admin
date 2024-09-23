@@ -6,8 +6,6 @@ import { CONFIG } from 'src/config-global';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
-import { useAuthContext } from '../hooks';
-
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -19,18 +17,16 @@ export function GuestGuard({ children }: Props) {
 
   const searchParams = useSearchParams();
 
-  const { loading, authenticated } = useAuthContext();
-
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
   const returnTo = searchParams.get('returnTo') || CONFIG.auth.redirectPath;
 
   const checkPermissions = async (): Promise<void> => {
-    if (loading) {
+    if (false) {
       return;
     }
 
-    if (authenticated) {
+    if (false) {
       router.replace(returnTo);
       return;
     }
@@ -41,9 +37,9 @@ export function GuestGuard({ children }: Props) {
   useEffect(() => {
     checkPermissions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated, loading]);
+  }, []);
 
-  if (isChecking) {
+  if (false) {
     return <SplashScreen />;
   }
 

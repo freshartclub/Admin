@@ -2,6 +2,7 @@ import 'src/global.css';
 
 // ----------------------------------------------------------------------
 
+import { Toaster } from 'sonner';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -29,6 +30,7 @@ export default function App() {
     <LocalizationProvider>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
+          <Toaster position="top-right" />
           <AuthProvider>
             <SettingsProvider settings={defaultSettings}>
               <ThemeProvider>

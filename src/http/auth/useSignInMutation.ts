@@ -16,7 +16,7 @@ let toastId: any;
 async function login(input: any) {
   return axiosInstance.post(AUTH_ENDPOINTS.SignIn, input);
 }
-const useLoginMutation = () => {
+const useSigInInMutation = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -33,10 +33,9 @@ const useLoginMutation = () => {
       });
     },
     onError: (res) => {
-      toast.dismiss(toastId);
       toast.error(res.response.data.message);
     },
   });
 };
 
-export default useLoginMutation;
+export default useSigInInMutation;
