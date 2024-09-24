@@ -1,17 +1,16 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useRouter } from 'src/routes/hooks';
 
@@ -44,29 +43,36 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function OtherDetails({ currentProduct, handelNext }) {
+export function OtherDetails({
+  artistFormData,
+  setArtistFormData,
+  setTabState,
+  setTabIndex,
+  tabIndex,
+  tabState,
+ }: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const defaultValues = useMemo(
     () => ({
-      ManagerArtistName: currentProduct?.ManagerArtistName || '',
-      ManagerSurnameone: currentProduct?.ManagerSurnameone || '',
-      ManagerSurnametwo: currentProduct?.ManagerSurnametwo || '',
-      ManagerArtworkNickname: currentProduct?.ManagerArtworkNickname || '',
-      ContactTo: currentProduct?.ContactTo || '',
-      ManagerphoneNumber: currentProduct?.ManagerphoneNumber || '',
-      ManagerEmail: currentProduct?.ManagerEmail || '',
-      ManagerAddress: currentProduct?.ManagerAddress || '',
-      ManagerZipCode: currentProduct?.ManagerZipCode || '',
-      ManagerCity: currentProduct?.ManagerCity || '',
-      ManagerProvince: currentProduct?.ManagerProvince || '',
-      ManagerCountry: currentProduct?.ManagerCountry || '',
-      ManagerLanguage: currentProduct?.ManagerLanguage || [],
-      ManagerGender: currentProduct?.ManagerGender || '',
+      ManagerArtistName: artistFormData?.ManagerArtistName || '',
+      ManagerSurnameone: artistFormData?.ManagerSurnameone || '',
+      ManagerSurnametwo: artistFormData?.ManagerSurnametwo || '',
+      ManagerArtworkNickname: artistFormData?.ManagerArtworkNickname || '',
+      ContactTo: artistFormData?.ContactTo || '',
+      ManagerphoneNumber: artistFormData?.ManagerphoneNumber || '',
+      ManagerEmail: artistFormData?.ManagerEmail || '',
+      ManagerAddress: artistFormData?.ManagerAddress || '',
+      ManagerZipCode: artistFormData?.ManagerZipCode || '',
+      ManagerCity: artistFormData?.ManagerCity || '',
+      ManagerProvince: artistFormData?.ManagerProvince || '',
+      ManagerCountry: artistFormData?.ManagerCountry || '',
+      ManagerLanguage: artistFormData?.ManagerLanguage || [],
+      ManagerGender: artistFormData?.ManagerGender || '',
     }),
-    [currentProduct]
+    [artistFormData]
   );
 
   const methods = useForm({
@@ -78,53 +84,43 @@ export function OtherDetails({ currentProduct, handelNext }) {
     reset,
     watch,
     setValue,
+    trigger,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
-
+ 
   useEffect(() => {
-    if (currentProduct) {
-      reset(defaultValues);
+    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+      setValue('ManagerArtistName', artistFormData?.ManagerArtistName || 'John ');
+      setValue('ManagerSurnameone', artistFormData?.ManagerSurnameone || 'Doe');
+      setValue('ManagerSurnametwo', artistFormData?.ManagerSurnametwo || 'Smith');
+      setValue('ManagerArtworkNickname', artistFormData?.ManagerArtworkNickname || 'Sunset Bliss');
+      setValue('ContactTo', artistFormData?.ContactTo || 'Sandy');
+      setValue('ManagerphoneNumber', artistFormData?.ManagerphoneNumber || '+919165326598');
+      setValue('ManagerEmail', artistFormData?.ManagerEmail || 'JohnDoe@gmail.com');
+      
+      setValue('ManagerAddress', artistFormData?.ManagerAddress || '131 chanda Nager');
+      setValue('ManagerZipCode', artistFormData?.ManagerZipCode || '12345');
+      setValue('ManagerCity', artistFormData?.ManagerCity || 'Los Angeles');
+      setValue('ManagerProvince', artistFormData?.ManagerProvince || 'Alaska');
+      setValue('ManagerCountry', artistFormData?.ManagerCountry || ' Albania');
+      setValue('ManagerLanguage', artistFormData?.ManagerLanguage || ['English']);
+      setValue('ManagerGender', artistFormData?.ManagerGender || 'Men');
+     
     }
-  }, [currentProduct, defaultValues, reset]);
-
-  useEffect(() => {
-    if (includeTaxes) {
-      setValue('taxes', 0);
-    } else {
-      setValue('taxes', currentProduct?.taxes || 0);
-    }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
+  }, [setValue]);
+  
 
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
-      handelNext();
-    } catch (error) {
-      console.error(error);
-    }
+    trigger(undefined, { shouldFocus: true });
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+     
+      return prev;
+    });
   });
 
-  const handleRemoveFile = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
-  }, [setValue]);
-
-  const handleChangeIncludeTaxes = useCallback((event) => {
-    setIncludeTaxes(event.target.checked);
-  }, []);
 
   const renderDetails = (
     <Card>
@@ -180,7 +176,13 @@ export function OtherDetails({ currentProduct, handelNext }) {
           <Field.Text name="ManagerZipCode" label="Zip/code" />
           <Field.Text name="ManagerCity" label="City" />
           <Field.Text name="ManagerProvince" label="Province/State/Region" />
-          <Field.Text name="ManagerCountry" label="Country" />
+          {/* <Field.Text name="ManagerCountry" label="Country" /> */}
+          <Field.CountrySelect
+          fullWidth
+          name="ManagerCountry"
+          label="Country"
+          placeholder="Choose a country"
+        />
         </Box>
          
         <Box
@@ -209,28 +211,14 @@ export function OtherDetails({ currentProduct, handelNext }) {
     </Card>
   );
 
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
-
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
-      </LoadingButton>
-    </Stack>
-  );
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
         {renderDetails}
 
-        {/* {renderActions} */}
         <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+           <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
             Save & Next
           </button>
         </div>

@@ -1,3 +1,4 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -56,32 +57,39 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function Invoice({ currentProduct, handelNext }) {
+export function Invoice({ 
+  artistFormData,
+  setArtistFormData,
+  setTabState,
+  setTabIndex,
+  tabIndex,
+  tabState,
+ }: AddArtistComponentProps ) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const defaultValues = useMemo(
     () => ({
-      TaxNumber: currentProduct?.TaxNumber || '',
-      TaxLegalName: currentProduct?.TaxLegalName || '',
-      TaxAddress: currentProduct?.TextAddress || '',
-      TaxZipCode: currentProduct?.zipCode || '',
-      TaxCity: currentProduct?.city || '',
-      TaxProvince: currentProduct?.TaxProvince || '',
-      TaxCountry: currentProduct?.TaxCountry || '',
-      TaxEmail: currentProduct?.TaxEmail || '',
-      TaxPhone: currentProduct?.TaxPhone || '',
-      BankIBAN: currentProduct?.BankIBAN || '',
-      BankName: currentProduct?.BankName || '',
-      CustomOrder: currentProduct?.CustomOrder || '',
-      PublishingCatalog: currentProduct?.PublishingCatalog || '',
-      ArtistFees: currentProduct?.ArtistFees || '',
-      ArtistPlus: currentProduct?.ArtistPlus || '',
-      MinNumberOfArtwork: currentProduct?.MinNumberOfArtwork || '',
-      MaxNumberOfArtwork: currentProduct?.MaxNumberOfArtwork || '',
+      TaxNumber: artistFormData?.TaxNumber || '',
+      TaxLegalName: artistFormData?.TaxLegalName || '',
+      TaxAddress: artistFormData?.TaxAddress || '',
+      TaxZipCode: artistFormData?.zipCode || '',
+      TaxCity: artistFormData?.city || '',
+      TaxProvince: artistFormData?.TaxProvince || '',
+      TaxCountry: artistFormData?.TaxCountry || '',
+      TaxEmail: artistFormData?.TaxEmail || '',
+      TaxPhone: artistFormData?.TaxPhone || '',
+      BankIBAN: artistFormData?.BankIBAN || '',
+      BankName: artistFormData?.BankName || '',
+      CustomOrder: artistFormData?.CustomOrder || '',
+      PublishingCatalog: artistFormData?.PublishingCatalog || '',
+      ArtistFees: artistFormData?.ArtistFees || '',
+      ArtistPlus: artistFormData?.ArtistPlus || '',
+      MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
+      MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
     }),
-    [currentProduct]
+    [artistFormData]
   );
 
   const methods = useForm({
@@ -93,53 +101,77 @@ export function Invoice({ currentProduct, handelNext }) {
     reset,
     watch,
     setValue,
+    trigger,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
-
+     
   useEffect(() => {
-    if (currentProduct) {
-      reset(defaultValues);
+    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+      setValue('TaxNumber', artistFormData?.TaxNumber || '12345');
+      setValue('TaxLegalName', artistFormData?.TaxLegalName || 'John Doe');
+      setValue('TaxAddress', artistFormData?.TaxAddress || '31,c21,vijay nager');
+      setValue('TaxZipCode', artistFormData?.TaxZipCode || '12345');
+      setValue('TaxCity', artistFormData?.TaxCity || 'Indore');
+      setValue('TaxProvince', artistFormData?.TaxProvince || 'Madhay Pradesh');
+      setValue('TaxCountry', artistFormData?.TaxCountry || 'USA');
+      setValue('TaxEmail', artistFormData?.TaxEmail || 'JohnDoe@gmail.com');
+      setValue('TaxPhone', artistFormData?.TaxPhone || '+917879610316');
+      setValue('BankIBAN', artistFormData?.BankIBAN || 'CBI90210');
+      setValue('BankName', artistFormData?.BankName || 'Bank of America');
+      setValue('CustomOrder', artistFormData?.CustomOrder || 'Yes');
+      setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
+      setValue('ArtistFees', artistFormData?.ArtistFees || '10000');
+      setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
+      setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
+      setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
     }
-  }, [currentProduct, defaultValues, reset]);
-
-  useEffect(() => {
-    if (includeTaxes) {
-      setValue('taxes', 0);
-    } else {
-      setValue('taxes', currentProduct?.taxes || 0);
-    }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
-
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
-      handelNext();
-    } catch (error) {
-      console.error(error);
-    }
-  });
-
-  const handleRemoveFile = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
   }, [setValue]);
 
-  const handleChangeIncludeTaxes = useCallback((event) => {
-    setIncludeTaxes(event.target.checked);
-  }, []);
+
+  // const values = watch();
+
+  // useEffect(() => {
+  //   if (currentProduct) {
+  //     reset(defaultValues);
+  //   }
+  // }, [currentProduct, defaultValues, reset]);
+
+  // useEffect(() => {
+  //   if (includeTaxes) {
+  //     setValue('taxes', 0);
+  //   } else {
+  //     setValue('taxes', currentProduct?.taxes || 0);
+  //   }
+  // }, [currentProduct?.taxes, includeTaxes, setValue]);
+
+  const onSubmit = handleSubmit(async (data) => {
+    trigger(undefined, { shouldFocus: true });
+
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabIndex(tabIndex + 1);
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+
+      return prev;
+    });
+  });
+
+  // const handleRemoveFile = useCallback(
+  //   (inputFile) => {
+  //     const filtered = values.images && values.images?.filter((file) => file !== inputFile);
+  //     setValue('images', filtered);
+  //   },
+  //   [setValue, values.images]
+  // );
+
+  // const handleRemoveAllFiles = useCallback(() => {
+  //   setValue('images', [], { shouldValidate: true });
+  // }, [setValue]);
+
+  // const handleChangeIncludeTaxes = useCallback((event) => {
+  //   setIncludeTaxes(event.target.checked);
+  // }, []);
 
   const renderDetails = (
     <Card>
@@ -266,7 +298,7 @@ export function Invoice({ currentProduct, handelNext }) {
       />
 
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
+        {!artistFormData ? 'Create product' : 'Save changes'}
       </LoadingButton>
     </Stack>
   );

@@ -1,3 +1,5 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useMemo, useState, useEffect } from 'react';
@@ -29,7 +31,6 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
   catagoryone: zod.string().min(1, { message: 'Catagory1 is required!' }),
   styleone: zod.string().min(1, { message: 'Style 1 is required!' }),
@@ -40,22 +41,29 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function AboutArtist({ currentProduct, handelNext }) {
+export function AboutArtist({
+  artistFormData,
+  setArtistFormData,
+  setTabState,
+  setTabIndex,
+  tabIndex,
+  tabState,
+ }: AddArtistComponentProps) {
+
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const defaultValues = useMemo(
     () => ({
-      //   name: currentProduct?.name || '',
-      About: currentProduct?.About || '',
-      catagoryone: currentProduct?.catagoryone || '',
-      styleone: currentProduct?.styleone || '',
-      styletwo: currentProduct?.styletwo || '',
-      ArtworkModule: currentProduct?.ArtworkModule || '',
-      ProductStatus: currentProduct?.ProductStatus || '',
+      About: artistFormData?.About || '',
+      catagoryone: artistFormData?.catagoryone || '',
+      styleone: artistFormData?.styleone || '',
+      styletwo: artistFormData?.styletwo || '',
+      ArtworkModule: artistFormData?.ArtworkModule || '',
+      ProductStatus: artistFormData?.ProductStatus || '',
     }),
-    [currentProduct]
+    [artistFormData]
   );
 
   const methods = useForm({
@@ -67,37 +75,38 @@ export function AboutArtist({ currentProduct, handelNext }) {
     reset,
     watch,
     setValue,
+    trigger,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
-
+  // const values = watch();
+  
   useEffect(() => {
-    if (currentProduct) {
-      reset(defaultValues);
-    }
-  }, [currentProduct, defaultValues, reset]);
+    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+      setValue('About', artistFormData?.About || 'Write somthing About Artist content');
+      setValue('catagoryone', artistFormData?.catagoryone || 'Catagory1');
+      setValue('styleone', artistFormData?.styleone || 'Impressionism');
+      setValue('ArtworkModule', artistFormData?.ArtworkModule || 'Module 1');
+      setValue('styletwo', artistFormData?.styletwo || 'Pop Art');
+      setValue('ProductStatus', artistFormData?.ProductStatus || 'Draft');
 
-  useEffect(() => {
-    if (includeTaxes) {
-      setValue('taxes', 0);
-    } else {
-      setValue('taxes', currentProduct?.taxes || 0);
     }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
+  }, [setValue]);
+
 
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
-      handelNext();
-    } catch (error) {
-      console.error(error);
-    }
+    trigger(undefined, { shouldFocus: true });
+
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabIndex(tabIndex + 1);
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+
+      return prev;
+    });
   });
+
 
   const renderDetails = (
     <Card sx={{ mb: 4 }}>
@@ -106,9 +115,7 @@ export function AboutArtist({ currentProduct, handelNext }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        {/* <Field.Text name="name" label="Product name" />
-
-        <Field.Text name="subDescription" label="Sub description" multiline rows={4} /> */}
+        
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">About</Typography>
@@ -186,7 +193,7 @@ export function AboutArtist({ currentProduct, handelNext }) {
       />
 
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
+        {!artistFormData ? 'Create product' : 'Save changes'}
       </LoadingButton>
     </Stack>
   );
