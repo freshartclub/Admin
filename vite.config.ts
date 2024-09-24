@@ -1,41 +1,22 @@
-import path from 'path';
-import checker from 'vite-plugin-checker';
-import { loadEnv, defineConfig } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import tailwindcss from 'tailwindcss';
+import svgr from 'vite-plugin-svgr';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
-// ----------------------------------------------------------------------
-
-const PORT = 8081;
-
-const env = loadEnv('all', process.cwd());
-
+// https://vitejs.dev/config/
 export default defineConfig({
-  // base: env.VITE_BASE_PATH,
-  plugins: [
-    react(),
-    checker({
-      typescript: false,
-      eslint: {
-        lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
-      },
-      overlay: {
-        position: 'tl',
-        initialIsOpen: false,
-      },
-    }),
-  ],
-  resolve: {
-    alias: [
-      {
-        find: /^~(.+)/,
-        replacement: path.join(process.cwd(), 'node_modules/$1'),
-      },
-      {
-        find: /^src(.+)/,
-        replacement: path.join(process.cwd(), 'src/$1'),
-      },
-    ],
+  plugins: [react(), tsconfigPaths(), svgr()],
+  server: {
+    watch: {
+      usePolling: true,
+    },
+    host: true,
+    port: 5173,
   },
-  server: { port: PORT, host: true },
-  preview: { port: PORT, host: true },
+  css: {
+    postcss: {
+      plugins: [tailwindcss()],
+    },
+  },
 });
