@@ -7,6 +7,8 @@ import { useTheme } from '@mui/material/styles';
 import { varAlpha, hideScrollY } from 'src/theme/styles';
 
 import { Logo } from 'src/components/logo';
+import freshLogo from 'src/assets/images/Logo01 2.png'
+import miniLogo from 'src/assets/images/login_icon.png'
 import { Scrollbar } from 'src/components/scrollbar';
 import { NavSectionMini, NavSectionVertical } from 'src/components/nav-section';
 
@@ -40,7 +42,8 @@ export function NavVertical({
     <>
       {slots?.topArea ?? (
         <Box sx={{ pl: 3.5, pt: 2.5, pb: 1 }}>
-          <Logo />
+          {/* <Logo /> */}
+          <img src={freshLogo} alt='logo'/>
         </Box>
       )}
 
@@ -56,7 +59,8 @@ export function NavVertical({
     <>
       {slots?.topArea ?? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 2.5 }}>
-          <Logo />
+          {/* <Logo /> */}
+          <img src={miniLogo} alt='logo'/>
         </Box>
       )}
 

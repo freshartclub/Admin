@@ -1,6 +1,6 @@
 import type { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box, Tab, Button } from '@mui/material';
 
@@ -29,6 +29,7 @@ function AddArtistIndex() {
     { value: 'logistics', label: 'Logistics', isSaved: false },
     { value: 'otherDetails', label: 'Other Details', isSaved: false },
   ]);
+  
 
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -71,30 +72,67 @@ function AddArtistIndex() {
       )}
       {tabIndex === 2 && (
         <Box sx={{ p: 1 }}>
-          <AboutArtist />
+          <AboutArtist 
+           artistFormData={artistFormData}
+           setArtistFormData={setArtistFormData}
+           setTabState={setTabState}
+           setTabIndex={setTabIndex}
+           tabIndex={tabIndex}
+           tabState={tabState}
+          />
         </Box>
       )}
       {tabIndex === 3 && (
         <Box sx={{ p: 1 }}>
-          <Media />
+          <Media 
+           artistFormData={artistFormData}
+           setArtistFormData={setArtistFormData}
+           setTabState={setTabState}
+           setTabIndex={setTabIndex}
+           tabIndex={tabIndex}
+           tabState={tabState}
+          />
         </Box>
       )}
       {tabIndex === 4 && (
         <Box sx={{ p: 1 }}>
-          <Invoice />
+          <Invoice 
+          artistFormData={artistFormData}
+          setArtistFormData={setArtistFormData}
+          setTabState={setTabState}
+          setTabIndex={setTabIndex}
+          tabIndex={tabIndex}
+          tabState={tabState}
+          />
         </Box>
       )}
       {tabIndex === 5 && (
         <Box sx={{ p: 1 }}>
-          <Logistic />
+          <Logistic 
+          artistFormData={artistFormData}
+          setArtistFormData={setArtistFormData}
+          setTabState={setTabState}
+          setTabIndex={setTabIndex}
+          tabIndex={tabIndex}
+          tabState={tabState}
+          />
         </Box>
       )}
       {tabIndex === 6 && (
         <Box sx={{ p: 1 }}>
-          <OtherDetails />
+          <OtherDetails 
+            artistFormData={artistFormData}
+            setArtistFormData={setArtistFormData}
+            setTabState={setTabState}
+            setTabIndex={setTabIndex}
+            tabIndex={tabIndex}
+            tabState={tabState}
+          />
         </Box>
       )}
+       
     </Box>
+      
   );
 }
 

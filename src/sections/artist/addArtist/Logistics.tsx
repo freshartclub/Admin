@@ -1,3 +1,5 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,15 +9,12 @@ import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { toast } from 'src/components/snackbar';
+
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -39,24 +38,31 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function Logistic({ currentProduct, handelNext }) {
+export function Logistic({ 
+  artistFormData,
+  setArtistFormData,
+  setTabState,
+  setTabIndex,
+  tabIndex,
+  tabState,
+ }: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const defaultValues = useMemo(
     () => ({
-      LogName: currentProduct?.LogName || '',
-      LogisticAddress: currentProduct?.LogisticAddress || '',
-      LogZipCode: currentProduct?.LogZipCode || '',
-      LogCity: currentProduct?.LogCity || '',
-      LogProvince: currentProduct?.LogProvince || '',
-      LogCountry: currentProduct?.country || '',
-      LogEmail: currentProduct?.LogEmail || '',
-      LogphoneNumber: currentProduct?.LogphoneNumber || '',
-      LogAdditionalNotes: currentProduct?.LogAdditionalNotes || '',
+      LogName: artistFormData?.LogName || '',
+      LogisticAddress: artistFormData?.LogisticAddress || '',
+      LogZipCode: artistFormData?.LogZipCode || '',
+      LogCity: artistFormData?.LogCity || '',
+      LogProvince: artistFormData?.LogProvince || '',
+      LogCountry: artistFormData?.country || '',
+      LogEmail: artistFormData?.LogEmail || '',
+      LogphoneNumber: artistFormData?.LogphoneNumber || '',
+      LogAdditionalNotes: artistFormData?.LogAdditionalNotes || '',
     }),
-    [currentProduct]
+    [artistFormData]
   );
 
   const methods = useForm({
@@ -68,45 +74,37 @@ export function Logistic({ currentProduct, handelNext }) {
     reset,
     watch,
     setValue,
+    trigger,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
-
   useEffect(() => {
-    if (currentProduct) {
-      reset(defaultValues);
+    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+      setValue('LogName', artistFormData?.LogName || 'John');
+      setValue('LogisticAddress', artistFormData?.LogisticAddress || '121 c21 vijay nager');
+      setValue('LogZipCode', artistFormData?.LogZipCode || '12345');
+      setValue('LogCity', artistFormData?.LogCity || 'Indore');
+      setValue('LogProvince', artistFormData?.LogProvince || 'Madhay Pradesh');
+      setValue('LogCountry', artistFormData?.LogCountry || 'USA');
+      
+      setValue('LogEmail', artistFormData?.LogEmail || 'Artist@gmail.com');
+      setValue('LogphoneNumber', artistFormData?.LogphoneNumber || '+919165323561');
+      setValue('LogAdditionalNotes', artistFormData?.LogAdditionalNotes || 'Hi this is testing Data Additional Notes ');
     }
-  }, [currentProduct, defaultValues, reset]);
-
-  useEffect(() => {
-    if (includeTaxes) {
-      setValue('taxes', 0);
-    } else {
-      setValue('taxes', currentProduct?.taxes || 0);
-    }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
-
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
-      handelNext();
-    } catch (error) {
-      console.error(error);
-    }
-  });
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
   }, [setValue]);
 
-  const handleChangeIncludeTaxes = useCallback((event) => {
-    setIncludeTaxes(event.target.checked);
-  }, []);
+  const onSubmit = handleSubmit(async (data) => {
+    trigger(undefined, { shouldFocus: true });
+
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabIndex(tabIndex + 1);
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+
+      return prev;
+    });
+  });
 
   const renderDetails = (
     <Card>
@@ -152,29 +150,17 @@ export function Logistic({ currentProduct, handelNext }) {
 
         <Field.Text name="LogAdditionalNotes" label="Log Additional Notes" multiline rows={4} />
 
-        {/* end my code */}
+        
       </Stack>
     </Card>
   );
 
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
 
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
-      </LoadingButton>
-    </Stack>
-  );
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
-        {renderDetails}
+         {renderDetails}
 
         {/* {renderActions} */}
         <div className="flex justify-end">

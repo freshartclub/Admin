@@ -20,7 +20,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { signInWithPassword } from 'src/auth/context/jwt';
 
 // ----------------------------------------------------------------------
@@ -43,7 +42,6 @@ export const SignInSchema = zod.object({
 export function JwtSignInView() {
   const router = useRouter();
 
-  const { checkUserSession } = useAuthContext();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -67,7 +65,6 @@ export function JwtSignInView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await signInWithPassword({ email: data.email, password: data.password });
-      await checkUserSession?.();
 
       router.refresh();
     } catch (error) {

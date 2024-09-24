@@ -3,6 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import FormHelperText from '@mui/material/FormHelperText';
 
 import { Upload, UploadBox, UploadAvatar } from '../upload';
+import {UploadVideo} from '../videoUpload/UploadVideo'
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +82,33 @@ export function RHFUpload({ name, multiple, helperText, ...other }) {
   );
 }
 
+// export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
+//   const { control, setValue } = useFormContext();
+
+//   return (
+//     <Controller
+//       name={name}
+//       control={control}
+//       render={({ field, fieldState: { error } }) => {
+//         const uploadProps = {
+//           multiple,
+//           accept: { 'video/*': [] },
+//           error: !!error,
+//           helperText: error?.message ?? helperText,
+//         };
+
+//         const onDrop = (acceptedFiles) => {
+//           const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
+
+//           setValue(name, value, { shouldValidate: true });
+//         };
+
+//         return <Upload {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
+//       }}
+//     />
+//   );
+// }
+
 export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
   const { control, setValue } = useFormContext();
 
@@ -102,9 +130,12 @@ export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
           setValue(name, value, { shouldValidate: true });
         };
 
-        return <Upload {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
+        return <UploadVideo {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
       }}
     />
   );
 }
+
+
+
 
