@@ -35,8 +35,6 @@ export function AuthGuard({ children }: Props) {
   );
 
   const checkPermissions = async (): Promise<void> => {
-    console.log();
-
     if (!isAuthorized) {
       const { method } = CONFIG.auth;
 
