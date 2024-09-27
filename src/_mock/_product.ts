@@ -91,14 +91,48 @@ export const PRODUCT_YEARS_OPTIONS = [
 ];
 
 export const PRODUCT_CATAGORYONE_OPTIONS = [
-  { value: 'Catagory1', label: 'Catagory1' },
-  { value: 'Catagory2', label: 'Catagory2' },
-  { value: 'Catagory3', label: 'Catagory3' },
-  { value: 'Catagory4', label: 'Catagory4' },
-  { value: 'Catagory5', label: 'Catagory5' },
-  { value: 'Catagory6', label: 'Catagory6' },
-  { value: 'Catagory7', label: 'Catagory7' },
+  { value: 'Paintings', label: 'Paintings' },
+  { value: 'Drawings', label: 'Drawings' },
+  { value: 'Photografy', label: 'Photografy' },
+  { value: 'Sculpture', label: 'Sculpture' },
 ];
+
+export const PRODUCT_STYLE_OPTIONS = [
+  { value: 'Expressionism', label: 'Expressionism' },
+  { value: 'Figurative', label: 'Figurative' },
+  { value: 'Abstract', label: 'Abstract' },
+  { value: 'Minimalism', label: 'Minimalism' },
+  { value: 'Conceptual', label: 'Conceptual' },
+  { value: 'Naif', label: 'Naif' },
+  { value: 'Realism', label: 'Realism' },
+]
+export const PRODUCT_MEDIA_OPTIONS = [
+  { value: 'Acrylic', label: 'Acrylic' },
+  { value: 'Oil', label: 'Oil' },
+  { value: 'Spray', label: 'Spray' },
+  { value: 'College', label: 'Collge' },
+  { value: 'Mixed', label: 'Mixed' },
+  { value: 'ink', label: 'ink' },
+  { value: 'Pigments', label: 'Pigments' },
+]
+export const PRODUCT_TECHNIC_OPTIONS = [
+  { value: 'Portait', label: 'Portait' },
+  { value: 'Nature', label: 'Nature' },
+  { value: 'Landscape', label: 'Landscape' },
+  { value: 'Customs', label: 'Customs' },
+  { value: 'Mixed', label: 'Mixed' },
+  { value: 'Street Art', label: 'Street Art' },
+  
+]
+export const PRODUCT_SUPPORT_OPTIONS = [
+  { value: 'Canvas', label: 'Canvas' },
+  { value: 'wood', label: 'wood' },
+  { value: 'Still', label: 'Still' },
+  { value: 'Glass', label: 'Glass' },
+  { value: 'plastic', label: 'Plastic' },
+  { value: 'Stone', label: 'Stonel' },
+  
+]
 
 export const PRODUCT_STYLEONE_OPTIONS = [
   { value: 'Realism', label: 'Realism' },
@@ -304,4 +338,48 @@ export const ARTWORK_COLLECTIONLIST_OPTIONS = [
   { value: 'Collection 3', label: 'Collection 3' },
   { value: 'Collection 4', label: 'Collection 4' },
 ]
+
+export const PRODUCT_STYLECATEGORYS_OPTIONS1 = [
+  { value: 'Painting', label: 'Painting' },
+  { value: 'Dry brushing', label: 'Dry brushing' },
+  { value: 'Underpainting', label: 'Underpainting' },
+  { value: 'Acrylic painting', label: 'Acrylic painting' },
+  { value: 'Glazing', label: 'Glazing' },
+  { value: 'Print', label: 'Print' },
+  { value: 'Art', label: 'Art' },
+  { value: 'Cubism', label: 'Cubism' },
+  { value: 'Impressionism', label: 'Impressionism' },
+  { value: 'Surrealism', label: 'Surrealism' },
+  { value: 'Photorealism', label: 'Photorealism' },
+  {
+    value: 'Words - Poetry, Literature, Quotes, Phrase',
+    label: 'Words - Poetry, Literature, Quotes, Phrase',
+  },
+  { value: 'Vignettes of nature - observation', label: 'Vignettes of nature - observation' },
+  { value: 'Observation - Realism ', label: 'Observation - Realism' },
+  { value: 'Expression - emotions', label: 'Expression - emotions' },
+  { value: 'Seascape - Marine life', label: 'Seascape - Marine life' },
+]
+export const PRODUCT_STYLECATEGORYS_OPTIONS = [
+  `Painting`,
+  `Dry brushing`,
+  `Underpainting`,
+  `Acrylic painting`,
+  `Print`,
+  `Acrylic painting`,
+  `Fashion`,
+  `Glazing`,
+  `Art`,
+  `Cubism`,
+  `Impressionism`,
+  `Surrealism`,
+  `Photorealism`,
+  `Words - Poetry, Literature, Quotes, Phrase`,
+  `Words - Poetry, Literature, Quotes, Phrase`,
+  `Vignettes of nature - observation`,
+  `Expression - emotions`,
+  `eascape - Marine life`,
+  
+];
+
 export const PRODUCT_CHECKOUT_STEPS = ['Cart', 'Billing & address', 'Payment'];

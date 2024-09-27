@@ -51,5 +51,34 @@ export const paths = {
       five: `${ROOTS.DASHBOARD}/group/five`,
       six: `${ROOTS.DASHBOARD}/group/six`,
     },
+    category: {
+      root: `${ROOTS.DASHBOARD}/category`,
+      discipline:{
+      root: `${ROOTS.DASHBOARD}/discipline`,
+      add : `${ROOTS.DASHBOARD}/category/discipline/add`,
+      list : `${ROOTS.DASHBOARD}/category/discipline/list`
+     },
+     style:{
+      root: `${ROOTS.DASHBOARD}/style`,
+      add : `${ROOTS.DASHBOARD}/category/style/add`,
+      list : `${ROOTS.DASHBOARD}/category/style/list`
+     },
+     technic:{
+      root: `${ROOTS.DASHBOARD}/technic`,
+      add : `${ROOTS.DASHBOARD}/category/technic/add`,
+      list : `${ROOTS.DASHBOARD}/category/technic/list`
+     },
+     theme:{
+      root: `${ROOTS.DASHBOARD}/theme`,
+      add : `${ROOTS.DASHBOARD}/category/theme/add`,
+      list : `${ROOTS.DASHBOARD}/category/theme/list`
+     },
+     mediasupport:{
+      root: `${ROOTS.DASHBOARD}/mediasupport`,
+      add : `${ROOTS.DASHBOARD}/category/mediasupport/add`,
+      list : `${ROOTS.DASHBOARD}/category/mediasupport/list`
+     }
+    }
+    
   },
 };

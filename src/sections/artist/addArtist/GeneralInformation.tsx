@@ -21,11 +21,11 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  accountId: zod.string().min(1, { message: 'Account Id is required!' }),
+  // accountId: zod.string().min(1, { message: 'Account Id is required!' }),
   ArtistName: zod.string().min(1, { message: 'ArtistName is required!' }),
   Surnameone: zod.string().min(1, { message: 'ArtistSurname is required!' }),
   Surnametwo: zod.string(),
-  ArtworkNickname: zod.string(),
+  ArtistNickname: zod.string(),
   ArtistId: zod.string().min(1, { message: 'Artist Id is required!' }),
   country: schemaHelper.objectOrNull({
     message: { required_error: 'Country is required!' },
@@ -59,13 +59,13 @@ export function GeneralInformation({
 
   const defaultValues = useMemo(
     () => ({
-      accountId: artistFormData?.accountId || '',
+      // accountId: artistFormData?.accountId || '',
       ArtistName: artistFormData?.ArtistName || '',
       Surnameone: artistFormData?.Surnameone || '',
       Surnametwo: artistFormData?.Surnametwo || '',
       ArtistId: artistFormData?.ArtistId || '',
-      ArtworkNickname: artistFormData?.ArtworkNickname || '',
-      country: artistFormData?.country || '',
+      ArtistNickname: artistFormData?.ArtistNickname || '',
+      country: artistFormData?.country || 'Spain',
       zipCode: artistFormData?.zipCode || '',
       city: artistFormData?.city || '',
       Province: artistFormData?.Province || '',
@@ -97,14 +97,14 @@ export function GeneralInformation({
   // const values = watch();
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
-      setValue('accountId', artistFormData?.accountId || '12345');
+    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
+      // setValue('accountId', artistFormData?.accountId || '12345');
       setValue('ArtistName', artistFormData?.ArtistName || 'John');
       setValue('Surnameone', artistFormData?.Surnameone || 'Doe');
       setValue('Surnametwo', artistFormData?.Surnametwo || 'Smith');
-      setValue('ArtworkNickname', artistFormData?.ArtworkNickname || 'Sunset Bliss');
+      setValue('ArtistNickname', artistFormData?.ArtistNickname || 'Sunset Bliss');
       setValue('ArtistId', artistFormData?.ArtistId || 'A98765');
-      setValue('country', artistFormData?.country || 'USA');
+      // setValue('country', artistFormData?.country || 'USA');
       setValue('createDate', artistFormData?.createDate || new Date().toISOString());
       setValue('Language', artistFormData?.Language || ['English']);
       setValue('zipCode', artistFormData?.zipCode || '90210');
@@ -137,7 +137,7 @@ export function GeneralInformation({
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="accountId" label=" Account Id" />
+        {/* <Field.Text name="accountId" label=" Account Id" /> */}
 
         <Box
           columnGap={2}
@@ -160,7 +160,7 @@ export function GeneralInformation({
         >
           <Field.Text name="ArtistId" label=" Artist Id" />
 
-          <Field.Text name="ArtworkNickname" label="Artwork Nickname" />
+          <Field.Text name="ArtistNickname" label="Artist Nickname" />
         </Box>
 
         <Field.CountrySelect

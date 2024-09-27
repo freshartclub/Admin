@@ -3,11 +3,14 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useMemo, useState, useEffect } from 'react';
+import {FormProvider, useFieldArray } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
@@ -20,23 +23,43 @@ import { useRouter } from 'src/routes/hooks';
 import {
   PRODUCT_MODULE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
-  PRODUCT_STYLEONE_OPTIONS,
-  PRODUCT_STYLETWO_OPTIONS,
+  // PRODUCT_STYLEONE_OPTIONS,
+  // PRODUCT_STYLETWO_OPTIONS,
   PRODUCT_CATAGORYONE_OPTIONS,
+  PRODUCT_STYLE_OPTIONS,
+  PRODUCT_MEDIA_OPTIONS,
+  PRODUCT_TECHNIC_OPTIONS,
+  PRODUCT_SUPPORT_OPTIONS,
 } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
-  catagoryone: zod.string().min(1, { message: 'Catagory1 is required!' }),
-  styleone: zod.string().min(1, { message: 'Style 1 is required!' }),
-  styletwo: zod.string().min(1, { message: 'Style 2 is required!' }),
+  catagory: zod.array(
+    zod.object({
+      catagoryone: zod.string().min(1, { message: 'Catagory1 is required!' }),
+      style: zod.string().min(1, { message: 'style is required!' }),
+      media: zod.string().min(1, { message: 'media is required!' }),
+      technic: zod.string().min(1, { message: 'technic is required!' }),
+      support: zod.string().min(1, { message: 'support is required!' }),
+    })
+  ),
+  // styleone: zod.string().min(1, { message: 'Style 1 is required!' }),
+  // styletwo: zod.string().min(1, { message: 'Style 2 is required!' }),
   ArtworkModule: zod.string().min(1, { message: 'Artwork Module is required!' }),
   ProductStatus: zod.string().min(1, { message: 'ProductStatus is required!' }),
+  emegencyNameOfContact:zod.string().min(1, { message: 'Name of Contact is required!' }),
+  emegencyContactTo:zod.string().min(1, { message: 'Contact to is required!' }),
+  emegencyPhoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  emegencyEmail:zod
+  .string()
+  .min(1, { message: 'Email is required!' })
+  .email({ message: 'Email must be a valid email address!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -57,20 +80,27 @@ export function AboutArtist({
   const defaultValues = useMemo(
     () => ({
       About: artistFormData?.About || '',
-      catagoryone: artistFormData?.catagoryone || '',
-      styleone: artistFormData?.styleone || '',
-      styletwo: artistFormData?.styletwo || '',
+      catagory: artistFormData?.catagory || '',
+      // styleone: artistFormData?.styleone || '',
+      // styletwo: artistFormData?.styletwo || '',
       ArtworkModule: artistFormData?.ArtworkModule || '',
       ProductStatus: artistFormData?.ProductStatus || '',
+      emegencyNameOfContact: artistFormData?.emegencyNameOfContact || '',
+      emegencyContactTo: artistFormData?.emegencyContactTo || '',
+      emegencyPhoneNumber: artistFormData?.emegencyPhoneNumber || '',
+      emegencyEmail: artistFormData?.emegencyEmail || '',
     }),
     [artistFormData]
   );
 
-  const methods = useForm({
+  // const methods = useForm({
+  //   resolver: zodResolver(NewProductSchema),
+  //   defaultValues,
+  // });
+  const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
-
   const {
     reset,
     watch,
@@ -78,23 +108,56 @@ export function AboutArtist({
     trigger,
     handleSubmit,
     formState: { isSubmitting },
-  } = methods;
+  } = formProps;
+  const { fields, append, remove } = useFieldArray({ control: formProps.control, name: 'catagory' });
 
+  const handleRemove = (index) => {
+    remove(index);
+  };
   // const values = watch();
   
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
       setValue('About', artistFormData?.About || 'Write somthing About Artist content');
-      setValue('catagoryone', artistFormData?.catagoryone || 'Catagory1');
-      setValue('styleone', artistFormData?.styleone || 'Impressionism');
+      // setValue('catagoryone', artistFormData?.catagoryone || 'Catagory1');
+      // setValue('styleone', artistFormData?.styleone || 'Impressionism');
       setValue('ArtworkModule', artistFormData?.ArtworkModule || 'Module 1');
-      setValue('styletwo', artistFormData?.styletwo || 'Pop Art');
+      // setValue('styletwo', artistFormData?.styletwo || 'Pop Art');
       setValue('ProductStatus', artistFormData?.ProductStatus || 'Draft');
+      setValue('emegencyNameOfContact', artistFormData?.emegencyNameOfContact || 'Deo')
+      setValue('emegencyContactTo', artistFormData?.emegencyContactTo || 'Alish')
+      setValue('emegencyPhoneNumber', artistFormData?.emegencyPhoneNumber || "+919165325634")
+      setValue('emegencyEmail', artistFormData?.emegencyEmail || "AdminAlish@gmail.com")
+
+      if (artistFormData?.catagory?.length === 1) { 
+        setValue('catagory', artistFormData.catagory);
+      } else {
+        const mockData = [
+          {
+            catagoryone:'Paintings',
+            style:'Figurative',
+            media:'Oil',
+            technic:'Nature',
+            support:'Canvas'
+          },
+          
+          
+        ];
+
+        mockData.forEach((item) => append(item));
+      }
 
     }
   }, [setValue]);
 
 
+  const addCategory = () => {
+    append({
+     catagoryone:''
+    });
+  };
+
+  
   const onSubmit = handleSubmit(async (data) => {
     trigger(undefined, { shouldFocus: true });
 
@@ -126,20 +189,96 @@ export function AboutArtist({
   );
 
   const ArtistCatagory = (
-    <Card>
+    <Card sx={{ mb: 4 }}>
       <CardHeader title="Artist Catagory" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
-          checkbox
-          name="catagoryone"
-          label="Catagory 1"
-          options={PRODUCT_CATAGORYONE_OPTIONS}
-        />
 
-        <Box
+        {/* try start */}
+        <Stack >
+          <div className='flex justify-end'>
+          <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={addCategory}
+          >
+            Add More Category
+          </Button>
+          </div>
+          {fields.map((item, index) => (
+            <Stack
+              key={item.id}
+              aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
+              spacing={1.5}
+              className=""
+            >
+              <Box
+                columnGap={2}
+                rowGap={3}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
+              >
+                <Field.SingelSelect
+                  checkbox
+                  name={`catagory[${index}].catagoryone`}
+                  label="Catagory 1"
+                  options={PRODUCT_CATAGORYONE_OPTIONS}
+                />
+                  <Box
+                columnGap={2}
+                rowGap={3}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
+              >
+                <Field.SingelSelect
+                  checkbox
+                  name={`catagory[${index}].style`}
+                  label="Style"
+                  options={PRODUCT_STYLE_OPTIONS}
+                />
+                <Field.SingelSelect
+                  checkbox
+                  name={`catagory[${index}].media`}
+                  label="Media"
+                  options={PRODUCT_MEDIA_OPTIONS}
+                />
+                <Field.SingelSelect
+                  checkbox
+                  name={`catagory[${index}].technic`}
+                  label="Technic"
+                  options={PRODUCT_TECHNIC_OPTIONS}
+                />
+                <Field.SingelSelect
+                  checkbox
+                  name={`catagory[${index}].support`}
+                  label="Support"
+                  options={PRODUCT_SUPPORT_OPTIONS}
+                />
+              </Box>
+                
+              </Box>
+
+              <div className='flex justify-end mb-2'>
+              <Button
+                size="small"
+                color="error"
+                className="flex justify-end"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => handleRemove(index)}
+              >
+                Remove
+              </Button>
+              </div>
+            </Stack>
+          ))}
+          
+        </Stack>
+        {/* try end */}
+
+        {/* <Box
           columnGap={2}
           rowGap={3}
           display="grid"
@@ -158,7 +297,28 @@ export function AboutArtist({
             label="Style 2"
             options={PRODUCT_STYLETWO_OPTIONS}
           />
+        </Box> */}
+      </Stack>
+    </Card>
+  );
+   
+  const Emergency = (
+    <Card className=''>
+      <CardHeader title="Emergency contact information" sx={{ mb: 1 }} />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+      <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+        >
+         <Field.Text name="emegencyNameOfContact" label="Name of Contact" />
+         <Field.Text name="emegencyContactTo" label="Contact To" />
+         <Field.Phone name="emegencyPhoneNumber" label="Contact number" helperText="Good to go" />
+         <Field.Text name="emegencyEmail" label="Email Address" />
         </Box>
+      
       </Stack>
     </Card>
   );
@@ -199,13 +359,16 @@ export function AboutArtist({
   );
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
+    <FormProvider {...formProps}>
+    <form onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
         <div className="grid grid-cols-3 gap-3">
           <div className="col-span-2">
             {renderDetails}
 
             {ArtistCatagory}
+
+            {Emergency}
           </div>
           <div className="col-span-1">{comman}</div>
         </div>
@@ -215,6 +378,7 @@ export function AboutArtist({
           </button>
         </div>
       </Stack>
-    </Form>
+    </form>
+  </FormProvider>
   );
 }

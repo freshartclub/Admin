@@ -3,7 +3,8 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect,useCallback } from 'react';
+import { Typography } from '@mui/material';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
@@ -39,6 +40,11 @@ export const NewProductSchema = zod.object({
   ManagerCountry: zod.string().min(1, { message: 'Country is required!' }),
   ManagerLanguage: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   ManagerGender: zod.string().min(1, { message: 'Gender is required!' }),
+  ManagerExtraInfo01:zod.string(),
+  ManagerExtraInfo02: zod.string(),
+  ManagerExtraInfo03: zod.string(),
+  ManagerDocumentName:zod.string().min(1, { message: 'Document Name is required!' }),
+  document:schemaHelper.file({ message: { required_error: 'document is required!' } }),
 });
 
 // ----------------------------------------------------------------------
@@ -71,6 +77,12 @@ export function OtherDetails({
       ManagerCountry: artistFormData?.ManagerCountry || '',
       ManagerLanguage: artistFormData?.ManagerLanguage || [],
       ManagerGender: artistFormData?.ManagerGender || '',
+      ManagerExtraInfo01: artistFormData?.ManagerExtraInfo01 || '',
+      ManagerExtraInfo02: artistFormData?.ManagerExtraInfo02 || '',
+      ManagerExtraInfo03: artistFormData?.ManagerExtraInfo03 || '',
+      ManagerDocumentName: artistFormData?.ManagerDocumentName || '',
+      document:artistFormData?.document || null,
+      
     }),
     [artistFormData]
   );
@@ -79,6 +91,7 @@ export function OtherDetails({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
+  
 
   const {
     reset,
@@ -88,9 +101,13 @@ export function OtherDetails({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
- 
+
+  const handleRemoveFile = useCallback(() => {
+    setValue('document', null);
+  }, [setValue]);
+
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
       setValue('ManagerArtistName', artistFormData?.ManagerArtistName || 'John ');
       setValue('ManagerSurnameone', artistFormData?.ManagerSurnameone || 'Doe');
       setValue('ManagerSurnametwo', artistFormData?.ManagerSurnametwo || 'Smith');
@@ -121,9 +138,24 @@ export function OtherDetails({
     });
   });
 
-
-  const renderDetails = (
+  
+  const document = (
     <Card>
+      <CardHeader title="Document" sx={{ mb: 1 }} />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+      <Field.Text name="ManagerDocumentName" label="Documents name" />
+      
+      <div>
+            <Typography variant="Document">Upload Document</Typography>
+            <Field.UploadBox name="document" maxSize={3145728} onDelete={handleRemoveFile} />
+
+          </div>
+      </Stack>
+    </Card>
+  );
+  const renderDetails = (
+    <Card sx={{ mb: 4 }}>
       <CardHeader
         title="Manager Details (If any)"
         sx={{ mb: 3 }}
@@ -205,6 +237,16 @@ export function OtherDetails({
             options={PRODUCT_GENDER_OPTIONS}
           />
         </Box>
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
+           <Field.Text name="ManagerExtraInfo01" label="Extra Info 01" />
+           <Field.Text name="ManagerExtraInfo01" label="Extra Info 02" />
+           <Field.Text name="ManagerExtraInfo01" label="Extra Info 03" />
+        </Box>
         {/* end section */}
         
       </Stack>
@@ -215,6 +257,8 @@ export function OtherDetails({
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
+         {document}
+
         {renderDetails}
 
         <div className="flex justify-end">

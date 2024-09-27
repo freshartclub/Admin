@@ -69,7 +69,7 @@ export function Highlights({
   };
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
       setValue(
         'Highlights',
         artistFormData?.Highlights ||
@@ -93,6 +93,7 @@ export function Highlights({
             Location: 'Los Angeles',
             Scope: 'National',
           },
+          
         ];
 
         mockcvs.forEach((item) => append(item));
@@ -188,13 +189,7 @@ export function Highlights({
     </Card>
   );
 
-  // const renderActions = (
-  //   <Stack spacing={3} direction="row" aligncvs="center" flexWrap="wrap">
-  //     <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-  //       {currentProduct ? 'Save changes' : 'Create product'}
-  //     </LoadingButton>
-  //   </Stack>
-  // );
+  
 
   return (
     <FormProvider {...formProps}>

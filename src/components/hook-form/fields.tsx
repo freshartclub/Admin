@@ -9,7 +9,7 @@ import { RHFAutocomplete } from './rhf-autocomplete';
 import { RHFCountrySelect } from './rhf-country-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
-import { RHFUpload,RHFUploadMultiVideo, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
+import { RHFUpload,RHFUploadMultiVideo, RHFUploadBox, RHFUploadAvatar,RHFUploadDocument } from './rhf-upload';
 import { RHFSelect, RHFMultiSelect, RHFSingleSelect } from './rhf-select';
 import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 
@@ -35,7 +35,8 @@ export const Field = {
   Autocomplete: RHFAutocomplete,
   MultiCheckbox: RHFMultiCheckbox,
   CountrySelect: RHFCountrySelect,
-  MobileDateTimePicker: RHFMobileDateTimePicker,
+  MobileDateTimePicker: RHFMobileDateTimePicker, 
   SingelSelect: RHFSingleSelect,
   MultiVideo:RHFUploadMultiVideo,
+  UploadDocument: RHFUploadDocument,
 };

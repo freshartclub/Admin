@@ -25,6 +25,7 @@ const useSigInInMutation = () => {
 
     onSuccess: async (res, input) => {
       setToken(res.data.token, input.rememberMe);
+      
       dispatch(setIsAuthorized(true));
       toast.dismiss(toastId);
       toast.success(res.data.message);
