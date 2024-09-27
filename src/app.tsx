@@ -19,7 +19,7 @@ import { SettingsDrawer, defaultSettings, SettingsProvider } from 'src/component
 import { AuthProvider } from 'src/auth/context/jwt';
 
 import { store } from './store/store';
-import { LocalizationProvider } from './locales';
+import { I18nProvider, LocalizationProvider } from './locales';
 
 // ----------------------------------------------------------------------
 
@@ -28,22 +28,24 @@ export default function App() {
   const queryClient = new QueryClient();
   return (
     <LocalizationProvider>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <Toaster position="top-right" />
-          <AuthProvider>
-            <SettingsProvider settings={defaultSettings}>
-              <ThemeProvider>
-                <MotionLazy>
-                  <ProgressBar />
-                  <SettingsDrawer />
-                  <Router />
-                </MotionLazy>
-              </ThemeProvider>
-            </SettingsProvider>
-          </AuthProvider>
-        </Provider>
-      </QueryClientProvider>
+      <I18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <Toaster position="top-right" />
+            <AuthProvider>
+              <SettingsProvider settings={defaultSettings}>
+                <ThemeProvider>
+                  <MotionLazy>
+                    <ProgressBar />
+                    <SettingsDrawer />
+                    <Router />
+                  </MotionLazy>
+                </ThemeProvider>
+              </SettingsProvider>
+            </AuthProvider>
+          </Provider>
+        </QueryClientProvider>
+      </I18nProvider>
     </LocalizationProvider>
   );
 }

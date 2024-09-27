@@ -1,9 +1,6 @@
 export interface ArtistDetailType {
   name: string;
   About: string;
-  catagoryone: string;
-  styleone: string;
-  styletwo: string;
   ArtworkModule: string;
   accountId: string;
   ArtistName: string;
@@ -26,6 +23,7 @@ export interface ArtistDetailType {
   InternalNote?: string;
   ProductStatus: string;
   year: string;
+  ArtistCategory: ArtistCategory[];
   Type: string;
   TaxNumber: string;
   TaxLegalName: string;
@@ -78,4 +76,10 @@ interface CVs {
   Description: string;
   Location?: string;
   Scope?: string;
+}
+
+interface ArtistCategory {
+  catagoryone: string;
+  styleone: string;
+  styletwo: string;
 }

@@ -7,6 +7,8 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
+import { useTranslate } from 'src/locales';
+
 import { varHover } from 'src/components/animate';
 import { FlagIcon } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
@@ -24,6 +26,7 @@ export type LanguagePopoverProps = IconButtonProps & {
 export function LanguagePopover({ data = [], sx, ...other }: LanguagePopoverProps) {
   const popover = usePopover();
 
+  const { onChangeLang } = useTranslate();
   const [locale, setLocale] = useState<string>(data[0].value);
 
   const currentLang = data.find((lang) => lang.value === locale);
@@ -31,6 +34,7 @@ export function LanguagePopover({ data = [], sx, ...other }: LanguagePopoverProp
   const handleChangeLang = useCallback(
     (newLang: string) => {
       setLocale(newLang);
+      onChangeLang(newLaArtist);
       popover.onClose();
     },
     [popover]

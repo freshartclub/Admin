@@ -69,7 +69,7 @@ export function Highlights({
   };
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue(
         'Highlights',
         artistFormData?.Highlights ||

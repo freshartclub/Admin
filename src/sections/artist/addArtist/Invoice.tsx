@@ -57,14 +57,14 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function Invoice({ 
+export function Invoice({
   artistFormData,
   setArtistFormData,
   setTabState,
   setTabIndex,
   tabIndex,
   tabState,
- }: AddArtistComponentProps ) {
+}: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
@@ -105,9 +105,9 @@ export function Invoice({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-     
+
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue('TaxNumber', artistFormData?.TaxNumber || '12345');
       setValue('TaxLegalName', artistFormData?.TaxLegalName || 'John Doe');
       setValue('TaxAddress', artistFormData?.TaxAddress || '31,c21,vijay nager');
@@ -127,7 +127,6 @@ export function Invoice({
       setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
     }
   }, [setValue]);
-
 
   // const values = watch();
 

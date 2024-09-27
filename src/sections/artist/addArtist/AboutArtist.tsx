@@ -25,18 +25,22 @@ import {
   PRODUCT_CATAGORYONE_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
+export const ArtistCatagory = zod.object({
+  catagoryone: zod.string({ required_error: 'Category one is required!' }),
+  styleone: zod.string({ required_error: 'Style 1 is required!' }),
+  styletwo: zod.string({ required_error: 'Style 2 is required!' }),
+});
+
 export const NewProductSchema = zod.object({
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
-  catagoryone: zod.string().min(1, { message: 'Catagory1 is required!' }),
-  styleone: zod.string().min(1, { message: 'Style 1 is required!' }),
-  styletwo: zod.string().min(1, { message: 'Style 2 is required!' }),
   ArtworkModule: zod.string().min(1, { message: 'Artwork Module is required!' }),
   ProductStatus: zod.string().min(1, { message: 'ProductStatus is required!' }),
+  ArtistCatagory: zod.array(ArtistCatagory),
 });
 
 // ----------------------------------------------------------------------
@@ -48,8 +52,7 @@ export function AboutArtist({
   setTabIndex,
   tabIndex,
   tabState,
- }: AddArtistComponentProps) {
-
+}: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
@@ -57,9 +60,7 @@ export function AboutArtist({
   const defaultValues = useMemo(
     () => ({
       About: artistFormData?.About || '',
-      catagoryone: artistFormData?.catagoryone || '',
-      styleone: artistFormData?.styleone || '',
-      styletwo: artistFormData?.styletwo || '',
+      ArtistCategory: artistFormData?.ArtistCategory,
       ArtworkModule: artistFormData?.ArtworkModule || '',
       ProductStatus: artistFormData?.ProductStatus || '',
     }),
@@ -80,20 +81,16 @@ export function AboutArtist({
     formState: { isSubmitting },
   } = methods;
 
-  // const values = watch();
-  
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue('About', artistFormData?.About || 'Write somthing About Artist content');
       setValue('catagoryone', artistFormData?.catagoryone || 'Catagory1');
       setValue('styleone', artistFormData?.styleone || 'Impressionism');
       setValue('ArtworkModule', artistFormData?.ArtworkModule || 'Module 1');
       setValue('styletwo', artistFormData?.styletwo || 'Pop Art');
       setValue('ProductStatus', artistFormData?.ProductStatus || 'Draft');
-
     }
   }, [setValue]);
-
 
   const onSubmit = handleSubmit(async (data) => {
     trigger(undefined, { shouldFocus: true });
@@ -107,7 +104,6 @@ export function AboutArtist({
     });
   });
 
-
   const renderDetails = (
     <Card sx={{ mb: 4 }}>
       <CardHeader title="About Artist" sx={{ mb: 3 }} />
@@ -115,8 +111,6 @@ export function AboutArtist({
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">About</Typography>
           <Field.Editor name="About" sx={{ maxHeight: 480 }} />
@@ -127,8 +121,17 @@ export function AboutArtist({
 
   const ArtistCatagory = (
     <Card>
-      <CardHeader title="Artist Catagory" sx={{ mb: 3 }} />
-
+      <Box>
+        <CardHeader title="Artist Catagory" sx={{ mb: 3 }} />
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          // onClick={haddCv}
+        >
+          Add More Catagory
+        </Button>
+      </Box>
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>

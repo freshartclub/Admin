@@ -50,7 +50,7 @@ export function OtherDetails({
   setTabIndex,
   tabIndex,
   tabState,
- }: AddArtistComponentProps) {
+}: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
@@ -88,9 +88,9 @@ export function OtherDetails({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
- 
+
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue('ManagerArtistName', artistFormData?.ManagerArtistName || 'John ');
       setValue('ManagerSurnameone', artistFormData?.ManagerSurnameone || 'Doe');
       setValue('ManagerSurnametwo', artistFormData?.ManagerSurnametwo || 'Smith');
@@ -98,7 +98,7 @@ export function OtherDetails({
       setValue('ContactTo', artistFormData?.ContactTo || 'Sandy');
       setValue('ManagerphoneNumber', artistFormData?.ManagerphoneNumber || '+919165326598');
       setValue('ManagerEmail', artistFormData?.ManagerEmail || 'JohnDoe@gmail.com');
-      
+
       setValue('ManagerAddress', artistFormData?.ManagerAddress || '131 chanda Nager');
       setValue('ManagerZipCode', artistFormData?.ManagerZipCode || '12345');
       setValue('ManagerCity', artistFormData?.ManagerCity || 'Los Angeles');
@@ -106,28 +106,22 @@ export function OtherDetails({
       setValue('ManagerCountry', artistFormData?.ManagerCountry || ' Albania');
       setValue('ManagerLanguage', artistFormData?.ManagerLanguage || ['English']);
       setValue('ManagerGender', artistFormData?.ManagerGender || 'Men');
-     
     }
   }, [setValue]);
-  
 
   const onSubmit = handleSubmit(async (data) => {
     trigger(undefined, { shouldFocus: true });
     setArtistFormData({ ...artistFormData, ...data });
     setTabState((prev) => {
       prev[tabIndex].isSaved = true;
-     
+
       return prev;
     });
   });
 
-
   const renderDetails = (
     <Card>
-      <CardHeader
-        title="Manager Details (If any)"
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Manager Details (If any)" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -178,20 +172,20 @@ export function OtherDetails({
           <Field.Text name="ManagerProvince" label="Province/State/Region" />
           {/* <Field.Text name="ManagerCountry" label="Country" /> */}
           <Field.CountrySelect
-          fullWidth
-          name="ManagerCountry"
-          label="Country"
-          placeholder="Choose a country"
-        />
+            fullWidth
+            name="ManagerCountry"
+            label="Country"
+            placeholder="Choose a country"
+          />
         </Box>
-         
+
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-         <Field.MultiSelect
+          <Field.MultiSelect
             checkbox
             name="ManagerLanguage"
             label="Language"
@@ -206,11 +200,9 @@ export function OtherDetails({
           />
         </Box>
         {/* end section */}
-        
       </Stack>
     </Card>
   );
-
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -218,7 +210,7 @@ export function OtherDetails({
         {renderDetails}
 
         <div className="flex justify-end">
-           <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
             Save & Next
           </button>
         </div>

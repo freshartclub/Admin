@@ -97,7 +97,7 @@ export function GeneralInformation({
   // const values = watch();
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue('accountId', artistFormData?.accountId || '12345');
       setValue('ArtistName', artistFormData?.ArtistName || 'John');
       setValue('Surnameone', artistFormData?.Surnameone || 'Doe');

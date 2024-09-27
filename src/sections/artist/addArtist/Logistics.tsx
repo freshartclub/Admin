@@ -14,7 +14,6 @@ import CardHeader from '@mui/material/CardHeader';
 
 import { useRouter } from 'src/routes/hooks';
 
-
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -38,14 +37,14 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function Logistic({ 
+export function Logistic({
   artistFormData,
   setArtistFormData,
   setTabState,
   setTabIndex,
   tabIndex,
   tabState,
- }: AddArtistComponentProps) {
+}: AddArtistComponentProps) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
@@ -80,17 +79,20 @@ export function Logistic({
   } = methods;
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '8081') {
+    if (window.location.hostname === 'localhost') {
       setValue('LogName', artistFormData?.LogName || 'John');
       setValue('LogisticAddress', artistFormData?.LogisticAddress || '121 c21 vijay nager');
       setValue('LogZipCode', artistFormData?.LogZipCode || '12345');
       setValue('LogCity', artistFormData?.LogCity || 'Indore');
       setValue('LogProvince', artistFormData?.LogProvince || 'Madhay Pradesh');
       setValue('LogCountry', artistFormData?.LogCountry || 'USA');
-      
+
       setValue('LogEmail', artistFormData?.LogEmail || 'Artist@gmail.com');
       setValue('LogphoneNumber', artistFormData?.LogphoneNumber || '+919165323561');
-      setValue('LogAdditionalNotes', artistFormData?.LogAdditionalNotes || 'Hi this is testing Data Additional Notes ');
+      setValue(
+        'LogAdditionalNotes',
+        artistFormData?.LogAdditionalNotes || 'Hi this is testing Data Additional Notes '
+      );
     }
   }, [setValue]);
 
@@ -149,18 +151,14 @@ export function Logistic({
         </Box>
 
         <Field.Text name="LogAdditionalNotes" label="Log Additional Notes" multiline rows={4} />
-
-        
       </Stack>
     </Card>
   );
 
-
-
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
-         {renderDetails}
+        {renderDetails}
 
         {/* {renderActions} */}
         <div className="flex justify-end">
