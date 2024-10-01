@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { PRODUCT_YEARS_OPTIONS } from 'src/_mock';
+import { getYearDropDown } from 'src/utils/helper';
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
@@ -156,7 +156,7 @@ export function Highlights({
                   checkbox
                   name={`cvs[${index}].year`}
                   label="Year"
-                  options={PRODUCT_YEARS_OPTIONS}
+                  options={getYearDropDown(101)}
                 />
                 <Field.Text name={`cvs[${index}].Type`} label="Type" />
                 <Field.Text name={`cvs[${index}].Description`} label="Description" />
@@ -187,14 +187,6 @@ export function Highlights({
       </Stack>
     </Card>
   );
-
-  // const renderActions = (
-  //   <Stack spacing={3} direction="row" aligncvs="center" flexWrap="wrap">
-  //     <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-  //       {currentProduct ? 'Save changes' : 'Create product'}
-  //     </LoadingButton>
-  //   </Stack>
-  // );
 
   return (
     <FormProvider {...formProps}>

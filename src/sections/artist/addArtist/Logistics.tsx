@@ -2,8 +2,8 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect, useCallback } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';

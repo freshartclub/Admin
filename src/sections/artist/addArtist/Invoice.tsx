@@ -1,13 +1,17 @@
+import type { ExtractIBANResult } from 'ibantools';
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { extractIBAN, validateIBAN } from 'ibantools';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
+import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
@@ -17,7 +21,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useRouter } from 'src/routes/hooks';
 
 import {
-  PRODUCT_BANKNAME_OPTIONS,
   PRODUCT_ARTISTPLUS_OPTIONS,
   PRODUCT_CUSTOMORDER_OPTIONS,
   PRODUCT_PUBLISHINGCATALOG_OPTIONS,
@@ -25,10 +28,8 @@ import {
   PRODUCT_MAXNUMBROFARTWORK_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-
-// ----------------------------------------------------------------------
+import { Iconify } from 'src/components/iconify';
+import { Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
   TaxNumber: zod.string().min(1, { message: 'TaxNumber/NIF Id is required!' }),
@@ -48,7 +49,12 @@ export const NewProductSchema = zod.object({
   BankIBAN: zod.string().min(1, { message: 'Bank IBAN is required!' }),
   BankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
-  PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
+  // PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
+  PublishingCatalog: zod.array(
+    zod.object({
+      PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
+    })
+  ),
   ArtistFees: zod.string().min(1, { message: 'Artist Fees is required!' }),
   ArtistPlus: zod.string(),
   MinNumberOfArtwork: zod.string().min(1, { message: 'Min Number of Artwork is required!' }),
@@ -66,6 +72,8 @@ export function Invoice({
   tabState,
 }: AddArtistComponentProps) {
   const router = useRouter();
+  const [ibanNumber, setIbanNumber] = useState('');
+  const [bankName, setBankName] = useState('');
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
@@ -92,7 +100,11 @@ export function Invoice({
     [artistFormData]
   );
 
-  const methods = useForm({
+  // const methods = useForm({
+  //   resolver: zodResolver(NewProductSchema),
+  //   defaultValues,
+  // });
+  const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
@@ -104,10 +116,22 @@ export function Invoice({
     trigger,
     handleSubmit,
     formState: { isSubmitting },
-  } = methods;
+  } = formProps;
+  const { fields, append, remove } = useFieldArray({
+    control: formProps.control,
+    name: 'PublishingCatalog',
+  });
 
+  const handleRemove = (index) => {
+    remove(index);
+  };
+  const addCatelog = () => {
+    append({
+      PublishingCatalog: '',
+    });
+  };
   useEffect(() => {
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
       setValue('TaxNumber', artistFormData?.TaxNumber || '12345');
       setValue('TaxLegalName', artistFormData?.TaxLegalName || 'John Doe');
       setValue('TaxAddress', artistFormData?.TaxAddress || '31,c21,vijay nager');
@@ -120,29 +144,24 @@ export function Invoice({
       setValue('BankIBAN', artistFormData?.BankIBAN || 'CBI90210');
       setValue('BankName', artistFormData?.BankName || 'Bank of America');
       setValue('CustomOrder', artistFormData?.CustomOrder || 'Yes');
-      setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
+      // setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
+      if (artistFormData?.catagoryone?.length) {
+        setValue('PublishingCatalog', artistFormData.PublishingCatalog);
+      } else {
+        const mockData = [
+          {
+            PublishingCatalog: 'Catagog 4',
+          },
+        ];
+
+        mockData.forEach((item) => append(item));
+      }
       setValue('ArtistFees', artistFormData?.ArtistFees || '10000');
       setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
       setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
       setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
     }
   }, [setValue]);
-
-  // const values = watch();
-
-  // useEffect(() => {
-  //   if (currentProduct) {
-  //     reset(defaultValues);
-  //   }
-  // }, [currentProduct, defaultValues, reset]);
-
-  // useEffect(() => {
-  //   if (includeTaxes) {
-  //     setValue('taxes', 0);
-  //   } else {
-  //     setValue('taxes', currentProduct?.taxes || 0);
-  //   }
-  // }, [currentProduct?.taxes, includeTaxes, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     trigger(undefined, { shouldFocus: true });
@@ -156,25 +175,28 @@ export function Invoice({
     });
   });
 
-  // const handleRemoveFile = useCallback(
-  //   (inputFile) => {
-  //     const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-  //     setValue('images', filtered);
-  //   },
-  //   [setValue, values.images]
-  // );
+  const hanldeIbanChange = (e) => {
+    let ibanDetail: ExtractIBANResult;
+    const val = e.target.value;
+    const { valid } = validateIBAN(val);
+    if (!valid) {
+      formProps.setError('BankIBAN', {
+        message: 'Please enter a valid IBAN number',
+      });
+    } else {
+      ibanDetail = extractIBAN(val);
+      formProps.clearErrors('BankIBAN');
+      console.log(ibanDetail);
 
-  // const handleRemoveAllFiles = useCallback(() => {
-  //   setValue('images', [], { shouldValidate: true });
-  // }, [setValue]);
+      formProps.setValue('BankName', ibanDetail.bankIdentifier);
+    }
 
-  // const handleChangeIncludeTaxes = useCallback((event) => {
-  //   setIncludeTaxes(event.target.checked);
-  // }, []);
+    setIbanNumber(val);
+  };
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Invoicing" sx={{ mb: 3 }} />
+      <CardHeader title="Invoicing & Co" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -234,14 +256,14 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="BankIBAN" label="Bank IBAN" />
-
-          <Field.SingelSelect
-            checkbox
-            name="BankName"
-            label="Bank Name "
-            options={PRODUCT_BANKNAME_OPTIONS}
+          <Field.Text
+            onChange={hanldeIbanChange}
+            value={ibanNumber}
+            name="BankIBAN"
+            label="Bank IBAN"
           />
+
+          <Field.Text name="BankName" label="BankName" />
         </Box>
 
         {/* end my section */}
@@ -259,12 +281,58 @@ export function Invoice({
           label="Are you accept custom Order?"
           options={PRODUCT_CUSTOMORDER_OPTIONS}
         />
-        <Field.SingelSelect
+        {/* <Field.SingelSelect
           checkbox
           name="PublishingCatalog"
           label="publishing catalogue"
           options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
-        />
+        /> */}
+        {/* try start */}
+        <Stack>
+          <div className="flex justify-end">
+            <Button
+              size="small"
+              color="primary"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={addCatelog}
+            >
+              Add More Catelog
+            </Button>
+          </div>
+          {fields.map((item, index) => (
+            <Stack
+              key={item.id}
+              aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
+              spacing={1.5}
+              className=""
+            >
+              <Box
+                columnGap={2}
+                rowGap={3}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
+              >
+                <Field.SingelSelect
+                  checkbox
+                  name={`PublishingCatalog[${index}].PublishingCatalog`}
+                  label="publishing catalogue"
+                  options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
+                />
+              </Box>
+
+              <Button
+                size="small"
+                color="error"
+                className="flex justify-end"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => handleRemove(index)}
+              >
+                Remove
+              </Button>
+            </Stack>
+          ))}
+        </Stack>
+        {/* try end */}
         <Field.Text name="ArtistFees" label=" Artist Fees" />
 
         <Field.SingelSelect
@@ -303,18 +371,20 @@ export function Invoice({
   );
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }}>
-        {renderDetails}
+    <FormProvider {...formProps}>
+      <form onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 5 }}>
+          {renderDetails}
 
-        {Commercialization}
-        {/* {renderActions} */}
-        <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            Save & Next
-          </button>
-        </div>
-      </Stack>
-    </Form>
+          {Commercialization}
+          {/* {renderActions} */}
+          <div className="flex justify-end">
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              Save & Next
+            </button>
+          </div>
+        </Stack>
+      </form>
+    </FormProvider>
   );
 }

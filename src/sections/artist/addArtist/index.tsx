@@ -1,6 +1,6 @@
 import type { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Box, Tab, Button } from '@mui/material';
 
@@ -20,6 +20,8 @@ import { GeneralInformation } from './GeneralInformation';
 function AddArtistIndex() {
   const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
 
+  console.log(artistFormData);
+
   const [tabState, setTabState] = useState([
     { value: 'generalInformation', label: 'General Information', isSaved: false },
     { value: 'cvAndHighlights', label: 'CV & Highlights', isSaved: false },
@@ -29,7 +31,6 @@ function AddArtistIndex() {
     { value: 'logistics', label: 'Logistics', isSaved: false },
     { value: 'otherDetails', label: 'Other Details', isSaved: false },
   ]);
-  
 
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -72,55 +73,7 @@ function AddArtistIndex() {
       )}
       {tabIndex === 2 && (
         <Box sx={{ p: 1 }}>
-          <AboutArtist 
-           artistFormData={artistFormData}
-           setArtistFormData={setArtistFormData}
-           setTabState={setTabState}
-           setTabIndex={setTabIndex}
-           tabIndex={tabIndex}
-           tabState={tabState}
-          />
-        </Box>
-      )}
-      {tabIndex === 3 && (
-        <Box sx={{ p: 1 }}>
-          <Media 
-           artistFormData={artistFormData}
-           setArtistFormData={setArtistFormData}
-           setTabState={setTabState}
-           setTabIndex={setTabIndex}
-           tabIndex={tabIndex}
-           tabState={tabState}
-          />
-        </Box>
-      )}
-      {tabIndex === 4 && (
-        <Box sx={{ p: 1 }}>
-          <Invoice 
-          artistFormData={artistFormData}
-          setArtistFormData={setArtistFormData}
-          setTabState={setTabState}
-          setTabIndex={setTabIndex}
-          tabIndex={tabIndex}
-          tabState={tabState}
-          />
-        </Box>
-      )}
-      {tabIndex === 5 && (
-        <Box sx={{ p: 1 }}>
-          <Logistic 
-          artistFormData={artistFormData}
-          setArtistFormData={setArtistFormData}
-          setTabState={setTabState}
-          setTabIndex={setTabIndex}
-          tabIndex={tabIndex}
-          tabState={tabState}
-          />
-        </Box>
-      )}
-      {tabIndex === 6 && (
-        <Box sx={{ p: 1 }}>
-          <OtherDetails 
+          <AboutArtist
             artistFormData={artistFormData}
             setArtistFormData={setArtistFormData}
             setTabState={setTabState}
@@ -130,9 +83,55 @@ function AddArtistIndex() {
           />
         </Box>
       )}
-       
+      {tabIndex === 3 && (
+        <Box sx={{ p: 1 }}>
+          <Media
+            artistFormData={artistFormData}
+            setArtistFormData={setArtistFormData}
+            setTabState={setTabState}
+            setTabIndex={setTabIndex}
+            tabIndex={tabIndex}
+            tabState={tabState}
+          />
+        </Box>
+      )}
+      {tabIndex === 4 && (
+        <Box sx={{ p: 1 }}>
+          <Invoice
+            artistFormData={artistFormData}
+            setArtistFormData={setArtistFormData}
+            setTabState={setTabState}
+            setTabIndex={setTabIndex}
+            tabIndex={tabIndex}
+            tabState={tabState}
+          />
+        </Box>
+      )}
+      {tabIndex === 5 && (
+        <Box sx={{ p: 1 }}>
+          <Logistic
+            artistFormData={artistFormData}
+            setArtistFormData={setArtistFormData}
+            setTabState={setTabState}
+            setTabIndex={setTabIndex}
+            tabIndex={tabIndex}
+            tabState={tabState}
+          />
+        </Box>
+      )}
+      {tabIndex === 6 && (
+        <Box sx={{ p: 1 }}>
+          <OtherDetails
+            artistFormData={artistFormData}
+            setArtistFormData={setArtistFormData}
+            setTabState={setTabState}
+            setTabIndex={setTabIndex}
+            tabIndex={tabIndex}
+            tabState={tabState}
+          />
+        </Box>
+      )}
     </Box>
-      
   );
 }
 

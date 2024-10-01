@@ -128,3 +128,11 @@ export const merge = (target: any, ...sources: any[]): any => {
 
   return merge(target, ...sources);
 };
+
+export const getYearDropDown = (till = 101) =>
+  Array.from({ length: till }, (_, index) => {
+    const currentYear = new Date().getFullYear();
+
+    const year = currentYear - index;
+    return { value: `${year}`, label: `${year}` };
+  });

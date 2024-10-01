@@ -1,8 +1,6 @@
 import { common, createLowlight } from 'lowlight';
 import LinkExtension from '@tiptap/extension-link';
-import ImageExtension from '@tiptap/extension-image';
 import StarterKitExtension from '@tiptap/starter-kit';
-import TextAlignExtension from '@tiptap/extension-text-align';
 import PlaceholderExtension from '@tiptap/extension-placeholder';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 import CodeBlockLowlightExtension from '@tiptap/extension-code-block-lowlight';
@@ -53,7 +51,7 @@ export const Editor = forwardRef(
           codeBlock: false,
           code: { HTMLAttributes: { class: editorClasses.content.codeInline } },
           heading: { HTMLAttributes: { class: editorClasses.content.heading } },
-          horizontalRule: { HTMLAttributes: { class: editorClasses.content.hr } },
+          // horizontalRule: { HTMLAttributes: { class: editorClasses.content.hr } },
           listItem: { HTMLAttributes: { class: editorClasses.content.listItem } },
           blockquote: { HTMLAttributes: { class: editorClasses.content.blockquote } },
           bulletList: { HTMLAttributes: { class: editorClasses.content.bulletList } },
@@ -63,8 +61,9 @@ export const Editor = forwardRef(
           placeholder,
           emptyEditorClass: editorClasses.content.placeholder,
         }),
-        ImageExtension.configure({ HTMLAttributes: { class: editorClasses.content.image } }),
-        TextAlignExtension.configure({ types: ['heading', 'paragraph'] }),
+
+        // ImageExtension.configure({ HTMLAttributes: { class: editorClasses.content.image } }),
+        // TextAlignExtension.configure({ types: ['heading', 'paragraph'] }),
         LinkExtension.configure({
           autolink: true,
           openOnClick: false,

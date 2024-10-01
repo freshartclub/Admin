@@ -102,19 +102,23 @@ export const schemaHelper = {
   files: (props) =>
     zod.array(zod.custom()).transform((data, ctx) => {
       const minFiles = props?.minFiles ?? 2;
+      const maxFiles = props?.maxFiles ?? 5;
 
-      if (!data.length) {
+      if (props.required && !data.length) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
           message: props?.message?.required_error ?? 'Files is required!',
         });
-      } else if (data.length < minFiles) {
+      } else if (props.required && data.length < minFiles) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
           message: `Must have at least ${minFiles} items!`,
         });
+      } else if (data.length > maxFiles) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: `You Cannot add more then ${maxFiles} items!`,
+        });
       }
-
-      return data;
     }),
 };

@@ -9,13 +9,21 @@ import { RHFAutocomplete } from './rhf-autocomplete';
 import { RHFCountrySelect } from './rhf-country-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
-import { RHFUpload,RHFUploadMultiVideo, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
+import { GooglePlacesAutoComplete } from './GooglePlacesAutoComplete';
 import { RHFSelect, RHFMultiSelect, RHFSingleSelect } from './rhf-select';
 import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
+import {
+  RHFUpload,
+  RHFUploadBox,
+  RHFUploadAvatar,
+  RHFUploadDocument,
+  RHFUploadMultiVideo,
+} from './rhf-upload';
 
 // ----------------------------------------------------------------------
 
 export const Field = {
+  GooglePlacesAutoComplete,
   Code: RHFCode,
   Editor: RHFEditor,
   Select: RHFSelect,
@@ -37,5 +45,6 @@ export const Field = {
   CountrySelect: RHFCountrySelect,
   MobileDateTimePicker: RHFMobileDateTimePicker,
   SingelSelect: RHFSingleSelect,
-  MultiVideo:RHFUploadMultiVideo,
+  MultiVideo: RHFUploadMultiVideo,
+  UploadDocument: RHFUploadDocument,
 };

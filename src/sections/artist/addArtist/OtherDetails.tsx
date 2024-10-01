@@ -2,13 +2,14 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 
@@ -16,15 +17,14 @@ import { useRouter } from 'src/routes/hooks';
 
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  ManagerArtistName: zod.string().min(1, { message: 'ArtistName is required!' }),
-  ManagerSurnameone: zod.string().min(1, { message: 'ArtistSurname is required!' }),
-  ManagerSurnametwo: zod.string(),
+  ManagerartistName: zod.string().min(1, { message: 'artistName is required!' }),
+  ManagerartistSurname1: zod.string().min(1, { message: 'ArtistSurname is required!' }),
+  ManagerartistSurname2: zod.string(),
   ManagerArtworkNickname: zod.string(),
   ContactTo: zod.string(),
   ManagerphoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
@@ -39,6 +39,11 @@ export const NewProductSchema = zod.object({
   ManagerCountry: zod.string().min(1, { message: 'Country is required!' }),
   ManagerLanguage: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   ManagerGender: zod.string().min(1, { message: 'Gender is required!' }),
+  ManagerExtraInfo01: zod.string(),
+  ManagerExtraInfo02: zod.string(),
+  ManagerExtraInfo03: zod.string(),
+  ManagerDocumentName: zod.string().min(1, { message: 'Document Name is required!' }),
+  document: schemaHelper.file({ message: { required_error: 'document is required!' } }),
 });
 
 // ----------------------------------------------------------------------
@@ -57,9 +62,9 @@ export function OtherDetails({
 
   const defaultValues = useMemo(
     () => ({
-      ManagerArtistName: artistFormData?.ManagerArtistName || '',
-      ManagerSurnameone: artistFormData?.ManagerSurnameone || '',
-      ManagerSurnametwo: artistFormData?.ManagerSurnametwo || '',
+      ManagerartistName: artistFormData?.ManagerartistName || '',
+      ManagerartistSurname1: artistFormData?.ManagerartistSurname1 || '',
+      ManagerartistSurname2: artistFormData?.ManagerartistSurname2 || '',
       ManagerArtworkNickname: artistFormData?.ManagerArtworkNickname || '',
       ContactTo: artistFormData?.ContactTo || '',
       ManagerphoneNumber: artistFormData?.ManagerphoneNumber || '',
@@ -71,9 +76,18 @@ export function OtherDetails({
       ManagerCountry: artistFormData?.ManagerCountry || '',
       ManagerLanguage: artistFormData?.ManagerLanguage || [],
       ManagerGender: artistFormData?.ManagerGender || '',
+      ManagerExtraInfo01: artistFormData?.ManagerExtraInfo01 || '',
+      ManagerExtraInfo02: artistFormData?.ManagerExtraInfo02 || '',
+      ManagerExtraInfo03: artistFormData?.ManagerExtraInfo03 || '',
+      ManagerDocumentName: artistFormData?.ManagerDocumentName || '',
+      document: artistFormData?.document || null,
     }),
     [artistFormData]
   );
+
+  const handleRemoveDocument = () => {
+    setValue('document', null);
+  };
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -91,9 +105,9 @@ export function OtherDetails({
 
   useEffect(() => {
     if (window.location.hostname === 'localhost') {
-      setValue('ManagerArtistName', artistFormData?.ManagerArtistName || 'John ');
-      setValue('ManagerSurnameone', artistFormData?.ManagerSurnameone || 'Doe');
-      setValue('ManagerSurnametwo', artistFormData?.ManagerSurnametwo || 'Smith');
+      setValue('ManagerartistName', artistFormData?.ManagerartistName || 'John ');
+      setValue('ManagerartistSurname1', artistFormData?.ManagerartistSurname1 || 'Doe');
+      setValue('ManagerartistSurname2', artistFormData?.ManagerartistSurname2 || 'Smith');
       setValue('ManagerArtworkNickname', artistFormData?.ManagerArtworkNickname || 'Sunset Bliss');
       setValue('ContactTo', artistFormData?.ContactTo || 'Sandy');
       setValue('ManagerphoneNumber', artistFormData?.ManagerphoneNumber || '+919165326598');
@@ -119,8 +133,22 @@ export function OtherDetails({
     });
   });
 
-  const renderDetails = (
+  const document = (
     <Card>
+      <CardHeader title="Document" sx={{ mb: 1 }} />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Text name="ManagerDocumentName" label="Documents name" />
+
+        <div>
+          <Typography variant="Document">Upload Document</Typography>
+          <Field.UploadDocument name="document" maxSize={3145728} onDelete={handleRemoveDocument} />
+        </div>
+      </Stack>
+    </Card>
+  );
+  const renderDetails = (
+    <Card sx={{ mb: 4 }}>
       <CardHeader title="Manager Details (If any)" sx={{ mb: 3 }} />
 
       <Divider />
@@ -132,11 +160,11 @@ export function OtherDetails({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="ManagerArtistName" label="Artist name" />
+          <Field.Text name="ManagerartistName" label="Artist name" />
 
-          <Field.Text name="ManagerSurnameone" label="Artist Surname 1" />
+          <Field.Text name="ManagerartistSurname1" label="Artist Surname 1" />
 
-          <Field.Text name="ManagerSurnametwo" label="Artist Surname 2" />
+          <Field.Text name="ManagerartistSurname2" label="Artist Surname 2" />
         </Box>
         <Box
           columnGap={2}
@@ -199,6 +227,16 @@ export function OtherDetails({
             options={PRODUCT_GENDER_OPTIONS}
           />
         </Box>
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
+          <Field.Text name="ManagerExtraInfo01" label="Extra Info 01" />
+          <Field.Text name="ManagerExtraInfo01" label="Extra Info 02" />
+          <Field.Text name="ManagerExtraInfo01" label="Extra Info 03" />
+        </Box>
         {/* end section */}
       </Stack>
     </Card>
@@ -207,6 +245,8 @@ export function OtherDetails({
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
+        {document}
+
         {renderDetails}
 
         <div className="flex justify-end">

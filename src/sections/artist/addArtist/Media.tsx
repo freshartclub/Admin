@@ -1,15 +1,14 @@
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState, useEffect,useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Typography } from '@mui/material';
+import { useMemo, useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 
@@ -19,15 +18,13 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
   MainPhoto: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-  AdditionalImage: schemaHelper.file({ message: { required_error: 'Back Photo is required!' } }),
-  InprocessPhoto: schemaHelper.file({ message: { required_error: 'Inprocess Photo is required!' } }),
-  MainVedio:schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
-  AdditionalVedio:schemaHelper.file({ message: { required_error: 'Additional video is required!' } }),
+  AdditionalImage: schemaHelper.files({ required: false }),
+  InprocessPhoto: zod.any(),
+  MainVedio: schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
+  AdditionalVedio: schemaHelper.files({ required: false }),
 });
 
 // ----------------------------------------------------------------------
-
-
 
 export function Media({
   artistFormData,
@@ -42,14 +39,15 @@ export function Media({
   const defaultValues = useMemo(
     () => ({
       MainPhoto: artistFormData?.MainPhoto || null,
-      AdditionalImage: artistFormData?.AdditionalImage || null,
+      AdditionalImage: artistFormData?.AdditionalImage || [],
       InprocessPhoto: artistFormData?.InprocessPhoto || null,
       MainVedio: artistFormData?.MainVedio || null,
-      AdditionalVedio:artistFormData?.AdditionalVedio || null,
-
+      AdditionalVedio: artistFormData?.AdditionalVedio || [],
     }),
     [artistFormData]
   );
+
+  console.log(defaultValues);
 
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -65,7 +63,6 @@ export function Media({
     formState: { isSubmitting },
   } = formProps;
 
-
   const onSubmit = handleSubmit(async (data) => {
     trigger(undefined, { shouldFocus: true });
 
@@ -78,30 +75,42 @@ export function Media({
     });
   });
 
+  const handleRemoveMainImage = useCallback(() => {
+    setValue('MainPhoto', null);
+  }, [setValue]);
 
+  const handleRemoveAdditionalImages = useCallback(() => {
+    setValue('AdditionalImage', []);
+  }, [setValue]);
 
+  const handleRemoveIndividualAdditionalImage = useCallback(
+    (image) => {
+      const arr = formProps.getValues('AdditionalImage').filter((val) => val.name !== image.name);
+      setValue('AdditionalImage', arr);
+    },
+    [setValue]
+  );
 
-    const handleRemoveFile = useCallback(() => {
-      setValue('MainPhoto', null);
-    }, [setValue]);
+  const handleRemoveInProcessImage = useCallback(() => {
+    setValue('InprocessPhoto', null);
+  }, [setValue]);
 
-    const handleRemoveFileone = useCallback(() => {
-      setValue('AdditionalImage', null);
-    }, [setValue]);
+  const handleRemoveMainVideo = useCallback(() => {
+    setValue('MainVedio', null);
+  }, [setValue]);
 
-    const handleRemoveFiletwo = useCallback(() => {
-      setValue('InprocessPhoto', null);
-    }, [setValue]);
- 
+  const handleRemoveAdditionalVideos = useCallback(() => {
+    setValue('AdditionalVedio', []);
+  }, [setValue]);
 
-    const handleRemoveFileVideo = useCallback(() => {
-      setValue('MainVedio', null);
-    }, [setValue]);
+  const handleRemoveIndividualAdditionalVideo = useCallback(
+    (video) => {
+      const arr = formProps.getValues('AdditionalVedio').filter((val) => val.name !== video.name);
 
-    const handleRemoveFileVideotwo = useCallback(() => {
-      setValue('AdditionalVedio', null);
-    }, [setValue]);
-  
+      setValue('AdditionalVedio', arr);
+    },
+    [setValue]
+  );
 
   const media = (
     <Card className="mb-6">
@@ -117,20 +126,29 @@ export function Media({
         >
           <div>
             <Typography variant="MainPhoto">Main Photo</Typography>
-            <Field.Upload name="MainPhoto" maxSize={3145728} onDelete={handleRemoveFile} />
+            <Field.Upload name="MainPhoto" maxSize={3145728} onDelete={handleRemoveMainImage} />
           </div>
 
           <div>
-           <Typography variant="AdditionalImage">Additional Image</Typography>
-            <Field.Upload name="AdditionalImage" maxSize={3145728} onDelete={handleRemoveFileone} />
+            <Typography variant="AdditionalImage">Additional Image</Typography>
+            <Field.Upload
+              multiple
+              onRemove={handleRemoveIndividualAdditionalImage}
+              name="AdditionalImage"
+              maxSize={3145728}
+              onRemoveAll={handleRemoveAdditionalImages}
+            />
           </div>
 
           <div>
             <Typography variant="InprocessPhoto">Inprocess Photo</Typography>
-            <Field.Upload name="InprocessPhoto" maxSize={3145728} onDelete={handleRemoveFiletwo} />
+            <Field.Upload
+              name="InprocessPhoto"
+              maxSize={3145728}
+              onDelete={handleRemoveInProcessImage}
+            />
           </div>
         </Box>
-
 
         <Box
           columnGap={2}
@@ -140,11 +158,17 @@ export function Media({
         >
           <div>
             <Typography variant="MainVedio">Main Video</Typography>
-            <Field.MultiVideo name="MainVedio" maxSize={5e+7} onDelete={handleRemoveFileVideo} />
+            <Field.MultiVideo name="MainVedio" maxSize={5e7} onDelete={handleRemoveMainVideo} />
           </div>
           <div>
-          <Typography variant="AdditionalVedio">Additional Video</Typography>
-          <Field.MultiVideo name="AdditionalVedio" maxSize={5e+7} onDelete={handleRemoveFileVideotwo} />
+            <Typography variant="AdditionalVedio">Additional Video</Typography>
+            <Field.MultiVideo
+              onRemoveAll={handleRemoveAdditionalVideos}
+              onRemove={handleRemoveIndividualAdditionalVideo}
+              multiple
+              name="AdditionalVedio"
+              maxSize={5e7}
+            />
           </div>
         </Box>
       </Stack>
@@ -165,5 +189,3 @@ export function Media({
     </Form>
   );
 }
-
-

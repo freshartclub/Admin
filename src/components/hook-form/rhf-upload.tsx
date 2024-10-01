@@ -2,8 +2,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import FormHelperText from '@mui/material/FormHelperText';
 
+import { UploadVideo } from '../videoUpload/UploadVideo';
 import { Upload, UploadBox, UploadAvatar } from '../upload';
-import {UploadVideo} from '../videoUpload/UploadVideo'
 
 // ----------------------------------------------------------------------
 
@@ -71,7 +71,17 @@ export function RHFUpload({ name, multiple, helperText, ...other }) {
         };
 
         const onDrop = (acceptedFiles) => {
-          const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
+          let value;
+
+          if (multiple) {
+            if (field.value) {
+              value = [...field.value, ...acceptedFiles];
+            } else {
+              value = acceptedFiles;
+            }
+          } else {
+            value = acceptedFiles[0];
+          }
 
           setValue(name, value, { shouldValidate: true });
         };
@@ -125,8 +135,17 @@ export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
         };
 
         const onDrop = (acceptedFiles) => {
-          const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
+          let value;
 
+          if (multiple) {
+            if (field.value) {
+              value = [...field.value, ...acceptedFiles];
+            } else {
+              value = acceptedFiles;
+            }
+          } else {
+            value = acceptedFiles[0];
+          }
           setValue(name, value, { shouldValidate: true });
         };
 
@@ -136,6 +155,29 @@ export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
   );
 }
 
+export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
+  const { control, setValue } = useFormContext();
 
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => {
+        const uploadProps = {
+          multiple,
+          accept: { 'file/*': [] },
+          error: !!error,
+          helperText: error?.message ?? helperText,
+        };
 
+        const onDrop = (acceptedFiles) => {
+          const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
 
+          setValue(name, value, { shouldValidate: true });
+        };
+
+        return <Upload {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
+      }}
+    />
+  );
+}
