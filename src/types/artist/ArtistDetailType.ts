@@ -5,10 +5,10 @@ export interface ArtistDetailType {
   accountId: string;
   artistName: string;
   artistSurname1: string;
-  Highlights: string;
-  cvs: CVs[];
+  highlights: string;
+  cvData: cvData[];
   artistSurname2?: string;
-  ArtworkNickname?: string;
+  nickName?: string;
   ArtistId: string;
   country?: object | null;
   createDate?: string;
@@ -17,7 +17,7 @@ export interface ArtistDetailType {
   city: string;
   state: string;
   residentialAddress: string;
-  phoneNumber: string;
+  phone: string;
   email: string;
   gender: string;
   InternalNote?: string;
@@ -70,7 +70,7 @@ export interface ArtistDetailType {
   LogAdditionalNotes?: string;
 }
 
-interface CVs {
+interface cvData {
   year: string;
   Type: string;
   Description: string;

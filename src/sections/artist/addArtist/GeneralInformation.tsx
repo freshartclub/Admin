@@ -36,7 +36,7 @@ export const NewProductSchema = zod.object({
   city: zod.string().min(1, { message: 'City is required!' }),
   state: zod.string().min(1, { message: 'state is required!' }),
   residentialAddress: zod.string().min(1, { message: 'residentialAddress is required!' }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  phone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -55,14 +55,14 @@ export function GeneralInformation({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
+  const [searchParam, setSearchParam] = useState();
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
-  const handleSuccess = () => {
+  const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
     setTabIndex(tabIndex + 1);
     setTabState((prev) => {
       prev[tabIndex].isSaved = true;
-
       return prev;
     });
   };
@@ -80,7 +80,7 @@ export function GeneralInformation({
       city: artistFormData?.city || '',
       state: artistFormData?.state || '',
       residentialAddress: artistFormData?.residentialAddress || '',
-      phoneNumber: artistFormData?.phoneNumber || '',
+      phone: artistFormData?.phone || '',
       email: artistFormData?.email || '',
       language: artistFormData?.language || [],
       gender: artistFormData?.gender || '',
@@ -120,7 +120,7 @@ export function GeneralInformation({
       setValue('city', artistFormData?.city || 'Los Angeles');
       setValue('state', artistFormData?.state || 'California');
       setValue('residentialAddress', artistFormData?.residentialAddress || '123 Art St.');
-      setValue('phoneNumber', artistFormData?.phoneNumber || '+917879610316');
+      setValue('phone', artistFormData?.phone || '+917879610316');
       setValue('email', artistFormData?.email || 'artist@example.com');
       setValue('gender', artistFormData?.gender || 'Men');
       setValue('InternalNote', artistFormData?.InternalNote || 'Mock data for testing');
@@ -130,8 +130,9 @@ export function GeneralInformation({
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
 
-    mutate({ data });
-    handleSuccess(data);
+    data.count = 1;
+
+    mutate({ body: data });
   });
 
   const renderDetails = (
@@ -189,9 +190,9 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Phone name="phoneNumber" label="Phone number" helperText="Good to go" />
+          <Field.Phone name="phone" label="Phone number" helperText="Good to go" />
 
-          <Field.Text name="email" label="Email residentialAddress" />
+          <Field.Text name="email" label="Email" />
         </Box>
 
         <Box
