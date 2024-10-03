@@ -158,6 +158,9 @@ export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
 export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
   const { control, setValue } = useFormContext();
 
+export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
+  const { control, setValue } = useFormContext();
+
   return (
     <Controller
       name={name}
@@ -169,6 +172,21 @@ export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
           error: !!error,
           helperText: error?.message ?? helperText,
         };
+
+        const onDrop = (acceptedFiles) => {
+          const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
+
+          setValue(name, value, { shouldValidate: true });
+        };
+
+        return <Upload {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
+      }}
+    />
+  );
+}
+
+
+
 
         const onDrop = (acceptedFiles) => {
           const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];

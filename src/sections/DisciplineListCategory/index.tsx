@@ -1,10 +1,9 @@
 
-
 import { Card, Table, TableBody } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Scrollbar } from "src/components/scrollbar";
-import { toast } from 'src/components/snackbar';
 import { LoadingScreen } from "src/components/loading-screen";
+import axiosInstance from "src/utils/axios";
 import { getToken } from "src/utils/tokenHelper";
 import {
     useTable,
@@ -13,27 +12,30 @@ import {
     TableEmptyRows,
     TableHeadCustom,
 } from 'src/components/table';
-import { TechnicTableRow } from "./Technic-table-row";
+  const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
+
+import { DisciplineTableRow } from "./Discipline-table-row";
 import { useQuery } from "@tanstack/react-query";
 
-const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
 
 const TABLE_HEAD = [
-    { _id: 'styleName', label: 'Style Name', width: 220 },
+    { _id: 'categoryName', label: 'Category Name', width: 220 },
     { _id: 'createdAt', label: 'Created At', width: 200 },
-    { _id: 'categoryName', label: 'Category Name', },
+    { _id: 'discription', label: 'Discription', },
     { _id: '', width: 88 },
 ];
 
-export function TechnicListCategory() {
+export function DiscipleListCategory() {
+   
     const token = getToken();
+    const [styles, setStyles] = useState([]);
+    // const [table, setTable] = useTable(); // Initialize table state
     const table = useTable();
     const [notFound, setNotFound] = useState(false);
-    
      
 
     const fetchData = async () => {
-        const response = await fetch( BASE_URL +  "/api/admin/list-artwork-style/technic", {
+        const response = await fetch( BASE_URL + "/api/admin/list-discipline", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -71,7 +73,6 @@ export function TechnicListCategory() {
     }
     
     const dataFiltered = data.data; 
-   
     return (
         <div>
            <Card>
@@ -96,7 +97,7 @@ export function TechnicListCategory() {
                             //     table.page * table.rowsPerPage + table.rowsPerPage
                             // )
                             .map((row) => (
-                                <TechnicTableRow
+                                <DisciplineTableRow
                                     key={row._id}
                                     row={row}
                                     selected={table.selected.includes(row._id)}
@@ -117,10 +118,6 @@ export function TechnicListCategory() {
         </div>
     );
 }
-
-
-
-
 
 
 

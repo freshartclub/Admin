@@ -43,7 +43,7 @@ export const Field = {
   Autocomplete: RHFAutocomplete,
   MultiCheckbox: RHFMultiCheckbox,
   CountrySelect: RHFCountrySelect,
-  MobileDateTimePicker: RHFMobileDateTimePicker,
+  MobileDateTimePicker: RHFMobileDateTimePicker, 
   SingelSelect: RHFSingleSelect,
   MultiVideo: RHFUploadMultiVideo,
   UploadDocument: RHFUploadDocument,
