@@ -1,6 +1,6 @@
 
 
-import type { IProductItem } from 'src/types/product';
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -46,7 +46,7 @@ export const NewProductSchema = zod.object({
 // ----------------------------------------------------------------------
 
 type Props = {
-  disciplineFormData?: IProductItem;
+  disciplineFormData?: AddArtistComponentProps;
 };
 
 export function AddDisciline({ disciplineFormData }: Props) {

@@ -25,6 +25,9 @@ const AddTheme = lazy(() => import('src/pages/dashboard/AddTheme'))
 const ThemeList = lazy(() => import('src/pages/dashboard/ThemeList'))
 const AddMediaSupport = lazy(() => import('src/pages/dashboard/AddMediaSupport'))
 const MediaSupportList = lazy(() => import('src/pages/dashboard/MediaSupportList'))
+const AddCreadentialsArea = lazy(() => import('src/pages/dashboard/AddCreadentialsArea'))
+const CreadentialsAreaList  = lazy(() => import('src/pages/dashboard/CreadentialsAreaList'))
+const AddArtwork = lazy(() => import('src/pages/dashboard/AddArtwok'))
 
 // ----------------------------------------------------------------------
 
@@ -44,15 +47,15 @@ export const dashboardRoutes = [
       { element: <IndexPage />, index: true },
       { path: 'two', element: <PageTwo /> },
       { path: 'three', element: <PageThree /> },
-      {
-        path: 'artist',
-        children: [
-          // { element: <PageFour />, index: true },
-          { path: 'add', element: <AddArtistFormIndex /> },
-          { path: 'five', element: <PageFive /> },
-          { path: 'six', element: <PageSix /> },
-        ],
-      },
+      // {
+      //   path: 'artist',
+      //   children: [
+      //     // { element: <PageFour />, index: true },
+      //     { path: 'add', element: <AddArtistFormIndex /> },
+      //     { path: 'five', element: <PageFive /> },
+      //     { path: 'six', element: <PageSix /> },
+      //   ],
+      // },
       {
         path: 'category',
         children: [
@@ -92,7 +95,84 @@ export const dashboardRoutes = [
            ],
           },
         ],
-      }
+      },
+      {
+        path: 'creadentialsAndInsigniasArea',
+        children: [
+          {path: 'add', element: <AddCreadentialsArea/>},
+          {path: 'list', element: <CreadentialsAreaList/>}
+          
+        ]
+      },
+      {
+      path: 'artwork',
+      children: [
+        {path: 'addArtwork', element: <AddArtwork/>},
+        {path: 'artworkList', element: <div>artworkList</div>}
+      ]
+      },
+      {
+        path: 'order',
+        children: [
+          {path: 'subscribe', element: <div>order Subscribe</div>},
+          {path: 'purchese', element: <div>order purchese</div>}
+        ]
+        },
+        {
+          path: 'invoice',
+          children: [
+            {path: 'list', element: <div>invoice List page</div>},
+            {path: 'details', element: <div>invoice Details page</div>},
+            {path: 'create', element: <div>invoice create page</div>},
+            {path: 'edit', element: <div>invoice edit page</div>},
+          ]
+          },
+          {
+            path: 'user',
+            children: [
+              {path: 'Profile', element: <div>user profile page</div>},
+              {path: 'cards', element: <div>user cards page</div>},
+              {path: 'list', element: <div>user list page</div>},
+              {path: 'create', element: <div>user creaet page</div>},
+              {path: 'edit', element: <div>user edit page</div>},
+              {path: 'account', element: <div>user account page</div>},
+            ]
+            },
+            {
+              path: 'circle',
+              children: [
+                {path: 'addcircle', element: <div>Add circle page</div>},
+                {path: 'circlelist', element: <div> List of Circle page</div>},
+              ]
+              },
+
+
+            { path: 'logistics', element: <div>This is Logistics page</div> },
+
+            {path: 'couponandpromotions', element: <div>coupon and promotions</div>},
+
+            {path: 'subscriptionplan', element: <div>subscription plan page</div>},
+
+            {path: 'faq', element: <div>FAQ page</div>},
+
+            {path: 'kbdatabase', element: <div> KB database page page</div>},
+
+            {
+              path: 'contentmanagement',
+              children: [
+                {path: 'list', element: <div>contentmanagement List page</div>},
+                {path: 'details', element: <div>contentmanagement Details page</div>},
+                {path: 'create', element: <div>contentmanagement create page</div>},
+                {path: 'edit', element: <div>contentmanagement edit page</div>},
+              ]
+              },
+              {path: 'marketingandcommunication', element: <div> marketingandcommunication page</div>},
+
+              {path: 'insurance', element: <div> insurance page</div>},
+
+              {path: 'mail', element: <div> mail page</div>},
+
+              {path: 'helpandsupport', element: <div> helpandsupport page</div>},
     ],
   },
 ];

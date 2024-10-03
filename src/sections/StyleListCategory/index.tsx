@@ -2,6 +2,7 @@
 import { Card, Table, TableBody } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Scrollbar } from "src/components/scrollbar";
+import { LoadingScreen } from "src/components/loading-screen";
 import { getToken } from "src/utils/tokenHelper";
 import {
     useTable,
@@ -11,6 +12,9 @@ import {
     TableHeadCustom,
 } from 'src/components/table';
 import { CategoryTableRow } from './Category-table-row';
+import { useQuery } from "@tanstack/react-query";
+
+const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
 
 const TABLE_HEAD = [
     { _id: 'styleName', label: 'Style Name', width: 220 },
@@ -21,32 +25,51 @@ const TABLE_HEAD = [
 
 export function StyleListCategory() {
     const token = getToken();
-    const [styles, setStyles] = useState([]);
     // const [table, setTable] = useTable(); // Initialize table state
     const table = useTable();
     const [notFound, setNotFound] = useState(false);
      
 
+     
     const fetchData = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/api/admin/list-artwork-style/style", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            setStyles(data.data);
-            setNotFound(data.data.length === 0);
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
+        const response = await fetch( BASE_URL + "/api/admin/list-artwork-style/style", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+
+        return response.json();
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['styleData'],
+        queryFn: fetchData,
+        staleTime: 1000 * 60 * 5, 
+    });
 
-    const dataFiltered = styles; 
+    useEffect(() => {
+        if (data) {
+            if (data.length === 0) {
+                setNotFound(true);
+            } else {
+                setNotFound(false);
+            }
+        }
+    }, [data]);
+
+    if (isLoading) {
+        return  <LoadingScreen/>;
+    }
+
+    if (isError) {
+        return <div>An error has occurred: {error.message}</div>;
+    }
+    
+    const dataFiltered = data.data; 
    
     return (
         <div>
