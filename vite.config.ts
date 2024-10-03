@@ -12,7 +12,7 @@ export default defineConfig({
       usePolling: true,
     },
     host: true,
-    port: 5173,
+    port: 5170,
   },
   css: {
     postcss: {

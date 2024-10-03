@@ -1,10 +1,9 @@
 
-
-import { Card, Table, TableBody } from "@mui/material";
+import { Button, Card, Table, TableBody } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Scrollbar } from "src/components/scrollbar";
-import { toast } from 'src/components/snackbar';
 import { LoadingScreen } from "src/components/loading-screen";
+import axiosInstance from "src/utils/axios";
 import { getToken } from "src/utils/tokenHelper";
 import {
     useTable,
@@ -12,28 +11,38 @@ import {
     TableNoData,
     TableEmptyRows,
     TableHeadCustom,
+    TablePaginationCustom,
 } from 'src/components/table';
-import { TechnicTableRow } from "./Technic-table-row";
-import { useQuery } from "@tanstack/react-query";
+  const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
 
-const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
+// import { credentialTable } from "./Discipline-table-row";
+
+import { CredentialTable } from "./credential-table-row";
+import { useQuery } from "@tanstack/react-query";
+import { CustomBreadcrumbs } from "src/components/custom-breadcrumbs";
+import { paths } from "src/routes/paths";
+import { RouterLink } from "src/routes/components";
+import { Iconify } from "src/components/iconify";
+
 
 const TABLE_HEAD = [
-    { _id: 'styleName', label: 'Style Name', width: 220 },
-    { _id: 'createdAt', label: 'Created At', width: 200 },
-    { _id: 'categoryName', label: 'Category Name', },
-    { _id: '', width: 88 },
+   { id: 'name', label: 'Credentials and Insignias Area​' },
+  { id: 'group', label: 'Group', width: 220 },
+  { id: 'status', label: 'Status', width: 130 },
+  { id: 'create', label: 'Create At', width: 220 },
+  { id: '', label: 'Action',   width: 88 },
 ];
-
-export function TechnicListCategory() {
+export function CredentialAreaList() {
+   
     const token = getToken();
+    const [styles, setStyles] = useState([]);
+    // const [table, setTable] = useTable(); // Initialize table state
     const table = useTable();
     const [notFound, setNotFound] = useState(false);
-    
      
 
     const fetchData = async () => {
-        const response = await fetch( BASE_URL +  "/api/admin/list-artwork-style/technic", {
+        const response = await fetch( BASE_URL + "/api/admin/get-insignias", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -71,9 +80,27 @@ export function TechnicListCategory() {
     }
     
     const dataFiltered = data.data; 
-   
     return (
         <div>
+            <CustomBreadcrumbs
+        heading="List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Credentials and Insignias Area List', href: paths.dashboard.creadentialsAndInsigniasArea.list },
+        //   { name: currentUser?.name },
+        ]}
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.creadentialsAndInsigniasArea.add}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+             Create Credentials and Insignias Area​
+            </Button>
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
            <Card>
             <Scrollbar>
                 <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -91,12 +118,12 @@ export function TechnicListCategory() {
                     />
                     <TableBody>
                         {dataFiltered
-                            // .slice(
-                            //     table.page * table.rowsPerPage,
-                            //     table.page * table.rowsPerPage + table.rowsPerPage
-                            // )
+                            .slice(
+                                table.page * table.rowsPerPage,
+                                table.page * table.rowsPerPage + table.rowsPerPage
+                            )
                             .map((row) => (
-                                <TechnicTableRow
+                                <CredentialTable
                                     key={row._id}
                                     row={row}
                                     selected={table.selected.includes(row._id)}
@@ -113,14 +140,19 @@ export function TechnicListCategory() {
                     </TableBody>
                 </Table>
             </Scrollbar>
+            <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
             </Card>
         </div>
     );
 }
-
-
-
-
 
 
 
