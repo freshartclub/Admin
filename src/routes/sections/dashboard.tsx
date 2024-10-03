@@ -9,7 +9,8 @@ import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
-const IndexPage = lazy(() => import('src/pages/dashboard/one'));
+
+const IndexPage = lazy(() => import('src/pages/dashboard/Dashboard'));
 const PageTwo = lazy(() => import('src/pages/dashboard/two'));
 const PageThree = lazy(() => import('src/pages/dashboard/three'));
 const AddArtistFormIndex = lazy(() => import('src/sections/artist/addArtist/index'));
@@ -28,7 +29,17 @@ const MediaSupportList = lazy(() => import('src/pages/dashboard/MediaSupportList
 const AddCreadentialsArea = lazy(() => import('src/pages/dashboard/AddCreadentialsArea'));
 const CreadentialsAreaList = lazy(() => import('src/pages/dashboard/CreadentialsAreaList'));
 const AddArtwork = lazy(() => import('src/pages/dashboard/AddArtwok'));
-
+const UserAccount  = lazy(() => import('src/pages/dashboard/user/account'));
+const UserList  = lazy(() => import('src/pages/dashboard/user/list'));
+const CreaetUser = lazy(() => import('src/pages/dashboard/user/new'));
+const UserProfile = lazy(() => import('src/pages/dashboard/user/profile'));
+const InvoiceList  = lazy(() => import('src/pages/dashboard/invoice/list'));
+const InvoiceDetails  = lazy(() => import('src/pages/dashboard/invoice/details'));
+const InvoiceEdit  = lazy(() => import('src/pages/dashboard/invoice/edit'));
+const InvoiceNew  = lazy(() => import('src/pages/dashboard/invoice/new'));
+const OrderList  = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
+const OrderPurcheseList  = lazy(() => import('src/pages/dashboard/order/purcheseList'));
+const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -45,8 +56,8 @@ export const dashboardRoutes = [
     element: <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       { element: <IndexPage />, index: true },
-      { path: 'two', element: <PageTwo /> },
-      { path: 'three', element: <PageThree /> },
+      // { path: 'two', element: <PageTwo /> },
+      // { path: 'three', element: <PageThree /> },
       {
         path: 'artist',
         children: [
@@ -114,28 +125,29 @@ export const dashboardRoutes = [
       {
         path: 'order',
         children: [
-          { path: 'subscribe', element: <div>order Subscribe</div> },
-          { path: 'purchese', element: <div>order purchese</div> },
+          { path: 'subscribe', element: <OrderList/> },
+          { path: 'purchese', element: <OrderPurcheseList/> },
+          { path: ':id', element: <OrderDetailsPage /> },
         ],
       },
       {
         path: 'invoice',
         children: [
-          { path: 'list', element: <div>invoice List page</div> },
-          { path: 'details', element: <div>invoice Details page</div> },
-          { path: 'create', element: <div>invoice create page</div> },
-          { path: 'edit', element: <div>invoice edit page</div> },
+          { path: 'list', element: <InvoiceList/> },
+          { path: 'details', element: <InvoiceDetails/> },
+          { path: 'create', element: <InvoiceEdit/> },
+          { path: 'edit', element: <InvoiceNew/> },
         ],
       },
       {
         path: 'user',
         children: [
-          { path: 'Profile', element: <div>user profile page</div> },
+          { path: 'Profile', element: <UserProfile/> },
           { path: 'cards', element: <div>user cards page</div> },
-          { path: 'list', element: <div>user list page</div> },
-          { path: 'create', element: <div>user creaet page</div> },
-          { path: 'edit', element: <div>user edit page</div> },
-          { path: 'account', element: <div>user account page</div> },
+          { path: 'list', element: <UserList/> },
+          { path: 'create', element: <CreaetUser/> },
+          { path: 'edit', element: <div>edit page</div>},
+          { path: 'account', element: <UserAccount/> },
         ],
       },
       {

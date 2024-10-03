@@ -1,6 +1,9 @@
 // ----------------------------------------------------------------------
 
 import { hydrateRoot } from "react-dom/client";
+import { _id, _postTitles } from 'src/_mock/assets';
+
+const MOCK_ID = _id[1];
 
 const ROOTS = {
   AUTH: '/auth',
@@ -96,8 +99,12 @@ export const paths = {
     order: {
       Root: `${ROOTS.DASHBOARD}/order`,
       subscribe: `${ROOTS.DASHBOARD}/order/subscribe`,
-      purchese: `${ROOTS.DASHBOARD}/order/purchese`
-       
+      purchese: `${ROOTS.DASHBOARD}/order/purchese`,
+      // details: `${ROOTS.DASHBOARD}/order/details`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
+      },
     },
     invoice: {
       Root: `${ROOTS.DASHBOARD}/invoice`,
