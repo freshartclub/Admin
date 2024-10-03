@@ -160,8 +160,6 @@ export function Invoice({
       setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
       setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
       setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
-      
-
     }
   }, [setValue]);
 

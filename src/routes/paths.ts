@@ -1,7 +1,5 @@
 // ----------------------------------------------------------------------
 
-import { hydrateRoot } from "react-dom/client";
-
 const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
@@ -80,72 +78,7 @@ export const paths = {
       add : `${ROOTS.DASHBOARD}/category/mediasupport/add`,
       list : `${ROOTS.DASHBOARD}/category/mediasupport/list`
      }
-    },
-    creadentialsAndInsigniasArea:{
-      root: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea`,
-      add: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea/add`,
-      list: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea/list`
-    },
-     artwork:{
-      Root: `${ROOTS.DASHBOARD}/artwork`,
-      addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
-      artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`
-    },
-
-    // try start
-    order: {
-      Root: `${ROOTS.DASHBOARD}/order`,
-      subscribe: `${ROOTS.DASHBOARD}/order/subscribe`,
-      purchese: `${ROOTS.DASHBOARD}/order/purchese`
-       
-    },
-    invoice: {
-      Root: `${ROOTS.DASHBOARD}/invoice`,
-      list: `${ROOTS.DASHBOARD}/invoice/list`,
-      details: `${ROOTS.DASHBOARD}/invoice/details`,
-      create: `${ROOTS.DASHBOARD}/invoice/create`,
-      edit: `${ROOTS.DASHBOARD}/invoice/edit`,
-    },
-      user: {
-      Root: `${ROOTS.DASHBOARD}/user`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`,
-      cards: `${ROOTS.DASHBOARD}/user/cards`,
-      list: `${ROOTS.DASHBOARD}/user/list`,
-      create: `${ROOTS.DASHBOARD}/user/create`,
-      edit: `${ROOTS.DASHBOARD}/user/edit`,
-      account: `${ROOTS.DASHBOARD}/user/account`,
-    },
-     circle: {
-      Root: `${ROOTS.DASHBOARD}/circle`,
-      addcircle: `${ROOTS.DASHBOARD}/circle/addcircle`,
-      circlelist: `${ROOTS.DASHBOARD}/circle/circlelist`,
-     },
-
-     logistics: `${ROOTS.DASHBOARD}/logistics`,
-     couponandpromotions: `${ROOTS.DASHBOARD}/couponandpromotions`,
-
-     subscriptionplan: `${ROOTS.DASHBOARD}/subscriptionplan`,
-     faq: `${ROOTS.DASHBOARD}/faq`,
-
-
-     kbdatabase: `${ROOTS.DASHBOARD}/kbdatabase`,
-   
-     contentmanagement: {
-      Root: `${ROOTS.DASHBOARD}/contentmanagement`,
-      list: `${ROOTS.DASHBOARD}/contentmanagement/list`,
-      details: `${ROOTS.DASHBOARD}/contentmanagement/details`,
-      create: `${ROOTS.DASHBOARD}/contentmanagement/create`,
-      edit: `${ROOTS.DASHBOARD}/contentmanagement/edit`,
-    },
-
-    marketingandcommunication: `${ROOTS.DASHBOARD}/marketingandcommunication`,
-
-    insurance: `${ROOTS.DASHBOARD}/insurance`,
-
-    mail: `${ROOTS.DASHBOARD}/mail`,
-
-    helpandsupport: `${ROOTS.DASHBOARD}/helpandsupport`,
+    }
     
-    // try end
   },
 };

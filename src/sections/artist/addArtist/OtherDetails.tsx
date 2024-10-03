@@ -93,7 +93,6 @@ export function OtherDetails({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
-  
 
   const {
     reset,
