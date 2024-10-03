@@ -2,8 +2,6 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useMemo, useState, useEffect } from 'react';
-import {FormProvider, useFieldArray } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
@@ -22,8 +20,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useRouter } from 'src/routes/hooks';
 
 import {
-  PRODUCT_STYLE_OPTIONS,
-  PRODUCT_MEDIA_OPTIONS,
   // PRODUCT_STYLEONE_OPTIONS,
   PRODUCT_MODULE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
@@ -108,9 +104,11 @@ export function AboutArtist({
       emegencyContactTo: artistFormData?.emegencyContactTo || '',
       emegencyPhoneNumber: artistFormData?.emegencyPhoneNumber || '',
       emegencyEmail: artistFormData?.emegencyEmail || '',
-    }),
-    [artistFormData]
-  );
+    }
+    return val;
+    
+    
+}, [artistFormData]);
 
   // const methods = useForm({
   //   resolver: zodResolver(NewProductSchema),
@@ -135,36 +133,7 @@ export function AboutArtist({
   };
   // const values = watch();
   
-  useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
-      setValue('About', artistFormData?.About || 'Write somthing About Artist content');
-      // setValue('catagoryone', artistFormData?.catagoryone || 'Catagory1');
-      // setValue('styleone', artistFormData?.styleone || 'Impressionism');
-      setValue('ArtworkModule', artistFormData?.ArtworkModule || 'Module 1');
-      // setValue('styletwo', artistFormData?.styletwo || 'Pop Art');
-      setValue('ProductStatus', artistFormData?.ProductStatus || 'Draft');
-      setValue('emegencyNameOfContact', artistFormData?.emegencyNameOfContact || 'Deo')
-      setValue('emegencyContactTo', artistFormData?.emegencyContactTo || 'Alish')
-      setValue('emegencyPhoneNumber', artistFormData?.emegencyPhoneNumber || "+919165325634")
-      setValue('emegencyEmail', artistFormData?.emegencyEmail || "AdminAlish@gmail.com")
-
-      if (artistFormData?.catagory?.length === 1) { 
-        setValue('catagory', artistFormData.catagory);
-      } else {
-        const mockData = [
-          {
-            catagoryone:'Paintings',
-            style:'Figurative',
-            media:'Oil',
-            technic:'Nature',
-            support:'Canvas'
-          },
-          
-          
-        ];
-
-        mockData.forEach((item) => append(item));
-      }
+ 
 
   useEffect(() => {
     if (window.location.hostname === 'localhost') {
@@ -196,12 +165,6 @@ export function AboutArtist({
       }
     }
   }, [setValue]);
-
-  const addCategory = () => {
-    append({
-      catagoryone: '',
-    });
-  };
 
   const addCategory = () => {
     append({
