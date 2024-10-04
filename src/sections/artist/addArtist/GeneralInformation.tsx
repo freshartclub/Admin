@@ -42,7 +42,7 @@ export const NewProductSchema = zod.object({
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email residentialAddress!' }),
   gender: zod.string().min(1, { message: 'Gender is required!' }),
-  InternalNote: zod.string(),
+  notes: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -85,7 +85,7 @@ export function GeneralInformation({
       language: artistFormData?.language || [],
       gender: artistFormData?.gender || '',
       createDate: artistFormData?.createDate || today(),
-      InternalNote: artistFormData?.InternalNote || '',
+      notes: artistFormData?.notes || '',
     }),
     [artistFormData]
   );
@@ -106,26 +106,26 @@ export function GeneralInformation({
 
   // const values = watch();
 
-  useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
-      // setValue('accountId', artistFormData?.accountId || '12345');
-      setValue('artistName', artistFormData?.artistName || 'John');
-      setValue('artistSurname1', artistFormData?.artistSurname1 || 'Doe');
-      setValue('artistSurname2', artistFormData?.artistSurname2 || 'Smith');
-      setValue('nickName', artistFormData?.nickName || 'Sunset Bliss');
-      // setValue('country', artistFormData?.country || 'USA');
-      setValue('createDate', artistFormData?.createDate || new Date().toISOString());
-      setValue('language', artistFormData?.language || ['English']);
-      setValue('zipCode', artistFormData?.zipCode || '90210');
-      setValue('city', artistFormData?.city || 'Los Angeles');
-      setValue('state', artistFormData?.state || 'California');
-      setValue('residentialAddress', artistFormData?.residentialAddress || '123 Art St.');
-      setValue('phone', artistFormData?.phone || '+917879610316');
-      setValue('email', artistFormData?.email || 'artist@example.com');
-      setValue('gender', artistFormData?.gender || 'Men');
-      setValue('InternalNote', artistFormData?.InternalNote || 'Mock data for testing');
-    }
-  }, [setValue]);
+  // useEffect(() => {
+  //   if (window.location.hostname === 'localhost' && window.location.port === '5173') {
+  //     // setValue('accountId', artistFormData?.accountId || '12345');
+  //     setValue('artistName', artistFormData?.artistName || 'John');
+  //     setValue('artistSurname1', artistFormData?.artistSurname1 || 'Doe');
+  //     setValue('artistSurname2', artistFormData?.artistSurname2 || 'Smith');
+  //     setValue('nickName', artistFormData?.nickName || 'Sunset Bliss');
+  //     // setValue('country', artistFormData?.country || 'USA');
+  //     setValue('createDate', artistFormData?.createDate || new Date().toISOString());
+  //     setValue('language', artistFormData?.language || ['English']);
+  //     setValue('zipCode', artistFormData?.zipCode || '90210');
+  //     setValue('city', artistFormData?.city || 'Los Angeles');
+  //     setValue('state', artistFormData?.state || 'California');
+  //     setValue('residentialAddress', artistFormData?.residentialAddress || '123 Art St.');
+  //     setValue('phone', artistFormData?.phone || '+917879610316');
+  //     setValue('email', artistFormData?.email || 'artist@example.com');
+  //     setValue('gender', artistFormData?.gender || 'Men');
+  //     setValue('notes', artistFormData?.notes || 'Mock data for testing');
+  //   }
+  // }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -218,7 +218,7 @@ export function GeneralInformation({
           />
         </Box>
 
-        <Field.Text name="InternalNote" label="Internal Note description" multiline rows={4} />
+        <Field.Text name="notes" label="Internal Note description" multiline rows={4} />
       </Stack>
     </Card>
   );

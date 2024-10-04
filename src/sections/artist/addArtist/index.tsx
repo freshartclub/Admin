@@ -17,6 +17,7 @@ import { Highlights } from './Highlights';
 import { AboutArtist } from './AboutArtist';
 import { OtherDetails } from './OtherDetails';
 import { GeneralInformation } from './GeneralInformation';
+import { log } from 'console';
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
@@ -63,9 +64,95 @@ function AddArtistIndex() {
           obj.cvData = data.data.highlights.cv;
           delete data.data.highlights;
         }
+
+        if (data.data.pageCount > 2) {
+          obj.about = data.data.aboutArtist.about;
+          obj.artistCatagory = data.data.aboutArtist.category;
+          delete data.data.aboutArtist;
+        }
+
+        // if (data.data.pageCount > 3) {
+        //   obj.profileImage = data.data.profile.mainImage;
+        //   obj.additionalImage = data.data.profile.additionalImage;
+        //   obj.inProcessImage = data.data.profile.inProcessImage;
+
+        //   obj.mainVideo = data.data.profile.mainVideo;
+
+        //   obj.additionalVideo = data.data.profile.additionalVideo;
+
+        //   delete data.data.media;
+        // }
+
+        if (data.data.pageCount > 4) {
+          obj.taxNumber = data.data?.invoice?.taxNumber;
+          obj.taxLegalName = data.data?.invoice?.taxLegalName;
+          obj.taxAddress = data.data?.invoice?.taxAddress;
+          obj.taxZipCode = data.data?.invoice?.taxZipCode;
+          obj.taxCity = data.data?.invoice?.taxCity;
+          obj.taxProvince = data.data?.invoice?.taxProvince;
+          obj.taxCountry = data.data?.invoice?.taxCountry;
+          obj.taxEmail = data.data?.invoice?.taxEmail;
+          obj.taxPhone = data.data?.invoice?.taxPhone;
+          obj.taxBankIBAN = data.data?.invoice?.taxBankIBAN;
+          obj.taxBankName = data.data?.invoice?.taxBankName;
+          delete data.data.invoice;
+        }
+
+        // check names
+
+        console.log(data.data);
+
+        if (data.data.pageCount > 5) {
+          obj.logName = data.data?.logistics?.logName;
+          obj.logAddress = data.data?.logistics?.logAddress;
+          obj.logZipCode = data.data?.logistics?.logZipCode;
+          obj.logCity = data.data?.logistics?.logCity;
+          obj.logProvince = data.data?.logistics?.logProvince;
+          obj.logCountry = data.data?.logistics?.logCountry;
+          obj.logEmail = data.data?.logistics?.logEmail;
+          obj.logPhone = data.data?.logistics?.logPhone;
+          obj.logNotes = data.data?.logistics?.logNotes;
+
+          delete data.data.logistic;
+        }
+
+        if (data.data.pageCount > 6) {
+          obj.documentName = data.data?.document?.documentName;
+          obj.uploadDocs = data.data?.document?.documentPath;
+          obj.managerArtistName = data.data?.managerDetails?.artistName;
+          obj.managerArtistSurnameOther1 = data.data?.managerDetails?.artistSurname1;
+          obj.managerArtistSurname2 = data.data?.managerDetails?.artistSurname2;
+          obj.managerArtistNickname = data.data?.managerDetails?.artistNickname;
+          obj.managerArtistEmail = data.data?.managerDetails?.artistEmail;
+          obj.managerArtistPhone = data.data?.managerDetails?.artistPhone;
+          obj.managerArtistGender = data.data?.managerDetails?.artistGender;
+          obj.managerArtistContactTo = data.data?.managerDetails?.artistContactTo;
+          obj.address = data.data?.managerDetails?.address?.address;
+          obj.managerCity = data.data?.managerDetails?.address?.city;
+          obj.managerState = data.data?.managerDetails?.address?.state;
+          obj.managerZipCode = data.data?.managerDetails?.address?.zipCode;
+          obj.managerCountry = data.data?.managerDetails?.address?.country;
+          obj.managerExtraInfo1 = data.data?.managerDetails?.address?.extraInfo1;
+          obj.managerExtraInfo2 = data.data?.managerDetails?.address?.extraInfo2;
+          obj.managerExtraInfo3 = data.data?.managerDetails?.address?.extraInfo3;
+
+          obj.managerArtistLanguage = data.data?.managerDetails?.language;
+        }
+
         setArtistFormData({ ...data.data, ...obj });
         setTabIndex(data.data.pageCount);
       });
+
+    // if(data.data.pageCount > 3){
+    //     obj.about = data.data.media.media;
+
+    //     delete data.data.media;
+    //   }
+    //   setArtistFormData({ ...data.data, ...obj });
+    //   setTabIndex(data.data.pageCount);
+    // });
+
+    // rember you should have to give dependency here and it is id
   }, []);
 
   if (id && !artistFormData) return <LoadingScreen />;

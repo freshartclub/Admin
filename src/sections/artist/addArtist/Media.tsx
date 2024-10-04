@@ -1,7 +1,7 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState, useCallback } from 'react';
 
@@ -13,15 +13,16 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  MainPhoto: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-  AdditionalImage: schemaHelper.files({ required: false }),
-  InprocessPhoto: zod.any(),
-  MainVedio: schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
-  AdditionalVedio: schemaHelper.files({ required: false }),
+  profileImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
+  additionalImage: schemaHelper.files({ required: false }),
+  inProcessImage: zod.any(),
+  mainVideo: schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
+  additionalVideo: schemaHelper.files({ required: false }),
 });
 
 // ----------------------------------------------------------------------
@@ -36,18 +37,29 @@ export function Media({
 }: AddArtistComponentProps) {
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
+  const handleSuccess = (data) => {
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabIndex(tabIndex + 1);
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+  };
+
+  
+
+  const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+
   const defaultValues = useMemo(
     () => ({
-      MainPhoto: artistFormData?.MainPhoto || null,
-      AdditionalImage: artistFormData?.AdditionalImage || [],
-      InprocessPhoto: artistFormData?.InprocessPhoto || null,
-      MainVedio: artistFormData?.MainVedio || null,
-      AdditionalVedio: artistFormData?.AdditionalVedio || [],
+      profileImage: artistFormData?.profileImage || null,
+      additionalImage: artistFormData?.additionalImage || [],
+      inProcessImage: artistFormData?.inProcessImage || null,
+      mainVideo: artistFormData?.mainVideo || null,
+      additionalVideo: artistFormData?.additionalVideo || [],
     }),
     [artistFormData]
   );
-
-  console.log(defaultValues);
 
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -63,51 +75,56 @@ export function Media({
     formState: { isSubmitting },
   } = formProps;
 
+  const { fields, append, remove } = useFieldArray({
+    control: formProps.control,
+    name: 'media',
+  });
+  
   const onSubmit = handleSubmit(async (data) => {
-    trigger(undefined, { shouldFocus: true });
 
-    setArtistFormData({ ...artistFormData, ...data });
-    setTabIndex(tabIndex + 1);
-    setTabState((prev) => {
-      prev[tabIndex].isSaved = true;
+    console.log(data);
+    
+    await trigger(undefined, { shouldFocus: true });
+    data.count = 4;
+    data.isContainsImage = true;
 
-      return prev;
-    });
+ 
+    mutate({ body: data });
   });
 
   const handleRemoveMainImage = useCallback(() => {
-    setValue('MainPhoto', null);
+    setValue('profileImage', null);
   }, [setValue]);
 
   const handleRemoveAdditionalImages = useCallback(() => {
-    setValue('AdditionalImage', []);
+    setValue('additionalImage', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalImage = useCallback(
     (image) => {
-      const arr = formProps.getValues('AdditionalImage').filter((val) => val.name !== image.name);
-      setValue('AdditionalImage', arr);
+      const arr = formProps.getValues('additionalImage').filter((val) => val.name !== image.name);
+      setValue('additionalImage', arr);
     },
     [setValue]
   );
 
   const handleRemoveInProcessImage = useCallback(() => {
-    setValue('InprocessPhoto', null);
+    setValue('inProcessImage', null);
   }, [setValue]);
 
   const handleRemoveMainVideo = useCallback(() => {
-    setValue('MainVedio', null);
+    setValue('mainVideo', null);
   }, [setValue]);
 
   const handleRemoveAdditionalVideos = useCallback(() => {
-    setValue('AdditionalVedio', []);
+    setValue('additionalVideo', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalVideo = useCallback(
     (video) => {
-      const arr = formProps.getValues('AdditionalVedio').filter((val) => val.name !== video.name);
+      const arr = formProps.getValues('additionalVideo').filter((val) => val.name !== video.name);
 
-      setValue('AdditionalVedio', arr);
+      setValue('additionalVideo', arr);
     },
     [setValue]
   );
@@ -125,25 +142,25 @@ export function Media({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <div>
-            <Typography variant="MainPhoto">Main Photo</Typography>
-            <Field.Upload name="MainPhoto" maxSize={3145728} onDelete={handleRemoveMainImage} />
+            <Typography variant="profileImage">Main Photo</Typography>
+            <Field.Upload name="profileImage" maxSize={3145728} onDelete={handleRemoveMainImage} />
           </div>
 
           <div>
-            <Typography variant="AdditionalImage">Additional Image</Typography>
+            <Typography variant="additionalImage">Additional Image</Typography>
             <Field.Upload
               multiple
               onRemove={handleRemoveIndividualAdditionalImage}
-              name="AdditionalImage"
+              name="additionalImage"
               maxSize={3145728}
               onRemoveAll={handleRemoveAdditionalImages}
             />
           </div>
 
           <div>
-            <Typography variant="InprocessPhoto">Inprocess Photo</Typography>
+            <Typography variant="inProcessImage">Inprocess Photo</Typography>
             <Field.Upload
-              name="InprocessPhoto"
+              name="inProcessImage"
               maxSize={3145728}
               onDelete={handleRemoveInProcessImage}
             />
@@ -157,16 +174,16 @@ export function Media({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <div>
-            <Typography variant="MainVedio">Main Video</Typography>
-            <Field.MultiVideo name="MainVedio" maxSize={5e7} onDelete={handleRemoveMainVideo} />
+            <Typography variant="mainVideo">Main Video</Typography>
+            <Field.MultiVideo name="mainVideo" maxSize={5e7} onDelete={handleRemoveMainVideo} />
           </div>
           <div>
-            <Typography variant="AdditionalVedio">Additional Video</Typography>
+            <Typography variant="additionalVideo">Additional Video</Typography>
             <Field.MultiVideo
               onRemoveAll={handleRemoveAdditionalVideos}
               onRemove={handleRemoveIndividualAdditionalVideo}
               multiple
-              name="AdditionalVedio"
+              name="additionalVideo"
               maxSize={5e7}
             />
           </div>
@@ -182,7 +199,7 @@ export function Media({
 
         <div className="flex justify-end">
           <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            Save & Next
+            {isPending ? 'Loading...' : 'Save & Next'}
           </button>
         </div>
       </Stack>

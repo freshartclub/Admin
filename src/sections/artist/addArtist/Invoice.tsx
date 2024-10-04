@@ -30,24 +30,25 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
+import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 
 export const NewProductSchema = zod.object({
-  TaxNumber: zod.string().min(1, { message: 'TaxNumber/NIF Id is required!' }),
-  TaxLegalName: zod.string().min(1, { message: 'TaxLegalName is required!' }),
-  TaxAddress: zod.string().min(1, { message: 'Tax Address is required!' }),
-  TaxZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  TaxCity: zod.string().min(1, { message: 'Tax City is required!' }),
-  TaxProvince: zod.string().min(1, { message: 'Tax Province is required!' }),
-  TaxCountry: schemaHelper.objectOrNull({
+  taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
+  taxLegalName: zod.string().min(1, { message: 'taxLegalName is required!' }),
+  taxAddress: zod.string().min(1, { message: 'Tax Address is required!' }),
+  taxZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
+  taxCity: zod.string().min(1, { message: 'Tax City is required!' }),
+  taxProvince: zod.string().min(1, { message: 'Tax Province is required!' }),
+  taxCountry: schemaHelper.objectOrNull({
     message: { required_error: 'Tax Country is required!' },
   }),
-  TaxEmail: zod
+  taxEmail: zod
     .string()
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email address!' }),
-  TaxPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  BankIBAN: zod.string().min(1, { message: 'Bank IBAN is required!' }),
-  BankName: zod.string().min(1, { message: 'Bank Name is required!' }),
+  taxPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  taxBankIBAN: zod.string(),
+  taxBankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
   // PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
   PublishingCatalog: zod.array(
@@ -72,38 +73,46 @@ export function Invoice({
   tabState,
 }: AddArtistComponentProps) {
   const router = useRouter();
+
   const [ibanNumber, setIbanNumber] = useState('');
-  const [bankName, setBankName] = useState('');
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
-  const defaultValues = useMemo(
-    () => ({
-      TaxNumber: artistFormData?.TaxNumber || '',
-      TaxLegalName: artistFormData?.TaxLegalName || '',
-      TaxAddress: artistFormData?.TaxAddress || '',
-      TaxZipCode: artistFormData?.zipCode || '',
-      TaxCity: artistFormData?.city || '',
-      TaxProvince: artistFormData?.TaxProvince || '',
-      TaxCountry: artistFormData?.TaxCountry || '',
-      TaxEmail: artistFormData?.TaxEmail || '',
-      TaxPhone: artistFormData?.TaxPhone || '',
-      BankIBAN: artistFormData?.BankIBAN || '',
-      BankName: artistFormData?.BankName || '',
+  const handleSuccess = (data) => {
+    
+    setArtistFormData({ ...artistFormData, ...data });
+    setTabIndex(tabIndex + 1);
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+  };
+
+  const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+  const defaultValues = useMemo(() => {
+    const def = {
+      taxNumber: artistFormData?.taxNumber || '',
+      taxLegalName: artistFormData?.taxLegalName || '',
+      taxAddress: artistFormData?.taxAddress || '',
+      taxZipCode: artistFormData?.taxZipCode || '',
+      taxCity: artistFormData?.taxCity || '',
+      taxProvince: artistFormData?.taxProvince || '',
+      taxCountry: artistFormData?.taxCountry || '',
+      taxEmail: artistFormData?.taxEmail || '',
+      taxPhone: artistFormData?.taxPhone || '',
+      taxBankIBAN: artistFormData?.taxBankIBAN || '',
+      taxBankName: artistFormData?.taxBankName || '',
       CustomOrder: artistFormData?.CustomOrder || '',
       PublishingCatalog: artistFormData?.PublishingCatalog || '',
       ArtistFees: artistFormData?.ArtistFees || '',
       ArtistPlus: artistFormData?.ArtistPlus || '',
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
-    }),
-    [artistFormData]
-  );
+    };
+    setIbanNumber(artistFormData?.taxBankIBAN);
+    return def;
+  }, [artistFormData]);
 
-  // const methods = useForm({
-  //   resolver: zodResolver(NewProductSchema),
-  //   defaultValues,
-  // });
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
@@ -117,6 +126,9 @@ export function Invoice({
     handleSubmit,
     formState: { isSubmitting },
   } = formProps;
+
+
+
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
     name: 'PublishingCatalog',
@@ -126,55 +138,49 @@ export function Invoice({
     remove(index);
   };
   const addCatelog = () => {
-    append({
-      PublishingCatalog: '',
-    });
+    append({PublishingCatalog: '',});
   };
-  useEffect(() => {
-    if (window.location.hostname === 'localhost' && window.location.port === '5173') {
-      setValue('TaxNumber', artistFormData?.TaxNumber || '12345');
-      setValue('TaxLegalName', artistFormData?.TaxLegalName || 'John Doe');
-      setValue('TaxAddress', artistFormData?.TaxAddress || '31,c21,vijay nager');
-      setValue('TaxZipCode', artistFormData?.TaxZipCode || '12345');
-      setValue('TaxCity', artistFormData?.TaxCity || 'Indore');
-      setValue('TaxProvince', artistFormData?.TaxProvince || 'Madhay Pradesh');
-      setValue('TaxCountry', artistFormData?.TaxCountry || 'USA');
-      setValue('TaxEmail', artistFormData?.TaxEmail || 'JohnDoe@gmail.com');
-      setValue('TaxPhone', artistFormData?.TaxPhone || '+917879610316');
-      setValue('BankIBAN', artistFormData?.BankIBAN || 'CBI90210');
-      setValue('BankName', artistFormData?.BankName || 'Bank of America');
-      setValue('CustomOrder', artistFormData?.CustomOrder || 'Yes');
-      // setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
-      if (artistFormData?.catagoryone?.length) {
-        setValue('PublishingCatalog', artistFormData.PublishingCatalog);
-      } else {
-        const mockData = [
-          {
-            PublishingCatalog: 'Catagog 4',
-          },
-        ];
+  
+  //   if (window.location.hostname === 'localhost' && window.location.port === '5173') {
+  //     setValue('taxNumber', artistFormData?.taxNumber || '12345');
+  //     setValue('taxLegalName', artistFormData?.taxLegalName || 'John Doe');
+  //     setValue('taxAddress', artistFormData?.taxAddress || '31,c21,vijay nager');
+  //     setValue('taxZipCode', artistFormData?.taxZipCode || '12345');
+  //     setValue('TaxCity', artistFormData?.TaxCity || 'Indore');
+  //     setValue('taxProvince', artistFormData?.taxProvince || 'Madhay Pradesh');
+  //     setValue('taxCountry', artistFormData?.taxCountry || 'USA');
+  //     setValue('taxEmail', artistFormData?.taxEmail || 'JohnDoe@gmail.com');
+  //     setValue('taxPhone', artistFormData?.taxPhone || '+917879610316');
+  //     setValue('taxBankIBAN', artistFormData?.taxBankIBAN || 'CBI90210');
+  //     setValue('taxBankName', artistFormData?.taxBankName || 'Bank of America');
+  //     setValue('CustomOrder', artistFormData?.CustomOrder || 'Yes');
+  //     // setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
+  //     if (artistFormData?.catagoryone?.length) {
+  //       setValue('PublishingCatalog', artistFormData.PublishingCatalog);
+  //     } else {
+  //       const mockData = [
+  //         {
+  //           PublishingCatalog: 'Catagog 4',
+  //         },
+  //       ];
 
-        mockData.forEach((item) => append(item));
-      }
-      setValue('ArtistFees', artistFormData?.ArtistFees || '10000');
-      setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
-      setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
-      setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
-      
-
-    }
-  }, [setValue]);
+  //       mockData.forEach((item) => append(item));
+  //     }
+  //     setValue('ArtistFees', artistFormData?.ArtistFees || '10000');
+  //     setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
+  //     setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
+  //     setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
+  //   }
+  // }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    trigger(undefined, { shouldFocus: true });
 
-    setArtistFormData({ ...artistFormData, ...data });
-    setTabIndex(tabIndex + 1);
-    setTabState((prev) => {
-      prev[tabIndex].isSaved = true;
+    console.log(data);
+    await trigger(undefined, { shouldFocus: true });
 
-      return prev;
-    });
+    data.count = 5;
+
+    mutate({ body: data });
   });
 
   const hanldeIbanChange = (e) => {
@@ -182,15 +188,15 @@ export function Invoice({
     const val = e.target.value;
     const { valid } = validateIBAN(val);
     if (!valid) {
-      formProps.setError('BankIBAN', {
+      formProps.setError('taxBankIBAN', {
         message: 'Please enter a valid IBAN number',
       });
     } else {
       ibanDetail = extractIBAN(val);
-      formProps.clearErrors('BankIBAN');
+      formProps.clearErrors('taxBankIBAN');
       console.log(ibanDetail);
 
-      formProps.setValue('BankName', ibanDetail.bankIdentifier);
+      formProps.setValue('taxBankName', ibanDetail.bankIdentifier);
     }
 
     setIbanNumber(val);
@@ -209,12 +215,12 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="TaxNumber" label=" TaxNumber/NIF" />
+          <Field.Text name="taxNumber" label=" taxNumber/NIF" />
 
-          <Field.Text name="TaxLegalName" label="TaxLegalName" />
+          <Field.Text name="taxLegalName" label="taxLegalName" />
         </Box>
 
-        <Field.Text name="TaxAddress" label="Tax Address" />
+        <Field.Text name="taxAddress" label="Tax Address" />
 
         <Box
           columnGap={2}
@@ -222,9 +228,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="TaxZipCode" label="Tax Zip/code" />
+          <Field.Text name="taxZipCode" label="Tax Zip/code" />
 
-          <Field.Text name="TaxCity" label="Tax City" />
+          <Field.Text name="taxCity" label="Tax City" />
         </Box>
         <Box
           columnGap={2}
@@ -232,11 +238,11 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="TaxProvince" label="TaxProvince" />
+          <Field.Text name="taxProvince" label="taxProvince" />
 
           <Field.CountrySelect
             fullWidth
-            name="TaxCountry"
+            name="taxCountry"
             label="Tax Country"
             placeholder="Choose a country"
           />
@@ -247,9 +253,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="TaxEmail" label="Tax Email address" />
+          <Field.Text name="taxEmail" label="Tax Email address" />
 
-          <Field.Phone name="TaxPhone" label="Tax Phone number" />
+          <Field.Phone name="taxPhone" label="Tax Phone number" />
         </Box>
 
         <Box
@@ -261,11 +267,11 @@ export function Invoice({
           <Field.Text
             onChange={hanldeIbanChange}
             value={ibanNumber}
-            name="BankIBAN"
+            name="taxBankIBAN"
             label="Bank IBAN"
           />
 
-          <Field.Text name="BankName" label="BankName" />
+          <Field.Text name="taxBankName" label="taxBankName" />
         </Box>
 
         {/* end my section */}
@@ -382,7 +388,7 @@ export function Invoice({
           {/* {renderActions} */}
           <div className="flex justify-end">
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              Save & Next
+              {isPending ? 'Loading...' : 'Save & Next'}
             </button>
           </div>
         </Stack>

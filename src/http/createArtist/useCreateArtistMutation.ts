@@ -7,12 +7,46 @@ import { toast } from 'src/components/snackbar';
 
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
 
+
+
 const useAddArtistMutation = (handleOnSuccess) => {
   const [searchParam, setSearchParam] = useSearchParams();
 
   const id = searchParam.get('id');
   async function addArtist({ body }: { body: any }) {
-    if (id) return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body);
+    console.log(body);
+    let headers;
+    if (body?.isContainsImage) {
+      const formData = new FormData();
+
+      Object.keys(body).forEach((key) => {
+        if (Array.isArray(body[key])) {
+          body[key].forEach((item) => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, body[key]);
+        }
+      });
+
+   
+
+      body = formData;
+      
+
+      headers = {
+        'Content-Type': 'multipart/form-data',
+      };
+    } else {
+      headers = {
+        'Content-Type': 'application/json',
+      };
+    }
+
+    if (id)
+      return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
+        headers,
+      });
     return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body);
   }
   return useMutation({
@@ -20,12 +54,19 @@ const useAddArtistMutation = (handleOnSuccess) => {
     onSuccess: async (res, body) => {
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
+
+      if (body.body.count === 7 ) {
+        
+        toast.success(res.data.message);
+       
+      }
     },
 
     onError: (res) => {
-      toast.error(res.response.data.message);
+      toast.error(res.data.message);
     },
   });
 };
+
 
 export default useAddArtistMutation;
