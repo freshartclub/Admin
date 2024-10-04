@@ -10,6 +10,8 @@ import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
 
 
 const useAddArtistMutation = (handleOnSuccess) => {
+  console.log("medede");
+  
   const [searchParam, setSearchParam] = useSearchParams();
 
   const id = searchParam.get('id');
