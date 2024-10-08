@@ -20,6 +20,7 @@ import useSigInInMutation from 'src/http/auth/useSignInMutation';
 
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -69,6 +70,8 @@ export function JwtSignInView() {
       setErrorMsg(error.response.data.message);
     }
   });
+ 
+ 
 
   const renderHead = (
     <Stack spacing={1.5} sx={{ mb: 5 }}>
@@ -81,7 +84,7 @@ export function JwtSignInView() {
       <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
 
       <Stack spacing={1.5}>
-        <Link
+        {/* <Link
           component={RouterLink}
           href="#"
           variant="body2"
@@ -89,7 +92,7 @@ export function JwtSignInView() {
           sx={{ alignSelf: 'flex-end' }}
         >
           Forgot password?
-        </Link>
+        </Link> */}
 
         <Field.Text
           name="password"

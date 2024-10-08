@@ -14,7 +14,7 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 
 import { useRouter } from 'src/routes/hooks';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
@@ -73,7 +73,7 @@ export function OtherDetails({
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
-    setShowPop(true);
+    // setShowPop(true);
   };
 
   const handleActivateSuccess = (data) => {
@@ -81,7 +81,7 @@ export function OtherDetails({
   };
 
   const handleOnActivataion = ()=>{
-    setShowPop(false);
+    setShowPop(true);
   }
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
@@ -133,6 +133,7 @@ export function OtherDetails({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+  const navigate = useNavigate()
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -144,6 +145,7 @@ export function OtherDetails({
     }
 
     mutate({ body: data });
+      
   });
 
 
@@ -295,23 +297,27 @@ export function OtherDetails({
         setShowPop(false);
       }}
     >
-      <DialogTitle>Artist Crerated</DialogTitle>
+      <DialogTitle>Activate Your Artist</DialogTitle>
       <DialogContent>
-        <DialogContentText>Activate user now or decide later?</DialogContentText>
+        <DialogContentText>Are you ready to bring your artist to life? Click the button below to activate and start artist journey!</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <button
+   <div className='flex gap-5'>
+   <button
           onClick={activeMutate}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
-          Activate
+      {isActivePending ? "Loading..." : "Activate Artist"}
         </button>
         <button
-          // onClick={onSubmit}
-          className="text-white bg-red-500 rounded-lg font-medium px-5 py-2 hover:bg-red-700"
+        // onClick={onSubmit}
+         
+          className="text-red-500 rounded-lg font-medium"
         >
+
           Maybe Later
         </button>
+   </div>
       </DialogActions>
     </Dialog>
   );
@@ -323,10 +329,17 @@ export function OtherDetails({
 
         {renderDetails}
 
-        <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            {isPending ? 'Loading...' : 'Save & Next'}
+        <div className="flex justify-end gap-5">
+          <button 
+          onClick={handleOnActivataion}
+          className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer" >
+           Activate Artist
+            
           </button>
+          <button 
+          className="text-white bg-black rounded-md px-3 py-2" type='Submit'>
+          {isPending ? 'Loading...' : 'Submit'}
+            </button>
         </div>
         {dialogBox}
       </Stack>

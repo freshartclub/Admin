@@ -57,11 +57,11 @@ const useAddArtistMutation = (handleOnSuccess) => {
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
 
-      if (body.body.count === 7 ) {
+      // if (body.body.count === 7 ) {
         
-        toast.success(res.data.message);
+      //   toast.success(res.data.message);
        
-      }
+      // }
     },
 
     onError: (res) => {

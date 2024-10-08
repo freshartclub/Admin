@@ -194,8 +194,8 @@ export function Invoice({
     } else {
       ibanDetail = extractIBAN(val);
       formProps.clearErrors('taxBankIBAN');
-      console.log(ibanDetail);
-
+      formProps.setValue("taxBankIBAN", val)
+       
       formProps.setValue('taxBankName', ibanDetail.bankIdentifier);
     }
 

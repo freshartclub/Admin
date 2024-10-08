@@ -18,6 +18,8 @@ import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { GooglePlacesAutoComplete } from 'src/components/hook-form/GooglePlacesAutoComplete';
+import Autocomplete from 'react-google-autocomplete';
 
 // ----------------------------------------------------------------------
 
@@ -154,6 +156,9 @@ export function GeneralInformation({
 
           <Field.Text name="artistSurname2" label="Artist Surname 2" />
         </Box>
+
+        
+        
 
         <Box
           columnGap={2}

@@ -40,6 +40,9 @@ const InvoiceNew  = lazy(() => import('src/pages/dashboard/invoice/new'));
 const OrderList  = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
 const OrderPurcheseList  = lazy(() => import('src/pages/dashboard/order/purcheseList'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
+const ArtistList = lazy(() => import('src/pages/dashboard/Artist/ArtistList'));
+const ArtistRequest = lazy(() => import('src/pages/dashboard/Artist/ArtistRequest'));
+const ArtistPendingRequest = lazy(() => import('src/pages/dashboard/Artist/AartistPendingRequest'))
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -65,7 +68,11 @@ export const dashboardRoutes = [
           { path: 'add', element: <AddArtistFormIndex /> },
           { path: 'five', element: <PageFive /> },
           { path: 'six', element: <PageSix /> },
+          {path:'list',  element: <ArtistList/>},
+          {path:'request',  element: <ArtistRequest/>},
+          {path:'pending-request',  element: <ArtistPendingRequest/>},
         ],
+
       },
 
       {

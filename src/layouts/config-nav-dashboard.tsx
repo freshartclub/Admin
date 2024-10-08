@@ -65,16 +65,21 @@ export const navData = [
         title: 'Artist',
         path: paths.dashboard.artist.five,
         icon: ICONS.paintBrush,
-        children: [{ title: 'Add Artist', path: paths.dashboard.artist.addArtist }],
+        children: [
+          { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
+          { title: 'Artist List', path: paths.dashboard.artist.artistList },
+          { title: 'Artist Request', path: paths.dashboard.artist.artistRequest },
+          { title: 'Artist Pending Request', path: paths.dashboard.artist.artistPendingRequest },
+        ],
       },
       {
         title: 'Artwork',
         path: paths.dashboard.artwork.Root,
         icon: ICONS.paintBrush,
         children: [
-          {title: 'Add Artwork', path:paths.dashboard.artwork.addArtwork},
-          {title: 'Artwork List', path:paths.dashboard.artwork.artworkList}
-        ]
+          { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
+          { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
+        ],
       },
 
       {
@@ -94,7 +99,6 @@ export const navData = [
                 title: 'Discipline List',
                 path: paths.dashboard.category.discipline.list,
               },
-              
             ],
           },
           {
@@ -109,7 +113,6 @@ export const navData = [
                 title: 'Style list',
                 path: paths.dashboard.category.style.list,
               },
-              
             ],
           },
           {
@@ -124,7 +127,6 @@ export const navData = [
                 title: 'Technic list',
                 path: paths.dashboard.category.technic.list,
               },
-              
             ],
           },
           {
@@ -139,7 +141,6 @@ export const navData = [
                 title: 'Theme list',
                 path: paths.dashboard.category.theme.list,
               },
-              
             ],
           },
           {
@@ -154,23 +155,27 @@ export const navData = [
                 title: 'Media Support list',
                 path: paths.dashboard.category.mediasupport.list,
               },
-              
             ],
           },
-          
         ],
       },
-      
+
       {
         title: 'Credentials and Insignias Area',
         path: paths.dashboard.creadentialsAndInsigniasArea.root,
         icon: ICONS.course,
         children: [
-          { title: 'Add Credentials and Insignias Area', path: paths.dashboard.creadentialsAndInsigniasArea.add },
-          { title: 'Credentials and Insignias Area List', path: paths.dashboard.creadentialsAndInsigniasArea.list },
+          {
+            title: 'Add Credentials and Insignias Area',
+            path: paths.dashboard.creadentialsAndInsigniasArea.add,
+          },
+          {
+            title: 'Credentials and Insignias Area List',
+            path: paths.dashboard.creadentialsAndInsigniasArea.list,
+          },
         ],
       },
-       
+
       // try start
       {
         title: 'Order',
@@ -264,11 +269,7 @@ export const navData = [
         title: 'Mail',
         path: paths.dashboard.mail,
         icon: ICONS.mail,
-        info: (
-          <label color="error">
-            +32
-          </label>
-        ),
+        info: <label color="error">+32</label>,
       },
       {
         title: 'Help & Support',
@@ -276,24 +277,21 @@ export const navData = [
         icon: ICONS.job,
       },
       // try end
-     
     ],
-    
   },
 ];
 
-
 // items: [
-  // {
-  //   title: 'User',
-  //   path: paths.dashboard.user.root,
-  //   icon: ICONS.user,
-  //   children: [
-  //     { title: 'Profile', path: paths.dashboard.user.root },
-  //     { title: 'Cards', path: paths.dashboard.user.cards },
-  //     { title: 'List', path: paths.dashboard.user.list },
-  //     { title: 'Create', path: paths.dashboard.user.new },
-  //     { title: 'Edit', path: paths.dashboard.user.demo.edit },
-  //     { title: 'Account', path: paths.dashboard.user.account },
-  //   ],
-  // },
+// {
+//   title: 'User',
+//   path: paths.dashboard.user.root,
+//   icon: ICONS.user,
+//   children: [
+//     { title: 'Profile', path: paths.dashboard.user.root },
+//     { title: 'Cards', path: paths.dashboard.user.cards },
+//     { title: 'List', path: paths.dashboard.user.list },
+//     { title: 'Create', path: paths.dashboard.user.new },
+//     { title: 'Edit', path: paths.dashboard.user.demo.edit },
+//     { title: 'Account', path: paths.dashboard.user.account },
+//   ],
+// },

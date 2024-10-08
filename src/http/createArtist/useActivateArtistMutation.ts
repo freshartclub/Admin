@@ -21,7 +21,8 @@ const useActivateArtistMutation = (handleOnActivataion) => {
     },
 
     onError: (res) => {
-      toast.error(res.data.message);
+      console.log(res.response.data.message);
+      toast.error(res.response.data.message);
     },
   });
 };

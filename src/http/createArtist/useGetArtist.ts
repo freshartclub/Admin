@@ -22,6 +22,8 @@ const useGetArtist = () => {
       return error;
     }
   };
+
+  console.log(fetchUser)
   return useQuery({
     queryKey: [ARTIST_ENDPOINTS.getArtistDetail],
     queryFn: fetchUser,

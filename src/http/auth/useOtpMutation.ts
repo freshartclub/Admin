@@ -11,27 +11,31 @@ import { toast } from 'src/components/snackbar';
 
 import { AUTH_ENDPOINTS } from '../apiEndPoints/Auth';
 import { paths } from 'src/routes/paths';
+import { useSearchParams } from 'react-router-dom';
 
 let toastId: any;
 
-async function login(input: any) {
-  return axiosInstance.post(AUTH_ENDPOINTS.SignIn, input);
+async function otpVerify(input: any) {
+  return axiosInstance.post(AUTH_ENDPOINTS.ValidateOtp, input);
 }
-const useSigInInMutation = () => {
+const useOtpMutation = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
+  const adminId = searchParams.get("id");
+  
 
   return useMutation({
-    mutationFn: login,
+    mutationFn: otpVerify,
 
     onSuccess: async (res, input) => {
-      console.log(res.data)
+
       setToken(res.data.token, input.rememberMe);
       
       dispatch(setIsAuthorized(true));
       toast.dismiss(toastId);
       toast.success(res.data.message);
-      navigate(paths.auth.jwt.signInOptVerification + "?id=" + res.data.id, {
+      navigate('/', {
         replace: true,
       });
     },
@@ -41,4 +45,4 @@ const useSigInInMutation = () => {
   });
 };
 
-export default useSigInInMutation;
+export default useOtpMutation;

@@ -2,6 +2,7 @@
 
 import { hydrateRoot } from "react-dom/client";
 import { _id, _postTitles } from 'src/_mock/assets';
+import { OtpVerification } from "src/sections/auth/jwt/opt-verify";
 
 const MOCK_ID = _id[1];
 
@@ -28,6 +29,8 @@ export const paths = {
     jwt: {
       signIn: `${ROOTS.AUTH}/jwt/sign-in`,
       signUp: `${ROOTS.AUTH}/jwt/sign-up`,
+      signInOptVerification:`${ROOTS.AUTH}/jwt/opt-verification`,
+
     },
     firebase: {
       signIn: `${ROOTS.AUTH}/firebase/sign-in`,
@@ -53,6 +56,9 @@ export const paths = {
     three: `${ROOTS.DASHBOARD}/three`,
     artist: {
       addArtist: `${ROOTS.DASHBOARD}/artist/add`,
+      artistList: `${ROOTS.DASHBOARD}/artist/list`,
+      artistRequest: `${ROOTS.DASHBOARD}/artist/request`,
+      artistPendingRequest: `${ROOTS.DASHBOARD}/artist/pending-request`,
       five: `${ROOTS.DASHBOARD}/group/five`,
       six: `${ROOTS.DASHBOARD}/group/six`,
     },
