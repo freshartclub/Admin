@@ -15,7 +15,7 @@ import CardHeader from '@mui/material/CardHeader';
 import { useRouter } from 'src/routes/hooks';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 // ----------------------------------------------------------------------
 
@@ -89,24 +89,6 @@ export function Logistic({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  // useEffect(() => {
-  //   if (window.location.hostname === 'localhost') {
-  //     setValue('logName', artistFormData?.logName || 'John');
-  //     setValue('logAddress', artistFormData?.logAddress || '121 c21 vijay nager');
-  //     setValue('logZipCode', artistFormData?.logZipCode || '12345');
-  //     setValue('logCity', artistFormData?.logCity || 'Indore');
-  //     setValue('logProvince', artistFormData?.logProvince || 'Madhay Pradesh');
-  //     setValue('logCountry', artistFormData?.logCountry || 'USA');
-
-  //     setValue('logEmail', artistFormData?.logEmail || 'Artist@gmail.com');
-  //     setValue('logPhone', artistFormData?.logPhone || '+919165323561');
-  //     setValue(
-  //       'logNotes',
-  //       artistFormData?.logNotes || 'Hi this is testing Data Additional Notes '
-  //     );
-  //   }
-  // }, [setValue]);
 
   console.log(artistFormData)
   const onSubmit = handleSubmit(async (data) => {

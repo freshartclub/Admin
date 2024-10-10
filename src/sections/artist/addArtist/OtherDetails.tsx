@@ -20,7 +20,7 @@ import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { dialog } from 'src/theme/core/components/dialog';
 import { DialogTitle } from '@mui/material';
 import { DialogContent } from '@mui/material';

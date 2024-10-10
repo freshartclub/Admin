@@ -84,6 +84,9 @@ export function OtpVerification() {
   const handleResendCode = useCallback(async (id) => {
     console.log(id);
     try {
+        startCountdown();
+
+      
       const data = {
         id: adminId,
       };
@@ -92,7 +95,7 @@ export function OtpVerification() {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [startCountdown]);
 
   const renderHead = (
     <>
@@ -133,7 +136,7 @@ export function OtpVerification() {
             ...(counting && { color: 'text.disabled', pointerEvents: 'none' }),
           }}
         >
-          Resend code {counting && `(${countdown}s)`}
+          {counting ? "" : "Resend Code"} {counting && `(${countdown}s)`}
         </Link>
       </Typography>
 

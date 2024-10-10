@@ -66,7 +66,9 @@ export const navData = [
         path: paths.dashboard.artist.five,
         icon: ICONS.paintBrush,
         children: [
-          { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
+          // { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
+          { title: 'Add Artist', path: paths.dashboard.artist.createArtist },
+
           { title: 'Artist List', path: paths.dashboard.artist.artistList },
           { title: 'Artist Request', path: paths.dashboard.artist.artistRequest },
           { title: 'Artist Pending Request', path: paths.dashboard.artist.artistPendingRequest },

@@ -42,7 +42,9 @@ const OrderPurcheseList  = lazy(() => import('src/pages/dashboard/order/purchese
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
 const ArtistList = lazy(() => import('src/pages/dashboard/Artist/ArtistList'));
 const ArtistRequest = lazy(() => import('src/pages/dashboard/Artist/ArtistRequest'));
-const ArtistPendingRequest = lazy(() => import('src/pages/dashboard/Artist/AartistPendingRequest'))
+const ArtistPendingRequest = lazy(() => import('src/pages/dashboard/Artist/AartistPendingRequest'));
+const CreateArtist = lazy(() => import('src/pages/dashboard/Artist/CreateArtist'));
+
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -65,6 +67,7 @@ export const dashboardRoutes = [
         path: 'artist',
         children: [
           // { element: <PageFour />, index: true },
+          {path:'create',  element: <CreateArtist/>},
           { path: 'add', element: <AddArtistFormIndex /> },
           { path: 'five', element: <PageFive /> },
           { path: 'six', element: <PageSix /> },

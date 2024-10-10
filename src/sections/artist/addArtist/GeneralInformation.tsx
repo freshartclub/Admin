@@ -15,7 +15,7 @@ import CardHeader from '@mui/material/CardHeader';
 import { today } from 'src/utils/format-time';
 
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { GooglePlacesAutoComplete } from 'src/components/hook-form/GooglePlacesAutoComplete';
@@ -106,28 +106,6 @@ export function GeneralInformation({
     formState: { isSubmitting },
   } = formProps;
 
-  // const values = watch();
-
-  // useEffect(() => {
-  //   if (window.location.hostname === 'localhost' && window.location.port === '5173') {
-  //     // setValue('accountId', artistFormData?.accountId || '12345');
-  //     setValue('artistName', artistFormData?.artistName || 'John');
-  //     setValue('artistSurname1', artistFormData?.artistSurname1 || 'Doe');
-  //     setValue('artistSurname2', artistFormData?.artistSurname2 || 'Smith');
-  //     setValue('nickName', artistFormData?.nickName || 'Sunset Bliss');
-  //     // setValue('country', artistFormData?.country || 'USA');
-  //     setValue('createDate', artistFormData?.createDate || new Date().toISOString());
-  //     setValue('language', artistFormData?.language || ['English']);
-  //     setValue('zipCode', artistFormData?.zipCode || '90210');
-  //     setValue('city', artistFormData?.city || 'Los Angeles');
-  //     setValue('state', artistFormData?.state || 'California');
-  //     setValue('residentialAddress', artistFormData?.residentialAddress || '123 Art St.');
-  //     setValue('phone', artistFormData?.phone || '+917879610316');
-  //     setValue('email', artistFormData?.email || 'artist@example.com');
-  //     setValue('gender', artistFormData?.gender || 'Men');
-  //     setValue('notes', artistFormData?.notes || 'Mock data for testing');
-  //   }
-  // }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });

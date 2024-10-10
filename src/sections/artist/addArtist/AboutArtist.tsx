@@ -33,7 +33,7 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { count } from 'console';
 
 // ----------------------------------------------------------------------

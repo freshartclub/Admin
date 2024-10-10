@@ -17,7 +17,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { getYearDropDown } from 'src/utils/helper';
 
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';

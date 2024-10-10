@@ -46,8 +46,6 @@ export function ArtistsRequest() {
     const { data } = await axiosInstance.get(
    `${ARTIST_ENDPOINTS.getAllBecomeArtist}`
     );
-
-    console.log(data);
     return data.data;
   }
 
@@ -83,7 +81,7 @@ export function ArtistsRequest() {
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Artist List', href: paths.dashboard },
+          { name: 'Artist Request List', href: paths.dashboard },
           //   { name: currentUser?.name },
         ]}
         action={

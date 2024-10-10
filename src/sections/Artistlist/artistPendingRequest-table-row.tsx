@@ -35,7 +35,7 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -44,8 +44,10 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
   const navigate = useNavigate()
 
  const handelEdit = (id)=>{
-    navigate(paths.dashboard.artist.addArtist + "?=" + id );
+    navigate(paths.dashboard.artist.addArtist + "?id=" + id );
  }
+
+ console.log(row)
   
 
   return (
@@ -61,7 +63,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
 
             <Stack className=' cursor-pointer' sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.fullName}
+                {row.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row.email}
@@ -70,7 +72,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.artistId}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.phone}</TableCell>
 
@@ -90,8 +92,8 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Label>
         </TableCell> */}
             {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
-            <div className={`w-fit h-fit flex items-center mt-5 ${row.role ? "bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1" : "bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1"}`}>
-            {row.role ? "Active" : "Inactive"}
+            <div className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? "bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1" : "bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1"}`}>
+            {row.isActivated ? "Active" : "Inactive"}
             </div>
 
 
@@ -135,7 +137,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Remove From Pending
           </MenuItem>
 
           <MenuItem

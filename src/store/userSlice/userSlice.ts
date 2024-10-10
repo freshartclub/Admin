@@ -19,6 +19,7 @@ export const userSlice = createSlice({
     updateUser: (state, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
     },
+  
     removeUser: (state) => {
       state.user = null;
     },

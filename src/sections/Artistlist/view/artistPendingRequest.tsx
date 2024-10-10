@@ -16,14 +16,13 @@ const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
 // import { credentialTable } from "./Discipline-table-row";
 
-import { ArtistsList } from './artistlist-table-row';
+
 import { useQuery } from '@tanstack/react-query';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
-import { ArtistRequest } from '../artistRequest-table-row';
+
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
@@ -88,16 +87,7 @@ export function ArtistsPendingRequest() {
           { name: 'Artist Pending List', href: paths.dashboard },
           //   { name: currentUser?.name },
         ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.artist.addArtist}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Create New Artist
-          </Button>
-        }
+       
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       <Card>
@@ -124,7 +114,7 @@ export function ArtistsPendingRequest() {
                   table.page * table.rowsPerPage + table.rowsPerPage
                 )
                 .map((row) => (
-                  <ArtistRequest
+                  <ArtistPendingRequest
                     key={row._id}
                     row={row}
                     selected={table.selected.includes(row._id)}

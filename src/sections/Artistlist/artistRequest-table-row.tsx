@@ -135,7 +135,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Remove Request
           </MenuItem>
 
           <MenuItem

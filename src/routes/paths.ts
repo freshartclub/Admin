@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------
 
-import { hydrateRoot } from "react-dom/client";
+import { hydrateRoot } from 'react-dom/client';
 import { _id, _postTitles } from 'src/_mock/assets';
-import { OtpVerification } from "src/sections/auth/jwt/opt-verify";
+import { OtpVerification } from 'src/sections/auth/jwt/opt-verify';
 
 const MOCK_ID = _id[1];
 
@@ -29,8 +29,7 @@ export const paths = {
     jwt: {
       signIn: `${ROOTS.AUTH}/jwt/sign-in`,
       signUp: `${ROOTS.AUTH}/jwt/sign-up`,
-      signInOptVerification:`${ROOTS.AUTH}/jwt/opt-verification`,
-
+      signInOptVerification: `${ROOTS.AUTH}/jwt/opt-verification`,
     },
     firebase: {
       signIn: `${ROOTS.AUTH}/firebase/sign-in`,
@@ -55,6 +54,7 @@ export const paths = {
     two: `${ROOTS.DASHBOARD}/two`,
     three: `${ROOTS.DASHBOARD}/three`,
     artist: {
+      createArtist: `${ROOTS.DASHBOARD}/artist/create`,
       addArtist: `${ROOTS.DASHBOARD}/artist/add`,
       artistList: `${ROOTS.DASHBOARD}/artist/list`,
       artistRequest: `${ROOTS.DASHBOARD}/artist/request`,
@@ -64,41 +64,41 @@ export const paths = {
     },
     category: {
       root: `${ROOTS.DASHBOARD}/category`,
-      discipline:{
-      root: `${ROOTS.DASHBOARD}/discipline`,
-      add : `${ROOTS.DASHBOARD}/category/discipline/add`,
-      list : `${ROOTS.DASHBOARD}/category/discipline/list`
-     },
-     style:{
-      root: `${ROOTS.DASHBOARD}/style`,
-      add : `${ROOTS.DASHBOARD}/category/style/add`,
-      list : `${ROOTS.DASHBOARD}/category/style/list`
-     },
-     technic:{
-      root: `${ROOTS.DASHBOARD}/technic`,
-      add : `${ROOTS.DASHBOARD}/category/technic/add`,
-      list : `${ROOTS.DASHBOARD}/category/technic/list`
-     },
-     theme:{
-      root: `${ROOTS.DASHBOARD}/theme`,
-      add : `${ROOTS.DASHBOARD}/category/theme/add`,
-      list : `${ROOTS.DASHBOARD}/category/theme/list`
-     },
-     mediasupport:{
-      root: `${ROOTS.DASHBOARD}/mediasupport`,
-      add : `${ROOTS.DASHBOARD}/category/mediasupport/add`,
-      list : `${ROOTS.DASHBOARD}/category/mediasupport/list`
-     }
+      discipline: {
+        root: `${ROOTS.DASHBOARD}/discipline`,
+        add: `${ROOTS.DASHBOARD}/category/discipline/add`,
+        list: `${ROOTS.DASHBOARD}/category/discipline/list`,
+      },
+      style: {
+        root: `${ROOTS.DASHBOARD}/style`,
+        add: `${ROOTS.DASHBOARD}/category/style/add`,
+        list: `${ROOTS.DASHBOARD}/category/style/list`,
+      },
+      technic: {
+        root: `${ROOTS.DASHBOARD}/technic`,
+        add: `${ROOTS.DASHBOARD}/category/technic/add`,
+        list: `${ROOTS.DASHBOARD}/category/technic/list`,
+      },
+      theme: {
+        root: `${ROOTS.DASHBOARD}/theme`,
+        add: `${ROOTS.DASHBOARD}/category/theme/add`,
+        list: `${ROOTS.DASHBOARD}/category/theme/list`,
+      },
+      mediasupport: {
+        root: `${ROOTS.DASHBOARD}/mediasupport`,
+        add: `${ROOTS.DASHBOARD}/category/mediasupport/add`,
+        list: `${ROOTS.DASHBOARD}/category/mediasupport/list`,
+      },
     },
-    creadentialsAndInsigniasArea:{
+    creadentialsAndInsigniasArea: {
       root: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea`,
       add: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea/add`,
-      list: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea/list`
+      list: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea/list`,
     },
-     artwork:{
+    artwork: {
       Root: `${ROOTS.DASHBOARD}/artwork`,
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
-      artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`
+      artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
     },
 
     // try start
@@ -119,7 +119,7 @@ export const paths = {
       create: `${ROOTS.DASHBOARD}/invoice/create`,
       edit: `${ROOTS.DASHBOARD}/invoice/edit`,
     },
-      user: {
+    user: {
       Root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
       cards: `${ROOTS.DASHBOARD}/user/cards`,
@@ -128,22 +128,21 @@ export const paths = {
       edit: `${ROOTS.DASHBOARD}/user/edit`,
       account: `${ROOTS.DASHBOARD}/user/account`,
     },
-     circle: {
+    circle: {
       Root: `${ROOTS.DASHBOARD}/circle`,
       addcircle: `${ROOTS.DASHBOARD}/circle/addcircle`,
       circlelist: `${ROOTS.DASHBOARD}/circle/circlelist`,
-     },
+    },
 
-     logistics: `${ROOTS.DASHBOARD}/logistics`,
-     couponandpromotions: `${ROOTS.DASHBOARD}/couponandpromotions`,
+    logistics: `${ROOTS.DASHBOARD}/logistics`,
+    couponandpromotions: `${ROOTS.DASHBOARD}/couponandpromotions`,
 
-     subscriptionplan: `${ROOTS.DASHBOARD}/subscriptionplan`,
-     faq: `${ROOTS.DASHBOARD}/faq`,
+    subscriptionplan: `${ROOTS.DASHBOARD}/subscriptionplan`,
+    faq: `${ROOTS.DASHBOARD}/faq`,
 
+    kbdatabase: `${ROOTS.DASHBOARD}/kbdatabase`,
 
-     kbdatabase: `${ROOTS.DASHBOARD}/kbdatabase`,
-   
-     contentmanagement: {
+    contentmanagement: {
       Root: `${ROOTS.DASHBOARD}/contentmanagement`,
       list: `${ROOTS.DASHBOARD}/contentmanagement/list`,
       details: `${ROOTS.DASHBOARD}/contentmanagement/details`,
@@ -158,7 +157,7 @@ export const paths = {
     mail: `${ROOTS.DASHBOARD}/mail`,
 
     helpandsupport: `${ROOTS.DASHBOARD}/helpandsupport`,
-    
+
     // try end
   },
 };

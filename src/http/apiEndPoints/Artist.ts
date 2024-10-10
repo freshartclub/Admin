@@ -7,4 +7,9 @@ export const ARTIST_ENDPOINTS = {
   getAllArtist: `${ADMIN_BASE_URL}/get-all-artists`,
   getAllBecomeArtist: `${ADMIN_BASE_URL}/get-artist-request-list`,
   getAllPendingArtist: `${ADMIN_BASE_URL}/get-artist-pending-list`,
+  createNewUser: `${ADMIN_BASE_URL}/create-new-user`,
+};
+
+export const USER_ENDPOINTS = {
+  getUserList: `${ADMIN_BASE_URL}/get-all-users`,
 };

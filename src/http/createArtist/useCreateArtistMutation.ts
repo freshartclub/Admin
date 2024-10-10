@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 
 import axiosInstance from 'src/utils/axios';
@@ -6,69 +6,56 @@ import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
 
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
+import { paths } from 'src/routes/paths';
 
-
-
-const useAddArtistMutation = (handleOnSuccess) => {
-  console.log("medede");
-  
+const useCreateArtistMutation = (setLoading) => {
   const [searchParam, setSearchParam] = useSearchParams();
+  const navigate = useNavigate();
 
   const id = searchParam.get('id');
-  async function addArtist({ body }: { body: any }) {
-    console.log(body);
-    let headers;
-    if (body?.isContainsImage) {
-      const formData = new FormData();
-
-      Object.keys(body).forEach((key) => {
-        if (Array.isArray(body[key])) {
-          body[key].forEach((item) => {
-            formData.append(key, item);
-          });
-        } else {
-          formData.append(key, body[key]);
-        }
-      });
-
+  async function CreateArtist(newData) {
+    const formData = new FormData();
    
+    Object.keys(newData.data).forEach((key) => {
+      if (Array.isArray(newData.data[key])) {
+        newData.data[key].forEach((item) => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, newData.data[key]);
+      }
+    });
 
-      body = formData;
-      
+    formData.append("isArtist", newData.isArtist);
+    formData.append("value", newData.value);
 
-      headers = {
-        'Content-Type': 'multipart/form-data',
-      };
-    } else {
-      headers = {
-        'Content-Type': 'application/json',
-      };
-    }
 
-    if (id)
-      return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
-        headers,
-      });
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body);
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.createNewUser}`, formData, {
+      headers:{
+        'Content-Type':'multipart/form-data'
+      }
+    });
   }
   return useMutation({
-    mutationFn: addArtist,
+    mutationFn: CreateArtist,
     onSuccess: async (res, body) => {
       setSearchParam({ id: res.data.id });
-      handleOnSuccess(body.body);
 
-      // if (body.body.count === 7 ) {
-        
-      //   toast.success(res.data.message);
-       
-      // }
+      if (body.isArtist) {
+        navigate(paths.dashboard.artist.addArtist + "?id=" + res.data.id);
+      } else {
+        navigate(paths.dashboard.user.list);
+      }
+    
+      toast.success(res.data.message);
+      setLoading(false);
     },
 
     onError: (res) => {
-      toast.error(res.data.message);
+      toast.error(res.response.data.message);
+      setLoading(false);
     },
   });
 };
 
-
-export default useAddArtistMutation;
+export default useCreateArtistMutation;

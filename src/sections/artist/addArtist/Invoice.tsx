@@ -30,7 +30,7 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
-import useAddArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),

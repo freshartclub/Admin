@@ -48,11 +48,11 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.name} src={row.avatarUrl} />
+            <Avatar alt={row.avatar} src={row.avatar} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.name}
+                {row.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row.email}
@@ -61,9 +61,9 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userId}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.company}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phone}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell>
 
@@ -77,20 +77,20 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
               'default'
             }
           >
-            {row.status}
+            {row.updatedAt}
           </Label>
         </TableCell>
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
+            {/* <Tooltip title="Quick Edit" placement="top" arrow>
               <IconButton
                 color={quickEdit.value ? 'inherit' : 'default'}
                 onClick={quickEdit.onTrue}
               >
                 <Iconify icon="solar:pen-bold" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
@@ -99,7 +99,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}
@@ -119,7 +119,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
             Delete
           </MenuItem>
 
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               onEditRow();
               popover.onClose();
@@ -127,7 +127,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
           >
             <Iconify icon="solar:pen-bold" />
             Edit
-          </MenuItem>
+          </MenuItem> */}
         </MenuList>
       </CustomPopover>
 

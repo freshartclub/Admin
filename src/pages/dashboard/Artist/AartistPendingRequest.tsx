@@ -31,7 +31,7 @@ export default function artistPendingList() {
         heading="Artist Pending Request"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root},
-          { name: 'ArtistPendingRequest​', href: paths.dashboard.artist.artistPendingRequest },
+          { name: 'Artist Pending Request​', href: paths.dashboard.artist.artistPendingRequest },
         //   { name: currentUser?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
