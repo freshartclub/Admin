@@ -1,10 +1,11 @@
 // ----------------------------------------------------------------------
-
-import { hydrateRoot } from 'react-dom/client';
+import { paramCase } from "src/utils/change-case";
+import { hydrateRoot } from "react-dom/client";
 import { _id, _postTitles } from 'src/_mock/assets';
 import { OtpVerification } from 'src/sections/auth/jwt/opt-verify';
 
 const MOCK_ID = _id[1];
+const MOCK_TITLE = _postTitles[2];
 
 const ROOTS = {
   AUTH: '/auth',
@@ -128,21 +129,59 @@ export const paths = {
       edit: `${ROOTS.DASHBOARD}/user/edit`,
       account: `${ROOTS.DASHBOARD}/user/account`,
     },
+    //  circle: {
+    //   Root: `${ROOTS.DASHBOARD}/circle`,
+    //   addcircle: `${ROOTS.DASHBOARD}/circle/addcircle`,
+    //   circlelist: `${ROOTS.DASHBOARD}/circle/circlelist`,
+    //   // circledetails: `${ROOTS.DASHBOARD}/circle/circledetails`,
+    //   // circleedit: `${ROOTS.DASHBOARD}/circle/circleedit`,
+    //   circledetails: (id: string) => `${ROOTS.DASHBOARD}/circle/${id}`,
+    //   circleedit: (id: string) => `${ROOTS.DASHBOARD}/circle/${id}/circleedit`,
+    //   demo: {
+    //     circledetails: `${ROOTS.DASHBOARD}/circle/${MOCK_ID}`,
+    //     circleedit: `${ROOTS.DASHBOARD}/circle/${MOCK_ID}/circleedit`,
+    //   },
+    //  },
     circle: {
-      Root: `${ROOTS.DASHBOARD}/circle`,
-      addcircle: `${ROOTS.DASHBOARD}/circle/addcircle`,
-      circlelist: `${ROOTS.DASHBOARD}/circle/circlelist`,
+      root: `${ROOTS.DASHBOARD}/circle`,
+      new: `${ROOTS.DASHBOARD}/circle/new`,
+      details: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}`,
+      edit: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/circle/${paramCase(MOCK_TITLE)}`,
+        edit: `${ROOTS.DASHBOARD}/circle/${paramCase(MOCK_TITLE)}/edit`,
+      },
     },
 
-    logistics: `${ROOTS.DASHBOARD}/logistics`,
-    couponandpromotions: `${ROOTS.DASHBOARD}/couponandpromotions`,
+     logistics: `${ROOTS.DASHBOARD}/logistics`,
 
-    subscriptionplan: `${ROOTS.DASHBOARD}/subscriptionplan`,
-    faq: `${ROOTS.DASHBOARD}/faq`,
+     couponandpromotions: {
+      Root: `${ROOTS.DASHBOARD}/couponandpromotions`,
+      add: `${ROOTS.DASHBOARD}/couponandpromotions/add`,
+      list: `${ROOTS.DASHBOARD}/couponandpromotions/list`
+     }, 
 
-    kbdatabase: `${ROOTS.DASHBOARD}/kbdatabase`,
+     subscriptionplan: {
+      Root: `${ROOTS.DASHBOARD}/subscriptionplan`,
+      add: `${ROOTS.DASHBOARD}/subscriptionplan/add`,
+      list: `${ROOTS.DASHBOARD}/subscriptionplan/list`,
+      pay: `${ROOTS.DASHBOARD}/subscriptionplan/pay`
+     },
 
-    contentmanagement: {
+     faq: {
+      Root: `${ROOTS.DASHBOARD}/faq`,
+      add: `${ROOTS.DASHBOARD}/faq/add`,
+      list: `${ROOTS.DASHBOARD}/faq/list`
+     },
+     kbdatabase: {
+      Root: `${ROOTS.DASHBOARD}/kbdatabase`,
+      add: `${ROOTS.DASHBOARD}/kbdatabase/add`,
+      list: `${ROOTS.DASHBOARD}/kbdatabase/list`
+     },
+
+    
+   
+     contentmanagement: {
       Root: `${ROOTS.DASHBOARD}/contentmanagement`,
       list: `${ROOTS.DASHBOARD}/contentmanagement/list`,
       details: `${ROOTS.DASHBOARD}/contentmanagement/details`,
@@ -156,8 +195,21 @@ export const paths = {
 
     mail: `${ROOTS.DASHBOARD}/mail`,
 
-    helpandsupport: `${ROOTS.DASHBOARD}/helpandsupport`,
+    tickets: {
+      Root: `${ROOTS.DASHBOARD}/tickets`,
+      allList: `${ROOTS.DASHBOARD}/tickets/allList`,
+      singleList: `${ROOTS.DASHBOARD}/tickets/singleList`,
+      addIncident: `${ROOTS.DASHBOARD}/tickets/addIncident`,
+    },
 
+    notificationAndMessage: {
+      Root: `${ROOTS.DASHBOARD}/notificationAndMessage`,
+      addMessage: `${ROOTS.DASHBOARD}/notificationAndMessage/addMessage`,
+      addNotification: `${ROOTS.DASHBOARD}/notificationAndMessage/addNotification`,
+      List: `${ROOTS.DASHBOARD}/notificationAndMessage/list`
+     },
+
+    
     // try end
   },
 };

@@ -212,36 +212,66 @@ export const navData = [
           { title: 'Account', path: paths.dashboard.user.account },
         ],
       },
+      // {
+      //   title: 'Circle Managemant',
+      //   path: paths.dashboard.circle.Root,
+      //   icon: ICONS.user,
+      //   children: [
+      //     { title: 'addcircle', path: paths.dashboard.circle.addcircle },
+      //     { title: 'circlelist', path: paths.dashboard.circle.circlelist },
+      //     {title: 'circledetails', path:paths.dashboard.circle.demo.circledetails},
+      //     {title: 'circleedit', path:paths.dashboard.circle.demo.circleedit},
+
+      //   ],
+      // },
       {
         title: 'Circle Managemant',
-        path: paths.dashboard.circle.Root,
-        icon: ICONS.user,
+        path: paths.dashboard.circle.root,
+        icon: ICONS.blog,
         children: [
-          { title: 'addcircle', path: paths.dashboard.circle.addcircle },
-          { title: 'circlelist', path: paths.dashboard.circle.circlelist },
+          { title: 'List', path: paths.dashboard.circle.root },
+          { title: 'Details', path: paths.dashboard.circle.demo.details },
+          { title: 'Create', path: paths.dashboard.circle.new },
+          { title: 'Edit', path: paths.dashboard.circle.demo.edit },
         ],
       },
       { title: 'Logistics', path: paths.dashboard.logistics, icon: ICONS.file },
 
       {
         title: 'Coupon & Promotions',
-        path: paths.dashboard.couponandpromotions,
+        path: paths.dashboard.couponandpromotions.Root,
         icon: ICONS.blank,
+        children:[
+          {title:"Add Coupon", path:paths.dashboard.couponandpromotions.add},
+          {title:"List of Coupon", path:paths.dashboard.couponandpromotions.list}
+        ]
       },
       {
         title: 'Subscription Plan',
-        path: paths.dashboard.subscriptionplan,
+        path: paths.dashboard.subscriptionplan.Root,
         icon: ICONS.blank,
+        children:[
+          {title:"Add Plan", path:paths.dashboard.subscriptionplan.add},
+          {title:"Plan List", path:paths.dashboard.subscriptionplan.list},
+        ]
       },
       {
         title: 'FAQ',
-        path: paths.dashboard.faq,
+        path: paths.dashboard.faq.Root,
         icon: ICONS.file,
+        children:[
+          {title:"Add FAQ", path:paths.dashboard.faq.add},
+          {title:"FAQ List", path:paths.dashboard.faq.list}
+        ]
       },
       {
         title: 'KB Database',
-        path: paths.dashboard.kbdatabase,
+        path: paths.dashboard.kbdatabase.Root,
         icon: ICONS.blog,
+        children:[
+          {title:"Add KB", path:paths.dashboard.kbdatabase.add},
+          {title:"KB List", path:paths.dashboard.kbdatabase.list}
+        ]
       },
 
       {
@@ -274,10 +304,26 @@ export const navData = [
         info: <label color="error">+32</label>,
       },
       {
-        title: 'Help & Support',
-        path: paths.dashboard.helpandsupport,
+        title: 'Ticket Management',
+        path: paths.dashboard.tickets.Root,
         icon: ICONS.job,
+        children: [
+          { title: 'All Ticket List', path: paths.dashboard.tickets.allList },
+          { title: 'Add Incident', path: paths.dashboard.tickets.addIncident },
+        ]
       },
+      {
+        title: 'Message And Notification',
+        path: paths.dashboard.notificationAndMessage.Root,
+        icon: ICONS.mail,
+        children: [
+          { title: 'Add Message', path: paths.dashboard.notificationAndMessage.addMessage },
+          { title: 'Add Notification', path: paths.dashboard.notificationAndMessage.addNotification },
+          { title: 'List', path: paths.dashboard.notificationAndMessage.List },
+          
+          
+        ],
+      }
       // try end
     ],
   },

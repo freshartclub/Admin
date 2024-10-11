@@ -382,4 +382,64 @@ export const PRODUCT_STYLECATEGORYS_OPTIONS = [
   
 ];
 
+export const FAQ_GROUP_OPTIONS = [
+  { value: 'Group A', label: 'Group A' },
+  { value: 'Group B', label: 'Group B' },
+  { value: 'Group C', label: 'Group C' },
+  { value: 'Group D', label: 'Group D' },
+  { value: 'Group E', label: 'Group E' },
+  { value: 'Group F', label: 'Group F' },
+  { value: 'Group G', label: 'Group G' },
+  
+]
+export const COUPON_USEGE_OPTIONS = [
+  { value: '1 Time', label: '1 Time' },
+  { value: '2 Time', label: '2 Time' },
+  { value: '3 Time', label: '3 Time' },
+  { value: '4 Time', label: '4 Time' },
+  { value: '5 Time', label: '5 Time' },
+  { value: '6 Time', label: '6 Time' },
+]
+export const COUPON_SUBSCRIPTIONPLAN_OPTIONS = [
+  { value: '$ 30/month', label: '$ 30/month' },
+  { value: '$ 20/month', label: '$ 20/month' },
+  { value: '$ 40/month', label: '$ 40/month' },
+  { value: '$ 50/month', label: '$ 50/month' },
+  
+]
+export const COUPON_EXTENTION_OPTIONS = [
+  { value: '20 days', label: '20 days' },
+  { value: '30 days', label: '30 days' },
+  { value: '40 days', label: '40 days' },
+  { value: '50 days', label: '50 days' },
+  { value: '25 days', label: '25 days' },
+]
+export const COUPON_DISCOUNT_OPTIONS = [
+  { value: '5 %', label: '5 %' },
+  { value: '10 %', label: '10 %' },
+  { value: '15 %', label: '15 %' },
+  { value: '20 %', label: '20 %' },
+  { value: '25 %', label: '25 %' },
+]
+export const PLAN_NUMOFARTWORK_OPTIONS = [
+  { value: '5 ', label: '5 ' },
+  { value: '10 ', label: '10 ' },
+  { value: '15 ', label: '15 ' },
+  { value: '20 ', label: '20 ' },
+  { value: '25 ', label: '25 ' },
+]
+export const PLAN_SHIPMENTS_OPTIONS = [
+  { value: 'yes', label: 'yes' },
+  { value: 'No', label: 'No' },
+]
+export const PLAN_STATUS_OPTIONS = [
+  { value: 'published', label: 'Published' },
+  { value: 'draft', label: 'Draft' },
+]
+export const MASSAGE_TYPE_OPTIONS = [
+  { value: 'Information', label: 'Information' },
+  { value: 'Status', label: 'Status' },
+  { value: 'Warning', label: 'Warning' },
+  { value: 'Termination', label: 'Termination' },
+]
 export const PRODUCT_CHECKOUT_STEPS = ['Cart', 'Billing & address', 'Payment'];
