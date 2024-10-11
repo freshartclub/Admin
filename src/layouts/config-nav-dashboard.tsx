@@ -69,9 +69,9 @@ export const navData = [
           // { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
           { title: 'Add Artist', path: paths.dashboard.artist.createArtist },
 
-          { title: 'Artist List', path: paths.dashboard.artist.artistList },
+          { title: 'Active Artist', path: paths.dashboard.artist.artistList },
           { title: 'Artist Request', path: paths.dashboard.artist.artistRequest },
-          { title: 'Artist Pending Request', path: paths.dashboard.artist.artistPendingRequest },
+          { title: 'Unpublished Artists', path: paths.dashboard.artist.artistPendingRequest },
         ],
       },
       {

@@ -107,6 +107,7 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
                 />
               ) : null,
             }}
+            
             slotProps={{
               toolbar: {
                 sx: {
