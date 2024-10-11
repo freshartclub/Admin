@@ -14,7 +14,6 @@ const useAddArtistMutation = (handleOnSuccess) => {
 
   const id = searchParam.get('id');
 
-
   async function addArtist({ body }: { body: any }) {
     console.log(body);
     let headers;
@@ -39,7 +38,7 @@ const useAddArtistMutation = (handleOnSuccess) => {
     } else {
       headers = {
         'Content-Type': 'application/json',
-      }; 
+      };
     }
 
     if (id)
@@ -51,7 +50,6 @@ const useAddArtistMutation = (handleOnSuccess) => {
   return useMutation({
     mutationFn: addArtist,
     onSuccess: async (res, body) => {
-      
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
 
@@ -63,7 +61,8 @@ const useAddArtistMutation = (handleOnSuccess) => {
     },
 
     onError: (res) => {
-      toast.error(res.data.message);
+      console.log(res);
+      toast.error(res.response?.data?.message);
     },
   });
 };
