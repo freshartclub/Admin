@@ -42,7 +42,7 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
   const quickEdit = useBoolean();
 
-  const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+  // const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
   const navigate = useNavigate();
 
@@ -110,14 +110,14 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
+            {/* <Tooltip title="Quick Edit" placement="top" arrow>
               <IconButton
                 color={quickEdit.value ? 'inherit' : 'default'}
                 onClick={quickEdit.onTrue}
               >
                 <Iconify icon="solar:pen-bold" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />

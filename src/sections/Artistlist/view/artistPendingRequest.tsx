@@ -56,7 +56,7 @@ export function ArtistsPendingRequest() {
     staleTime: 1000 * 60 * 5,
   });
 
-  console.log(data)
+
 
   useEffect(() => {
     if (data) {

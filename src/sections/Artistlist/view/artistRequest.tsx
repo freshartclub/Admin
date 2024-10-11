@@ -49,11 +49,15 @@ export function ArtistsRequest() {
     return data.data;
   }
 
+
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['styleData'],
     queryFn: fetchData,
     staleTime: 1000 * 60 * 5,
   });
+
+
 
   useEffect(() => {
     if (data) {
