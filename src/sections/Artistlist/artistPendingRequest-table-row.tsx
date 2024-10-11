@@ -1,4 +1,3 @@
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import Box from '@mui/material/Box';
@@ -14,6 +13,8 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
+import RLInk from 'react-router-dom';
+
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { Label } from 'src/components/label';
@@ -22,6 +23,8 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import moment from 'moment';
+import { RouterLink } from 'src/routes/components';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -35,20 +38,25 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ArtistPendingRequest({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
- const handelEdit = (id)=>{
-    navigate(paths.dashboard.artist.addArtist + "?id=" + id );
- }
+  const handelEdit = (id) => {
+    navigate(paths.dashboard.artist.addArtist + '?id=' + id);
+  };
 
- console.log(row)
-  
+  console.log(row);
 
   return (
     <>
@@ -61,7 +69,10 @@ export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, on
           <Stack spacing={1} direction="row" alignItems="center">
             {/* <Avatar alt={row.uploadImage} src={row.profile.mainImage} /> */}
 
-            <Stack className=' cursor-pointer' sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Stack
+              className=" cursor-pointer"
+              sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
+            >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
                 {row.artistName}
               </Link>
@@ -72,9 +83,11 @@ export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, on
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.artistId}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userId}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.phone}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row.phone}
+        </TableCell>
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
 
@@ -91,32 +104,26 @@ export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, on
             {row.isActive}
           </Label>
         </TableCell> */}
-            {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
-            <div className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? "bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1" : "bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1"}`}>
-            {row.isActivated ? "Active" : "Inactive"}
-            </div>
+        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row.address?.country}
+        </TableCell>
 
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
 
-         {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {moment(row.createdAt).format('YYYY-MM-DD')}
+        </TableCell>
 
-         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.createdAt}</TableCell>
-
-
-        <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap', display:"flex",  gap:2}} spacing={2}>
+          {
+          //   row.isActivated === false && <RouterLink href={`${paths.dashboard.artist.addArtist}?id=${row._id}`}>
+          //   <span className="bg-green-600 text-white py-2 px-2 rounded-md"> Acivate</span>
+          // </RouterLink>
+          }
+          <RouterLink href={`${paths.dashboard.artist.addArtist}?id=${row._id}`}>
+            <span className="bg-black text-white py-2 px-2 rounded-md"> Continue Edit</span>
+          </RouterLink>
         </TableCell>
       </TableRow>
 
@@ -140,9 +147,7 @@ export function ArtistPendingRequest({ row, selected, onEditRow, onSelectRow, on
             Remove From Pending
           </MenuItem>
 
-          <MenuItem
-            onClick={() => handelEdit(row._id)}
-          >
+          <MenuItem onClick={() => handelEdit(row._id)}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>

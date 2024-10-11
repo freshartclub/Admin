@@ -16,51 +16,43 @@ const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
 // import { credentialTable } from "./Discipline-table-row";
 
-import { ArtistsList } from './artistlist-table-row';
 import { useQuery } from '@tanstack/react-query';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
-import { ArtistRequest } from '../artistRequest-table-row';
+
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { AllArtistList } from '../allArtist-table-row';
+import { Iconify } from 'src/components/iconify';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
 
-  { id: 'group', label: 'Contact', width: 180 },
-   { id: 'city', label: 'City', width: 130 },
-   { id: 'country', label: 'Country', width: 130 },
+  { id: 'group', label: 'User Id', width: 180 },
+  { id: 'Contact', label: 'Contact', width: 130 },
+  { id: 'Status', label: 'Status', width: 130 },
 
   // { id: 'status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Create At', width: 220 },
+  { id: 'create', label: 'Created At', width: 220 },
   { id: '', label: 'Action', width: 88 },
 ];
-export function ArtistsRequest() {
+export function AllArtist() {
   const token = getToken();
   const [styles, setStyles] = useState([]);
   // const [table, setTable] = useTable(); // Initialize table state
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-
-// dont forget to change uri
+  // dont forget to change uri
   async function fetchData() {
-    const { data } = await axiosInstance.get(
-   `${ARTIST_ENDPOINTS.getAllBecomeArtist}`
-    );
+    const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllArtistInDatabase}`);
     return data.data;
   }
-
-
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['styleData'],
     queryFn: fetchData,
     staleTime: 1000 * 60 * 5,
   });
-
-
 
   useEffect(() => {
     if (data) {
@@ -81,17 +73,25 @@ export function ArtistsRequest() {
   }
 
   const dataFiltered = data;
-  
+
   return (
     <div>
       {/* <CustomBreadcrumbs
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Artist Request List', href: paths.dashboard },
+          { name: 'All Artist List', href: paths.dashboard },
           //   { name: currentUser?.name },
         ]}
-       
+        action={
+          <Button
+            href={`${paths.dashboard.artist.createArtist}`}
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            variant="contained"
+          >
+            Create Artist
+          </Button>
+        }
         sx={{ mb: { xs: 3, md: 5 } }}
       /> */}
       <Card>
@@ -118,7 +118,7 @@ export function ArtistsRequest() {
                   table.page * table.rowsPerPage + table.rowsPerPage
                 )
                 .map((row) => (
-                  <ArtistRequest
+                  <AllArtistList
                     key={row._id}
                     row={row}
                     selected={table.selected.includes(row._id)}

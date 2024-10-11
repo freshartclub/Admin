@@ -9,11 +9,12 @@ import { useTable } from 'src/components/table';
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { paths } from 'src/routes/paths';
+import { SuspendedArtist } from 'src/sections/Artistlist/view/suspendedArtistList';
 import { InvoiceAnalytic } from 'src/sections/invoice/invoice-analytic';
 import { InvoiceListView } from 'src/sections/invoice/view';
 
 
-import { ListArtists } from 'src/sections/Artistlist';
+
 
 
 
@@ -23,7 +24,7 @@ import { ListArtists } from 'src/sections/Artistlist';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function artistList() {
+export default function suspendedArtistList() {
   return (
     <>
     <DashboardContent>
@@ -32,15 +33,15 @@ export default function artistList() {
       </Helmet>
 
       <CustomBreadcrumbs
-        heading="Active Artist List"
+        heading="Suspended Artist List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root},
-          { name: 'Active Artist List​', href: paths.dashboard.artist.artistList },
+          { name: 'Suspended List​', href: paths.dashboard.artist.suspendList },
         //   { name: currentUser?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-       <ListArtists/>
+       <SuspendedArtist/>
       </DashboardContent>
     </>
   );

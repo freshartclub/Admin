@@ -24,6 +24,7 @@ import { RouterLink } from 'src/routes/components';
 import { Iconify } from 'src/components/iconify';
 import { ArtistRequest } from '../artistRequest-table-row';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { SuspendedArtistList } from '../suspendedArtistLis-table-row';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
@@ -33,10 +34,10 @@ const TABLE_HEAD = [
    { id: 'country', label: 'Country', width: 130 },
 
   // { id: 'status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Create At', width: 220 },
+  { id: 'create', label: 'Status', width: 220 },
   { id: '', label: 'Action', width: 88 },
 ];
-export function ArtistsRequest() {
+export function SuspendedArtist() {
   const token = getToken();
   const [styles, setStyles] = useState([]);
   // const [table, setTable] = useTable(); // Initialize table state
@@ -47,7 +48,7 @@ export function ArtistsRequest() {
 // dont forget to change uri
   async function fetchData() {
     const { data } = await axiosInstance.get(
-   `${ARTIST_ENDPOINTS.getAllBecomeArtist}`
+   `${ARTIST_ENDPOINTS.suspendedArtist}`
     );
     return data.data;
   }
@@ -88,7 +89,7 @@ export function ArtistsRequest() {
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Artist Request List', href: paths.dashboard },
+          { name: 'Suspended Artist', href: paths.dashboard },
           //   { name: currentUser?.name },
         ]}
        
@@ -118,7 +119,7 @@ export function ArtistsRequest() {
                   table.page * table.rowsPerPage + table.rowsPerPage
                 )
                 .map((row) => (
-                  <ArtistRequest
+                  <SuspendedArtistList
                     key={row._id}
                     row={row}
                     selected={table.selected.includes(row._id)}

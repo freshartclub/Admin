@@ -1,7 +1,7 @@
 import type { IUserItem } from 'src/types/user';
 
 import { z as zod } from 'zod';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
@@ -30,6 +30,12 @@ import { RadioGroup } from '@mui/material';
 import { Radio } from '@mui/material';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 import { useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
+import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { artistData } from '../KBS/data';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -65,9 +71,16 @@ type Props = {
 
 export function CreateArtistForm({ currentUser }: Props) {
   const router = useRouter();
+
+  const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
+
   const [value, setValue] = useState('new');
   const [isArtist, setIsArtist] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [searchParam, setSearchParam] = useSearchParams();
+
+  const id = searchParam.get('id');
 
   const { isPending, mutate } = useCreateArtistMutation(setLoading);
 
@@ -76,7 +89,7 @@ export function CreateArtistForm({ currentUser }: Props) {
       status: currentUser?.status || '',
       F: currentUser?.avatar || null,
       isVerified: currentUser?.isVerified || true,
-      name: currentUser?.name || 'Rachit',
+      name: currentUser?.name || '',
       email: currentUser?.email || '',
       phoneNumber: currentUser?.phoneNumber || '',
       country: currentUser?.country || 'India',
@@ -89,6 +102,25 @@ export function CreateArtistForm({ currentUser }: Props) {
     }),
     [currentUser]
   );
+
+  // useLayoutEffect(async ()=>{
+  //   if(id){
+  //     const { artistDetail } = await axiosInstance.get(
+  // `${ARTIST_ENDPOINTS.getAllPendingArtist}`
+  //        );
+  //     setArtistFormData(artistDetail);
+  //   }
+  // })
+
+  // useEffect(() => {
+  //   const getNewUser = async () => {
+  //     const artistDetail = await axiosInstance.get(`${ARTIST_ENDPOINTS.getuser}/${id}`);
+  //     setArtistFormData(artistDetail.data);
+  //     setValue(artistDetail.data?.userId ? 'new' : 'existing')
+  //   };
+
+  //   getNewUser();
+  // }, []);
 
   const methods = useForm<NewUserSchemaType>({
     mode: 'onSubmit',
@@ -108,8 +140,6 @@ export function CreateArtistForm({ currentUser }: Props) {
 
   const navigate = useNavigate();
 
- 
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       const newData = {
@@ -123,13 +153,14 @@ export function CreateArtistForm({ currentUser }: Props) {
     }
   });
 
- useEffect(() => {
+  useEffect(() => {
     const result = NewUserSchema.safeParse(values);
     if (!result.success) {
       setLoading(false);
     }
-  },[values]);
+  }, [values]);
 
+  // if (!value) return <LoadingScreen />;
 
   return (
     <>
@@ -144,12 +175,14 @@ export function CreateArtistForm({ currentUser }: Props) {
               <FormControlLabel
                 onChange={(e) => setValue(e.target.value)}
                 value="new"
+                // checked={value === 'new'}
                 control={<Radio checked={value === 'new'} />}
                 label="New User"
               />
               <FormControlLabel
                 onChange={(e) => setValue(e.target.value)}
                 value="existing"
+                checked={value === 'existing'}
                 control={<Radio />}
                 label="Existing User"
               />

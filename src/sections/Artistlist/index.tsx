@@ -81,7 +81,7 @@ export function ListArtists() {
 
   return (
     <div>
-      <CustomBreadcrumbs
+      {/* <CustomBreadcrumbs
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
@@ -99,7 +99,7 @@ export function ListArtists() {
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
-      />
+      /> */}
       <Card>
         <Scrollbar>
           <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>

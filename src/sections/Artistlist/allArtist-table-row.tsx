@@ -14,7 +14,7 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -35,7 +35,7 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -72,7 +72,7 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.artistId}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userId}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
           {row.phone}
@@ -117,8 +117,12 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
               </IconButton>
             </Tooltip> */}
 
-            <IconButton color={popover.open ? 'inherit' : 'default'} >
-              <Iconify icon="mdi:eye-outline" />
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              {row.isActivated ? (
+                <Iconify icon="mdi:eye-outline" />
+              ) : (
+                <Iconify icon="eva:more-vertical-fill" />
+              )}
             </IconButton>
           </Stack>
         </TableCell>
@@ -133,7 +137,7 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               confirm.onTrue();
               popover.onClose();
@@ -141,12 +145,12 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Suspend
-          </MenuItem>
+           Suspend
+          </MenuItem> */}
 
           <MenuItem onClick={() => handelEdit(row._id)}>
             <Iconify icon="solar:pen-bold" />
-            Edit
+            Continue Edit
           </MenuItem>
         </MenuList>
       </CustomPopover>

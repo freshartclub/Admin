@@ -14,6 +14,9 @@ import { InvoiceListView } from 'src/sections/invoice/view';
 
 
 import { ListArtists } from 'src/sections/Artistlist';
+import { AllArtist } from 'src/sections/Artistlist/view/allArtistList';
+import { Button } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
 
 
 
@@ -23,7 +26,7 @@ import { ListArtists } from 'src/sections/Artistlist';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function artistList() {
+export default function allArtistList() {
   return (
     <>
     <DashboardContent>
@@ -32,15 +35,26 @@ export default function artistList() {
       </Helmet>
 
       <CustomBreadcrumbs
-        heading="Active Artist List"
+        heading="All Artist List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root},
-          { name: 'Active Artist List​', href: paths.dashboard.artist.artistList },
+          { name: 'All Artist List​', href: paths.dashboard.artist.allArtist },
         //   { name: currentUser?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
+        action={
+            <Button
+            href={`${paths.dashboard.artist.createArtist}`}
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            variant="contained"
+          >
+            Create Artist
+
+            
+          </Button>
+        }
       />
-       <ListArtists/>
+       <AllArtist/>
       </DashboardContent>
     </>
   );

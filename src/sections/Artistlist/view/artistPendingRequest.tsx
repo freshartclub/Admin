@@ -26,9 +26,9 @@ import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'Artist Id', width: 180 },
+  { id: 'group', label: 'User Id', width: 180 },
   { id: 'group', label: 'Contact', width: 180 },
-  { id: 'status', label: 'Status', width: 130 },
+  { id: 'status', label: 'Country', width: 130 },
   { id: 'create', label: 'Create At', width: 220 },
   { id: '', label: 'Action', width: 88 },
 ];
@@ -80,16 +80,7 @@ export function ArtistsPendingRequest() {
   
   return (
     <div>
-      <CustomBreadcrumbs
-        heading="List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Artist Pending List', href: paths.dashboard },
-          //   { name: currentUser?.name },
-        ]}
-       
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+    
       <Card>
         <Scrollbar>
           <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>

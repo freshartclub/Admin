@@ -7,6 +7,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
 
+
 // ----------------------------------------------------------------------
 
 
@@ -67,7 +68,8 @@ const ListOfMsgNfc = lazy(() => import('src/pages/dashboard/Massage-and-Notifica
 const TicketList = lazy(() => import('src/pages/dashboard/Ticket-Management/TicketList'));
 const SingelList = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
 const AddIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AddIncident'));
-
+const SuspendedArtist = lazy(() => import('src/pages/dashboard/Artist/SuspendedArtistList'));
+const AllArtist = lazy(() => import('src/pages/dashboard/Artist/AllArtistList'));
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -95,8 +97,10 @@ export const dashboardRoutes = [
           { path: 'five', element: <PageFive /> },
           { path: 'six', element: <PageSix /> },
           {path:'list',  element: <ArtistList/>},
+          {path:'all',  element: <AllArtist/>},
           {path:'request',  element: <ArtistRequest/>},
           {path:'pending-request',  element: <ArtistPendingRequest/>},
+          {path:'suspended-list',  element: <SuspendedArtist/>},
         ],
 
       },

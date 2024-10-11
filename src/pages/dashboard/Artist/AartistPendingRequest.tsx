@@ -28,10 +28,10 @@ export default function artistPendingList() {
       </Helmet>
 
       <CustomBreadcrumbs
-        heading="Artist Pending Request"
+        heading="Unpublished Artist"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root},
-          { name: 'Artist Pending Request​', href: paths.dashboard.artist.artistPendingRequest },
+          { name: 'Unpublished Artist​', href: paths.dashboard.artist.artistPendingRequest },
         //   { name: currentUser?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

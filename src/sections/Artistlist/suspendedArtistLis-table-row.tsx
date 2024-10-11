@@ -12,16 +12,16 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import moment from 'moment';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
-import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -35,19 +35,16 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
-
-  // const { isPending, mutate } = useAddArtistMutation(handleSuccess);
-
   const navigate = useNavigate();
 
   const handelEdit = (id) => {
-    navigate(paths.dashboard.artist.addArtist + '?id=' + id);
+    navigate(paths.dashboard.artist.addArtist + '?=' + id);
   };
 
   return (
@@ -59,9 +56,12 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.uploadImage} src={row?.profile?.mainImage} />
+            {/* <Avatar alt={row.uploadImage} src={row.profile.mainImage} /> */}
 
-            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Stack
+              className=" cursor-pointer"
+              sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
+            >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
                 {row.artistName}
               </Link>
@@ -72,10 +72,10 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.artistId}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phone}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.phone}
+          {row.address.city}
         </TableCell>
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
@@ -94,34 +94,30 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
           </Label>
         </TableCell> */}
         {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
-        <div
-          className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
-        >
-          {row.isActivated ? 'Active' : 'Inactive'}
-        </div>
+        <div className={`w-fit h-fit flex items-center mt-5 `}>{row.address.country}</div>
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.createdAt}
+          {moment(row.createdAt).format('YYYY-MM-DD')}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          <Button
+            href={paths.dashboard.artist.createArtist}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Create Artist
+          </Button>
         </TableCell>
 
-        <TableCell>
+        {/* <TableCell>
           <Stack direction="row" alignItems="center">
-            {/* <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip> */}
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} >
-              <Iconify icon="mdi:eye-outline" />
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           </Stack>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
 
       {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
@@ -141,7 +137,7 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Suspend
+            Remove Request
           </MenuItem>
 
           <MenuItem onClick={() => handelEdit(row._id)}>

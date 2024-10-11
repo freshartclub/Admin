@@ -63,12 +63,13 @@ export const navData = [
     items: [
       {
         title: 'Artist',
-        path: paths.dashboard.artist.five,
+        path: paths.dashboard.artist.Root,
         icon: ICONS.paintBrush,
         children: [
           // { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
-          { title: 'Add Artist', path: paths.dashboard.artist.createArtist },
+          // { title: 'Add Artist', path: paths.dashboard.artist.createArtist },
           { title: 'New Artist Request', path: paths.dashboard.artist.artistRequest },
+          { title: 'All Artist', path: paths.dashboard.artist.allArtist },
           { title: 'Active Artist', path: paths.dashboard.artist.artistList },
           { title: 'Unpublished Artists', path: paths.dashboard.artist.artistPendingRequest },
           { title: 'Suspended Artist', path: paths.dashboard.artist.suspendList },

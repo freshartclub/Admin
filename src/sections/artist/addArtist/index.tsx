@@ -140,7 +140,11 @@ function AddArtistIndex() {
         }
 
         setArtistFormData({ ...data.data, ...obj });
-        setTabIndex(data.data.pageCount);
+        if (data.data.pageCount === 7) {
+          setTabIndex(0);
+        } else {
+          setTabIndex(data.data.pageCount);
+        }
       });
 
     // if(data.data.pageCount > 3){

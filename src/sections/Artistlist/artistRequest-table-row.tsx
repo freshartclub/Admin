@@ -1,4 +1,3 @@
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import Box from '@mui/material/Box';
@@ -13,6 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import moment from 'moment';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -22,6 +22,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -41,12 +42,11 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
   const popover = usePopover();
 
   const quickEdit = useBoolean();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
- const handelEdit = (id)=>{
-    navigate(paths.dashboard.artist.addArtist + "?=" + id );
- }
-  
+  const handelEdit = (id) => {
+    navigate(paths.dashboard.artist.addArtist + '?=' + id);
+  };
 
   return (
     <>
@@ -59,9 +59,12 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           <Stack spacing={1} direction="row" alignItems="center">
             {/* <Avatar alt={row.uploadImage} src={row.profile.mainImage} /> */}
 
-            <Stack className=' cursor-pointer' sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Stack
+              className=" cursor-pointer"
+              sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
+            >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.fullName}
+                {row.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row.email}
@@ -70,9 +73,11 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phone}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.phone}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row.address.city}
+        </TableCell>
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
 
@@ -89,33 +94,30 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
             {row.isActive}
           </Label>
         </TableCell> */}
-            {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
-            <div className={`w-fit h-fit flex items-center mt-5 ${row.role ? "bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1" : "bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1"}`}>
-            {row.role ? "Active" : "Inactive"}
-            </div>
+        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
+        <div className={`w-fit h-fit flex items-center mt-5 `}>{row.address.country}</div>
 
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
 
-         {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {moment(row.createdAt).format('YYYY-MM-DD')}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          <RouterLink href={`${paths.dashboard.artist.createArtist}?id=${row._id}`}>
+            <span className="bg-black text-white py-2 px-2 rounded-md flex items-center gap-2">
+              {' '}
+              <Iconify icon="mingcute:add-line" /> Create Artist
+            </span>
+          </RouterLink>
+        </TableCell>
 
-         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.createdAt}</TableCell>
-
-
-        <TableCell>
+        {/* <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           </Stack>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
 
       {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
@@ -138,9 +140,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
             Remove Request
           </MenuItem>
 
-          <MenuItem
-            onClick={() => handelEdit(row._id)}
-          >
+          <MenuItem onClick={() => handelEdit(row._id)}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
