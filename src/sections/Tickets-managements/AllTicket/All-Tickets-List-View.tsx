@@ -85,7 +85,7 @@ export function TicketsListView() {
     filters: filters.state,
     dateError,
   });
-  console.log("sbdgvf",dataFiltered)
+  
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 

@@ -16,6 +16,8 @@ import { formHelperTextClasses } from '@mui/material/FormHelperText';
 import { Iconify } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { Field } from 'src/components/hook-form';
+import { Button } from '@mui/material';
+import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 
@@ -68,40 +70,12 @@ export function TicketTableToolbar({ filters, onResetPage, dateError }: Props) {
         direction={{ xs: 'column', md: 'row' }}
         sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
-        {/* <DatePicker
-          label="Start date"
-          value={filters.state.startDate}
-          onChange={handleFilterStartDate}
-          slotProps={{ textField: { fullWidth: true } }}
-          sx={{ maxWidth: { md: 200 } }}
-        />
-
-        <DatePicker
-          label="End date"
-          value={filters.state.endDate}
-          onChange={handleFilterEndDate}
-          slotProps={{
-            textField: {
-              fullWidth: true,
-              error: dateError,
-              helperText: dateError ? 'End date must be later than start date' : null,
-            },
-          }}
-          sx={{
-            maxWidth: { md: 200 },
-            [`& .${formHelperTextClasses.root}`]: {
-              position: { md: 'absolute' },
-              bottom: { md: -40 },
-            },
-          }}
-        /> */}
-
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.state.name}
             onChange={handleFilterName}
-            placeholder="Search customer or order number..."
+            placeholder="Search for Tickets..."
             sx={{ maxWidth: { md: 300 } }}
             InputProps={{
               startAdornment: (
@@ -112,14 +86,31 @@ export function TicketTableToolbar({ filters, onResetPage, dateError }: Props) {
             }}
           />
         </Stack>
-         <Field.SingelSelect 
-          name='status'
-          label="Select Sttus"
-          options={STATUS_OPTIONS}
-          />
+           
+           <Button
+              component={RouterLink}
+              // href={paths.dashboard.invoice.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              sx={{ maxWidth: { md: 180 } }}
+            >
+              New Teckets
+            </Button>
+            <Button
+              component={RouterLink}
+              // href={paths.dashboard.invoice.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              sx={{ maxWidth: { md: 1800 } }}
+            >
+              New Incident
+            </Button>
       </Stack>
-
       
     </>
   );
 }
+
+
+
+
