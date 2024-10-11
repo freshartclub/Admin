@@ -499,6 +499,30 @@ export const _tags = [
   `Photography`,
   `Music`,
 ];
+export const _userTages = [
+  `Tage 01`,
+  `Tage 02`,
+  `Tage 03`,
+  `Tage 04`,
+  `Tage 05`,
+  `Tage 06`,
+  `Tage 07`,
+]
+export const _restriction = [
+  `For User`,
+  `Artworks`,
+  `Artist`,
+  `Collections`,
+]
+export const _catalog = [
+  `Catalog 1`,
+  `Catalog 2`,
+  `Catalog 3`,
+  `Catalog 4`,
+  `Catalog 5`,
+  `Catalog 6`,
+  `Catalog 7`,
+]
 
 // ----------------------------------------------------------------------
 

@@ -1,10 +1,4 @@
 
-
-// export function ArtworkAdd() {
-//     return(
-//         <></>
-//     )
-// }
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -233,12 +227,13 @@ export function ArtworkAdd({ currentProduct }) {
     setIncludeTaxes(event.target.checked);
   }, []);
 
-  const handleRemoveFile = useCallback(() => {
-    setValue('MainPhoto', null);
-  }, [setValue]);
-
   const handleRemoveFileone = useCallback(() => {
     setValue('BackPhoto', null);
+  }, [setValue]);
+   
+
+  const handleRemoveFile = useCallback(() => {
+    setValue('MainPhoto', null);
   }, [setValue]);
 
   const handleRemoveFiletwo = useCallback(() => {

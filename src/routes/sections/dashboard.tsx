@@ -40,6 +40,30 @@ const InvoiceNew  = lazy(() => import('src/pages/dashboard/invoice/new'));
 const OrderList  = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
 const OrderPurcheseList  = lazy(() => import('src/pages/dashboard/order/purcheseList'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
+const AddCircle = lazy(() => import('src/pages/dashboard/Circle/new'));
+const CircleList = lazy(() => import('src/pages/dashboard/Circle/list'));
+const CircleDetails = lazy(() => import('src/pages/dashboard/Circle/details'));
+const CircleEdit = lazy(() => import('src/pages/dashboard/Circle/edit'));
+const CreateContent = lazy(() => import('src/pages/dashboard/Content-Management/CreateContent'));
+const ContentList = lazy(() => import('src/pages/dashboard/Content-Management/ContentList'));
+const Mail = lazy(() => import('src/pages/dashboard/Mail'));
+const AddFaq = lazy(() => import('src/pages/dashboard/FAQ/AddFaq'));
+const FaqList = lazy(() => import('src/pages/dashboard/FAQ/FaqList'));
+const AddKB = lazy(() => import('src/pages/dashboard/KBdatabase/AddKb'));
+const KBList = lazy(() => import('src/pages/dashboard/KBdatabase/KbList'));
+const AddCoupon = lazy(() => import('src/pages/dashboard/Coupon-and-Promotion/AddCoupon'));
+const ListOfCoupon = lazy(() => import('src/pages/dashboard/Coupon-and-Promotion/CouponList'));
+const AddPlan = lazy(() => import('src/pages/dashboard/Subscription-plan/AddSubscription'));
+const PlanList = lazy(() => import('src/pages/dashboard/Subscription-plan/PlanList'));
+const Payment = lazy(() => import('src/pages/dashboard/Subscription-plan/Payment'));
+const AddMassage = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddMassage'));
+const AddNotification = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddNotification'));
+const ListOfMsgNfc = lazy(() => import('src/pages/dashboard/Massage-and-Notification/ListMassageAndNotification'));
+
+const TicketList = lazy(() => import('src/pages/dashboard/Ticket-Management/TicketList'));
+const SingelList = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
+const AddIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AddIncident'));
+
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -150,30 +174,64 @@ export const dashboardRoutes = [
           { path: 'account', element: <UserAccount/> },
         ],
       },
+      // {
+      //   path: 'circle',
+      //   children: [
+      //     { element: <CircleList />, index: true },
+      //     { path: 'addcircle', element: <AddCircle/> },
+      //     { path: 'circlelist', element: <CircleList/> },
+      //     { path: ':id', element: <CircleDetails/> },
+      //     { path: ':id/circleedit', element: <CircleEdit/> },
+      //   ],
+      // },
       {
         path: 'circle',
         children: [
-          { path: 'addcircle', element: <div>Add circle page</div> },
-          { path: 'circlelist', element: <div> List of Circle page</div> },
+          { element: <CircleList />, index: true },
+          { path: 'list', element: <CircleList /> },
+          { path: ':title', element: <CircleDetails /> },
+          { path: ':title/edit', element: <CircleEdit /> },
+          { path: 'new', element: <AddCircle/> },
         ],
       },
 
       { path: 'logistics', element: <div>This is Logistics page</div> },
 
-      { path: 'couponandpromotions', element: <div>coupon and promotions</div> },
+      { path: 'couponandpromotions',
+       children:[
+        {path: 'add', element: <AddCoupon/>},
+        {path: 'list', element: <ListOfCoupon/>}
+       ]
+      },
 
-      { path: 'subscriptionplan', element: <div>subscription plan page</div> },
+      { path: 'subscriptionplan',
+       children: [
+        {path: 'add',element: <AddPlan/>},
+        {path: 'list',element: <PlanList/>},
+        {path: 'pay', element: <Payment/>}
+       ]
+      },
 
-      { path: 'faq', element: <div>FAQ page</div> },
+      { path: 'faq',
+       children: [
+        {path: 'add', element: <AddFaq/>},
+        {path: 'list', element: <FaqList/>}
+       ]
+      },
 
-      { path: 'kbdatabase', element: <div> KB database page page</div> },
+      { path: 'kbdatabase',
+       children:[
+        {path: 'add',element: <AddKB/>},
+        {path: 'list',element: <KBList/>}
+       ]
+      },
 
       {
         path: 'contentmanagement',
         children: [
-          { path: 'list', element: <div>contentmanagement List page</div> },
+          { path: 'list', element: <ContentList/> },
           { path: 'details', element: <div>contentmanagement Details page</div> },
-          { path: 'create', element: <div>contentmanagement create page</div> },
+          { path: 'create', element: <CreateContent/> },
           { path: 'edit', element: <div>contentmanagement edit page</div> },
         ],
       },
@@ -181,9 +239,23 @@ export const dashboardRoutes = [
 
       { path: 'insurance', element: <div> insurance page</div> },
 
-      { path: 'mail', element: <div> mail page</div> },
+      { path: 'mail', element: <Mail/> },
 
-      { path: 'helpandsupport', element: <div> helpandsupport page</div> },
+      { path: 'tickets',
+       children: [
+          { path: 'allList', element: <TicketList/> },
+          { path: 'singleList', element: <SingelList/> },
+          { path: 'addIncident', element: <AddIncident/> },
+       ]
+      },
+      {
+        path: 'notificationAndMessage',
+        children: [
+          { path: 'addMessage', element: <AddMassage/> },
+          { path: 'addNotification', element: <AddNotification/> },
+          { path: 'list', element: <ListOfMsgNfc/> },
+        ],
+      },
     ],
   },
 ];

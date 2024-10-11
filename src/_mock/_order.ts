@@ -8,6 +8,10 @@ export const ORDER_STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
   { value: 'refunded', label: 'Refunded' },
 ];
+export const TICKET_OPTIONS =[
+  { value: 'new', label: 'New' },
+  { value: 'onGoing', label: 'On Going' },
+]
 
 const ITEMS = [...Array(3)].map((_, index) => ({
   id: _mock.id(index),
