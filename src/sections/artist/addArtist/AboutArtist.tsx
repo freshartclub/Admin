@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import {
   PRODUCT_STYLE_OPTIONS,
@@ -78,7 +78,8 @@ export function AboutArtist({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const router = useRouter();
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
@@ -95,8 +96,6 @@ export function AboutArtist({
 
   const defaultValues = useMemo(
     () => ({
-        
-
       About: artistFormData?.about || '',
       catagory: artistFormData?.artistCatagory || '',
       // ArtworkModule: artistFormData?.artworkModule || '',
@@ -129,8 +128,6 @@ export function AboutArtist({
   const handleRemove = (index) => {
     remove(index);
   };
- 
- 
 
   const addArtistCategory = () => {
     append({
@@ -143,9 +140,7 @@ export function AboutArtist({
   };
 
   const onSubmit = handleSubmit(async (data) => {
-
     console.log(data);
-   
 
     const newData = {
       about: data.About,
@@ -172,7 +167,7 @@ export function AboutArtist({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">About</Typography>
-          <Field.Editor name="About" sx={{ maxHeight: 480 }} />
+          <Field.Editor disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
         </Stack>
       </Stack>
     </Card>
@@ -189,6 +184,7 @@ export function AboutArtist({
         <Stack>
           <div className="flex justify-end">
             <Button
+              disabled={isReadOnly}
               size="small"
               color="primary"
               startIcon={<Iconify icon="mingcute:add-line" />}
@@ -211,6 +207,7 @@ export function AboutArtist({
                 gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
               >
                 <Field.SingelSelect
+                  disabled={isReadOnly}
                   checkbox
                   name={`catagory[${index}].category`}
                   label="Catagory 1"
@@ -224,23 +221,27 @@ export function AboutArtist({
                 >
                   <Field.SingelSelect
                     checkbox
+                    disabled={isReadOnly}
                     name={`catagory[${index}].style`}
                     label="Style"
                     options={PRODUCT_STYLE_OPTIONS}
                   />
                   <Field.SingelSelect
+                    disabled={isReadOnly}
                     checkbox
                     name={`catagory[${index}].media`}
                     label="Media"
                     options={PRODUCT_MEDIA_OPTIONS}
                   />
                   <Field.SingelSelect
+                    disabled={isReadOnly}
                     checkbox
                     name={`catagory[${index}].technic`}
                     label="Technic"
                     options={PRODUCT_TECHNIC_OPTIONS}
                   />
                   <Field.SingelSelect
+                    disabled={isReadOnly}
                     checkbox
                     name={`catagory[${index}].support`}
                     label="Support"
@@ -252,6 +253,7 @@ export function AboutArtist({
               {index !== 0 ? (
                 <div className="flex justify-end mb-2">
                   <Button
+                    disabled={isReadOnly}
                     size="small"
                     color="error"
                     className="flex justify-end"
@@ -332,6 +334,14 @@ export function AboutArtist({
   //   </Card>
   // );
 
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
+  };
+
   const renderActions = (
     <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
       <FormControlLabel
@@ -361,9 +371,18 @@ export function AboutArtist({
             {/* <div className="col-span-1">{comman}</div> */}
           </div>
           <div className="flex justify-end">
-            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Loading...' : 'Save & Next'}
-            </button>
+            {!isReadOnly ? (
+              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+                {isPending ? 'Loading...' : 'Save & Next'}
+              </button>
+            ) : (
+              <span
+                onClick={viewNext}
+                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+              >
+                View Next
+              </span>
+            )}
           </div>
         </Stack>
       </form>

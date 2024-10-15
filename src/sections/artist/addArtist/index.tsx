@@ -163,7 +163,7 @@ function AddArtistIndex() {
 
   return (
     <Box sx={{ p: 1 }}>
-      <CustomTabs variant="standard" sx={{ bgcolor: 'white' }}>
+      <CustomTabs className="custom12" variant="standard" sx={{ bgcolor: 'white' }}>
         {tabState.map((tab, i) => (
           <Tab
             disabled={i > 0 && tabState[i - 1].isSaved !== true}

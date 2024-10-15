@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
@@ -14,24 +13,16 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
-import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-import axiosInstance from 'src/utils/axios';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
-import { Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { DialogContentText } from '@mui/material';
 import { useState } from 'react';
-import { toast } from 'src/components/snackbar';
 import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
-import { Field } from 'src/components/hook-form';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useChnagePassword } from './http/useChnagePassword';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
@@ -48,16 +39,14 @@ type Props = {
 
 export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-  const password = useBoolean();
+  const popover = usePopover();
+  // const password = useBoolean();
+  // const quickEdit = useBoolean();
   const [showPop, setShowPop] = useState(false);
   const [showPasswordPop, setShowPasswordPop] = useState(false);
 
-  // const [newPassword, setNewPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
-  const popover = usePopover();
-
-  const quickEdit = useBoolean();
   const {
     register,
     handleSubmit,
@@ -65,19 +54,13 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
     watch,
   } = useForm();
 
-  const { mutate, isPending } = useSuspendArtistMutation(row._id);
-  const { mutate: mutatePassword, isPending: isPendingPassword } = useChnagePassword(setShowPasswordPop);
-
-  const navigate = useNavigate();
-
   const newPassword = watch('newPassword');
-
-  const handelEdit = (id) => {
-    navigate(paths.dashboard.artist.addArtist + '?id=' + id);
-  };
+  const { mutate, isPending } = useSuspendArtistMutation();
+  const { mutate: mutatePassword, isPending: isPendingPassword } =
+    useChnagePassword(setShowPasswordPop);
 
   const handleSuspend = async (id) => {
-    mutate();
+    mutate(id);
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -96,29 +79,20 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
     {
       icon: 'solar:pen-bold',
       name: 'Edit Details',
-      onClick: () => {
-        handelEdit(row._id);
-        popover.close();
-      },
-      handelEdit: (id) => {
+      handelEdit: (id: any) => {
         navigate(paths.dashboard.artist.addArtist + '?id=' + id);
       },
     },
     {
       icon: 'hugeicons:view',
       name: 'View',
-      onClick: () => {
-        confirm.setTrue();
-        popover.close();
+      handelEdit: (id: any) => {
+        navigate(paths.dashboard.artist.addArtist + '?id=' + id + '&view=true');
       },
     },
     {
       icon: 'icon-park-outline:change',
       name: 'Change Password',
-      onClick: () => {
-        quickEdit.setTrue();
-        popover.close();
-      },
       handelEdit: () => {
         setShowPasswordPop(true);
       },
@@ -133,10 +107,6 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
     {
       icon: 'charm:circle-tick',
       name: 'Activate Artist',
-      onClick: () => {
-        quickEdit.setTrue();
-        popover.close();
-      },
     },
   ];
 
@@ -228,31 +198,29 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.artistName}
+                {row?.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
+                {row?.email}
               </Box>
             </Stack>
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userId}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.userId}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.phone}
+          {row?.phone}
         </TableCell>
 
         <div
           className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
         >
-          {row.isActivated ? 'Active' : 'Inactive'}
+          {row?.isActivated ? 'Active' : 'Inactive'}
         </div>
 
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
-
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.createdAt}
+          {row?.createdAt}
         </TableCell>
 
         <TableCell>
@@ -273,18 +241,7 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {/* <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-           Suspend
-          </MenuItem> */}
-
-          {actionButtons.map((itmes, index) => (
+          {actionButtons.map((itmes: any, index) => (
             <MenuItem
               key={index}
               onClick={() => {

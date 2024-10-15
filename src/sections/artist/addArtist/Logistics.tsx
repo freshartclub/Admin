@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
@@ -46,9 +46,8 @@ export function Logistic({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const router = useRouter();
-
-  const [includeTaxes, setIncludeTaxes] = useState(false);
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
 
   const defaultValues = useMemo(
     () => ({
@@ -90,14 +89,20 @@ export function Logistic({
     formState: { isSubmitting },
   } = methods;
 
-  console.log(artistFormData)
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data)
     await trigger(undefined, { shouldFocus: true });
     data.count = 6;
 
     mutate({ body: data });
   });
+
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
+  };
 
   const renderDetails = (
     <Card>
@@ -106,9 +111,9 @@ export function Logistic({
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="logName" label="Log name" />
+        <Field.Text disabled={isReadOnly} name="logName" label="Log name" />
 
-        <Field.Text name="logAddress" label="Logistic Address" />
+        <Field.Text disabled={isReadOnly} name="logAddress" label="Logistic Address" />
 
         <Box
           columnGap={2}
@@ -116,9 +121,9 @@ export function Logistic({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="logZipCode" label="Log Zip/code" />
+          <Field.Text disabled={isReadOnly} name="logZipCode" label="Log Zip/code" />
 
-          <Field.Text name="logCity" label=" Log City" />
+          <Field.Text disabled={isReadOnly} name="logCity" label=" Log City" />
         </Box>
 
         <Box
@@ -127,21 +132,28 @@ export function Logistic({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="logProvince" label="Log Province/State/Region" />
+          <Field.Text disabled={isReadOnly} name="logProvince" label="Log Province/State/Region" />
 
           <Field.CountrySelect
+            disabled={isReadOnly}
             fullWidth
             name="logCountry"
             label="Log Country"
             placeholder="Choose a country"
           />
 
-          <Field.Text name="logEmail" label="Email address" />
+          <Field.Text disabled={isReadOnly} name="logEmail" label="Email address" />
 
-          <Field.Phone name="logPhone" label="Log Phone number" />
+          <Field.Phone disabled={isReadOnly} name="logPhone" label="Log Phone number" />
         </Box>
 
-        <Field.Text name="logNotes" label="Log Additional Notes" multiline rows={4} />
+        <Field.Text
+          disabled={isReadOnly}
+          name="logNotes"
+          label="Log Additional Notes"
+          multiline
+          rows={4}
+        />
       </Stack>
     </Card>
   );
@@ -153,9 +165,18 @@ export function Logistic({
 
         {/* {renderActions} */}
         <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-          {isPending ? 'Loading...' : 'Save & Next'}
-          </button>
+          {!isReadOnly ? (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Loading...' : 'Save & Next'}
+            </button>
+          ) : (
+            <span
+              onClick={viewNext}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              View Next
+            </span>
+          )}
         </div>
       </Stack>
     </Form>

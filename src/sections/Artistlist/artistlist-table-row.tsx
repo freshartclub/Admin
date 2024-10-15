@@ -22,6 +22,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { RouterLink } from 'src/routes/components';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -107,20 +108,9 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
         </TableCell>
 
         <TableCell>
-          <Stack direction="row" alignItems="center">
-            {/* <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip> */}
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} >
-              <Iconify icon="mdi:eye-outline" />
-            </IconButton>
-          </Stack>
+          <RouterLink href={`${paths.dashboard.artist.addArtist}?id=${row._id}&view=true`}>
+            <Iconify icon="mdi:eye-outline" />
+          </RouterLink>
         </TableCell>
       </TableRow>
 

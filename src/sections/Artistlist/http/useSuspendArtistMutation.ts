@@ -9,9 +9,9 @@ import { paths } from 'src/routes/paths';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 // User id mogodb
-export const useSuspendArtistMutation = (id) => {
+export const useSuspendArtistMutation = () => {
   const queryClient = useQueryClient();
-  async function CreateArtist() {
+  async function CreateArtist(id) {
     const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
 
     return response;
@@ -21,7 +21,7 @@ export const useSuspendArtistMutation = (id) => {
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
         queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase],
-        refetchType:"all"
+        refetchType: 'all',
       });
 
       toast.success(res.data.message);

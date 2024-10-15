@@ -13,7 +13,7 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { getYearDropDown } from 'src/utils/helper';
 
@@ -43,7 +43,9 @@ export function Highlights({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const router = useRouter();
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
+
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
     setTabIndex(tabIndex + 1);
@@ -105,7 +107,7 @@ export function Highlights({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Highlights</Typography>
-          <Field.Editor name="highlights" sx={{ maxHeight: 480 }} />
+          <Field.Editor disabled={isReadOnly} name="highlights" sx={{ maxHeight: 480 }} />
         </Stack>
       </Stack>
     </Card>
@@ -129,20 +131,30 @@ export function Highlights({
                 gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(5, 1fr)' }}
               >
                 <Field.SingelSelect
+                  disabled={isReadOnly}
                   checkbox
                   name={`cvData[${index}].year`}
                   label="Year"
                   options={getYearDropDown(101)}
                 />
-                <Field.Text name={`cvData[${index}].Type`} label="Type" />
-                <Field.Text name={`cvData[${index}].Description`} label="Description" />
-                <Field.Text name={`cvData[${index}].Location`} label="Location" />
-                <Field.Text name={`cvData[${index}].Scope`} label="Scope" />
+                <Field.Text disabled={isReadOnly} name={`cvData[${index}].Type`} label="Type" />
+                <Field.Text
+                  disabled={isReadOnly}
+                  name={`cvData[${index}].Description`}
+                  label="Description"
+                />
+                <Field.Text
+                  disabled={isReadOnly}
+                  name={`cvData[${index}].Location`}
+                  label="Location"
+                />
+                <Field.Text disabled={isReadOnly} name={`cvData[${index}].Scope`} label="Scope" />
               </Box>
 
               <Button
                 size="small"
                 color="error"
+                disabled={isReadOnly}
                 className="flex justify-end"
                 startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
                 onClick={() => handleRemove(index)}
@@ -154,6 +166,7 @@ export function Highlights({
           <Button
             size="small"
             color="primary"
+            disabled={isReadOnly}
             startIcon={<Iconify icon="mingcute:add-line" />}
             onClick={haddCv}
           >
@@ -164,6 +177,14 @@ export function Highlights({
     </Card>
   );
 
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
+  };
+
   return (
     <FormProvider {...formProps}>
       <form onSubmit={onSubmit}>
@@ -171,9 +192,18 @@ export function Highlights({
           {renderDetails}
           {AddCv}
           <div className="flex justify-end">
-            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Loading...' : 'Save & Next'}
-            </button>
+            {!isReadOnly ? (
+              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+                {isPending ? 'Loading...' : 'Save & Next'}
+              </button>
+            ) : (
+              <span
+                onClick={viewNext}
+                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+              >
+                View Next
+              </span>
+            )}
           </div>
         </Stack>
       </form>

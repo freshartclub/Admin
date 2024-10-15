@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { extractIBAN, validateIBAN } from 'ibantools';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -17,9 +16,7 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
-import { useRouter } from 'src/routes/hooks';
-
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 import {
   PRODUCT_ARTISTPLUS_OPTIONS,
   PRODUCT_CUSTOMORDER_OPTIONS,
@@ -27,7 +24,6 @@ import {
   PRODUCT_MINNUMBROFARTWORK_OPTIONS,
   PRODUCT_MAXNUMBROFARTWORK_OPTIONS,
 } from 'src/_mock';
-
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
@@ -72,14 +68,13 @@ export function Invoice({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const router = useRouter();
-
   const [ibanNumber, setIbanNumber] = useState('');
-
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
+
   const handleSuccess = (data) => {
-    
     setArtistFormData({ ...artistFormData, ...data });
     setTabIndex(tabIndex + 1);
     setTabState((prev) => {
@@ -127,8 +122,6 @@ export function Invoice({
     formState: { isSubmitting },
   } = formProps;
 
-
-
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
     name: 'PublishingCatalog',
@@ -138,10 +131,8 @@ export function Invoice({
     remove(index);
   };
   const addCatelog = () => {
-    append({PublishingCatalog: '',});
+    append({ PublishingCatalog: '' });
   };
-  
-  //   if (window.location.hostname === 'localhost' && window.location.port === '5173') {
   //     setValue('taxNumber', artistFormData?.taxNumber || '12345');
   //     setValue('taxLegalName', artistFormData?.taxLegalName || 'John Doe');
   //     setValue('taxAddress', artistFormData?.taxAddress || '31,c21,vijay nager');
@@ -174,7 +165,6 @@ export function Invoice({
   // }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-
     console.log(data);
     await trigger(undefined, { shouldFocus: true });
 
@@ -194,12 +184,20 @@ export function Invoice({
     } else {
       ibanDetail = extractIBAN(val);
       formProps.clearErrors('taxBankIBAN');
-      formProps.setValue("taxBankIBAN", val)
-       
+      formProps.setValue('taxBankIBAN', val);
+
       formProps.setValue('taxBankName', ibanDetail.bankIdentifier);
     }
 
     setIbanNumber(val);
+  };
+
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
   };
 
   const renderDetails = (
@@ -215,12 +213,12 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="taxNumber" label=" taxNumber/NIF" />
+          <Field.Text disabled={isReadOnly} name="taxNumber" label=" taxNumber/NIF" />
 
-          <Field.Text name="taxLegalName" label="taxLegalName" />
+          <Field.Text disabled={isReadOnly} name="taxLegalName" label="taxLegalName" />
         </Box>
 
-        <Field.Text name="taxAddress" label="Tax Address" />
+        <Field.Text disabled={isReadOnly} name="taxAddress" label="Tax Address" />
 
         <Box
           columnGap={2}
@@ -228,9 +226,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="taxZipCode" label="Tax Zip/code" />
+          <Field.Text disabled={isReadOnly} name="taxZipCode" label="Tax Zip/code" />
 
-          <Field.Text name="taxCity" label="Tax City" />
+          <Field.Text disabled={isReadOnly} name="taxCity" label="Tax City" />
         </Box>
         <Box
           columnGap={2}
@@ -238,9 +236,10 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="taxProvince" label="taxProvince" />
+          <Field.Text disabled={isReadOnly} name="taxProvince" label="taxProvince" />
 
           <Field.CountrySelect
+            disabled={isReadOnly}
             fullWidth
             name="taxCountry"
             label="Tax Country"
@@ -253,9 +252,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="taxEmail" label="Tax Email address" />
+          <Field.Text disabled={isReadOnly} name="taxEmail" label="Tax Email address" />
 
-          <Field.Phone name="taxPhone" label="Tax Phone number" />
+          <Field.Phone disabled={isReadOnly} name="taxPhone" label="Tax Phone number" />
         </Box>
 
         <Box
@@ -265,13 +264,14 @@ export function Invoice({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.Text
+            disabled={isReadOnly}
             onChange={hanldeIbanChange}
             value={ibanNumber}
             name="taxBankIBAN"
             label="Bank IBAN"
           />
 
-          <Field.Text name="taxBankName" label="taxBankName" />
+          <Field.Text disabled={isReadOnly} name="taxBankName" label="taxBankName" />
         </Box>
 
         {/* end my section */}
@@ -284,6 +284,7 @@ export function Invoice({
       <CardHeader title="Commercialization" sx={{ mb: 1 }} />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
+          disabled={isReadOnly}
           checkbox
           name="CustomOrder"
           label="Are you accept custom Order?"
@@ -299,6 +300,7 @@ export function Invoice({
         <Stack>
           <div className="flex justify-end">
             <Button
+              disabled={isReadOnly}
               size="small"
               color="primary"
               startIcon={<Iconify icon="mingcute:add-line" />}
@@ -321,6 +323,7 @@ export function Invoice({
                 gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
               >
                 <Field.SingelSelect
+                  disabled={isReadOnly}
                   checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
                   label="publishing catalogue"
@@ -329,6 +332,7 @@ export function Invoice({
               </Box>
 
               <Button
+                disabled={isReadOnly}
                 size="small"
                 color="error"
                 className="flex justify-end"
@@ -341,21 +345,24 @@ export function Invoice({
           ))}
         </Stack>
         {/* try end */}
-        <Field.Text name="ArtistFees" label=" Artist Fees" />
+        <Field.Text disabled={isReadOnly} name="ArtistFees" label=" Artist Fees" />
 
         <Field.SingelSelect
+          disabled={isReadOnly}
           checkbox
           name="ArtistPlus"
           label="Artist +++"
           options={PRODUCT_ARTISTPLUS_OPTIONS}
         />
         <Field.SingelSelect
+          disabled={isReadOnly}
           checkbox
           name="MinNumberOfArtwork"
           label="Min. Number of artworks"
           options={PRODUCT_MINNUMBROFARTWORK_OPTIONS}
         />
         <Field.SingelSelect
+          disabled={isReadOnly}
           checkbox
           name="MaxNumberOfArtwork"
           label="Max. Number of artworks"
@@ -387,9 +394,18 @@ export function Invoice({
           {Commercialization}
           {/* {renderActions} */}
           <div className="flex justify-end">
-            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Loading...' : 'Save & Next'}
-            </button>
+            {!isReadOnly ? (
+              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+                {isPending ? 'Loading...' : 'Save & Next'}
+              </button>
+            ) : (
+              <span
+                onClick={viewNext}
+                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+              >
+                View Next
+              </span>
+            )}
           </div>
         </Stack>
       </form>

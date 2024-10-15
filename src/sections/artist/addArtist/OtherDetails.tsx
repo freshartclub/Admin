@@ -12,21 +12,12 @@ import Stack from '@mui/material/Stack';
 import { Dialog, Switch, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-
-import { useRouter } from 'src/routes/hooks';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-
+import { useSearchParams } from 'src/routes/hooks';
+import { useNavigate } from 'react-router-dom';
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
-import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
-
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-import { dialog } from 'src/theme/core/components/dialog';
-import { DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogContentText } from '@mui/material';
-import { DialogActions } from '@mui/material';
-import { Button } from '@mui/material';
+import { DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMutation';
 
 // ----------------------------------------------------------------------
@@ -66,26 +57,26 @@ export function OtherDetails({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const router = useRouter();
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
 
-  const [includeTaxes, setIncludeTaxes] = useState(false);
   const [showPop, setShowPop] = useState(false);
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
-    // setShowPop(true);
   };
 
   const handleActivateSuccess = (data) => {
     mutate(data);
   };
 
-  const handleOnActivataion = ()=>{
+  const handleOnActivataion = () => {
     setShowPop(true);
-  }
+  };
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
-  const { isPending: isActivePending, mutate: activeMutate } = useActivateArtistMutation(handleActivateSuccess);
+  const { isPending: isActivePending, mutate: activeMutate } =
+    useActivateArtistMutation(handleActivateSuccess);
   const [isOn, setIsOn] = useState(false);
 
   const defaultValues = useMemo(
@@ -133,58 +124,66 @@ export function OtherDetails({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     data.count = 7;
-    //
     data.isContainsImage = true;
     if (isOn) {
       data.isManagerDetails = true;
     }
 
     mutate({ body: data });
-      
   });
-
-
 
   const blob = new Blob([methods.getValues('uploadDocs')], { type: 'application/pdf' });
   const blobURL = URL.createObjectURL(blob);
 
-  const pdfViewer = (
-    <PDFViewer width="100%" height="500px" file={blobURL}>
-      <Page pageNumber={1} />
-    </PDFViewer>
-  );
+  const viewNext = () => {
+    setTabIndex(0);
+    setTabState((prev) => {
+      prev[0].isSaved = true;
+      return prev;
+    });
+  };
 
   const document = (
     <Card>
       <CardHeader title="Document" sx={{ mb: 1 }} />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="documentName" label="Documents name" />
+        <Field.Text disabled={isReadOnly} name="documentName" label="Documents name" />
 
-        <div>
-          <Typography variant="Document">Upload Document</Typography>
+        <Typography variant="Document">Upload Document</Typography>
 
-          {methods.getValues('uploadDocs') ? (
-            <div className="flex ">
-              {methods.getValues('uploadDocs') && pdfViewer}
-
-              <button onClick={() => methods.setValue('uploadDocs', '')}>Click to Cancel</button>
-            </div>
-          ) : (
-            <Field.UploadDocument
-              multiple={false}
-              helperText={'Plese upload pdf'}
-              name="uploadDocs"
-              maxSize={3145728}
-              onDelete={handleRemoveDocument}
-            />
-          )}
-        </div>
+        {methods.getValues('uploadDocs') ? (
+          <div className="flex flex-col gap-2">
+            <iframe src={blobURL} width="100%" height="500px" title="PDF Document" />
+            {isReadOnly ? (
+              <span className="text-white opacity-1 bg-black rounded-md px-3 py-2 text-center">
+                Click to Remove
+              </span>
+            ) : (
+              <span
+                onClick={() => methods.setValue('uploadDocs', '')}
+                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer text-center"
+              >
+                Click to Remove
+              </span>
+            )}
+          </div>
+        ) : (
+          <Field.UploadDocument
+            disabled={isReadOnly}
+            accept={'pdf/*'}
+            multiple={false}
+            helperText={'Plese upload pdf'}
+            name="uploadDocs"
+            maxSize={3145728}
+            onDelete={handleRemoveDocument}
+          />
+        )}
       </Stack>
     </Card>
   );
@@ -192,7 +191,7 @@ export function OtherDetails({
     <Card sx={{ mb: 4 }}>
       <div className="flex justify-between items-center">
         <CardHeader title="Manager Details (If any)" sx={{ mb: 3 }} />
-        <Switch onClick={() => setIsOn((prev) => !prev)} />
+        <Switch disabled={isReadOnly} onClick={() => setIsOn((prev) => !prev)} />
       </div>
 
       <Divider />
@@ -205,11 +204,19 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
           >
-            <Field.Text name="managerArtistName" label="Artist name" />
+            <Field.Text disabled={isReadOnly} name="managerArtistName" label="Artist name" />
 
-            <Field.Text name="managerArtistSurnameOther1" label="Artist Surname 1" />
+            <Field.Text
+              disabled={isReadOnly}
+              name="managerArtistSurnameOther1"
+              label="Artist Surname 1"
+            />
 
-            <Field.Text name="managerArtistSurname2" label="Artist Surname 2" />
+            <Field.Text
+              disabled={isReadOnly}
+              name="managerArtistSurname2"
+              label="Artist Surname 2"
+            />
           </Box>
           <Box
             columnGap={2}
@@ -217,9 +224,13 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
-            <Field.Text name="managerArtistNickname" label="Artwork Nickname" />
+            <Field.Text
+              disabled={isReadOnly}
+              name="managerArtistNickname"
+              label="Artwork Nickname"
+            />
 
-            <Field.Text name="managerArtistContactTo" label="Contact To" />
+            <Field.Text disabled={isReadOnly} name="managerArtistContactTo" label="Contact To" />
           </Box>
           <Box
             columnGap={2}
@@ -227,12 +238,12 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
-            <Field.Phone name="managerArtistPhone" label="Phone number" />
+            <Field.Phone disabled={isReadOnly} name="managerArtistPhone" label="Phone number" />
 
-            <Field.Text name="managerArtistEmail" label="Email address" />
+            <Field.Text disabled={isReadOnly} name="managerArtistEmail" label="Email address" />
           </Box>
 
-          <Field.Text name="address" label="Address" />
+          <Field.Text disabled={isReadOnly} name="address" label="Address" />
 
           <Box
             columnGap={2}
@@ -240,11 +251,12 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
           >
-            <Field.Text name="managerZipCode" label="Zip/code" />
-            <Field.Text name="managerCity" label="City" />
-            <Field.Text name="managerState" label="Province/State/Region" />
+            <Field.Text disabled={isReadOnly} name="managerZipCode" label="Zip/code" />
+            <Field.Text disabled={isReadOnly} name="managerCity" label="City" />
+            <Field.Text disabled={isReadOnly} name="managerState" label="Province/State/Region" />
             {/* <Field.Text name="managerCountry" label="Country" /> */}
             <Field.CountrySelect
+              disabled={isReadOnly}
               fullWidth
               name="managerCountry"
               label="Country"
@@ -259,6 +271,7 @@ export function OtherDetails({
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
             <Field.MultiSelect
+              disabled={isReadOnly}
               helperText=""
               checkbox
               name="managerArtistLanguage"
@@ -268,6 +281,7 @@ export function OtherDetails({
             />
 
             <Field.SingelSelect
+              disabled={isReadOnly}
               checkbox
               name="managerArtistGender"
               label="Gender"
@@ -280,9 +294,9 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
           >
-            <Field.Text name="managerExtraInfo1" label="Extra Info 01" />
-            <Field.Text name="managerExtraInfo2" label="Extra Info 02" />
-            <Field.Text name="managerExtraInfo3" label="Extra Info 03" />
+            <Field.Text disabled={isReadOnly} name="managerExtraInfo1" label="Extra Info 01" />
+            <Field.Text disabled={isReadOnly} name="managerExtraInfo2" label="Extra Info 02" />
+            <Field.Text disabled={isReadOnly} name="managerExtraInfo3" label="Extra Info 03" />
           </Box>
           {/* end section */}
         </Stack>
@@ -299,25 +313,23 @@ export function OtherDetails({
     >
       <DialogTitle>Activate Your Artist</DialogTitle>
       <DialogContent>
-        <DialogContentText>Are you ready to bring your artist to life? Click the button below to activate and start artist journey!</DialogContentText>
+        <DialogContentText>
+          Are you ready to bring your artist to life? Click the button below to activate and start
+          artist journey!
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
-   <div className='flex gap-5'>
-   <button
-          onClick={activeMutate}
-          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
-        >
-      {isActivePending ? "Loading..." : "Activate Artist"}
-        </button>
-        <button
-        // onClick={onSubmit}
-         
-          className="text-red-500 rounded-lg font-medium"
-        >
-
-          Maybe Later
-        </button>
-   </div>
+        <div className="flex gap-5">
+          <button
+            onClick={activeMutate}
+            className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+          >
+            {isActivePending ? 'Loading...' : 'Activate Artist'}
+          </button>
+          <button onClick={() => setShowPop(false)} className="text-red-500 rounded-lg font-medium">
+            Maybe Later
+          </button>
+        </div>
       </DialogActions>
     </Dialog>
   );
@@ -330,16 +342,26 @@ export function OtherDetails({
         {renderDetails}
 
         <div className="flex justify-end gap-5">
-          <button 
-          onClick={handleOnActivataion}
-          className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer" >
-           Activate Artist
-            
-          </button>
-          <button 
-          className="text-white bg-black rounded-md px-3 py-2" type='Submit'>
-          {isPending ? 'Loading...' : 'Submit'}
-            </button>
+          {!isReadOnly ? (
+            <>
+              <button
+                onClick={handleOnActivataion}
+                className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
+              >
+                Activate Artist
+              </button>
+              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+                {isPending ? 'Loading...' : 'Submit'}
+              </button>
+            </>
+          ) : (
+            <span
+              onClick={viewNext}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              Go Back
+            </span>
+          )}
         </div>
         {dialogBox}
       </Stack>

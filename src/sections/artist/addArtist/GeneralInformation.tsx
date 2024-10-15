@@ -20,6 +20,7 @@ import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { GooglePlacesAutoComplete } from 'src/components/hook-form/GooglePlacesAutoComplete';
 import Autocomplete from 'react-google-autocomplete';
+import { useSearchParams } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +60,9 @@ export function GeneralInformation({
 }: AddArtistComponentProps) {
   const [searchParam, setSearchParam] = useState();
   const [includeTaxes, setIncludeTaxes] = useState(false);
+
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
@@ -106,7 +110,6 @@ export function GeneralInformation({
     formState: { isSubmitting },
   } = formProps;
 
-
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
 
@@ -114,6 +117,14 @@ export function GeneralInformation({
 
     mutate({ body: data });
   });
+
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
+  };
 
   const renderDetails = (
     <Card>
@@ -128,15 +139,12 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="artistName" label="Artist name" />
+          <Field.Text disabled={isReadOnly} name="artistName" label="Artist name" />
 
-          <Field.Text name="artistSurname1" label="Artist Surname 1" />
+          <Field.Text disabled={isReadOnly} name="artistSurname1" label="Artist Surname 1" />
 
-          <Field.Text name="artistSurname2" label="Artist Surname 2" />
+          <Field.Text disabled={isReadOnly} name="artistSurname2" label="Artist Surname 2" />
         </Box>
-
-        
-        
 
         <Box
           columnGap={2}
@@ -144,7 +152,7 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="nickName" label="Artist Nickname" />
+          <Field.Text disabled={isReadOnly} name="nickName" label="Artist Nickname" />
         </Box>
 
         <Field.CountrySelect
@@ -152,6 +160,7 @@ export function GeneralInformation({
           name="country"
           label="Country"
           placeholder="Choose a country"
+          disabled={isReadOnly}
         />
 
         <Box
@@ -160,12 +169,12 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="zipCode" label="Zip/code" />
-          <Field.Text name="city" label="City" />
-          <Field.Text name="state" label="state/State/Region" />
+          <Field.Text disabled={isReadOnly} name="zipCode" label="Zip/code" />
+          <Field.Text disabled={isReadOnly} name="city" label="City" />
+          <Field.Text disabled={isReadOnly} name="state" label="state/State/Region" />
         </Box>
 
-        <Field.Text name="residentialAddress" label="residentialAddress" />
+        <Field.Text disabled={isReadOnly} name="residentialAddress" label="residentialAddress" />
 
         <Box
           columnGap={2}
@@ -173,9 +182,14 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Phone name="phone" label="Phone number" helperText="Good to go" />
+          <Field.Phone
+            disabled={isReadOnly}
+            name="phone"
+            label="Phone number"
+            helperText="Good to go"
+          />
 
-          <Field.Text name="email" label="Email" />
+          <Field.Text disabled={isReadOnly} name="email" label="Email" />
         </Box>
 
         <Box
@@ -188,6 +202,7 @@ export function GeneralInformation({
             helperText=""
             checkbox
             name="language"
+            disabled={isReadOnly}
             placeholder="Select language"
             label="language"
             options={PRODUCT_LANGUAGE_OPTIONS}
@@ -195,13 +210,20 @@ export function GeneralInformation({
 
           <Field.SingelSelect
             checkbox
+            disabled={isReadOnly}
             name="gender"
             label="Gender"
             options={PRODUCT_GENDER_OPTIONS}
           />
         </Box>
 
-        <Field.Text name="notes" label="Internal Note description" multiline rows={4} />
+        <Field.Text
+          disabled={isReadOnly}
+          name="notes"
+          label="Internal Note description"
+          multiline
+          rows={4}
+        />
       </Stack>
     </Card>
   );
@@ -212,9 +234,18 @@ export function GeneralInformation({
         {renderDetails}
 
         <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            {isPending ? 'Loading...' : 'Save & Next'}
-          </button>
+          {!isReadOnly ? (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Loading...' : 'Save & Next'}
+            </button>
+          ) : (
+            <span
+              onClick={viewNext}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              View Next
+            </span>
+          )}
         </div>
       </Stack>
     </Form>

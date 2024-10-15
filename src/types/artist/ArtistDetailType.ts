@@ -52,6 +52,7 @@ export interface ArtistDetailType {
   logProvince: string;
   logCountry?: object | null;
   managerArtistName: string;
+  managerArtistSurnameOther1: string;
   documentName:String;
   uploadDocs:any;
   managerExtraInfo1:String;

@@ -14,6 +14,7 @@ import CardHeader from '@mui/material/CardHeader';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useSearchParams } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,8 @@ export function Media({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const [includeTaxes, setIncludeTaxes] = useState(false);
+  const view = useSearchParams().get('view');
+  const isReadOnly = view !== null;
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
@@ -45,8 +47,6 @@ export function Media({
       return prev;
     });
   };
-
-  
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
@@ -79,16 +79,14 @@ export function Media({
     control: formProps.control,
     name: 'media',
   });
-  
-  const onSubmit = handleSubmit(async (data) => {
 
+  const onSubmit = handleSubmit(async (data) => {
     console.log(data);
-    
+
     await trigger(undefined, { shouldFocus: true });
     data.count = 4;
     data.isContainsImage = true;
 
- 
     mutate({ body: data });
   });
 
@@ -129,6 +127,14 @@ export function Media({
     [setValue]
   );
 
+  const viewNext = () => {
+    setTabState((prev) => {
+      prev[tabIndex].isSaved = true;
+      return prev;
+    });
+    setTabIndex(tabIndex + 1);
+  };
+
   const media = (
     <Card className="mb-6">
       <CardHeader title="Media" sx={{ mb: 3 }} />
@@ -143,12 +149,18 @@ export function Media({
         >
           <div>
             <Typography variant="profileImage">Main Photo</Typography>
-            <Field.Upload name="profileImage" maxSize={3145728} onDelete={handleRemoveMainImage} />
+            <Field.Upload
+              disabled={isReadOnly}
+              name="profileImage"
+              maxSize={3145728}
+              onDelete={handleRemoveMainImage}
+            />
           </div>
 
           <div>
             <Typography variant="additionalImage">Additional Image</Typography>
             <Field.Upload
+              disabled={isReadOnly}
               multiple
               onRemove={handleRemoveIndividualAdditionalImage}
               name="additionalImage"
@@ -160,6 +172,7 @@ export function Media({
           <div>
             <Typography variant="inProcessImage">Inprocess Photo</Typography>
             <Field.Upload
+              disabled={isReadOnly}
               name="inProcessImage"
               maxSize={3145728}
               onDelete={handleRemoveInProcessImage}
@@ -175,11 +188,17 @@ export function Media({
         >
           <div>
             <Typography variant="mainVideo">Main Video</Typography>
-            <Field.MultiVideo name="mainVideo" maxSize={5e7} onDelete={handleRemoveMainVideo} />
+            <Field.MultiVideo
+              disabled={isReadOnly}
+              name="mainVideo"
+              maxSize={5e7}
+              onDelete={handleRemoveMainVideo}
+            />
           </div>
           <div>
             <Typography variant="additionalVideo">Additional Video</Typography>
             <Field.MultiVideo
+              disabled={isReadOnly}
               onRemoveAll={handleRemoveAdditionalVideos}
               onRemove={handleRemoveIndividualAdditionalVideo}
               multiple
@@ -198,9 +217,18 @@ export function Media({
         {media}
 
         <div className="flex justify-end">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            {isPending ? 'Loading...' : 'Save & Next'}
-          </button>
+          {!isReadOnly ? (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Loading...' : 'Save & Next'}
+            </button>
+          ) : (
+            <span
+              onClick={viewNext}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              View Next
+            </span>
+          )}
         </div>
       </Stack>
     </Form>
