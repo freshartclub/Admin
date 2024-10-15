@@ -42,7 +42,7 @@ const useAddArtistMutation = (handleOnSuccess) => {
     }
 
     if (id)
-      return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
         headers,
       });
     return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body);

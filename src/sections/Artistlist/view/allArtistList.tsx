@@ -23,6 +23,7 @@ import { paths } from 'src/routes/paths';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { AllArtistList } from '../allArtist-table-row';
 import { Iconify } from 'src/components/iconify';
+import { useGetArtistList } from '../http/useGetArtistList';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
@@ -42,17 +43,8 @@ export function AllArtist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-  // dont forget to change uri
-  async function fetchData() {
-    const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllArtistInDatabase}`);
-    return data.data;
-  }
+  const {data, isLoading, isError} = useGetArtistList();
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['styleData'],
-    queryFn: fetchData,
-    staleTime: 1000 * 60 * 5,
-  });
 
   useEffect(() => {
     if (data) {
@@ -64,7 +56,7 @@ export function AllArtist() {
     }
   }, [data]);
 
-  if (isLoading) {
+  if (isLoading ) {
     return <LoadingScreen />;
   }
 

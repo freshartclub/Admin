@@ -25,16 +25,17 @@ import { Iconify } from 'src/components/iconify';
 import { ArtistRequest } from '../artistRequest-table-row';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { SuspendedArtistList } from '../suspendedArtistLis-table-row';
+import { useGetSuspendedArtistList } from '../http/useGetSuspendedArtist';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​' },
+  { id: 'name', label: 'Artist Name​',width: 130 },
 
-  { id: 'group', label: 'Contact', width: 180 },
+  { id: 'group', label: 'Contact', width: 130 },
    { id: 'city', label: 'City', width: 130 },
    { id: 'country', label: 'Country', width: 130 },
 
-  // { id: 'status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Status', width: 220 },
+  
+  { id: 'create', label: 'Created At', width: 130 },
   { id: '', label: 'Action', width: 88 },
 ];
 export function SuspendedArtist() {
@@ -44,22 +45,11 @@ export function SuspendedArtist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-
-// dont forget to change uri
-  async function fetchData() {
-    const { data } = await axiosInstance.get(
-   `${ARTIST_ENDPOINTS.suspendedArtist}`
-    );
-    return data.data;
-  }
+  const {data, isLoading, isError} = useGetSuspendedArtistList();
 
 
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['styleData'],
-    queryFn: fetchData,
-    staleTime: 1000 * 60 * 5,
-  });
+
 
 
 

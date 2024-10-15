@@ -4,24 +4,26 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
+
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
+
 import moment from 'moment';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import { useUnsuspendArtistMutation } from './http/useUnsuspendArtistMutation';
+import { Dialog, DialogActions, DialogContentText, DialogTitle } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { useState } from 'react';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -37,15 +39,47 @@ type Props = {
 
 export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
+  const [showPop , setShowPop] = useState(false)
+  
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
   const navigate = useNavigate();
 
-  const handelEdit = (id) => {
-    navigate(paths.dashboard.artist.addArtist + '?=' + id);
-  };
+  const { mutate, isPending } = useUnsuspendArtistMutation(row._id);
+
+
+
+
+  const handleUnsuspend = (id)=>{
+    mutate()
+  }
+
+  const dialogBox = (
+    <Dialog
+      open={showPop}
+      onClose={() => {
+        setShowPop(false);
+      }}
+    >
+      <DialogTitle>Unsuspend Artist</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Are You Sure you want to Unsuspend this Artist?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleUnsuspend(row._id)}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {isPending ? 'Loading...' : ' Unsuspend Artist'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  
+
 
   return (
     <>
@@ -56,8 +90,6 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            {/* <Avatar alt={row.uploadImage} src={row.profile.mainImage} /> */}
-
             <Stack
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
@@ -78,51 +110,21 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
           {row.address.city}
         </TableCell>
 
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.isActive === true && 'success') ||
-              (row.isActive === false && 'warning') ||
-            //   (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.isActive}
-          </Label>
-        </TableCell> */}
-        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
         <div className={`w-fit h-fit flex items-center mt-5 `}>{row.address.country}</div>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
           {moment(row.createdAt).format('YYYY-MM-DD')}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          <Button
-            href={paths.dashboard.artist.createArtist}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Create Artist
-          </Button>
+          <Button 
+          onClick={() => setShowPop(true)}
+          variant="contained">Unsuspend Artist</Button>
         </TableCell>
-
-        {/* <TableCell>
-          <Stack direction="row" alignItems="center">
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
-        </TableCell> */}
       </TableRow>
+      {dialogBox}
+     
 
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
-
-      <CustomPopover
+      {/* <CustomPopover
         open={popover.open}
         anchorEl={popover.anchorEl}
         onClose={popover.onClose}
@@ -145,9 +147,9 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
             Edit
           </MenuItem>
         </MenuList>
-      </CustomPopover>
+      </CustomPopover> */}
 
-      <ConfirmDialog
+      {/* <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
@@ -157,7 +159,7 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
             Delete
           </Button>
         }
-      />
+      /> */}
     </>
   );
 }

@@ -22,6 +22,17 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment } from '@mui/material';
+import { DialogContentText } from '@mui/material';
+import { useState } from 'react';
+import { toast } from 'src/components/snackbar';
+import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
+import { Field } from 'src/components/hook-form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useChnagePassword } from './http/useChnagePassword';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -37,18 +48,172 @@ type Props = {
 
 export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
+  const password = useBoolean();
+  const [showPop, setShowPop] = useState(false);
+  const [showPasswordPop, setShowPasswordPop] = useState(false);
+
+  // const [newPassword, setNewPassword] = useState("");
+  // const [confirmPassword, setConfirmPassword] = useState("");
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
 
-  // const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+  const { mutate, isPending } = useSuspendArtistMutation(row._id);
+  const { mutate: mutatePassword, isPending: isPendingPassword } = useChnagePassword(setShowPasswordPop);
 
   const navigate = useNavigate();
+
+  const newPassword = watch('newPassword');
 
   const handelEdit = (id) => {
     navigate(paths.dashboard.artist.addArtist + '?id=' + id);
   };
+
+  const handleSuspend = async (id) => {
+    mutate();
+  };
+
+  const onSubmit = handleSubmit(async (data) => {
+    const newData = {
+      id: row._id,
+      data: {
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      },
+    };
+
+    await mutatePassword(newData);
+  });
+
+  const actionButtons = [
+    {
+      icon: 'solar:pen-bold',
+      name: 'Edit Details',
+      onClick: () => {
+        handelEdit(row._id);
+        popover.close();
+      },
+      handelEdit: (id) => {
+        navigate(paths.dashboard.artist.addArtist + '?id=' + id);
+      },
+    },
+    {
+      icon: 'hugeicons:view',
+      name: 'View',
+      onClick: () => {
+        confirm.setTrue();
+        popover.close();
+      },
+    },
+    {
+      icon: 'icon-park-outline:change',
+      name: 'Change Password',
+      onClick: () => {
+        quickEdit.setTrue();
+        popover.close();
+      },
+      handelEdit: () => {
+        setShowPasswordPop(true);
+      },
+    },
+    {
+      icon: 'mingcute:warning-fill',
+      name: 'Suspend Artist',
+      handelEdit: () => {
+        setShowPop(true);
+      },
+    },
+    {
+      icon: 'charm:circle-tick',
+      name: 'Activate Artist',
+      onClick: () => {
+        quickEdit.setTrue();
+        popover.close();
+      },
+    },
+  ];
+
+  const dialogBox = (
+    <Dialog
+      open={showPop}
+      onClose={() => {
+        setShowPop(false);
+      }}
+    >
+      <DialogTitle>Suspend Artist</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Are You Sure you want to suspend this Artist?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleSuspend(row._id)}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {isPending ? 'Loading...' : ' Suspend Artist'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const chnagePasswordDialogBox = (
+    <Dialog
+      sx={{ width: '100vw' }}
+      open={showPasswordPop}
+      onClose={() => {
+        setShowPasswordPop(false);
+      }}
+    >
+      <DialogTitle>
+        Change Password - ({row?.artistName} {row?.userId})
+      </DialogTitle>
+      <form onSubmit={onSubmit}>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <input
+            className=" py-2 border-[1px] border-zinc-500 rounded-lg px-2"
+            type="password"
+            placeholder="New Password"
+            {...register('newPassword', {
+              required: 'Password is required',
+              minLength: {
+                value: 8,
+                message: 'Password must be at least 8 characters long',
+              },
+            })}
+          />
+          {errors.newPassword && <p className="text-red-500">{errors.newPassword.message}</p>}
+
+          <input
+            className=" py-2 border-[1px] border-zinc-500 rounded-lg px-2"
+            type="text"
+            placeholder="Confirm Password"
+            {...register('confirmPassword', {
+              required: 'Please confirm your password',
+              validate: (value) => value === newPassword || 'Passwords do not match',
+            })}
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500">{errors.confirmPassword.message}</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <button
+            type="submit"
+            className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+            disabled={isPending}
+          >
+            {isPendingPassword ? 'Loading...' : 'Change Password'}
+          </button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
 
   return (
     <>
@@ -78,22 +243,6 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
           {row.phone}
         </TableCell>
 
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.isActive === true && 'success') ||
-              (row.isActive === false && 'warning') ||
-            //   (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.isActive}
-          </Label>
-        </TableCell> */}
-        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
         <div
           className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
         >
@@ -108,21 +257,8 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            {/* <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip> */}
-
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              {row.isActivated ? (
-                <Iconify icon="mdi:eye-outline" />
-              ) : (
-                <Iconify icon="eva:more-vertical-fill" />
-              )}
+              <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           </Stack>
         </TableCell>
@@ -148,10 +284,17 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
            Suspend
           </MenuItem> */}
 
-          <MenuItem onClick={() => handelEdit(row._id)}>
-            <Iconify icon="solar:pen-bold" />
-            Continue Edit
-          </MenuItem>
+          {actionButtons.map((itmes, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                itmes.handelEdit(row._id);
+              }}
+            >
+              <Iconify icon={itmes.icon} />
+              {itmes.name}
+            </MenuItem>
+          ))}
         </MenuList>
       </CustomPopover>
 
@@ -166,6 +309,8 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Button>
         }
       />
+      {dialogBox}
+      {chnagePasswordDialogBox}
     </>
   );
 }

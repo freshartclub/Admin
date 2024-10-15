@@ -62,6 +62,7 @@ export const paths = {
 
       artistList: `${ROOTS.DASHBOARD}/artist/list`,
       suspendList: `${ROOTS.DASHBOARD}/artist/suspended-list`,
+    
       artistRequest: `${ROOTS.DASHBOARD}/artist/request`,
       artistPendingRequest: `${ROOTS.DASHBOARD}/artist/pending-request`,
       five: `${ROOTS.DASHBOARD}/group/five`,

@@ -11,6 +11,9 @@ export const ARTIST_ENDPOINTS = {
   createNewUser: `${ADMIN_BASE_URL}/create-new-user`,
   getuser: `${ADMIN_BASE_URL}/get-user`,
   suspendedArtist: `${ADMIN_BASE_URL}/suspended-list`,
+  suspendArtist: `${ADMIN_BASE_URL}/suspend-artist`,
+  unSuspendArtist: `${ADMIN_BASE_URL}/unsuspend-artist`,
+  chnageArtistPasswoed: `${ADMIN_BASE_URL}/change-artist-password`,
 };
 
 export const USER_ENDPOINTS = {
