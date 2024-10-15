@@ -23,26 +23,26 @@ import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMu
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  managerArtistName: zod.string().min(1, { message: 'artistName is required!' }),
-  managerArtistSurnameOther1: zod.string(),
-  managerArtistSurname2: zod.string(),
-  managerArtistNickname: zod.string(),
-  managerArtistContactTo: zod.string(),
-  managerArtistPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  managerArtistEmail: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  address: zod.string().min(1, { message: 'Address is required!' }),
-  managerZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  managerCity: zod.string().min(1, { message: 'City is required!' }),
-  managerState: zod.string().min(1, { message: 'Province is required!' }),
-  managerCountry: zod.string().min(1, { message: 'Country is required!' }),
-  managerArtistLanguage: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  managerArtistGender: zod.string().min(1, { message: 'Gender is required!' }),
-  managerExtraInfo1: zod.string(),
-  managerExtraInfo2: zod.string(),
-  managerExtraInfo3: zod.string(),
+  // managerArtistName: zod.string().min(1, { message: 'artistName is required!' }),
+  // managerArtistSurnameOther1: zod.string(),
+  // managerArtistSurname2: zod.string(),
+  // managerArtistNickname: zod.string(),
+  // managerArtistContactTo: zod.string(),
+  // managerArtistPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  // managerArtistEmail: zod
+  //   .string()
+  //   .min(1, { message: 'Email is required!' })
+  //   .email({ message: 'Email must be a valid email address!' }),
+  // address: zod.string().min(1, { message: 'Address is required!' }),
+  // managerZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
+  // managerCity: zod.string().min(1, { message: 'City is required!' }),
+  // managerState: zod.string().min(1, { message: 'Province is required!' }),
+  // managerCountry: zod.string().min(1, { message: 'Country is required!' }),
+  // managerArtistLanguage: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  // managerArtistGender: zod.string().min(1, { message: 'Gender is required!' }),
+  // managerExtraInfo1: zod.string(),
+  // managerExtraInfo2: zod.string(),
+  // managerExtraInfo3: zod.string(),
   documentName: zod.string().min(1, { message: 'Document Name is required!' }),
   uploadDocs: schemaHelper.file({ message: { required_error: 'document is required!' } }),
 });
