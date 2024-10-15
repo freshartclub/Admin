@@ -125,7 +125,7 @@ export function OtherDetails({
     formState: { isSubmitting },
   } = methods;
   const navigate = useNavigate();
-
+  console.log(methods.getValues());
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     data.count = 7;
@@ -139,6 +139,8 @@ export function OtherDetails({
 
   const blob = new Blob([methods.getValues('uploadDocs')], { type: 'application/pdf' });
   const blobURL = URL.createObjectURL(blob);
+
+  console.log(blobURL);
 
   const viewNext = () => {
     setTabIndex(0);
@@ -159,7 +161,12 @@ export function OtherDetails({
 
         {methods.getValues('uploadDocs') ? (
           <div className="flex flex-col gap-2">
-            <iframe src={blobURL} width="100%" height="500px" title="PDF Document" />
+            <iframe
+              src={`${import.meta.env.VITE_SERVER_BASE_URL}/uploads/documents/${artistFormData?.uploadDocs}`}
+              width="100%"
+              height="500px"
+              title="PDF Document"
+            />
             {isReadOnly ? (
               <span className="text-white opacity-1 bg-black rounded-md px-3 py-2 text-center">
                 Click to Remove

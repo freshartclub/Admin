@@ -17,6 +17,8 @@ import { ListArtists } from 'src/sections/Artistlist';
 import { AllArtist } from 'src/sections/Artistlist/view/allArtistList';
 import { Button } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
+import { Link } from 'react-router-dom';
+import { RouterLink } from 'src/routes/components';
 
 
 
@@ -43,15 +45,17 @@ export default function allArtistList() {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
         action={
-            <Button
+            <RouterLink
             href={`${paths.dashboard.artist.createArtist}`}
-            startIcon={<Iconify icon="mingcute:add-line" />}
             variant="contained"
           >
-            Create Artist
+           <span className="bg-black text-white py-2 px-2 rounded-md flex items-center gap-2">
+              {' '}
+              <Iconify icon="mingcute:add-line" /> Create Artist
+            </span>
 
             
-          </Button>
+          </RouterLink>
         }
       />
        <AllArtist/>

@@ -36,6 +36,8 @@ import axiosInstance from 'src/utils/axios';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { artistData } from '../KBS/data';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useGetExistingUserDetails } from './http/useGetExistingUserDetails';
+import CreateNewUser from './createNewUser';
 
 // ----------------------------------------------------------------------
 
@@ -69,7 +71,7 @@ type Props = {
   currentUser?: IUserItem;
 };
 
-export function CreateArtistForm({ currentUser }: Props) {
+export function CreateArtistForm() {
   const router = useRouter();
 
   const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
@@ -81,51 +83,15 @@ export function CreateArtistForm({ currentUser }: Props) {
   const [searchParam, setSearchParam] = useSearchParams();
 
   const id = searchParam.get('id');
+  const existingUser = searchParam.get('extisting');
 
   const { isPending, mutate } = useCreateArtistMutation(setLoading);
+  
 
-  const defaultValues = useMemo(
-    () => ({
-      status: currentUser?.status || '',
-      F: currentUser?.avatar || null,
-      isVerified: currentUser?.isVerified || true,
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      country: currentUser?.country || 'India',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      address: currentUser?.address || '',
-      zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
-    }),
-    [currentUser]
-  );
-
-  // useLayoutEffect(async ()=>{
-  //   if(id){
-  //     const { artistDetail } = await axiosInstance.get(
-  // `${ARTIST_ENDPOINTS.getAllPendingArtist}`
-  //        );
-  //     setArtistFormData(artistDetail);
-  //   }
-  // })
-
-  // useEffect(() => {
-  //   const getNewUser = async () => {
-  //     const artistDetail = await axiosInstance.get(`${ARTIST_ENDPOINTS.getuser}/${id}`);
-  //     setArtistFormData(artistDetail.data);
-  //     setValue(artistDetail.data?.userId ? 'new' : 'existing')
-  //   };
-
-  //   getNewUser();
-  // }, []);
+  const { data, isLoading, isError } = useGetExistingUserDetails(id);
 
   const methods = useForm<NewUserSchemaType>({
-    mode: 'onSubmit',
     resolver: zodResolver(NewUserSchema),
-    defaultValues,
   });
 
   const {
@@ -136,7 +102,31 @@ export function CreateArtistForm({ currentUser }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
+  
+
+  useEffect(() => {
+    watch("email");
+    if (!data) return;
+    const obj = {
+      status: data?.status || '',
+      F: data?.avatar || null,
+      isVerified: data?.isVerified || false,
+      name: data?.name || '',
+      email: data?.email || '',
+      phoneNumber: data?.phoneNumber || '',
+      country: data?.country || 'spain',
+      state: data?.state || '',
+      city: data?.city || '',
+      address: data?.address || '',
+      zipCode: data?.zipCode || '',
+      company: data?.company || '',
+      role: data?.role || '',
+    };
+    methods.setValue("email", obj.email);
+    methods.setValue("email", obj.email);
+
+    
+  }, [data]);
 
   const navigate = useNavigate();
 
@@ -153,14 +143,7 @@ export function CreateArtistForm({ currentUser }: Props) {
     }
   });
 
-  useEffect(() => {
-    const result = NewUserSchema.safeParse(values);
-    if (!result.success) {
-      setLoading(false);
-    }
-  }, [values]);
-
-  // if (!value) return <LoadingScreen />;
+  if(isLoading) return;
 
   return (
     <>
@@ -196,19 +179,6 @@ export function CreateArtistForm({ currentUser }: Props) {
           <Grid container spacing={3}>
             <Grid xs={12} md={4}>
               <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-                {currentUser && (
-                  <Label
-                    color={
-                      (values.status === 'active' && 'success') ||
-                      (values.status === 'banned' && 'error') ||
-                      'warning'
-                    }
-                    sx={{ position: 'absolute', top: 24, right: 24 }}
-                  >
-                    {values.status}
-                  </Label>
-                )}
-
                 <Box sx={{ mb: 5 }}>
                   <Field.UploadAvatar
                     name="avatar"
@@ -230,67 +200,6 @@ export function CreateArtistForm({ currentUser }: Props) {
                     }
                   />
                 </Box>
-
-                {currentUser && (
-                  <FormControlLabel
-                    labelPlacement="start"
-                    control={
-                      <Controller
-                        name="status"
-                        control={control}
-                        render={({ field }) => (
-                          <Switch
-                            {...field}
-                            checked={field.value !== 'active'}
-                            onChange={(event) =>
-                              field.onChange(event.target.checked ? 'banned' : 'active')
-                            }
-                          />
-                        )}
-                      />
-                    }
-                    label={
-                      <>
-                        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                          Banned
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                          Apply disable account
-                        </Typography>
-                      </>
-                    }
-                    sx={{
-                      mx: 0,
-                      mb: 3,
-                      width: 1,
-                      justifyContent: 'space-between',
-                    }}
-                  />
-                )}
-
-                {/* <Field.Switch
-                  name="isVerified"
-                  labelPlacement="start"
-                  label={
-                    <>
-                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                        Email verified
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Disabling this will automatically send the user a verification email
-                      </Typography>
-                    </>
-                  }
-                  sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-                /> */}
-
-                {currentUser && (
-                  <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                    <Button variant="soft" color="error">
-                      Delete user
-                    </Button>
-                  </Stack>
-                )}
               </Card>
             </Grid>
 
@@ -330,169 +239,7 @@ export function CreateArtistForm({ currentUser }: Props) {
           </Grid>
         </Form>
       ) : (
-        <Form methods={methods} onSubmit={onSubmit}>
-          <Grid container spacing={3}>
-            <Grid xs={12} md={4}>
-              <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-                {currentUser && (
-                  <Label
-                    color={
-                      (values.status === 'active' && 'success') ||
-                      (values.status === 'banned' && 'error') ||
-                      'warning'
-                    }
-                    sx={{ position: 'absolute', top: 24, right: 24 }}
-                  >
-                    {values.status}
-                  </Label>
-                )}
-
-                <Box sx={{ mb: 5 }}>
-                  <Field.UploadAvatar
-                    name="avatar"
-                    maxSize={3145728}
-                    helperText={
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          mt: 3,
-                          mx: 'auto',
-                          display: 'block',
-                          textAlign: 'center',
-                          color: 'text.disabled',
-                        }}
-                      >
-                        Allowed *.jpeg, *.jpg, *.png, *.gif
-                        <br /> max size of {fData(3145728)}
-                      </Typography>
-                    }
-                  />
-                </Box>
-
-                {currentUser && (
-                  <FormControlLabel
-                    labelPlacement="start"
-                    control={
-                      <Controller
-                        name="status"
-                        control={control}
-                        render={({ field }) => (
-                          <Switch
-                            {...field}
-                            checked={field.value !== 'active'}
-                            onChange={(event) =>
-                              field.onChange(event.target.checked ? 'banned' : 'active')
-                            }
-                          />
-                        )}
-                      />
-                    }
-                    label={
-                      <>
-                        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                          Banned
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                          Apply disable account
-                        </Typography>
-                      </>
-                    }
-                    sx={{
-                      mx: 0,
-                      mb: 3,
-                      width: 1,
-                      justifyContent: 'space-between',
-                    }}
-                  />
-                )}
-
-                {/* <Field.Switch
-                  name="isVerified"
-                  labelPlacement="start"
-                  label={
-                    <>
-                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                        Email verified
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Disabling this will automatically send the user a verification email
-                      </Typography>
-                    </>
-                  }
-                  sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-                /> */}
-
-                {currentUser && (
-                  <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                    <Button variant="soft" color="error">
-                      Delete user
-                    </Button>
-                  </Stack>
-                )}
-              </Card>
-            </Grid>
-
-            <Grid xs={12} md={8}>
-              <Card sx={{ p: 3 }}>
-                {/* <Field.Text sx={{pb:3}} name="name" label="Existing User Account Id" /> */}
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display="grid"
-                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
-                >
-                  <Field.Text name="name" label="Full name" />
-                  <Field.Text name="email" label="Email address" />
-                  <Field.Phone name="phoneNumber" label="Phone number" />
-
-                  <Field.CountrySelect
-                    fullWidth
-                    name="country"
-                    label="Country"
-                    placeholder="Choose a country"
-                  />
-
-                  <Field.Text name="state" label="State/region" />
-                  <Field.Text name="city" label="City" />
-                  <Field.Text name="address" label="Address" />
-                  <Field.Text name="zipCode" label="Zip/code" />
-                </Box>
-
-                <Stack
-                  alignItems="flex-end"
-                  direction="row"
-                  justifyContent="end"
-                  spacing={2}
-                  sx={{ mt: 3 }}
-                >
-                  <LoadingButton
-                    onClick={() => {
-                      setIsArtist(false);
-                      setLoading(true);
-                    }}
-                    type="submit"
-                    variant="contained"
-                    loading={isSubmitting}
-                  >
-                    {!isArtist && loading ? 'loading..' : ' Create User'}
-                  </LoadingButton>
-                  <LoadingButton
-                    onClick={() => {
-                      setIsArtist(true);
-                      setLoading(true);
-                    }}
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    loading={isSubmitting}
-                  >
-                    {isArtist && loading ? ' Loding...' : 'Create User With Artist Account'}
-                  </LoadingButton>
-                </Stack>
-              </Card>
-            </Grid>
-          </Grid>
-        </Form>
+        <CreateNewUser data={data}/>
       )}
     </>
   );

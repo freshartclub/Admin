@@ -1,4 +1,3 @@
-
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,6 +50,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 export const NewProductSchema = zod.object({
   ArtworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
+  ArtistID: zod.string().min(1, { message: 'Artist ID is required!' }),
   ArtistName: zod.string().min(1, { message: 'ArtistName is required!' }),
   ArtworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
   ArtworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
@@ -114,11 +114,12 @@ export function ArtworkAdd({ currentProduct }) {
 
   const defaultValues = useMemo(
     () => ({
-      ArtworkName: currentProduct?.ArtworkName || '',
-      ArtistName: currentProduct?.ArtistName || '',
-      ArtworkCreationYear: currentProduct?.ArtworkCreationYear || '',
-      ArtworkSeries: currentProduct?.ArtworkSeries || '',
-      ProductDescription: currentProduct?.ProductDescription || '',
+      ArtworkName: currentProduct?.ArtworkName || 'Monalisa',
+      ArtistID: currentProduct?.ArtistID || 'XZH6546',
+      ArtistName: currentProduct?.ArtistName || 'Rachit Patel',
+      ArtworkCreationYear: currentProduct?.ArtworkCreationYear || '2021',
+      ArtworkSeries: currentProduct?.ArtworkSeries || 'Catagog 1',
+      ProductDescription: currentProduct?.ProductDescription || 'LoremLroem',
 
       MainPhoto: currentProduct?.MainPhoto || null,
       BackPhoto: currentProduct?.BackPhoto || null,
@@ -127,26 +128,26 @@ export function ArtworkAdd({ currentProduct }) {
       MainVideo: currentProduct?.MainVideo || null,
       otherVideo: currentProduct?.otherVideo || null,
 
-      ArtworkTechnic: currentProduct?.ArtworkTechnic || '',
+      ArtworkTechnic: currentProduct?.ArtworkTechnic || 'Painting',
       ArtworkTheme: currentProduct?.ArtworkTheme || '',
-      ArtworkOrientation: currentProduct?.ArtworkTheme || '',
+      ArtworkOrientation: currentProduct?.ArtworkOrientation || 'Square',
       Material: currentProduct?.Material || '',
-      Weight: currentProduct?.Weight || '',
-      Hight: currentProduct?.Hight || '',
-      Lenght: currentProduct?.Lenght || '',
-      Width: currentProduct?.Width || '',
+      Weight: currentProduct?.Weight || '20kg',
+      Hight: currentProduct?.Hight || '400Cm',
+      Lenght: currentProduct?.Lenght || '20m',
+      Width: currentProduct?.Width || '10m',
       HangingAvailable: currentProduct?.HangingAvailable || '',
-      HangingDescription: currentProduct?.HangingDescription || '',
+      HangingDescription: currentProduct?.HangingDescription || 'Lorem Lorem',
       Framed: currentProduct?.Framed || '',
-      FramedDescription: currentProduct?.FramedDescription || '',
-      FrameHight: currentProduct?.FrameHight || '',
-      FrameLenght: currentProduct?.FrameLenght || '',
-      FrameWidth: currentProduct?.FrameWidth || '',
+      FramedDescription: currentProduct?.FramedDescription || 'Lorem Lorem',
+      FrameHight: currentProduct?.FrameHight || '20m',
+      FrameLenght: currentProduct?.FrameLenght || '400cm',
+      FrameWidth: currentProduct?.FrameWidth || '20vw',
       ArtworkStyle: currentProduct?.ArtworkStyle || [],
       Emotions: currentProduct?.Emotions || [],
       Colors: currentProduct?.Colors || [],
       PurchaseCatalog: currentProduct?.PurchaseCatalog || '',
-      ArtistFees: currentProduct?.ArtistFees || '',
+      ArtistFees: currentProduct?.ArtistFees || '$5000',
       DownwardOffer: currentProduct?.ArtistFees || '',
       UpworkOffer: currentProduct?.UpworkOffer || '',
       AcceptOfferPrice: currentProduct?.AcceptOfferPrice || '',
@@ -230,7 +231,6 @@ export function ArtworkAdd({ currentProduct }) {
   const handleRemoveFileone = useCallback(() => {
     setValue('BackPhoto', null);
   }, [setValue]);
-   
 
   const handleRemoveFile = useCallback(() => {
     setValue('MainPhoto', null);
@@ -254,9 +254,9 @@ export function ArtworkAdd({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="ArtworkName" label=" Artwork Name" />
-
+        <Field.Text name="ArtistID" label=" Artist ID" />
         <Field.Text name="ArtistName" label=" Artist Name" />
+        <Field.Text name="ArtworkName" label=" Artwork Name" />
 
         <Box
           columnGap={2}
@@ -303,7 +303,7 @@ export function ArtworkAdd({ currentProduct }) {
           </div>
 
           <div>
-           <Typography variant="BackPhoto">Back Photo</Typography>
+            <Typography variant="BackPhoto">Back Photo</Typography>
             <Field.Upload name="BackPhoto" maxSize={3145728} onDelete={handleRemoveFileone} />
           </div>
 
@@ -323,7 +323,7 @@ export function ArtworkAdd({ currentProduct }) {
             onRemoveAll={handleRemoveAllFiles}
             onUpload={() => console.info('ON UPLOAD')}
           />
-          </div>
+        </div>
         <Box
           columnGap={2}
           rowGap={3}
@@ -332,11 +332,15 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <div>
             <Typography variant="MainVideo">Main Video</Typography>
-            <Field.MultiVideo name="MainVideo" maxSize={5e+7} onDelete={handleRemoveFileVideo} />
+            <Field.MultiVideo name="MainVideo" maxSize={5e7} onDelete={handleRemoveFileVideo} />
           </div>
           <div>
             <Typography variant="otherVideo">Main Video</Typography>
-            <Field.MultiVideo name="otherVideo" maxSize={5e+7} onDelete={handleRemoveFileotherVideo} />
+            <Field.MultiVideo
+              name="otherVideo"
+              maxSize={5e7}
+              onDelete={handleRemoveFileotherVideo}
+            />
           </div>
         </Box>
       </Stack>
@@ -627,36 +631,34 @@ export function ArtworkAdd({ currentProduct }) {
   );
 
   return (
-    
-      <div>
-        <Form methods={methods} onSubmit={onSubmit}>
-          <Stack spacing={{ xs: 3, md: 5 }}>
-            <div className="grid md:grid-cols-3 gap-3">
-              <div className="col-span-2">
-                {renderDetails}
-                {media}
-                {additionalInformation}
-                {Commercialization}
-                {pricing}
-                {InventoryandShiping}
-              </div>
+    <div>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 5 }}>
+          <div className="grid md:grid-cols-3 gap-3">
+            <div className="col-span-2">
+              {renderDetails}
+              {media}
+              {additionalInformation}
+              {Commercialization}
+              {pricing}
+              {InventoryandShiping}
+            </div>
 
-              <div className="col-span-1">
-                {Discipline}
-                {Promotions}
-                {Restrictions}
-                {Collection}
-              </div>
+            <div className="col-span-1">
+              {Discipline}
+              {Promotions}
+              {Restrictions}
+              {Collection}
             </div>
-            {/* {renderActions} */}
-            <div className="flex justify-end mb-6 mr-6">
-              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-                Save
-              </button>
-            </div>
-          </Stack>
-        </Form>
-      </div>
-    
+          </div>
+          {/* {renderActions} */}
+          <div className="flex justify-end mb-6 mr-6">
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              Save
+            </button>
+          </div>
+        </Stack>
+      </Form>
+    </div>
   );
 }

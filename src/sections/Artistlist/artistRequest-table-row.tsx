@@ -48,6 +48,8 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
     navigate(paths.dashboard.artist.addArtist + '?=' + id);
   };
 
+  const extisting = row?.userId ? true : false;
+
   return (
     <>
       <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
@@ -64,10 +66,10 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.artistName}
+                {row?.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
+                {row?.email}
               </Box>
             </Stack>
           </Stack>
@@ -103,7 +105,9 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           {moment(row.createdAt).format('YYYY-MM-DD')}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          <RouterLink href={`${paths.dashboard.artist.createArtist}?id=${row._id}`}>
+          <RouterLink
+            href={`${paths.dashboard.artist.createArtist}?id=${row._id}&extisting=${extisting}`}
+          >
             <span className="bg-black text-white py-2 px-2 rounded-md flex items-center gap-2">
               {' '}
               <Iconify icon="mingcute:add-line" /> Create Artist
