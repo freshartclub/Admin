@@ -1,7 +1,10 @@
 import { _mock } from "src/_mock";
 
+const generateUniqueId = () => `ID-${Math.random().toString(36).substr(2, 9)}`;
+
 export const tickets = [
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET001",
         Title: "Login Issue",
         Time: "2024-10-10T09:30:00Z",
@@ -11,6 +14,7 @@ export const tickets = [
         Status: "Created"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET002",
         Title: "Feature Request",
         Time: "2024-10-10T10:15:00Z",
@@ -20,6 +24,7 @@ export const tickets = [
         Status: "Dispatched"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET003",
         Title: "Bug Report",
         Time: "2024-10-10T11:00:00Z",
@@ -29,6 +34,7 @@ export const tickets = [
         Status: "Technical Finish"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET004",
         Title: "Account Recovery",
         Time: "2024-10-10T12:30:00Z",
@@ -38,6 +44,7 @@ export const tickets = [
         Status: "In progress"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET005",
         Title: "Payment Issue",
         Time: "2024-10-10T13:45:00Z",
@@ -47,6 +54,7 @@ export const tickets = [
         Status: "Finalise"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET006",
         Title: "App Update Error",
         Time: "2024-10-10T14:15:00Z",
@@ -56,6 +64,7 @@ export const tickets = [
         Status: "Finalise"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET007",
         Title: "Data Sync Failure",
         Time: "2024-10-10T15:00:00Z",
@@ -65,6 +74,7 @@ export const tickets = [
         Status: "Finalise"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET008",
         Title: "Profile Update Problem",
         Time: "2024-10-10T15:30:00Z",
@@ -74,6 +84,7 @@ export const tickets = [
         Status: "Finalise"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET009",
         Title: "Notification Glitch",
         Time: "2024-10-10T16:00:00Z",
@@ -83,6 +94,7 @@ export const tickets = [
         Status: "Finalise"
     },
     {
+        UniqueID: generateUniqueId(),
         TicketNumber: "TICKET010",
         Title: "Subscription Cancellation",
         Time: "2024-10-10T16:30:00Z",

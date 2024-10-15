@@ -15,7 +15,7 @@ export default function Page() {
   const { id = '' } = useParams();
 
   const currentOrder = _orders.find((order) => order.id === id);
-
+ console.log("cuurent order ",currentOrder)
   return (
     <>
       <Helmet>

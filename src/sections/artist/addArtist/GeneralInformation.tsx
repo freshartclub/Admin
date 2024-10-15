@@ -177,7 +177,7 @@ export function GeneralInformation({
 
           <Field.Text name="email" label="Email" />
         </Box>
-
+    
         <Box
           columnGap={2}
           rowGap={3}

@@ -10,7 +10,7 @@ import { AddKbForm } from 'src/sections/KBS/AddKbForm';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function AddKb() {
   const navigate = useNavigate()
   return (
     <>

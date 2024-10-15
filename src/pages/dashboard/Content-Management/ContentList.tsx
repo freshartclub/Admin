@@ -12,7 +12,7 @@ import { ListContent } from 'src/sections/ContentManagement/ListContent';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function ContentList() {
   const navigate = useNavigate()
   return (
     <>

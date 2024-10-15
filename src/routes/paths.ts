@@ -3,6 +3,9 @@ import { paramCase } from "src/utils/change-case";
 import { hydrateRoot } from "react-dom/client";
 import { _id, _postTitles } from 'src/_mock/assets';
 import { OtpVerification } from 'src/sections/auth/jwt/opt-verify';
+import { tickets } from "src/sections/Tickets-managements/Data";
+
+
 
 const MOCK_ID = _id[1];
 const MOCK_TITLE = _postTitles[2];
@@ -98,6 +101,16 @@ export const paths = {
     },
     artwork: {
       Root: `${ROOTS.DASHBOARD}/artwork`,
+      catalog: {
+        root: `${ROOTS.DASHBOARD}/catalog`,
+        add: `${ROOTS.DASHBOARD}/artwork/catalog/add`,
+        list: `${ROOTS.DASHBOARD}/artwork/catalog/list`,
+      },
+      collection_management: {
+        root: `${ROOTS.DASHBOARD}/collection_management`,
+        add: `${ROOTS.DASHBOARD}/artwork/collection_management/add`,  
+        list: `${ROOTS.DASHBOARD}/artwork/collection_management/list`,  
+      },
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
       artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
     },
@@ -198,9 +211,12 @@ export const paths = {
     tickets: {
       Root: `${ROOTS.DASHBOARD}/tickets`,
       allList: `${ROOTS.DASHBOARD}/tickets/allList`,
-      singleList: `${ROOTS.DASHBOARD}/tickets/singleList`,
       addIncident: `${ROOTS.DASHBOARD}/tickets/addIncident`,
+      singleList: `${ROOTS.DASHBOARD}/tickets/singleList`,
+      // singleList: `${ROOTS.DASHBOARD}/tickets/${tickets.UniqueID}`,
     },
+   
+    
 
     notificationAndMessage: {
       Root: `${ROOTS.DASHBOARD}/notificationAndMessage`,
