@@ -12,7 +12,7 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 import { CreateArtistFormSchema } from './createArtitstForm';
 
-const CreateNewUser = ({ data }) => {
+const CreateNewUser = ({ data, isReadOnly }) => {
   const [value, setValue] = useState('new');
   const [isArtist, setIsArtist] = useState(false);
 
@@ -90,7 +90,7 @@ const CreateNewUser = ({ data }) => {
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
             >
               <Field.Text name="name" label="Full name" />
-              <Field.Text name="email" label="Email address" />
+              <Field.Text disabled={isReadOnly} name="email" label="Email address" />
               <Field.Phone name="phoneNumber" label="Phone number" />
 
               <Field.CountrySelect

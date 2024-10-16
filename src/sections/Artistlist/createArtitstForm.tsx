@@ -74,6 +74,7 @@ export function CreateArtistForm() {
 
   const id = useSearchParams().get('id');
   const existingUser = useSearchParams().get('extisting');
+  const isReadOnly = id !== null;
 
   const { data, isLoading } = useGetExistingUserDetails(id);
   const { isPending, mutate } = useCreateArtistMutation();
@@ -85,7 +86,6 @@ export function CreateArtistForm() {
   const { reset, handleSubmit } = methods;
 
   useEffect(() => {
-    setValue(existingUser ? 'existing' : 'new');
     if (!data) return;
     if (data) {
       reset({
@@ -101,6 +101,7 @@ export function CreateArtistForm() {
         existingZipCode: data?.address.zipCode || '',
       });
     }
+    setValue(existingUser === 'true' ? 'existing' : 'new');
   }, [data, value, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
@@ -196,7 +197,7 @@ export function CreateArtistForm() {
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
                 >
                   <Field.Text name="existingName" label="Full name" />
-                  <Field.Text name="existingEmail" label="Email address" />
+                  <Field.Text disabled={isReadOnly} name="existingEmail" label="Email address" />
                   <Field.Phone name="existingPhoneNumber" label="Phone number" />
 
                   <Field.CountrySelect
@@ -222,7 +223,7 @@ export function CreateArtistForm() {
           </Grid>
         </Form>
       ) : (
-        <CreateNewUser data={data} />
+        <CreateNewUser data={data} isReadOnly={isReadOnly} />
       )}
     </>
   );
