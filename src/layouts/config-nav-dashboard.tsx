@@ -80,13 +80,45 @@ export const navData = [
         path: paths.dashboard.artwork.Root,
         icon: ICONS.paintBrush,
         children: [
+          {
+            title: 'Catalog',
+            path: paths.dashboard.artwork.catalog.root,
+            children: [
+              {
+                title: 'Add Catalog',
+                path: paths.dashboard.artwork.catalog.add,
+              },
+              {
+                title: 'Catalog List',
+                path: paths.dashboard.artwork.catalog.list,
+              },
+            ],
+          },
+          {
+            title: 'Collection Management',
+            path: paths.dashboard.artwork.collection_management.root,
+            children: [
+              {
+                title: 'Add Collection',
+                path: paths.dashboard.artwork.collection_management.add,
+              },
+              {
+                title: 'Collection List',
+                path: paths.dashboard.artwork.collection_management.list,
+              },
+            ],
+          },
           { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
           { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
-        ],
+        ]
+        // children: [
+        //   { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
+        //   { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
+        // ],
       },
 
       {
-        title: 'Categorys',
+        title: 'Categories',
         path: paths.dashboard.category.root,
         icon: ICONS.menuItem,
         children: [

@@ -55,14 +55,7 @@ import { InvoiceTableFiltersResult } from './Kb-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-// const TABLE_HEAD = [
-//   { id: 'invoiceNumber', label: 'Title KB' },
-//   { id: 'price', label: 'Group' },
-//   { id: 'createDate', label: 'Date' },
-//   { id: 'dueDate', label: 'Created By' },
-//   { id: 'tag', label: 'Tages' },
-//   { id: '',},
-// ];
+
 
 const TABLE_HEAD = [
     { id: 'invoiceNumber', label: 'Title KB' },
@@ -213,11 +206,11 @@ export function KbListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="FAQ List"
+          heading="KB List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'KB Database', href: paths.dashboard.faq.Root },
-            { name: 'List' },
+            // { name: 'KB Database', href: paths.dashboard.faq.Root },
+            { name: 'KB List' },
           ]}
           action={
             <Button

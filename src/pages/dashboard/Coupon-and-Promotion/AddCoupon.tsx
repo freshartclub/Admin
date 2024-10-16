@@ -11,7 +11,7 @@ import { AddCouponForm } from 'src/sections/CouponAndPromotion/AddCouponForm';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function AddCoupon() {
   const navigate = useNavigate()
   return (
     <>

@@ -1,7 +1,13 @@
+import { paths } from "src/routes/paths";
 
+import TicketDescription from 'src/pages/dashboard/Ticket-Management/SingleTicket'
+import { useNavigate } from "react-router";
 
 export function TicketCartd({data}){
-   
+    const navigate = useNavigate()
+   const hendleTicketDetail = (data:string) => {
+    navigate(paths.dashboard.tickets.singleList, { state: { data } });
+  }
   return(
     <div className="p-5 border rounded-md mb-4">
        <div className="flex justify-between gap-4 pb-5">
@@ -16,9 +22,15 @@ export function TicketCartd({data}){
        <h4 className="text-black text-[14px] font-semibold pb-2">{data.Title}</h4>
        <p className="text-[#84818A] text-[14px] font-semibold pb-3">{data.Description}</p>
        <hr/>
-       <div className="flex gap-4 pt-3 items-center">
-        <img src={data.Image} alt="user Image" className="w-[2rem] h-[2rem] rounded-full"/>
-        <p className="text-[#84818A] text-[14px] font-semibold">{data.Name}</p>
+       <div className="flex gap-4 pt-3 items-center justify-between">
+          <div className="flex gap-4 pt-3 items-center">
+          <img src={data.Image} alt="user Image" className="w-[2rem] h-[2rem] rounded-full"/>
+           <p className="text-[#84818A] text-[14px] font-semibold">{data.Name}</p>
+          </div>
+          <div>
+            <p className="text-[#84818A] text-[14px] font-semibold border-b pb-1 hover:cursor-pointer" onClick={() => {hendleTicketDetail(data)}} >Open Ticket</p>
+            
+          </div>
        </div>
     </div>
   )

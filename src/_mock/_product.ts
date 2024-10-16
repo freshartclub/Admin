@@ -392,6 +392,80 @@ export const FAQ_GROUP_OPTIONS = [
   { value: 'Group G', label: 'Group G' },
   
 ]
+export const CATAGORY_PLAN_OPTIONS = [
+  { value: 'Plan 01', label: 'Plan 01' },
+  { value: 'Plan 02', label: 'Plan 02' },
+  { value: 'Plan 03', label: 'Plan 03' },
+  { value: 'Plan 04', label: 'Plan 04' },
+  { value: 'Plan 05', label: 'Plan 05' },
+]
+export const CATAGORY_EXCLUSIVE_OPTIONS = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+]
+export const COLLECTION_TAGS_OPTIONS = [
+  { value: 'Tag 01', label: 'Tag 01' },
+  { value: 'Tag 02', label: 'Tag 02' },
+  { value: 'Tag 03', label: 'Tag 03' },
+  { value: 'Tag 04', label: 'Tag 04' },
+  { value: 'Tag 05', label: 'Tag 05' },
+  { value: 'Tag 06', label: 'Tag 06' },
+]
+export const COLLECTION_STATUS_OPTIONS = [
+  { value: 'Draft', label: 'Draft' },
+  { value: 'Available', label: 'Available' },
+  { value: 'Not Available', label: 'Not Available' },
+]
+export const COLLECTION_CREATED_OPTIONS = [
+  { value: 'Pablo Picasso', label: 'Pablo Picasso' },
+  { value: 'Claude Monet', label: 'Claude Monet' },
+  { value: 'Leonardo da Vinci', label: 'Leonardo da Vinci' },
+  { value: 'Michelangelo', label: 'Michelangelo' },
+]
+export const INC_GROUP_OPTIONS = [
+  { value: 'Group A', label: 'Group A' },
+  { value: 'Group B', label: 'Group B' },
+  { value: 'Group C', label: 'Group C' },
+  { value: 'Group D', label: 'Group D' },
+  { value: 'Group E', label: 'Group E' },
+  { value: 'Group F', label: 'Group F' },
+  { value: 'Group G', label: 'Group G' },
+]
+export const INC_TYPE_OPTIONS = [
+  { value: 'Type A', label: 'Type A' },
+  { value: 'Type B', label: 'Type B' },
+  { value: 'Type C', label: 'Type C' },
+  { value: 'Type D', label: 'Type D' },
+  { value: 'Type E', label: 'Type E' },
+  { value: 'Type F', label: 'Type F' },
+  { value: 'Type G', label: 'Type G' },
+]
+export const TICKET_TYPE_OPTIONS = [
+  { value: 'Type A', label: 'Type A' },
+  { value: 'Type B', label: 'Type B' },
+  { value: 'Type C', label: 'Type C' },
+  { value: 'Type D', label: 'Type D' },
+  { value: 'Type E', label: 'Type E' },
+  { value: 'Type F', label: 'Type F' },
+  { value: 'Type G', label: 'Type G' },
+]
+export const TICKET_STATUS_OPTIONS = [
+  { value: 'Created', label: 'Created' },
+  { value: 'Dispatched', label: 'Dispatched' },
+  { value: 'Technical Finish', label: 'Technical Finish' },
+  { value: 'In progress', label: 'In progress' },
+  { value: 'Finalise', label: 'Finalise' },
+]
+export const INC_SEVERITY_OPTIONS = [
+  { value: 'Severity A', label: 'severity A' },
+  { value: 'Severity B', label: 'severity B' },
+  { value: 'Severity C', label: 'severity C' },
+]
+export const INC_STATUS_OPTIONS = [
+  { value: 'Draft', label: 'Draft' },
+  { value: 'Available', label: 'Available' },
+  { value: 'Not Available', label: 'Not Available' },
+]
 export const COUPON_USEGE_OPTIONS = [
   { value: '1 Time', label: '1 Time' },
   { value: '2 Time', label: '2 Time' },

@@ -10,7 +10,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function KbList() {
   const navigate = useNavigate()
   return (
     <>

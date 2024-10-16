@@ -64,12 +64,18 @@ const Payment = lazy(() => import('src/pages/dashboard/Subscription-plan/Payment
 const AddMassage = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddMassage'));
 const AddNotification = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddNotification'));
 const ListOfMsgNfc = lazy(() => import('src/pages/dashboard/Massage-and-Notification/ListMassageAndNotification'));
-
 const TicketList = lazy(() => import('src/pages/dashboard/Ticket-Management/TicketList'));
 const SingelList = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
 const AddIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AddIncident'));
 const SuspendedArtist = lazy(() => import('src/pages/dashboard/Artist/SuspendedArtistList'));
 const AllArtist = lazy(() => import('src/pages/dashboard/Artist/AllArtistList'));
+const AddCatalog = lazy(() => import('src/pages/dashboard/AddArtwok/Catalog/AddCatalog'));
+const CatalogList = lazy(() => import('src/pages/dashboard/AddArtwok/Catalog/CatalogList'));
+const AddCollection = lazy(() => import('src/pages/dashboard/AddArtwok/Collection-Management/AddCollection'));
+const CollectionList = lazy(() => import('src/pages/dashboard/AddArtwok/Collection-Management/CollectionList'));
+
+const ArtworkList = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkList'));
+
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -155,9 +161,27 @@ export const dashboardRoutes = [
       {
         path: 'artwork',
         children: [
+          {
+            path: 'catalog',
+            children: [
+              { path: 'add', element: <AddCatalog/> },
+              { path: 'list', element: <CatalogList/> },
+            ],
+          },
+          {
+            path: 'collection_management',
+            children: [
+              { path: 'add', element: <AddCollection/> },
+              { path: 'list', element: <CollectionList/> },
+            ],
+          },
           { path: 'addArtwork', element: <AddArtwork /> },
-          { path: 'artworkList', element: <div>artworkList</div> },
-        ],
+          { path: 'artworkList', element: <ArtworkList/> },
+        ]
+        // children: [
+          // { path: 'addArtwork', element: <AddArtwork /> },
+          // { path: 'artworkList', element: <div>artworkList</div> },
+        // ],
       },
       {
         path: 'order',

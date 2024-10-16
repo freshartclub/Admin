@@ -11,7 +11,7 @@ import { CouponListView } from 'src/sections/CouponAndPromotion/Coupon-list-view
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function CouponList() {
   const navigate = useNavigate()
   return (
     <>

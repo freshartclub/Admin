@@ -11,7 +11,7 @@ import { AddFaqForm } from 'src/sections/FAQS/AddFaqForm';
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function AddFaq() {
   const navigate = useNavigate()
   return (
     <>

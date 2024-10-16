@@ -499,6 +499,40 @@ export const _tags = [
   `Photography`,
   `Music`,
 ];
+export const ArtworkList = [
+  `Artwork 01`,
+  `Artwork 02`,
+  `Artwork 03`,
+  `Artwork 04`,
+  `Artwork 05`,
+  `Artwork 06`,
+  `Artwork 07`,
+  
+]
+export const Collections = [
+  `Collection 01`,
+  `Collection 02`,
+  `Collection 03`,
+  `Collection 04`,
+  `Collection 05`,
+  `Collection 06`,
+]
+export const Art_provider = [
+  `Provider 01`,
+  `Provider 02`,
+  `Provider 03`,
+  `Provider 04`,
+  `Provider 05`,
+  `Provider 06`,
+]
+export const _artworks = [
+  `Edgar Degas`,
+  `Claude Monet`,
+  `Pierre-Auguste Renoir`,
+  `Paul Cézanne`,
+  `Johannes Vermeer `,
+  
+]
 export const _userTages = [
   `Tage 01`,
   `Tage 02`,

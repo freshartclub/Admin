@@ -47,25 +47,28 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
+import { artistCollections } from './data';
 
-import { FaqTableRow } from './faq-table-row';
-import { InvoiceTableToolbar } from './faq-table-toolbar';
-import { InvoiceTableFiltersResult } from './faq-table-filters-result';
+
+import { CollectionTableRow } from './collection-table-row';
+import { CollectionTableToolbar } from './collection-table-toolbar';
+import { CollectionTableFiltersResult } from './collection-table-filters-result';
 
 // ----------------------------------------------------------------------
+
+
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Title FAQ' },
-  { id: 'price', label: 'Group' },
-  { id: 'createDate', label: 'Date' },
-  { id: 'dueDate', label: 'Created By' },
-  { id: 'tag', label: 'Tages' },
-  { id: '',},
-];
+    { id: 'invoiceNumber', label: 'Colletion List' },
+    { id: 'createDate', label: 'Created_date' },
+    { id: 'dueDate', label: 'created_by' },
+    { id: 'tag', label: 'tags'  },
+    { id: '',},
+  ];
 
 // ----------------------------------------------------------------------
 
-export function FaqListView() {
+export function CollectionListView() {
   const theme = useTheme();
 
   const router = useRouter();
@@ -75,6 +78,7 @@ export function FaqListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
+  
 
   const filters = useSetState<IInvoiceTableFilters>({
     name: '',
@@ -87,7 +91,7 @@ export function FaqListView() {
   const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: artistCollections,
     comparator: getComparator(table.order, table.orderBy),
     filters: filters.state,
     dateError,
@@ -104,23 +108,23 @@ export function FaqListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const getInvoiceLength = (status: string) =>
-    tableData.filter((item) => item.status === status).length;
+    artistCollections.filter((item) => item.status === status).length;
 
   const getTotalAmount = (status: string) =>
     sumBy(
-      tableData.filter((item) => item.status === status),
+      artistCollections.filter((item) => item.status === status),
       (invoice) => invoice.totalAmount
     );
 
   const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / tableData.length) * 100;
+    (getInvoiceLength(status) / artistCollections.length) * 100;
 
   const TABS = [
     {
       value: 'all',
       label: 'All',
       color: 'default',
-      count: tableData.length,
+      count: artistCollections.length,
     },
     {
       value: 'paid',
@@ -150,7 +154,7 @@ export function FaqListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      const deleteRow = artistCollections.filter((row) => row.id !== id);
 
       toast.success('Delete success!');
 
@@ -158,11 +162,11 @@ export function FaqListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [dataInPage.length, table, artistCollections]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    const deleteRows = artistCollections.filter((row) => !table.selected.includes(row.id));
 
     toast.success('Delete success!');
 
@@ -172,7 +176,7 @@ export function FaqListView() {
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  }, [dataFiltered.length, dataInPage.length, table, artistCollections]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -200,19 +204,19 @@ export function FaqListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="FAQ List"
+          heading="Collection List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'FAQ List' },
+            { name: 'Collection List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.faq.add}
+              href={paths.dashboard.artwork.collection_management.add}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Add FAQ
+              Add Collections
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -222,7 +226,7 @@ export function FaqListView() {
 
         <Card>
 
-          <InvoiceTableToolbar
+          <CollectionTableToolbar
             filters={filters}
             dateError={dateError}
             onResetPage={table.onResetPage}
@@ -230,7 +234,7 @@ export function FaqListView() {
           />
 
           {canReset && (
-            <InvoiceTableFiltersResult
+            <CollectionTableFiltersResult
               filters={filters}
               onResetPage={table.onResetPage}
               totalResults={dataFiltered.length}
@@ -302,7 +306,7 @@ export function FaqListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <FaqTableRow
+                      <CollectionTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -384,23 +388,23 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
-    inputData = inputData.filter(
-      (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
+//   if (name) {
+//     inputData = inputData.filter(
+//       (invoice) =>
+//         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+//         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+//     );
+//   }
 
   if (status !== 'all') {
     inputData = inputData.filter((invoice) => invoice.status === status);
   }
 
-  if (service.length) {
-    inputData = inputData.filter((invoice) =>
-      invoice.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
+//   if (service.length) {
+//     inputData = inputData.filter((invoice) =>
+//       invoice.items.some((filterItem) => service.includes(filterItem.service))
+//     );
+//   }
 
   if (!dateError) {
     if (startDate && endDate) {

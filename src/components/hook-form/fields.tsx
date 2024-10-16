@@ -11,7 +11,7 @@ import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { GooglePlacesAutoComplete } from './GooglePlacesAutoComplete';
 import { RHFSelect, RHFMultiSelect, RHFSingleSelect } from './rhf-select';
-import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
+import { RHFDatePicker, RHFMobileDateTimePicker,RHFMobileTimePicker } from './rhf-date-picker';
 import {
   RHFUpload,
   RHFUploadBox,
@@ -47,4 +47,5 @@ export const Field = {
   SingelSelect: RHFSingleSelect,
   MultiVideo: RHFUploadMultiVideo,
   UploadDocument: RHFUploadDocument,
+  TimePicker: RHFMobileTimePicker,
 };

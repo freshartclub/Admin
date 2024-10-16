@@ -29,7 +29,10 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
  
 import {
-    FAQ_GROUP_OPTIONS,
+    INC_GROUP_OPTIONS,
+    INC_TYPE_OPTIONS,
+    INC_SEVERITY_OPTIONS,
+    INC_STATUS_OPTIONS,
 } from "src/_mock"
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
@@ -39,11 +42,16 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-    group: zod.string().min(1, { message: 'group is required!' }),
-    title: zod.string().min(1, { message: 'faq Question is required!' }),
-    kbDescription: schemaHelper.editor().min(100, { message: 'Description must be at least 100 characters' }),
-  images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
-  tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+    incGroup: zod.string().min(1, { message: 'group is required!' }),
+    incType: zod.string().min(1, { message: 'Type is required!' }),
+    title: zod.string().min(1, { message: 'Title is required!' }),
+    description: schemaHelper.editor().min(100, { message: 'Description must be at least 100 characters' }),
+    date: schemaHelper.date({ message: { required_error: 'date is required!' } }),
+    initTime: schemaHelper.time({ message: { required_error: 'time is required!' } }),
+    endTime: schemaHelper.time({ message: { required_error: 'time is required!' } }),
+    severity: zod.string().min(1, { message: 'Severity is required!' }),
+    status: zod.string().min(1, { message: 'Status is required!' }),
+    note: zod.string(),
   
 });
 
@@ -53,19 +61,23 @@ type Props = {
   currentPost?: IPostItem;
 };
 
-export function AddKbForm({ currentPost }: Props) {
+export function AddIncidentForm({ currentPost }: Props) {
   const router = useRouter();
 
   const preview = useBoolean();
 
   const defaultValues = useMemo(
     () => ({
-      group: currentPost?.group || '',
+      incGroup: currentPost?.incGroup || '',
+      incType: currentPost?.incType || '',
       title:currentPost?.title || '',
-      kbDescription:currentPost?.kbDescription || '',
-      images: currentPost?.images || [],
-      tags: currentPost?.tags || [],
-      
+      description:currentPost?.description || '',
+      date: currentPost?.date || null,
+      initTime: currentPost?.initTime || null,
+      severity: currentPost?.severity || '',
+      status: currentPost?.status || '',
+      note:currentPost?.note || '',
+    
     }),
     [currentPost]
   );
@@ -104,18 +116,7 @@ export function AddKbForm({ currentPost }: Props) {
     }
   });
   
-  const handleRemoveFileDetails = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
-  }, [setValue]);
-
+  
   
   const renderDetails = (
     <Card>
@@ -126,81 +127,73 @@ export function AddKbForm({ currentPost }: Props) {
 
         <Field.SingelSelect 
          checkbox
-         name="group"
-         label="select Group"
-         options={FAQ_GROUP_OPTIONS}
+         name="incGroup"
+         label="Inc. Group"
+         options={INC_GROUP_OPTIONS}
+        />
+        <Field.SingelSelect 
+         checkbox
+         name="incType"
+         label="Inc. Type"
+         options={INC_TYPE_OPTIONS}
         />
         
-        <Field.Text name="title" label="KB Title" />
+        <Field.Text name="title" label="Title" />
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">KB Description</Typography>
-          <Field.Editor name="kbDescription" sx={{ maxHeight: 480 }} />
+          <Typography variant="subtitle2">Description</Typography>
+          <Field.Editor name="description" sx={{ maxHeight: 480 }} />
         </Stack>
+ 
+        <Field.MobileDateTimePicker name='date' label='Incident Date & Time'/>
 
-        
-        <Field.Autocomplete
-          name="tags"
-          label="Tags"
-          placeholder="+ Tags"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={_tags.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+        >
+         <Field.TimePicker name='initTime' label='Init Time'/>
+
+         <Field.TimePicker name='endTime' label='End Time'/>
+
+        </Box>
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+        >
+            <Field.SingelSelect 
+         checkbox
+         name="severity"
+         label="Severity"
+         options={INC_SEVERITY_OPTIONS}
         />
+        <Field.SingelSelect 
+         checkbox
+         name="status"
+         label="Status"
+         options={INC_STATUS_OPTIONS}
+        />
+        </Box>
         
+        <Field.Text name='note' label='Note' multiline rows={4}/>
       </Stack>
     </Card>
   );
 
-  const renderProperties = (
-    <Card>
-      <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-       <Typography variant="subtitle2">images</Typography>
-          <Field.Upload
-            multiple
-            thumbnail
-            name="images"
-            maxSize={3145728}
-            onRemove={handleRemoveFileDetails}
-            onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
-          />
-        </Stack>
-       </Stack>
-    </Card>
-  );
 
   
 
   return (
     <div>
         <CustomBreadcrumbs
-        heading="Kb Database"
+        heading="New Incident"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           // { name: 'KB Database', href: paths.dashboard.kbdatabase.Root},
-          { name: 'Add KB' },
+          { name: 'Add Incident' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -211,14 +204,14 @@ export function AddKbForm({ currentPost }: Props) {
 
         <div className='col-span-2'>
         {renderDetails}
-        <div className='flex flex-row justify-end gap-3 mt-8'>
+        <div className='flex flex-row justify-start gap-3 mt-8'>
         <button type='button' className='bg-white text-black border py-2 px-3 rounded-md'>Cencel</button>
-        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save KB</button>
+        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save</button>
       </div>
         </div>
 
         <div className='col-span-1'>
-        {renderProperties}
+        
         </div>
         </div>
        

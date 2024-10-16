@@ -122,4 +122,35 @@ export const schemaHelper = {
         });
       }
     }),
+
+    //  try 
+    time: (props) =>
+  zod
+    .coerce
+    .string()
+    .nullable()
+    .transform((timeString, ctx) => {
+      // Use a regex to check the time format (HH:mm)
+      const timeFormat = /^([01]\d|2[0-3]):([0-5]\d)$/; // Matches "HH:mm"
+
+      if (!timeString) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: props?.message?.required_error ?? 'Time is required!',
+        });
+        return null;
+      }
+
+      if (!timeFormat.test(timeString)) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: props?.message?.invalid_type_error ?? 'Invalid Time format! Use HH:mm.',
+        });
+        return null;
+      }
+
+      return timeString; // Return the validated time string
+    })
+    .pipe(zod.union([zod.string(), zod.null()])),
+
 };

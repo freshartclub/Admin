@@ -12,7 +12,7 @@ import { CreateContentForm } from 'src/sections/ContentManagement/CreateContentF
 
 const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
 
-export default function AddMediaSupport() {
+export default function CreateContent() {
   const navigate = useNavigate()
   return (
     <>
