@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 
 import axiosInstance from 'src/utils/axios';
@@ -7,15 +7,15 @@ import { toast } from 'src/components/snackbar';
 
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
 import { paths } from 'src/routes/paths';
+import { useSearchParams } from 'src/routes/hooks';
 
-const useCreateArtistMutation = (setLoading) => {
-  const [searchParam, setSearchParam] = useSearchParams();
+const useCreateArtistMutation = () => {
   const navigate = useNavigate();
+  const id = useSearchParams().get('id');
 
-  const id = searchParam.get('id');
   async function CreateArtist(newData) {
     const formData = new FormData();
-   
+
     Object.keys(newData.data).forEach((key) => {
       if (Array.isArray(newData.data[key])) {
         newData.data[key].forEach((item) => {
@@ -26,34 +26,29 @@ const useCreateArtistMutation = (setLoading) => {
       }
     });
 
-    formData.append("isArtist", newData.isArtist);
-    formData.append("value", newData.value);
+    formData.append('isArtist', newData.isArtist);
+    formData.append('value', newData.value);
 
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    };
 
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.createNewUser}`, formData, {
-      headers:{
-        'Content-Type':'multipart/form-data'
-      }
-    });
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.createNewUser}/${id}`, formData, { headers });
   }
   return useMutation({
     mutationFn: CreateArtist,
     onSuccess: async (res, body) => {
-      setSearchParam({ id: res.data.id });
-
       if (body.isArtist) {
-        navigate(paths.dashboard.artist.addArtist + "?id=" + res.data.id);
+        navigate(paths.dashboard.artist.addArtist + '?id=' + res.data.id);
       } else {
         navigate(paths.dashboard.user.list);
       }
-    
+
       toast.success(res.data.message);
-      setLoading(false);
     },
 
     onError: (res) => {
       toast.error(res.response.data.message);
-      setLoading(false);
     },
   });
 };

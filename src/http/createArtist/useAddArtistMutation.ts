@@ -1,21 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-
 import axiosInstance from 'src/utils/axios';
-
 import { toast } from 'src/components/snackbar';
-
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
 
 const useAddArtistMutation = (handleOnSuccess) => {
-  console.log('medede');
-
   const [searchParam, setSearchParam] = useSearchParams();
-
   const id = searchParam.get('id');
 
   async function addArtist({ body }: { body: any }) {
-    console.log(body);
     let headers;
     if (body?.isContainsImage) {
       const formData = new FormData();
@@ -31,18 +24,13 @@ const useAddArtistMutation = (handleOnSuccess) => {
       });
 
       body = formData;
-
-      headers = {
-        'Content-Type': 'multipart/form-data',
-      };
+      headers = { 'Content-Type': 'multipart/form-data' };
     } else {
-      headers = {
-        'Content-Type': 'application/json',
-      };
+      headers = { 'Content-Type': 'application/json' };
     }
 
     if (id)
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
+      return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
         headers,
       });
     return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body);
@@ -52,16 +40,9 @@ const useAddArtistMutation = (handleOnSuccess) => {
     onSuccess: async (res, body) => {
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
-
-      // if (body.body.count === 7 ) {
-
-      //   toast.success(res.data.message);
-
-      // }
     },
 
     onError: (res) => {
-      console.log(res);
       toast.error(res.response?.data?.message);
     },
   });

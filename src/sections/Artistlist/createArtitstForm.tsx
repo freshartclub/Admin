@@ -1,50 +1,37 @@
-import type { IUserItem } from 'src/types/user';
-
 import { z as zod } from 'zod';
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useSearchParams } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FormControl } from '@mui/material';
-import { FormLabel } from '@mui/material';
 import { RadioGroup } from '@mui/material';
 import { Radio } from '@mui/material';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
-import { useNavigate } from 'react-router';
-import { useSearchParams } from 'react-router-dom';
-import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
-import axiosInstance from 'src/utils/axios';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
-import { artistData } from '../KBS/data';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useGetExistingUserDetails } from './http/useGetExistingUserDetails';
 import CreateNewUser from './createNewUser';
 
 // ----------------------------------------------------------------------
 
-export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
+export type CreateArtistFormSchemaType = zod.infer<typeof CreateArtistFormSchema>;
+export type CreateExistingArtistFormSchemaType = zod.infer<typeof CreateExistingArtistFormSchema>;
 
-export const NewUserSchema = zod.object({
-  avatar: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+export const CreateArtistFormSchema = zod.object({
+  avatar: schemaHelper.file({
+    message: { required_error: 'Avatar is required!', required: false },
+  }),
   name: zod.string().min(1, { message: 'Name is required!' }),
   email: zod
     .string()
@@ -55,95 +42,92 @@ export const NewUserSchema = zod.object({
     message: { required_error: 'Country is required!' },
   }),
   address: zod.string().min(1, { message: 'Address is required!' }),
-
   state: zod.string().min(1, { message: 'State is required!' }),
   city: zod.string().min(1, { message: 'City is required!' }),
-
   zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  // Not required
-  status: zod.string(),
-  isVerified: zod.boolean(),
+});
+
+export const CreateExistingArtistFormSchema = zod.object({
+  existingAvatar: schemaHelper.file({
+    message: { required_error: 'Avatar is required!', required: false },
+  }),
+  existingId: zod.string().min(1, { message: 'Id is required!' }),
+  existingName: zod.string().min(1, { message: 'Name is required!' }),
+  existingEmail: zod
+    .string()
+    .min(1, { message: 'Email is required!' })
+    .email({ message: 'Email must be a valid email address!' }),
+  existingPhoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  existingCountry: schemaHelper.objectOrNull<string | null>({
+    message: { required_error: 'Country is required!' },
+  }),
+  existingAddress: zod.string().min(1, { message: 'Address is required!' }),
+  existingState: zod.string().min(1, { message: 'State is required!' }),
+  existingCity: zod.string().min(1, { message: 'City is required!' }),
+  existingZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentUser?: IUserItem;
-};
-
 export function CreateArtistForm() {
-  const router = useRouter();
-
-  const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
-
   const [value, setValue] = useState('new');
-  const [isArtist, setIsArtist] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const [searchParam, setSearchParam] = useSearchParams();
+  const id = useSearchParams().get('id');
+  const existingUser = useSearchParams().get('extisting');
 
-  const id = searchParam.get('id');
-  const existingUser = searchParam.get('extisting');
+  const { data, isLoading } = useGetExistingUserDetails(id);
+  const { isPending, mutate } = useCreateArtistMutation();
 
-  const { isPending, mutate } = useCreateArtistMutation(setLoading);
-  
-
-  const { data, isLoading, isError } = useGetExistingUserDetails(id);
-
-  const methods = useForm<NewUserSchemaType>({
-    resolver: zodResolver(NewUserSchema),
+  const methods = useForm({
+    resolver: zodResolver(CreateExistingArtistFormSchema),
   });
 
-  const {
-    reset,
-    watch,
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  
+  const { reset, handleSubmit } = methods;
 
   useEffect(() => {
-    watch("email");
+    setValue(existingUser ? 'existing' : 'new');
     if (!data) return;
-    const obj = {
-      status: data?.status || '',
-      F: data?.avatar || null,
-      isVerified: data?.isVerified || false,
-      name: data?.name || '',
-      email: data?.email || '',
-      phoneNumber: data?.phoneNumber || '',
-      country: data?.country || 'spain',
-      state: data?.state || '',
-      city: data?.city || '',
-      address: data?.address || '',
-      zipCode: data?.zipCode || '',
-      company: data?.company || '',
-      role: data?.role || '',
-    };
-    methods.setValue("email", obj.email);
-    methods.setValue("email", obj.email);
-
-    
-  }, [data]);
-
-  const navigate = useNavigate();
+    if (data) {
+      reset({
+        existingAvatar: data?.avatar || null,
+        existingId: data?.userId || '',
+        existingName: data?.artistName || '',
+        existingEmail: data?.email || '',
+        existingPhoneNumber: data?.phone || '',
+        existingCountry: data?.address.country || '',
+        existingAddress: data?.address.address || '',
+        existingState: data?.address.state || '',
+        existingCity: data?.address.city || '',
+        existingZipCode: data?.address.zipCode || '',
+      });
+    }
+  }, [data, value, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const newData = {
-        data: data,
-        isArtist: isArtist,
+        data: {
+          avatar: data.existingAvatar,
+          name: data.existingName,
+          email: data.existingEmail,
+          phoneNumber: data.existingPhoneNumber,
+          country: data.existingCountry,
+          address: data.existingAddress,
+          state: data.existingState,
+          city: data.existingCity,
+          zipCode: data.existingZipCode,
+        },
+        isArtist: true,
         value: value,
       };
+
       mutate(newData);
     } catch (error) {
       console.error(error);
     }
   });
 
-  if(isLoading) return;
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <>
@@ -158,7 +142,6 @@ export function CreateArtistForm() {
               <FormControlLabel
                 onChange={(e) => setValue(e.target.value)}
                 value="new"
-                // checked={value === 'new'}
                 control={<Radio checked={value === 'new'} />}
                 label="New User"
               />
@@ -175,13 +158,13 @@ export function CreateArtistForm() {
       </div>
 
       {value === 'existing' ? (
-        <Form methods={methods}>
+        <Form methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={3}>
             <Grid xs={12} md={4}>
               <Card sx={{ pt: 10, pb: 5, px: 3 }}>
                 <Box sx={{ mb: 5 }}>
                   <Field.UploadAvatar
-                    name="avatar"
+                    name="existingAvatar"
                     maxSize={3145728}
                     helperText={
                       <Typography
@@ -218,7 +201,7 @@ export function CreateArtistForm() {
 
                   <Field.CountrySelect
                     fullWidth
-                    name="country"
+                    name="existingCountry"
                     label="Country"
                     placeholder="Choose a country"
                   />
@@ -230,16 +213,16 @@ export function CreateArtistForm() {
                 </Box>
 
                 <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                  <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                    Create Artist Account
-                  </LoadingButton>
+                  <Button type="submit" variant="contained">
+                    {isPending ? 'Creating...' : 'Create Artist Account'}
+                  </Button>
                 </Stack>
               </Card>
             </Grid>
           </Grid>
         </Form>
       ) : (
-        <CreateNewUser data={data}/>
+        <CreateNewUser data={data} />
       )}
     </>
   );
