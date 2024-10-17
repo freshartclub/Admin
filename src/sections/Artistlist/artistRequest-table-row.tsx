@@ -4,27 +4,20 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import moment from 'moment';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-
-// import { UserQuickEditForm } from './user-quick-edit-form';
+import { fDate } from 'src/utils/format-time';
+import { phoneNo } from 'src/utils/change-case';
 
 // ----------------------------------------------------------------------
 
@@ -38,10 +31,8 @@ type Props = {
 
 export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
-
-  const quickEdit = useBoolean();
+  // const quickEdit = useBoolean();
   const navigate = useNavigate();
 
   const handelEdit = (id) => {
@@ -75,56 +66,29 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phone}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.address.city}
+          {row?.address?.city}
         </TableCell>
 
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.isActive === true && 'success') ||
-              (row.isActive === false && 'warning') ||
-            //   (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.isActive}
-          </Label>
-        </TableCell> */}
-        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
-        <div className={`w-fit h-fit flex items-center mt-5 `}>{row.address.country}</div>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row.address.country}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {moment(row.createdAt).format('YYYY-MM-DD')}
+          {fDate(row?.createdAt)}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
           <RouterLink
             href={`${paths.dashboard.artist.createArtist}?id=${row._id}&extisting=${extisting}`}
           >
             <span className="bg-black text-white py-2 px-2 rounded-md flex items-center gap-2">
-              {' '}
               <Iconify icon="mingcute:add-line" /> Create Artist
             </span>
           </RouterLink>
         </TableCell>
-
-        {/* <TableCell>
-          <Stack direction="row" alignItems="center">
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
-        </TableCell> */}
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}

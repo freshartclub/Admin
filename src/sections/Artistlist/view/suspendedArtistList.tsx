@@ -1,9 +1,7 @@
-import { Button, Card, Table, TableBody } from '@mui/material';
+import { Card, Table, TableBody } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
 import { LoadingScreen } from 'src/components/loading-screen';
-import axiosInstance from 'src/utils/axios';
-import { getToken } from 'src/utils/tokenHelper';
 import {
   useTable,
   emptyRows,
@@ -12,46 +10,23 @@ import {
   TableHeadCustom,
   TablePaginationCustom,
 } from 'src/components/table';
-const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-
-// import { credentialTable } from "./Discipline-table-row";
-
-import { ArtistsList } from './artistlist-table-row';
-import { useQuery } from '@tanstack/react-query';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
-import { ArtistRequest } from '../artistRequest-table-row';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { SuspendedArtistList } from '../suspendedArtistLis-table-row';
 import { useGetSuspendedArtistList } from '../http/useGetSuspendedArtist';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​',width: 130 },
-
+  { id: 'name', label: 'Artist Name​', width: 130 },
   { id: 'group', label: 'Contact', width: 130 },
-   { id: 'city', label: 'City', width: 130 },
-   { id: 'country', label: 'Country', width: 130 },
-
-  
+  { id: 'city', label: 'City', width: 130 },
+  { id: 'country', label: 'Country', width: 130 },
   { id: 'create', label: 'Created At', width: 130 },
-  { id: '', label: 'Action', width: 88 },
+  { id: 'action', label: 'Action', width: 88 },
 ];
 export function SuspendedArtist() {
-  const token = getToken();
-  const [styles, setStyles] = useState([]);
-  // const [table, setTable] = useTable(); // Initialize table state
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-  const {data, isLoading, isError} = useGetSuspendedArtistList();
-
-
-
-
-
-
+  const { data, isLoading, isError, error } = useGetSuspendedArtistList();
 
   useEffect(() => {
     if (data) {
@@ -72,70 +47,58 @@ export function SuspendedArtist() {
   }
 
   const dataFiltered = data;
-  
+
   return (
-    <div>
-      {/* <CustomBreadcrumbs
-        heading="List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Suspended Artist', href: paths.dashboard },
-          //   { name: currentUser?.name },
-        ]}
-       
-        sx={{ mb: { xs: 3, md: 5 } }}
-      /> */}
-      <Card>
-        <Scrollbar>
-          <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              rowCount={dataFiltered.length}
-              numSelected={table.selected.length}
-              onSort={table.onSort}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row._id)
-                )
-              }
+    <Card>
+      <Scrollbar>
+        <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+          <TableHeadCustom
+            order={table.order}
+            orderBy={table.orderBy}
+            headLabel={TABLE_HEAD}
+            rowCount={dataFiltered.length}
+            numSelected={table.selected.length}
+            onSort={table.onSort}
+            onSelectAllRows={(checked) =>
+              table.onSelectAllRows(
+                checked,
+                dataFiltered.map((row) => row._id)
+              )
+            }
+          />
+          <TableBody>
+            {dataFiltered
+              .slice(
+                table.page * table.rowsPerPage,
+                table.page * table.rowsPerPage + table.rowsPerPage
+              )
+              .map((row) => (
+                <SuspendedArtistList
+                  key={row._id}
+                  row={row}
+                  selected={table.selected.includes(row._id)}
+                  onSelectRow={() => table.onSelectRow(row._id)}
+                  onDeleteRow={() => handleDeleteRow(row._id)}
+                  onEditRow={() => handleEditRow(row._id)}
+                />
+              ))}
+            <TableEmptyRows
+              height={table.dense ? 56 : 76}
+              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
             />
-            <TableBody>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <SuspendedArtistList
-                    key={row._id}
-                    row={row}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
-                ))}
-              <TableEmptyRows
-                height={table.dense ? 56 : 76}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-              />
-              <TableNoData notFound={notFound} />
-            </TableBody>
-          </Table>
-        </Scrollbar>
-        <TablePaginationCustom
-          page={table.page}
-          dense={table.dense}
-          count={dataFiltered.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onChangeDense={table.onChangeDense}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-        />
-      </Card>
-    </div>
+            <TableNoData notFound={notFound} />
+          </TableBody>
+        </Table>
+      </Scrollbar>
+      <TablePaginationCustom
+        page={table.page}
+        dense={table.dense}
+        count={dataFiltered.length}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onChangeDense={table.onChangeDense}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+      />
+    </Card>
   );
 }

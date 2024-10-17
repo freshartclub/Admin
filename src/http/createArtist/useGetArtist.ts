@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
-
 import axiosInstance from 'src/utils/axios';
-
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
+import { useSearchParams } from 'src/routes/hooks';
 
 async function getArtistDetail(id) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getArtistDetail}/${id}`);
@@ -11,19 +9,16 @@ async function getArtistDetail(id) {
 }
 
 const useGetArtist = () => {
-  const [searchParam, setSearchParam] = useSearchParams();
-  const id = searchParam.get('id');
+  const id = useSearchParams().get('id');
   const fetchUser = async () => {
     try {
       const res = await getArtistDetail(id);
-
       return res;
     } catch (error) {
       return error;
     }
   };
 
-  console.log(fetchUser)
   return useQuery({
     queryKey: [ARTIST_ENDPOINTS.getArtistDetail],
     queryFn: fetchUser,

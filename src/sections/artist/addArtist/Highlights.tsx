@@ -21,6 +21,7 @@ import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
+import { ARTIST_CV_EVENTSCOPE, ARTIST_CV_EVENTTYPE } from 'src/_mock';
 
 export const NewProductSchema = zod.object({
   highlights: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
@@ -137,7 +138,13 @@ export function Highlights({
                   label="Year"
                   options={getYearDropDown(101)}
                 />
-                <Field.Text disabled={isReadOnly} name={`cvData[${index}].Type`} label="Type" />
+                <Field.SingelSelect
+                  disabled={isReadOnly}
+                  checkbox
+                  name={`cvData[${index}].Type`}
+                  label="Type"
+                  options={ARTIST_CV_EVENTTYPE}
+                />
                 <Field.Text
                   disabled={isReadOnly}
                   name={`cvData[${index}].Description`}
@@ -148,7 +155,13 @@ export function Highlights({
                   name={`cvData[${index}].Location`}
                   label="Location"
                 />
-                <Field.Text disabled={isReadOnly} name={`cvData[${index}].Scope`} label="Scope" />
+                <Field.SingelSelect
+                  disabled={isReadOnly}
+                  checkbox
+                  name={`cvData[${index}].Scope`}
+                  label="Scope"
+                  options={ARTIST_CV_EVENTSCOPE}
+                />
               </Box>
 
               <Button

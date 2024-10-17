@@ -1,15 +1,10 @@
 import type { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
 import { useState, useLayoutEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import { Box, Tab, Button } from '@mui/material';
-
 import useGetArtist from 'src/http/createArtist/useGetArtist';
-
 import { CustomTabs } from 'src/components/custom-tabs';
 import { LoadingScreen } from 'src/components/loading-screen';
-
 import { Media } from './Media';
 import { Invoice } from './Invoice';
 import { Logistic } from './Logistics';
@@ -17,19 +12,15 @@ import { Highlights } from './Highlights';
 import { AboutArtist } from './AboutArtist';
 import { OtherDetails } from './OtherDetails';
 import { GeneralInformation } from './GeneralInformation';
-import { log } from 'console';
-// ----------------------------------------------------------------------
-
+import { useSearchParams } from 'src/routes/hooks';
 // ----------------------------------------------------------------------
 
 function AddArtistIndex() {
   const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
 
-  const [searchParam, setSearchParam] = useSearchParams();
+  const { refetch } = useGetArtist();
 
-  const { isFetching, isLoading, refetch, isFetched } = useGetArtist();
-
-  const id = searchParam.get('id');
+  const id = useSearchParams().get('id');
   const [tabIndex, setTabIndex] = useState(0);
 
   const [tabState, setTabState] = useState([
@@ -68,20 +59,19 @@ function AddArtistIndex() {
         if (data.data.pageCount > 2) {
           obj.about = data.data.aboutArtist.about;
           obj.artistCatagory = data.data.aboutArtist.category;
+          obj.discipline = data.data.aboutArtist.discipline;
           delete data.data.aboutArtist;
         }
 
-        // if (data.data.pageCount > 3) {
-        //   obj.profileImage = data.data.profile.mainImage;
-        //   obj.additionalImage = data.data.profile.additionalImage;
-        //   obj.inProcessImage = data.data.profile.inProcessImage;
+        if (data.data.pageCount > 3) {
+          obj.profileImage = data.data.profile.mainImage;
+          obj.additionalImage = data.data.profile.additionalImage;
+          obj.inProcessImage = data.data.profile.inProcessImage;
+          obj.mainVideo = data.data.profile.mainVideo;
+          obj.additionalVideo = data.data.profile.additionalVideo;
 
-        //   obj.mainVideo = data.data.profile.mainVideo;
-
-        //   obj.additionalVideo = data.data.profile.additionalVideo;
-
-        //   delete data.data.media;
-        // }
+          delete data.data.media;
+        }
 
         if (data.data.pageCount > 4) {
           obj.taxNumber = data.data?.invoice?.taxNumber;
@@ -97,10 +87,6 @@ function AddArtistIndex() {
           obj.taxBankName = data.data?.invoice?.taxBankName;
           delete data.data.invoice;
         }
-
-        // check names
-
-        console.log(data.data);
 
         if (data.data.pageCount > 5) {
           obj.logName = data.data?.logistics?.logName;
@@ -146,17 +132,6 @@ function AddArtistIndex() {
           setTabIndex(data.data.pageCount);
         }
       });
-
-    // if(data.data.pageCount > 3){
-    //     obj.about = data.data.media.media;
-
-    //     delete data.data.media;
-    //   }
-    //   setArtistFormData({ ...data.data, ...obj });
-    //   setTabIndex(data.data.pageCount);
-    // });
-
-    // rember you should have to give dependency here and it is id
   }, []);
 
   if (id && !artistFormData) return <LoadingScreen />;

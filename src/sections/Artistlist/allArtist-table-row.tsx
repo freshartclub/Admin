@@ -24,6 +24,8 @@ import { useState } from 'react';
 import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 import { useForm } from 'react-hook-form';
 import { useChnagePassword } from './http/useChnagePassword';
+import { fDate } from 'src/utils/format-time';
+import { phoneNo } from 'src/utils/change-case';
 
 // import { UserQuickEditForm } from './user-quick-edit-form';
 
@@ -210,17 +212,17 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.userId}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row?.phone}
+          {phoneNo(row?.phone)}
         </TableCell>
 
         <div
-          className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+          className={`w-fit h-fit flex items-center mt-5 ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
         >
           {row?.isActivated ? 'Active' : 'Inactive'}
         </div>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row?.createdAt}
+          {fDate(row?.createdAt)}
         </TableCell>
 
         <TableCell>

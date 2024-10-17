@@ -93,7 +93,7 @@ export const PRODUCT_YEARS_OPTIONS = [
 export const PRODUCT_CATAGORYONE_OPTIONS = [
   { value: 'Paintings', label: 'Paintings' },
   { value: 'Drawings', label: 'Drawings' },
-  { value: 'Photografy', label: 'Photografy' },
+  { value: 'Photography', label: 'Photography' },
   { value: 'Sculpture', label: 'Sculpture' },
 ];
 
@@ -105,7 +105,7 @@ export const PRODUCT_STYLE_OPTIONS = [
   { value: 'Conceptual', label: 'Conceptual' },
   { value: 'Naif', label: 'Naif' },
   { value: 'Realism', label: 'Realism' },
-]
+];
 export const PRODUCT_MEDIA_OPTIONS = [
   { value: 'Acrylic', label: 'Acrylic' },
   { value: 'Oil', label: 'Oil' },
@@ -114,7 +114,7 @@ export const PRODUCT_MEDIA_OPTIONS = [
   { value: 'Mixed', label: 'Mixed' },
   { value: 'ink', label: 'ink' },
   { value: 'Pigments', label: 'Pigments' },
-]
+];
 export const PRODUCT_TECHNIC_OPTIONS = [
   { value: 'Portait', label: 'Portait' },
   { value: 'Nature', label: 'Nature' },
@@ -122,8 +122,7 @@ export const PRODUCT_TECHNIC_OPTIONS = [
   { value: 'Customs', label: 'Customs' },
   { value: 'Mixed', label: 'Mixed' },
   { value: 'Street Art', label: 'Street Art' },
-  
-]
+];
 export const PRODUCT_SUPPORT_OPTIONS = [
   { value: 'Canvas', label: 'Canvas' },
   { value: 'wood', label: 'wood' },
@@ -131,8 +130,23 @@ export const PRODUCT_SUPPORT_OPTIONS = [
   { value: 'Glass', label: 'Glass' },
   { value: 'plastic', label: 'Plastic' },
   { value: 'Stone', label: 'Stonel' },
-  
-]
+];
+
+export const ARTIST_CV_EVENTTYPE = [
+  { value: 'Solo Exhibition', label: 'Solo Exhibition' },
+  { value: 'Group Exhibition', label: 'Group Exhibition' },
+  { value: 'Collection', label: 'Collection' },
+  { value: 'Award', label: 'Award' },
+  { value: 'Press & Bibliography', label: 'Press & Bibliography' },
+  { value: 'Education', label: 'SEducation' },
+];
+
+export const ARTIST_CV_EVENTSCOPE = [
+  { value: 'Local', label: 'SLocal' },
+  { value: 'Regional', label: 'Regional' },
+  { value: 'National', label: 'SNational' },
+  { value: 'International', label: 'International' },
+];
 
 export const PRODUCT_STYLEONE_OPTIONS = [
   { value: 'Realism', label: 'Realism' },
@@ -321,23 +335,22 @@ export const ARTWORK_PROMOTIONSCORE_OPTIONS = [
   { value: '20 out of 20', label: '20 out of 20' },
   { value: '25 out of 25', label: '25 out of 25' },
   { value: '30 out of 30', label: '30 out of 30' },
-  
 ];
 export const ARTWORK_AVAILABLETO_OPTIONS = [
   { value: 'Not Available To Guest', label: 'Not Available To Guest' },
   { value: 'Available To All', label: 'Available To All' },
   { value: 'Available Only Artist', label: 'Available Only Artist' },
-]
+];
 export const ARTWORK_DISCOUNTACCEPTATION_OPTIONS = [
   { value: 'Promotions', label: 'Promotions' },
   { value: 'Only Artist', label: 'Only Artist' },
-]
+];
 export const ARTWORK_COLLECTIONLIST_OPTIONS = [
   { value: 'Collection 1', label: 'Collection 1' },
   { value: 'Collection 2', label: 'Collection 2' },
   { value: 'Collection 3', label: 'Collection 3' },
   { value: 'Collection 4', label: 'Collection 4' },
-]
+];
 
 export const PRODUCT_STYLECATEGORYS_OPTIONS1 = [
   { value: 'Painting', label: 'Painting' },
@@ -359,7 +372,7 @@ export const PRODUCT_STYLECATEGORYS_OPTIONS1 = [
   { value: 'Observation - Realism ', label: 'Observation - Realism' },
   { value: 'Expression - emotions', label: 'Expression - emotions' },
   { value: 'Seascape - Marine life', label: 'Seascape - Marine life' },
-]
+];
 export const PRODUCT_STYLECATEGORYS_OPTIONS = [
   `Painting`,
   `Dry brushing`,
@@ -379,7 +392,6 @@ export const PRODUCT_STYLECATEGORYS_OPTIONS = [
   `Vignettes of nature - observation`,
   `Expression - emotions`,
   `eascape - Marine life`,
-  
 ];
 
 export const FAQ_GROUP_OPTIONS = [
@@ -390,19 +402,18 @@ export const FAQ_GROUP_OPTIONS = [
   { value: 'Group E', label: 'Group E' },
   { value: 'Group F', label: 'Group F' },
   { value: 'Group G', label: 'Group G' },
-  
-]
+];
 export const CATAGORY_PLAN_OPTIONS = [
   { value: 'Plan 01', label: 'Plan 01' },
   { value: 'Plan 02', label: 'Plan 02' },
   { value: 'Plan 03', label: 'Plan 03' },
   { value: 'Plan 04', label: 'Plan 04' },
   { value: 'Plan 05', label: 'Plan 05' },
-]
+];
 export const CATAGORY_EXCLUSIVE_OPTIONS = [
   { value: 'yes', label: 'Yes' },
   { value: 'no', label: 'No' },
-]
+];
 export const COLLECTION_TAGS_OPTIONS = [
   { value: 'Tag 01', label: 'Tag 01' },
   { value: 'Tag 02', label: 'Tag 02' },
@@ -410,18 +421,18 @@ export const COLLECTION_TAGS_OPTIONS = [
   { value: 'Tag 04', label: 'Tag 04' },
   { value: 'Tag 05', label: 'Tag 05' },
   { value: 'Tag 06', label: 'Tag 06' },
-]
+];
 export const COLLECTION_STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },
   { value: 'Available', label: 'Available' },
   { value: 'Not Available', label: 'Not Available' },
-]
+];
 export const COLLECTION_CREATED_OPTIONS = [
   { value: 'Pablo Picasso', label: 'Pablo Picasso' },
   { value: 'Claude Monet', label: 'Claude Monet' },
   { value: 'Leonardo da Vinci', label: 'Leonardo da Vinci' },
   { value: 'Michelangelo', label: 'Michelangelo' },
-]
+];
 export const INC_GROUP_OPTIONS = [
   { value: 'Group A', label: 'Group A' },
   { value: 'Group B', label: 'Group B' },
@@ -430,7 +441,7 @@ export const INC_GROUP_OPTIONS = [
   { value: 'Group E', label: 'Group E' },
   { value: 'Group F', label: 'Group F' },
   { value: 'Group G', label: 'Group G' },
-]
+];
 export const INC_TYPE_OPTIONS = [
   { value: 'Type A', label: 'Type A' },
   { value: 'Type B', label: 'Type B' },
@@ -439,7 +450,7 @@ export const INC_TYPE_OPTIONS = [
   { value: 'Type E', label: 'Type E' },
   { value: 'Type F', label: 'Type F' },
   { value: 'Type G', label: 'Type G' },
-]
+];
 export const TICKET_TYPE_OPTIONS = [
   { value: 'Type A', label: 'Type A' },
   { value: 'Type B', label: 'Type B' },
@@ -448,24 +459,24 @@ export const TICKET_TYPE_OPTIONS = [
   { value: 'Type E', label: 'Type E' },
   { value: 'Type F', label: 'Type F' },
   { value: 'Type G', label: 'Type G' },
-]
+];
 export const TICKET_STATUS_OPTIONS = [
   { value: 'Created', label: 'Created' },
   { value: 'Dispatched', label: 'Dispatched' },
   { value: 'Technical Finish', label: 'Technical Finish' },
   { value: 'In progress', label: 'In progress' },
   { value: 'Finalise', label: 'Finalise' },
-]
+];
 export const INC_SEVERITY_OPTIONS = [
   { value: 'Severity A', label: 'severity A' },
   { value: 'Severity B', label: 'severity B' },
   { value: 'Severity C', label: 'severity C' },
-]
+];
 export const INC_STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },
   { value: 'Available', label: 'Available' },
   { value: 'Not Available', label: 'Not Available' },
-]
+];
 export const COUPON_USEGE_OPTIONS = [
   { value: '1 Time', label: '1 Time' },
   { value: '2 Time', label: '2 Time' },
@@ -473,47 +484,46 @@ export const COUPON_USEGE_OPTIONS = [
   { value: '4 Time', label: '4 Time' },
   { value: '5 Time', label: '5 Time' },
   { value: '6 Time', label: '6 Time' },
-]
+];
 export const COUPON_SUBSCRIPTIONPLAN_OPTIONS = [
   { value: '$ 30/month', label: '$ 30/month' },
   { value: '$ 20/month', label: '$ 20/month' },
   { value: '$ 40/month', label: '$ 40/month' },
   { value: '$ 50/month', label: '$ 50/month' },
-  
-]
+];
 export const COUPON_EXTENTION_OPTIONS = [
   { value: '20 days', label: '20 days' },
   { value: '30 days', label: '30 days' },
   { value: '40 days', label: '40 days' },
   { value: '50 days', label: '50 days' },
   { value: '25 days', label: '25 days' },
-]
+];
 export const COUPON_DISCOUNT_OPTIONS = [
   { value: '5 %', label: '5 %' },
   { value: '10 %', label: '10 %' },
   { value: '15 %', label: '15 %' },
   { value: '20 %', label: '20 %' },
   { value: '25 %', label: '25 %' },
-]
+];
 export const PLAN_NUMOFARTWORK_OPTIONS = [
   { value: '5 ', label: '5 ' },
   { value: '10 ', label: '10 ' },
   { value: '15 ', label: '15 ' },
   { value: '20 ', label: '20 ' },
   { value: '25 ', label: '25 ' },
-]
+];
 export const PLAN_SHIPMENTS_OPTIONS = [
   { value: 'yes', label: 'yes' },
   { value: 'No', label: 'No' },
-]
+];
 export const PLAN_STATUS_OPTIONS = [
   { value: 'published', label: 'Published' },
   { value: 'draft', label: 'Draft' },
-]
+];
 export const MASSAGE_TYPE_OPTIONS = [
   { value: 'Information', label: 'Information' },
   { value: 'Status', label: 'Status' },
   { value: 'Warning', label: 'Warning' },
   { value: 'Termination', label: 'Termination' },
-]
+];
 export const PRODUCT_CHECKOUT_STEPS = ['Cart', 'Billing & address', 'Payment'];

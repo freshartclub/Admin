@@ -1,9 +1,8 @@
-import { Button, Card, Table, TableBody } from '@mui/material';
+import { Card, Table, TableBody } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
 import { LoadingScreen } from 'src/components/loading-screen';
 import axiosInstance from 'src/utils/axios';
-import { getToken } from 'src/utils/tokenHelper';
 import {
   useTable,
   emptyRows,
@@ -12,18 +11,9 @@ import {
   TableHeadCustom,
   TablePaginationCustom,
 } from 'src/components/table';
-const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-
-// import { credentialTable } from "./Discipline-table-row";
-
+// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { ListArtist } from './artistlist-table-row';
-
 import { useQuery } from '@tanstack/react-query';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
-import { ADMIN_BASE_URL } from 'src/utils/BaseUrls';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 const TABLE_HEAD = [
@@ -31,22 +21,16 @@ const TABLE_HEAD = [
   { id: 'group', label: 'Artist Id', width: 180 },
   { id: 'group', label: 'Contact', width: 180 },
   { id: 'status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Create At', width: 220 },
-  { id: '', label: 'Action', width: 88 },
+  { id: 'create', label: 'Created At', width: 130 },
+  { id: 'action', label: 'Action', width: 88 },
 ];
 export function ListArtists() {
-  const token = getToken();
-  const [styles, setStyles] = useState([]);
-  // const [table, setTable] = useTable(); // Initialize table state
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-
-// dont forget to change uri
+  // dont forget to change uri
   async function fetchData() {
-    const { data } = await axiosInstance.get(
-      `${ARTIST_ENDPOINTS.getAllArtist}`
-    );
+    const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllArtist}`);
     return data.data;
   }
 
@@ -55,8 +39,6 @@ export function ListArtists() {
     queryFn: fetchData,
     staleTime: 1000 * 60 * 5,
   });
-
-
 
   useEffect(() => {
     if (data) {
@@ -77,7 +59,6 @@ export function ListArtists() {
   }
 
   const dataFiltered = data;
-  console.log(dataFiltered)
 
   return (
     <div>

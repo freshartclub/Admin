@@ -5,26 +5,21 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
-import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { RouterLink } from 'src/routes/components';
-
-// import { UserQuickEditForm } from './user-quick-edit-form';
+import { fDate } from 'src/utils/format-time';
+import { phoneNo } from 'src/utils/change-case';
 
 // ----------------------------------------------------------------------
 
@@ -38,12 +33,8 @@ type Props = {
 
 export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
-
-  const quickEdit = useBoolean();
-
-  // const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+  // const quickEdit = useBoolean();
 
   const navigate = useNavigate();
 
@@ -64,47 +55,28 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.artistName}
+                {row?.artistName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
+                {row?.email}
               </Box>
             </Stack>
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.artistId}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.artistId}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.phone}
+          {phoneNo(row?.phone)}
         </TableCell>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.isActivated}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.isActive === true && 'success') ||
-              (row.isActive === false && 'warning') ||
-            //   (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.isActive}
-          </Label>
-        </TableCell> */}
-        {/* <div className={`${row.isActive == true ? "bg-slate-500 rounded-md px-2 py-1 text-white" : "bg-red-300 rounded-md px-2 py-1"} ${row.isActive == true && 'Active'}`}>{row.isActive}</div> */}
         <div
-          className={`w-fit h-fit flex items-center mt-5 ${row.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+          className={`w-fit h-fit flex items-center mt-5 ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
         >
-          {row.isActivated ? 'Active' : 'Inactive'}
+          {row?.isActivated ? 'Active' : 'Inactive'}
         </div>
 
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.isActive}</TableCell> */}
-
         <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row.createdAt}
+          {fDate(row?.createdAt)}
         </TableCell>
 
         <TableCell>

@@ -43,8 +43,8 @@ export const NewProductSchema = zod.object({
   // managerExtraInfo1: zod.string(),
   // managerExtraInfo2: zod.string(),
   // managerExtraInfo3: zod.string(),
-  documentName: zod.string().min(1, { message: 'Document Name is required!' }),
-  uploadDocs: schemaHelper.file({ message: { required_error: 'document is required!' } }),
+  // documentName: zod.string().min(1, { message: 'Document Name is required!' }),
+  // uploadDocs: schemaHelper.files({ required: false }),
 });
 
 // ----------------------------------------------------------------------
@@ -82,7 +82,7 @@ export function OtherDetails({
   const defaultValues = useMemo(
     () => ({
       documentName: artistFormData?.documentName || '',
-      uploadDocs: artistFormData?.uploadDocs || '',
+      uploadDocs: artistFormData?.uploadDocs || [],
       managerArtistName: artistFormData?.managerArtistName || '',
       managerArtistSurnameOther1: artistFormData?.managerArtistSurnameOther1 || '',
       managerArtistSurname2: artistFormData?.managerArtistSurname2 || '',
@@ -105,7 +105,7 @@ export function OtherDetails({
   );
 
   const handleRemoveDocument = () => {
-    setValue('uploadDocs', null);
+    setValue('uploadDocs', []);
   };
 
   const methods = useForm({
@@ -125,7 +125,7 @@ export function OtherDetails({
     formState: { isSubmitting },
   } = methods;
   const navigate = useNavigate();
-  console.log(methods.getValues());
+
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     data.count = 7;
@@ -137,10 +137,8 @@ export function OtherDetails({
     mutate({ body: data });
   });
 
-  const blob = new Blob([methods.getValues('uploadDocs')], { type: 'application/pdf' });
-  const blobURL = URL.createObjectURL(blob);
-
-  console.log(blobURL);
+  // const blob = new Blob([methods.getValues('uploadDocs')], { type: 'application/pdf' });
+  // const blobURL = URL.createObjectURL(blob);
 
   const viewNext = () => {
     setTabIndex(0);
@@ -159,7 +157,7 @@ export function OtherDetails({
 
         <Typography variant="Document">Upload Document</Typography>
 
-        {methods.getValues('uploadDocs') ? (
+        {/* {methods.getValues('uploadDocs') ? (
           <div className="flex flex-col gap-2">
             <iframe
               src={`${import.meta.env.VITE_SERVER_BASE_URL}/uploads/documents/${artistFormData?.uploadDocs}`}
@@ -183,14 +181,24 @@ export function OtherDetails({
         ) : (
           <Field.UploadDocument
             disabled={isReadOnly}
-            accept={'pdf/*'}
-            multiple={false}
+            accept="application/pdf"
+            multiple
             helperText={'Plese upload pdf'}
             name="uploadDocs"
             maxSize={3145728}
             onDelete={handleRemoveDocument}
           />
-        )}
+        )} */}
+        <Field.Upload
+          disabled={isReadOnly}
+          accept="application/pdf"
+          multiple
+          helperText={'Please upload pdf'}
+          name="uploadDocs"
+          maxSize={3145728}
+          onRemove={handleRemoveDocument}
+          // onDelete={handleRemoveDocument}
+        />
       </Stack>
     </Card>
   );
@@ -358,7 +366,7 @@ export function OtherDetails({
                 Activate Artist
               </button>
               <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-                {isPending ? 'Loading...' : 'Submit'}
+                {isPending ? 'Loading...' : 'Save'}
               </button>
             </>
           ) : (
