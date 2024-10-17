@@ -15,9 +15,7 @@ export function SingleFilePreview({ file }: SingleFilePreviewProps) {
   const fileName = typeof file === 'string' ? file : file.name;
 
   const previewUrl = typeof file === 'string' ? file : URL.createObjectURL(file);
- 
-  console.log(previewUrl);
-  
+
   return (
     <Box
       sx={{

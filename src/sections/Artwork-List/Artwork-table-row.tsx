@@ -55,19 +55,19 @@ export function ArtworkTableRow({
           <Checkbox
             checked={selected}
             onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
+            inputProps={{ id: `row-checkbox-${row?.id}`, 'aria-label': `Row checkbox` }}
           />
         </TableCell>
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.artworkName}>{row.artworkName.charAt(0).toUpperCase()}</Avatar>
+            <Avatar alt={row?.artworkName}>{row?.artworkName.charAt(0).toUpperCase()}</Avatar>
 
             <ListItemText
               disableTypography
               primary={
                 <Typography variant="body2" noWrap>
-                  {row.artworkName}
+                  {row?.artworkName}
                 </Typography>
               }
               secondary={
@@ -77,69 +77,44 @@ export function ArtworkTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row.artworkType}
+                  {row?.artworkType}
                 </Link>
               }
             />
           </Stack>
         </TableCell>
 
-        <TableCell align="center">{row.catalog}</TableCell>
+        <TableCell align="center">{row?.artworkSeries}</TableCell>
 
-        <TableCell align="center">{row.commercializationWay}</TableCell>
+        <TableCell align="center">{row?.commercialization?.upworkOffer}</TableCell>
 
-        <TableCell align="center">{row.artistName}</TableCell>
+        <TableCell align="center">{row?.artistName}</TableCell>
 
         <TableCell>
           <ListItemText
-            primary={fDate(row.publishDate)}
-            secondary={fTime(row.publishDate)}
+            primary={fDate(row?.updatedAt)}
+            secondary={fTime(row?.publishDate)}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
           />
         </TableCell>
 
         <TableCell>
-        <Label
-          variant="soft"
-          color={
-            (row.status === 'published' && 'success') ||
-            (row.status === 'failed' && 'warning') ||
-            (row.status === 'draft' && 'error') ||
-            'default'
-          }
-        >
-          {row.status}
-        </Label>
-      </TableCell>
+          <Label
+            variant="soft"
+            color={
+              (row.status === 'published' && 'success') ||
+              (row.status === 'failed' && 'warning') ||
+              (row.status === 'draft' && 'error') ||
+              'default'
+            }
+          >
+            {row?.isApproved}
+          </Label>
+        </TableCell>
 
-        {/* <TableCell>
-          <ListItemText
-            primary={fDate(row.dueDate)}
-            secondary={fTime(row.dueDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell> */}
-
-        {/* <TableCell>{fCurrency(row.totalAmount)}</TableCell> */}
-
-        {/* <TableCell align="center">{row.createBy}</TableCell>
-
-        <TableCell align="center">{row.tags[0]}</TableCell> */}
-  
-
-    <TableCell>
+        <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                // color={quickEdit.value ? 'inherit' : 'default'}
-                // onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>

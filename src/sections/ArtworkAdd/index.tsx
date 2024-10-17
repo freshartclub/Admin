@@ -8,7 +8,15 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
-import { InputAdornment, Typography } from '@mui/material';
+import {
+  Avatar,
+  Input,
+  InputAdornment,
+  ListItemText,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import CardHeader from '@mui/material/CardHeader';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -22,7 +30,7 @@ import {
   ARTWORK_THEME_OPTIONS,
   ARTWORK_STYLE_OPTIONS,
   ARTWORK_TAGES_OPTIONS,
-  PRODUCT_series_OPTIONS,
+  PRODUCT_SERIES_OPTIONS,
   ARTWORK_FRAMED_OPTIONS,
   ARTWORK_COLORS_OPTIONS,
   ARTWORK_TECHNIC_OPTIONS,
@@ -45,135 +53,141 @@ import {
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import useCreateArtworkMutation from './http/useCreateArtworkMutation';
+import { useGetArtistById } from './http/useGetArtistById';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { Helmet } from 'react-helmet-async';
+import { Link } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export const NewProductSchema = zod.object({
-  ArtworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
-  ArtistID: zod.string().min(1, { message: 'Artist ID is required!' }),
-  ArtistName: zod.string().min(1, { message: 'ArtistName is required!' }),
-  ArtworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
-  ArtworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
-  ProductDescription: zod.string(),
-
-  MainPhoto: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-  BackPhoto: schemaHelper.file({ message: { required_error: 'Back Photo is required!' } }),
-  InprocssPhoto: schemaHelper.file({ message: { required_error: 'Inprocess Photo is required!' } }),
-  images: schemaHelper.files({ message: { required_error: 'Images is required!' } }),
-  MainVideo: schemaHelper.file({ message: { required_error: 'Main Video is required!' } }),
-  otherVideo: schemaHelper.file({ message: { required_error: 'other Video is required!' } }),
-
-  ArtworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
-  ArtworkTheme: zod.string().min(1, { message: 'ArtworkTheme is required!' }),
-  ArtworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
-  Material: zod.string().min(1, { message: 'Material is required!' }),
-  Weight: zod.string().min(1, { message: 'Weight required!' }),
-  Hight: zod.string().min(1, { message: 'Hight required!' }),
-  Lenght: zod.string().min(1, { message: 'Lenght required!' }),
-  Width: zod.string().min(1, { message: 'Width required!' }),
-  HangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
-  HangingDescription: zod.string(),
-  Framed: zod.string().min(1, { message: 'Framed is required!' }),
-  FramedDescription: zod.string(),
-  FrameHight: zod.string().min(1, { message: 'Hight required!' }),
-  FrameLenght: zod.string().min(1, { message: 'Lenght required!' }),
-  FrameWidth: zod.string().min(1, { message: 'Width required!' }),
-  ArtworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  Emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  Colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  PurchaseCatalog: zod.string().min(1, { message: 'Purchase Catalog required!' }),
-  ArtistFees: zod.string().min(1, { message: 'Artist Fees required!' }),
-  DownwardOffer: zod.string(),
-  UpworkOffer: zod.string(),
-  AcceptOfferPrice: zod.string().min(1, { message: 'Accept offer price is required!' }),
-  PriceRequest: zod.string(),
-  BasePrice: zod.string().min(1, { message: 'Base price is required!' }),
-  Dpersentage: zod.number().min(1, { message: 'Descount not be $0.00' }),
-  VATAmount: zod.string(),
-  ArtistbaseFees: zod.string(),
-  SKU: zod.string().min(1, { message: 'SKU is required!' }),
-
-  PCode: zod.string(),
-
-  Location: zod.string().min(1, { message: 'Location is required!' }),
-  ArtworkDiscipline: zod.string(),
-  ArtworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  Promotion: zod.string(),
-  PromotionScore: zod.string(),
-  AvailableTo: zod.string(),
-  DiscountAcceptation: zod.string(),
-  CollectionList: zod.string(),
-});
+// export const NewProductSchema = zod.object({
+//   // artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
+//   // artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
+//   // artistName: zod.string().min(1, { message: 'artistName is required!' }),
+//   // artworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
+//   // artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
+//   // productDescription: zod.string(),
+//   // mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
+//   // backImage: schemaHelper.file({ message: { required_error: 'Back Photo is required!' } }),
+//   // InprocssPhoto: schemaHelper.file({ message: { required_error: 'Inprocess Photo is required!' } }),
+//   // images: zod.array(zod.string()).max(5, { message: 'Maximum Limit Five Only' }),
+//   // mainVideo: schemaHelper.file({ message: { required_error: 'Main Video is required!' } }),
+//   // otherVideo: schemaHelper.file({ message: { required_error: 'other Video is required!' } }),
+//   // artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
+//   // artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
+//   // artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
+//   // material: zod.string().min(1, { message: 'material is required!' }),
+//   // weight: zod.string().min(1, { message: 'weight required!' }),
+//   // height: zod.string().min(1, { message: 'height required!' }),
+//   // lenght: zod.string().min(1, { message: 'lenght required!' }),
+//   // width: zod.string().min(1, { message: 'width required!' }),
+//   // hangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
+//   // hangingDescription: zod.string(),
+//   // framed: zod.string().min(1, { message: 'Framed is required!' }),
+//   // framedDescription: zod.string(),
+//   // frameHeight: zod.string().min(1, { message: 'Hight required!' }),
+//   // frameLenght: zod.string().min(1, { message: 'Lenght required!' }),
+//   // frameWidth: zod.string().min(1, { message: 'Width required!' }),
+//   // artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+//   // emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+//   // colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+//   // purchaseCatalog: zod.string().min(1, { message: 'Purchase Catalog required!' }),
+//   // artistFees: zod.string().min(1, { message: 'Artist Fees required!' }),
+//   // downwardOffer: zod.string(),
+//   // upworkOffer: zod.string(),
+//   // acceptOfferPrice: zod.string().min(1, { message: 'Accept offer price is required!' }),
+//   // priceRequest: zod.string(),
+//   // basePrice: zod.string().min(1, { message: 'Base price is required!' }),
+//   // dpersentage: zod.number().min(1, { message: 'Descount not be $0.00' }),
+//   // vatAmount: zod.string(),
+//   // artistbaseFees: zod.string(),
+//   // sku: zod.string().min(1, { message: 'sku is required!' }),
+//   // pCode: zod.string(),
+//   // location: zod.string().min(1, { message: 'location is required!' }),
+//   // artworkDiscipline: zod.string(),
+//   // artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+//   // promotion: zod.string(),
+//   // promotionScore: zod.string(),
+//   // availableTo: zod.string(),
+//   // discountAcceptation: zod.string(),
+//   // collectionList: zod.string(),
+// });
 
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
   const router = useRouter();
 
-  const [includeTaxes, setIncludeTaxes] = useState(false);
+  const [mongoDBId, setmongoDBId] = useState(null);
+  const [open, setOpen] = useState(true);
 
   const defaultValues = useMemo(
     () => ({
-      ArtworkName: currentProduct?.ArtworkName || 'Monalisa',
-      ArtistID: currentProduct?.ArtistID || 'XZH6546',
-      ArtistName: currentProduct?.ArtistName || 'Rachit Patel',
-      ArtworkCreationYear: currentProduct?.ArtworkCreationYear || '2021',
-      ArtworkSeries: currentProduct?.ArtworkSeries || 'Catagog 1',
-      ProductDescription: currentProduct?.ProductDescription || 'LoremLroem',
+      artworkName: currentProduct?.artworkName || '',
+      artistID: currentProduct?.artistID || '',
+      artistName: currentProduct?.artistName || '',
+      artworkCreationYear: currentProduct?.artworkCreationYear || '',
+      artworkSeries: currentProduct?.artworkSeries || ' ',
+      productDescription: currentProduct?.productDescription || '',
 
-      MainPhoto: currentProduct?.MainPhoto || null,
-      BackPhoto: currentProduct?.BackPhoto || null,
-      InprocessPhoto: currentProduct?.InprocessPhoto || null,
+      mainImage: currentProduct?.mainImage || null,
+      backImage: currentProduct?.backImage || null,
+      inProcessImage: currentProduct?.inProcessImage || null,
       images: currentProduct?.images || [],
-      MainVideo: currentProduct?.MainVideo || null,
+      mainVideo: currentProduct?.mainVideo || null,
       otherVideo: currentProduct?.otherVideo || null,
 
-      ArtworkTechnic: currentProduct?.ArtworkTechnic || 'Painting',
-      ArtworkTheme: currentProduct?.ArtworkTheme || '',
-      ArtworkOrientation: currentProduct?.ArtworkOrientation || 'Square',
-      Material: currentProduct?.Material || '',
-      Weight: currentProduct?.Weight || '20kg',
-      Hight: currentProduct?.Hight || '400Cm',
-      Lenght: currentProduct?.Lenght || '20m',
-      Width: currentProduct?.Width || '10m',
-      HangingAvailable: currentProduct?.HangingAvailable || '',
-      HangingDescription: currentProduct?.HangingDescription || 'Lorem Lorem',
-      Framed: currentProduct?.Framed || '',
-      FramedDescription: currentProduct?.FramedDescription || 'Lorem Lorem',
-      FrameHight: currentProduct?.FrameHight || '20m',
-      FrameLenght: currentProduct?.FrameLenght || '400cm',
-      FrameWidth: currentProduct?.FrameWidth || '20vw',
-      ArtworkStyle: currentProduct?.ArtworkStyle || [],
-      Emotions: currentProduct?.Emotions || [],
-      Colors: currentProduct?.Colors || [],
-      PurchaseCatalog: currentProduct?.PurchaseCatalog || '',
-      ArtistFees: currentProduct?.ArtistFees || '$5000',
-      DownwardOffer: currentProduct?.ArtistFees || '',
-      UpworkOffer: currentProduct?.UpworkOffer || '',
-      AcceptOfferPrice: currentProduct?.AcceptOfferPrice || '',
-      PriceRequest: currentProduct?.PriceRequest || '',
+      artworkTechnic: currentProduct?.artworkTechnic || '',
+      artworkTheme: currentProduct?.artworkTheme || '',
+      artworkOrientation: currentProduct?.artworkOrientation || '',
+      material: currentProduct?.material || '',
+      weight: currentProduct?.weight || '',
+      lenght: currentProduct?.lenght || '',
+      height: currentProduct?.height || '',
+      width: currentProduct?.width || '',
+      hangingAvailable: currentProduct?.hangingAvailable || '',
+      hangingDescription: currentProduct?.hangingDescription || ' ',
+      framed: currentProduct?.framed || '',
+      framedDescription: currentProduct?.framedDescription || ' ',
+      frameHeight: currentProduct?.frameHeight || '',
+      frameLenght: currentProduct?.frameLenght || '',
+      frameWidth: currentProduct?.frameWidth || '',
+      artworkStyle: currentProduct?.artworkStyle || [],
+      emotions: currentProduct?.emotions || [],
+      colors: currentProduct?.colors || [],
+      purchaseCatalog: currentProduct?.purchaseCatalog || '',
+      downwardOffer: currentProduct?.ArtistFees || '',
+      upworkOffer: currentProduct?.upworkOffer || '',
+      acceptOfferPrice: currentProduct?.acceptOfferPrice || '',
+      priceRequest: currentProduct?.priceRequest || '',
 
-      BasePrice: currentProduct?.BasePrice || '',
-      Dpersentage: currentProduct?.Dpersentage || 0,
-      VATAmount: currentProduct?.VATAmount || '',
-      ArtistbaseFees: currentProduct?.ArtistbaseFees || '',
+      basePrice: currentProduct?.basePrice || '',
+      dpersentage: currentProduct?.dpersentage || 0,
+      vatAmount: currentProduct?.vatAmount || '',
+      artistFees: currentProduct?.artistFees || '',
+      offensive: currentProduct?.offensive || '',
+      artistbaseFees: currentProduct?.artistbaseFees || '',
 
-      SKU: currentProduct?.SKU || '',
-      PCode: currentProduct?.PCode || '',
-      Location: currentProduct?.Location || '',
-      ArtworkDiscipline: currentProduct?.ArtworkDiscipline || '',
-      ArtworkTags: currentProduct?.ArtworkTags || [],
-      Promotion: currentProduct?.Promotion || '',
-      PromotionScore: currentProduct?.PromotionScore || '',
-      AvailableTo: currentProduct?.AvailableTo || '',
-      DiscountAcceptation: currentProduct?.DiscountAcceptation || '',
-      CollectionList: currentProduct?.CollectionList || '',
+      sku: currentProduct?.sku || '',
+      pCode: currentProduct?.pCode || '',
+      location: currentProduct?.location || '',
+      artworkDiscipline: currentProduct?.artworkDiscipline || '',
+      artworkTags: currentProduct?.artworkTags || [],
+      promotion: currentProduct?.promotion || '',
+      promotionScore: currentProduct?.promotionScore || '',
+      availableTo: currentProduct?.availableTo || '',
+      discountAcceptation: currentProduct?.discountAcceptation || '',
+      collectionList: currentProduct?.collectionList || '',
     }),
     [currentProduct]
   );
 
+  const { mutate, isPending } = useCreateArtworkMutation();
+
   const methods = useForm({
-    resolver: zodResolver(NewProductSchema),
+    // resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
 
@@ -182,8 +196,17 @@ export function ArtworkAdd({ currentProduct }) {
     watch,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+
+  const debounceArtistId = useDebounce(methods.getValues('artistID'), 800);
+
+  const {
+    refetch,
+    data: artistData,
+    isRefetching,
+    isPending: isArtistIdPending,
+  } = useGetArtistById(debounceArtistId);
 
   const values = watch();
 
@@ -194,19 +217,18 @@ export function ArtworkAdd({ currentProduct }) {
   }, [currentProduct, defaultValues, reset]);
 
   useEffect(() => {
-    if (includeTaxes) {
-      setValue('taxes', 0);
-    } else {
-      setValue('taxes', currentProduct?.taxes || 0);
+    if (methods.getValues('artistID') !== '') {
+      refetch();
     }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
+  }, [debounceArtistId]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      const newData = {
+        data: data,
+        id: mongoDBId,
+      };
+      mutate(newData);
     } catch (error) {
       console.error(error);
     }
@@ -224,39 +246,92 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('images', [], { shouldValidate: true });
   }, [setValue]);
 
-  const handleChangeIncludeTaxes = useCallback((event) => {
-    setIncludeTaxes(event.target.checked);
-  }, []);
+  // const handleChangeIncludeTaxes = useCallback((event) => {
+  //   setIncludeTaxes(event.target.checked);
+  // }, []);
 
   const handleRemoveFileone = useCallback(() => {
-    setValue('BackPhoto', null);
+    setValue('backImage', null);
   }, [setValue]);
 
   const handleRemoveFile = useCallback(() => {
-    setValue('MainPhoto', null);
+    setValue('mainImage', null);
   }, [setValue]);
 
   const handleRemoveFiletwo = useCallback(() => {
-    setValue('InprocessPhoto', null);
+    setValue('inProcessImage', null);
   }, [setValue]);
 
   const handleRemoveFileVideo = useCallback(() => {
-    setValue('MainVideo', null);
+    setValue('mainVideo', null);
   }, [setValue]);
+
   const handleRemoveFileotherVideo = useCallback(() => {
     setValue('otherVideo', null);
   }, [setValue]);
 
+  const refillData = (artistData) => {
+    setValue('artistID', artistData?.artistId);
+    setValue('artistName', artistData?.artistName);
+    setmongoDBId(artistData?._id);
+    setOpen(false);
+  };
+
   const renderDetails = (
-    <Card sx={{ mb: 3 }}>
+    <Card sx={{ mb: 3, position: 'relative' }}>
       <CardHeader title="General Informations" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="ArtistID" label=" Artist ID" />
-        <Field.Text name="ArtistName" label=" Artist Name" />
-        <Field.Text name="ArtworkName" label=" Artwork Name" />
+        <Field.Text name="artistID" label=" Artist ID" />
+        {methods.getValues('artistID') && open && (
+          <div className="absolute w-[94%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+            <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {artistData && artistData.length > 0 ? (
+                artistData.map((i, j) => (
+                  <TableCell
+                    onClick={() => refillData(i)}
+                    key={j}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    <Stack spacing={2} direction="row" alignItems="center">
+                      <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
+
+                      <ListItemText
+                        disableTypography
+                        primary={
+                          <Typography variant="body2" noWrap>
+                            {i?.artistName} - {i?.userId}
+                          </Typography>
+                        }
+                        secondary={
+                          <Link
+                            noWrap
+                            variant="body2"
+                            // onClick={onViewRow}
+                            sx={{ color: 'text.disabled' }}
+                          >
+                            {i?.email}
+                          </Link>
+                        }
+                      />
+                    </Stack>
+                  </TableCell>
+                ))
+              ) : (
+                <TableCell>No Data Available</TableCell>
+              )}
+            </TableRow>
+          </div>
+        )}
+        <Field.Text name="artistName" label=" Artist Name" />
+        <Field.Text name="artworkName" label=" Artwork Name" />
 
         <Box
           columnGap={2}
@@ -266,19 +341,19 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <Field.SingelSelect
             checkbox
-            name="ArtworkCreationYear"
+            name="artworkCreationYear"
             label="Artwork Creation year"
             options={PRODUCT_YEARS_OPTIONS}
           />
           <Field.SingelSelect
-            checkbox
-            name="ArtworkSeries"
+            checkbo
+            name="artworkSeries"
             label="Artwork Series"
-            options={PRODUCT_series_OPTIONS}
+            options={PRODUCT_SERIES_OPTIONS}
           />
         </Box>
 
-        <Field.Text name="ProductDescription" label="Product Description" multiline rows={4} />
+        <Field.Text name="productDescription" label="Product Description" multiline rows={4} />
 
         {/* end my section */}
       </Stack>
@@ -298,18 +373,18 @@ export function ArtworkAdd({ currentProduct }) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <div>
-            <Typography variant="MainPhoto">Main Photo</Typography>
-            <Field.Upload name="MainPhoto" maxSize={3145728} onDelete={handleRemoveFile} />
+            <Typography variant="mainImage">Main Photo</Typography>
+            <Field.Upload name="mainImage" maxSize={3145728} onDelete={handleRemoveFile} />
           </div>
 
           <div>
-            <Typography variant="BackPhoto">Back Photo</Typography>
-            <Field.Upload name="BackPhoto" maxSize={3145728} onDelete={handleRemoveFileone} />
+            <Typography variant="backImage">Back Photo</Typography>
+            <Field.Upload name="backImage" maxSize={3145728} onDelete={handleRemoveFileone} />
           </div>
 
           <div>
-            <Typography variant="InprocessPhoto">Inprocess Photo</Typography>
-            <Field.Upload name="InprocessPhoto" maxSize={3145728} onDelete={handleRemoveFiletwo} />
+            <Typography variant="inProcessImage">Inprocess Photo</Typography>
+            <Field.Upload name="inProcessImage" maxSize={3145728} onDelete={handleRemoveFiletwo} />
           </div>
         </Box>
         <div>
@@ -320,8 +395,8 @@ export function ArtworkAdd({ currentProduct }) {
             name="images"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
-            onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
+            // onRemoveAll={handleRemoveAllFiles}
+            // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box
@@ -331,11 +406,11 @@ export function ArtworkAdd({ currentProduct }) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <div>
-            <Typography variant="MainVideo">Main Video</Typography>
-            <Field.MultiVideo name="MainVideo" maxSize={5e7} onDelete={handleRemoveFileVideo} />
+            <Typography variant="mainVideo">Main Video</Typography>
+            <Field.MultiVideo name="mainVideo" maxSize={5e7} onDelete={handleRemoveFileVideo} />
           </div>
           <div>
-            <Typography variant="otherVideo">Main Video</Typography>
+            <Typography variant="otherVideo">Other Video</Typography>
             <Field.MultiVideo
               name="otherVideo"
               maxSize={5e7}
@@ -361,21 +436,21 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <Field.SingelSelect
             checkbox
-            name="ArtworkTechnic"
+            name="artworkTechnic"
             label="Artwork Technic"
             options={ARTWORK_TECHNIC_OPTIONS}
           />
 
           <Field.SingelSelect
             checkbox
-            name="ArtworkTheme"
+            name="artworkTheme"
             label="Artwork Theme"
             options={ARTWORK_THEME_OPTIONS}
           />
         </Box>
         <Field.SingelSelect
           checkbox
-          name="ArtworkOrientation"
+          name="artworkOrientation"
           label="Artwork Orientation"
           options={ARTWORK_ORIENTATION_OPTIONS}
         />
@@ -388,15 +463,15 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <Field.SingelSelect
             checkbox
-            name="Material"
-            label="Material"
+            name="material"
+            label="material"
             options={ARTWORK_MATERIAL_OPTIONS}
           />
 
           <Field.SingelSelect
             checkbox
-            name="Offensive"
-            label="Offensive"
+            name="offensive"
+            label="offensive"
             options={ARTWORK_OFFENSIVE_OPTIONS}
           />
         </Box>
@@ -406,48 +481,48 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
         >
-          <Field.Text name="Weight" label="Weight" />
-          <Field.Text name="Hight" label="Hight" />
-          <Field.Text name="Lenght" label="Lenght" />
-          <Field.Text name="Width" label="Width" />
+          <Field.Text name="weight" label="weight" />
+          <Field.Text name="height" label="height" />
+          <Field.Text name="lenght" label="lenght" />
+          <Field.Text name="width" label="width" />
         </Box>
         <Field.SingelSelect
           checkbox
-          name="HangingAvailable"
+          name="hangingAvailable"
           label="Hanging available"
           options={ARTWORK_HANGING_OPTIONS}
         />
-        <Field.Text name="HangingDescription" label="Hanging Description" multiline rows={3} />
+        <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
         <Field.SingelSelect
           checkbox
-          name="Framed"
-          label="Framed"
+          name="framed"
+          label="framed"
           options={ARTWORK_FRAMED_OPTIONS}
         />
-        <Field.Text name="FramedDescription" label="Framed Description" multiline rows={3} />
+        <Field.Text name="framedDescription" label="framed Description" multiline rows={3} />
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="FrameHight" label="Hight" />
-          <Field.Text name="FrameLenght" label="Lenght" />
-          <Field.Text name="FrameWidth" label="Width" />
+          <Field.Text name="frameHeight" label="Height" />
+          <Field.Text name="frameLenght" label="Lenght" />
+          <Field.Text name="frameWidth" label="Width" />
         </Box>
         <Field.MultiSelect
           checkbox
-          name="ArtworkStyle"
+          name="artworkStyle"
           label="Artwork Style"
           options={ARTWORK_STYLE_OPTIONS}
         />
         <Field.MultiSelect
           checkbox
-          name="Emotions"
-          label="Emotions"
+          name="emotions"
+          label="emotions"
           options={ARTWORK_EMOTIONS_OPTIONS}
         />
-        <Field.MultiSelect checkbox name="Colors" label="Colors" options={ARTWORK_COLORS_OPTIONS} />
+        <Field.MultiSelect checkbox name="colors" label="colors" options={ARTWORK_COLORS_OPTIONS} />
       </Stack>
     </Card>
   );
@@ -460,27 +535,27 @@ export function ArtworkAdd({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="PurchaseCatalog"
+          name="purchaseCatalog"
           label="Purchase Catalog"
           options={ARTWORK_PURCHASECATALOG_OPTIONS}
         />
-        <Field.Text name="ArtistFees" label="Artist Fees" />
+        <Field.Text name="artistFees" label="Artist Fees" />
         <Field.SingelSelect
           checkbox
-          name="DownwardOffer"
+          name="downwardOffer"
           label="Downward Offer"
           options={ARTWORK_DOWNWARDOFFER_OPTIONS}
         />
         <Field.SingelSelect
           checkbox
-          name="UpworkOffer"
+          name="upworkOffer"
           label="Upwork Offer"
           options={ARTWORK_UPWORKOFFER_OPTIONS}
         />
-        <Field.Text name="AcceptOfferPrice" label="Accept offer min. price" />
+        <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
         <Field.SingelSelect
           checkbox
-          name="PriceRequest"
+          name="priceRequest"
           label="Price by request"
           options={ARTWORK_UPWORKOFFER_OPTIONS}
         />
@@ -493,10 +568,10 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="BasePrice" label="Base Price" />
-        {/* <Field.Text name="Dpersentage" label="Discounted Percentage" /> */}
+        <Field.Text name="basePrice" label="Base Price" />
+        {/* <Field.Text name="dpersentage" label="Discounted Percentage" /> */}
         <Field.Text
-          name="Dpersentage"
+          name="dpersentage"
           label="Discounted Percentage"
           placeholder="0.00%"
           type="number"
@@ -512,8 +587,8 @@ export function ArtworkAdd({ currentProduct }) {
           }}
         />
         {/* <Field.Text name="Discounte " label="Discounted Percentage " /> */}
-        <Field.Text name="VATAmount" label="VAT Amount (%)" />
-        <Field.Text name="ArtistbaseFees" label="Artist Fees" />
+        <Field.Text name="vatAmount" label="VAT Amount (%)" />
+        <Field.Text name="artistbaseFees" label="Artist Fees" />
       </Stack>
     </Card>
   );
@@ -529,9 +604,9 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="SKU" label="SKU" />
-          <Field.Text name="PCode" label="Product code" />
-          <Field.Text name="Location" label="Location" />
+          <Field.Text name="sku" label="sku" />
+          <Field.Text name="pCode" label="Product code" />
+          <Field.Text name="location" label="location" />
         </Box>
       </Stack>
     </Card>
@@ -544,13 +619,13 @@ export function ArtworkAdd({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="ArtworkDiscipline"
+          name="artworkDiscipline"
           label="Artwork Discipline"
           options={ARTWORK_DISCIPLINE_OPTIONS}
         />
         <Field.MultiSelect
           checkbox
-          name="ArtworkTags"
+          name="artworkTags"
           label="Artwork Tags"
           options={ARTWORK_TAGES_OPTIONS}
         />
@@ -565,14 +640,14 @@ export function ArtworkAdd({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="Promotion"
-          label="Promotion"
+          name="promotion"
+          label="promotion"
           options={ARTWORK_PROMOTIONS_OPTIONS}
         />
         <Field.SingelSelect
           checkbox
-          name="PromotionScore"
-          label="Promotion Score"
+          name="promotionScore"
+          label="promotion Score"
           options={ARTWORK_PROMOTIONSCORE_OPTIONS}
         />
       </Stack>
@@ -587,13 +662,13 @@ export function ArtworkAdd({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="AvailableTo"
-          label="AvailableTo"
+          name="availableTo"
+          label="availableTo"
           options={ARTWORK_AVAILABLETO_OPTIONS}
         />
         <Field.SingelSelect
           checkbox
-          name="DiscountAcceptation"
+          name="discountAcceptation"
           label="Discount Acceptation"
           options={ARTWORK_DISCOUNTACCEPTATION_OPTIONS}
         />
@@ -608,7 +683,7 @@ export function ArtworkAdd({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="CollectionList"
+          name="collectionList"
           label="Collection List"
           options={ARTWORK_COLLECTIONLIST_OPTIONS}
         />
@@ -654,7 +729,7 @@ export function ArtworkAdd({ currentProduct }) {
           {/* {renderActions} */}
           <div className="flex justify-end mb-6 mr-6">
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              Save
+              {isPending ? 'Saving...' : 'Save'}
             </button>
           </div>
         </Stack>
