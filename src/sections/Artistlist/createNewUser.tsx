@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -8,11 +8,12 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import { fData } from 'src/utils/format-number';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { Form, Field } from 'src/components/hook-form';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 import { CreateArtistFormSchema } from './createArtitstForm';
+import axios from 'axios';
 
-const CreateNewUser = ({ data, isReadOnly }) => {
+const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   const [value, setValue] = useState('new');
   const [isArtist, setIsArtist] = useState(false);
 
@@ -51,6 +52,23 @@ const CreateNewUser = ({ data, isReadOnly }) => {
       console.error(error);
     }
   });
+
+  useEffect(() => {
+    const getLocation = () => {
+      fetchCountryByIP();
+    };
+
+    const fetchCountryByIP = async () => {
+      try {
+        const response = await axios.get('https://ipapi.co/json/');
+        methods.setValue('country', response.data.country_name);
+      } catch (err) {
+        console.log('Failed to fetch country data by IP');
+      }
+    };
+
+    getLocation();
+  }, [methods.getValues('country')]);
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -113,9 +131,11 @@ const CreateNewUser = ({ data, isReadOnly }) => {
               spacing={2}
               sx={{ mt: 3 }}
             >
-              <Button type="submit" variant="contained">
-                {isPending && !isArtist ? 'Loading..' : 'Create User'}
-              </Button>
+              {!existingUser && (
+                <Button type="submit" variant="contained">
+                  {isPending && !isArtist ? 'Loading..' : 'Create User'}
+                </Button>
+              )}
               <Button
                 onClick={() => setIsArtist(true)}
                 type="submit"

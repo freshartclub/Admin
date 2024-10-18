@@ -223,7 +223,7 @@ export function CreateArtistForm() {
           </Grid>
         </Form>
       ) : (
-        <CreateNewUser data={data} isReadOnly={isReadOnly} />
+        <CreateNewUser existingUser={existingUser} data={data} isReadOnly={isReadOnly} />
       )}
     </>
   );

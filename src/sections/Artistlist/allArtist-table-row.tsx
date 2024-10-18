@@ -206,9 +206,13 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.userId}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.state}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.country}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span

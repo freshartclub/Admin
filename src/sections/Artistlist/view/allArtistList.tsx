@@ -16,8 +16,10 @@ import { useGetArtistList } from '../http/useGetArtistList';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'User Id', width: 180 },
   { id: 'Contact', label: 'Contact', width: 130 },
+  { id: 'city', label: 'City', width: 130 },
+  { id: 'provnce', label: 'Province', width: 130 },
+  { id: 'country', label: 'Country', width: 130 },
   { id: 'Status', label: 'Status', width: 130 },
   { id: 'create', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
