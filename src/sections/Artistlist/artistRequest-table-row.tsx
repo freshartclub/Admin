@@ -1,3 +1,5 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -16,12 +18,12 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
-import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
+import { IconButton } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: ArtistDetailType;
+  row: AddArtistComponentProps;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -66,10 +68,26 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.address.country}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row?.address?.city}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {row.address.country}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+          {fDate(row?.createdAt)}
+        </TableCell>
+
+        <TableCell sx={{ alignContent: 'center' }}>
+          <RouterLink>
+            <Iconify icon="mdi:eye-outline" />
+          </RouterLink>
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
           <RouterLink
             href={`${paths.dashboard.artist.createArtist}?id=${row._id}&extisting=${extisting}`}
           >
@@ -77,6 +95,14 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
               <Iconify icon="mingcute:add-line" /> Create Artist
             </span>
           </RouterLink>
+        </TableCell>
+
+        <TableCell>
+          <Stack direction="row" alignItems="center">
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          </Stack>
         </TableCell>
       </TableRow>
 
@@ -95,12 +121,13 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove Request
+            Reject
           </MenuItem>
-
-          <MenuItem onClick={() => handelEdit(row._id)}>
-            <Iconify icon="solar:pen-bold" />
-            Edit
+          {/* right now we just write here to remember that we have to change this */}
+          {/* onClick={() => handelEdit(row._id)} */}
+          <MenuItem>
+            <Iconify icon="mdi:ban" />
+            Ban
           </MenuItem>
         </MenuList>
       </CustomPopover>
@@ -109,10 +136,10 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content="Are you sure want to delete?"
+        content="Are you sure want to Reject this request?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            Reject
           </Button>
         }
       />

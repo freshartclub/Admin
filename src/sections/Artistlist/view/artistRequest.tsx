@@ -17,12 +17,14 @@ import { ArtistRequest } from '../artistRequest-table-row';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'Contact', width: 180 },
-  { id: 'city', label: 'City', width: 130 },
-  { id: 'country', label: 'Country', width: 130 },
-  { id: 'create', label: 'Created At', width: 130 },
-  { id: 'action', label: 'Action', width: 88 },
+  { id: 'name', label: 'Artist Name​', width: 130 },
+  { id: 'group', label: 'Contact', width: 140 },
+  { id: 'city', label: 'City', width: 140 },
+  { id: 'country', label: 'Country', width: 140 },
+  { id: 'create', label: 'Created At', width: 140 },
+  { id: 'action', label: 'View CV', width: 140 },
+  { id: 'action', label: 'Action', width: 170 },
+  { id: 'action', label: 'Action', width: 140 },
 ];
 export function ArtistsRequest() {
   const table = useTable();
