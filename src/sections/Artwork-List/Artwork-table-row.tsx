@@ -23,7 +23,13 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { Tooltip } from '@mui/material';
+import { DialogActions, Tooltip } from '@mui/material';
+import { useRemoveArtWorkList } from './http/useRemoveArtWorkList';
+import { Dialog } from '@mui/material';
+import { DialogTitle } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogContentText } from '@mui/material';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -45,8 +51,40 @@ export function ArtworkTableRow({
   onDeleteRow,
 }: Props) {
   const confirm = useBoolean();
+  const [showPop, setShowPop] = useState(false);
 
   const popover = usePopover();
+
+  const { mutate, isPending } = useRemoveArtWorkList(row._id);
+
+  const removeArtWorkList = () => {
+    mutate();
+    if (!isPending) {
+      setShowPop(false);
+    }
+  };
+
+  const dialogBox = (
+    <Dialog
+      open={showPop}
+      onClose={() => {
+        setShowPop(false);
+      }}
+    >
+      <DialogTitle>Unsuspend Artist</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Are You Sure you want to remove this Art Work?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={removeArtWorkList}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {isPending ? 'Removing...' : 'Remove'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
     <>
@@ -92,7 +130,7 @@ export function ArtworkTableRow({
 
         <TableCell>
           <ListItemText
-            primary={fDate(row?.updatedAt)}
+            primary={fDate(row?.createdAt)}
             secondary={fTime(row?.publishDate)}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
@@ -129,15 +167,9 @@ export function ArtworkTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
+          <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Remove
           </MenuItem>
 
           <MenuItem
@@ -152,17 +184,7 @@ export function ArtworkTableRow({
         </MenuList>
       </CustomPopover>
 
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
+      {dialogBox}
     </>
   );
 }

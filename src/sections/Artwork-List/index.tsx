@@ -52,16 +52,19 @@ import { ArtworkList } from './data';
 import { ArtworkTableRow } from './Artwork-table-row';
 import { ArtworkTableToolbar } from './Artwork-table-toolbar';
 import { ArtworkTableFiltersResult } from './Artwork-table-filters-result';
+import { useGetArtworkList } from './http/useGetArtworkList';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Artworks' },
-  { id: 'price', label: 'Catalog' },
-  { id: 'createDate', label: 'Comercialization Way' },
-  { id: 'dueDate', label: 'Artist' },
-  { id: 'tag', label: 'Published date' },
-  { id: 'status', label: 'Status' },
+  { id: 'invoiceNumber', label: 'Artworks', width: 180 },
+  { id: 'price', label: 'Catalog', width: 180 },
+  { id: 'createDate', label: 'Comercialization Way', width: 180 },
+  { id: 'dueDate', label: 'Artist', width: 180 },
+  { id: 'tag', label: 'Published date', width: 180 },
+  { id: 'status', label: 'Status', width: 180 },
+  { id: 'action', label: 'Action', width: 180 },
 ];
 
 // ----------------------------------------------------------------------
@@ -85,10 +88,17 @@ export function ArtworkListView() {
     endDate: null,
   });
 
+  const { data, isLoading } = useGetArtworkList();
+  console.log(isLoading);
+  console.log(data);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
   const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
 
   const dataFiltered = applyFilter({
-    inputData: ArtworkList,
+    inputData: data,
     comparator: getComparator(table.order, table.orderBy),
     filters: filters.state,
     dateError,
@@ -149,53 +159,55 @@ export function ArtworkListView() {
     },
   ] as const;
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = ArtworkList.filter((row) => row.id !== id);
+  const handleRemove = () => {};
 
-      toast.success('Delete success!');
+  // const handleDeleteRow = useCallback(
+  //   (id: string) => {
+  //     const deleteRow = ArtworkList.filter((row) => row.id !== id);
 
-      setTableData(deleteRow);
+  //     toast.success('Delete success!');
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, ArtworkList]
-  );
+  //     setTableData(deleteRow);
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = ArtworkList.filter((row) => !table.selected.includes(row.id));
+  //     table.onUpdatePageDeleteRow(dataInPage.length);
+  //   },
+  //   [dataInPage.length, table, ArtworkList]
+  // );
 
-    toast.success('Delete success!');
+  // const handleDeleteRows = useCallback(() => {
+  //   const deleteRows = ArtworkList.filter((row) => !table.selected.includes(row.id));
 
-    setTableData(deleteRows);
+  //   toast.success('Delete success!');
 
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, ArtworkList]);
+  //   setTableData(deleteRows);
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
+  //   table.onUpdatePageDeleteRows({
+  //     totalRowsInPage: dataInPage.length,
+  //     totalRowsFiltered: dataFiltered.length,
+  //   });
+  // }, [dataFiltered.length, dataInPage.length, table, ArtworkList]);
 
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
-    },
-    [router]
-  );
+  // const handleEditRow = useCallback(
+  //   (id: string) => {
+  //     router.push(paths.dashboard.invoice.edit(id));
+  //   },
+  //   [router]
+  // );
 
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+  // const handleViewRow = useCallback(
+  //   (id: string) => {
+  //     router.push(paths.dashboard.invoice.details(id));
+  //   },
+  //   [router]
+  // );
+
+  // const handleFilterStatus = useCallback(
+  //   (event: React.SyntheticEvent, newValue: string) => {
+  //     table.onResetPage();
+  //     filters.setState({ status: newValue });
+  //   },
+  //   [filters, table]
+  // );
 
   return (
     <>
@@ -304,11 +316,11 @@ export function ArtworkListView() {
                       <ArtworkTableRow
                         key={i}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        // selected={table.selected.includes(row.id)}
+                        // onSelectRow={() => table.onSelectRow(row.id)}
+                        // onViewRow={() => handleViewRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
                       />
                     ))}
 
@@ -372,6 +384,8 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
   const { name, status, service, startDate, endDate } = filters;
+
+  console.log(filters);
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
