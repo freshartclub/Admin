@@ -284,52 +284,54 @@ export function ArtworkAdd({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="artistID" label=" Artist ID" />
-        {methods.getValues('artistID') && open && (
-          <div className="absolute w-[94%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
-            <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {artistData && artistData.length > 0 ? (
-                artistData.map((i, j) => (
-                  <TableCell
-                    onClick={() => refillData(i)}
-                    key={j}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                      },
-                    }}
-                  >
-                    <Stack spacing={2} direction="row" alignItems="center">
-                      <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
+        <div className="relative">
+          <Field.Text name="artistID" label=" Artist ID" />
+          {methods.getValues('artistID') && open && (
+            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {artistData && artistData.length > 0 ? (
+                  artistData.map((i, j) => (
+                    <TableCell
+                      onClick={() => refillData(i)}
+                      key={j}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      <Stack spacing={2} direction="row" alignItems="center">
+                        <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
 
-                      <ListItemText
-                        disableTypography
-                        primary={
-                          <Typography variant="body2" noWrap>
-                            {i?.artistName} - {i?.userId}
-                          </Typography>
-                        }
-                        secondary={
-                          <Link
-                            noWrap
-                            variant="body2"
-                            // onClick={onViewRow}
-                            sx={{ color: 'text.disabled' }}
-                          >
-                            {i?.email}
-                          </Link>
-                        }
-                      />
-                    </Stack>
-                  </TableCell>
-                ))
-              ) : (
-                <TableCell>No Data Available</TableCell>
-              )}
-            </TableRow>
-          </div>
-        )}
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography variant="body2" noWrap>
+                              {i?.artistName} - {i?.userId}
+                            </Typography>
+                          }
+                          secondary={
+                            <Link
+                              noWrap
+                              variant="body2"
+                              // onClick={onViewRow}
+                              sx={{ color: 'text.disabled' }}
+                            >
+                              {i?.email}
+                            </Link>
+                          }
+                        />
+                      </Stack>
+                    </TableCell>
+                  ))
+                ) : (
+                  <TableCell>No Data Available</TableCell>
+                )}
+              </TableRow>
+            </div>
+          )}
+        </div>
         <Field.Text name="artistName" label=" Artist Name" />
         <Field.Text name="artworkName" label=" Artwork Name" />
 
@@ -395,8 +397,8 @@ export function ArtworkAdd({ currentProduct }) {
             name="images"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
-            // onRemoveAll={handleRemoveAllFiles}
-            // onUpload={() => console.info('ON UPLOAD')}
+          // onRemoveAll={handleRemoveAllFiles}
+          // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box
