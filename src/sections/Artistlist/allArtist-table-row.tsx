@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -26,13 +24,12 @@ import { useForm } from 'react-hook-form';
 import { useChnagePassword } from './http/useChnagePassword';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
-
-// import { UserQuickEditForm } from './user-quick-edit-form';
+import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDetailType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -211,19 +208,17 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.userId}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {phoneNo(row?.phone)}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <span
+            className={`w-fit h-fit flex items-center ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+          >
+            {row?.isActivated ? 'Active' : 'Inactive'}
+          </span>
         </TableCell>
 
-        <div
-          className={`w-fit h-fit flex items-center mt-5 ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
-        >
-          {row?.isActivated ? 'Active' : 'Inactive'}
-        </div>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {fDate(row?.createdAt)}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
         <TableCell>
           <Stack direction="row" alignItems="center">

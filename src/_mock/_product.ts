@@ -222,7 +222,7 @@ export const PRODUCT_MAXNUMBROFARTWORK_OPTIONS = [
   { value: '19', label: '19' },
 ];
 
-export const PRODUCT_series_OPTIONS = [
+export const PRODUCT_SERIES_OPTIONS = [
   { value: 'Catagog 1', label: 'Catagog 1' },
   { value: 'Catagog 2', label: 'Catagog 2' },
   { value: 'Catagog 3', label: 'Catagog 3' },
@@ -325,6 +325,7 @@ export const ARTWORK_TAGES_OPTIONS = [
   { value: 'D', label: 'D' },
   { value: 'E', label: 'E' },
 ];
+
 export const ARTWORK_PROMOTIONS_OPTIONS = [
   { value: 'Yes', label: 'Yes' },
   { value: 'No', label: 'No' },

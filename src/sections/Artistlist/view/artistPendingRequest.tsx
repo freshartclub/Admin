@@ -17,8 +17,8 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'User Id', width: 180 },
+  { id: 'name', label: 'Artist Name​', width: 180 },
+  { id: 'id', label: 'User Id', width: 130 },
   { id: 'group', label: 'Contact', width: 180 },
   { id: 'status', label: 'Country', width: 130 },
   { id: 'create', label: 'Created At', width: 130 },

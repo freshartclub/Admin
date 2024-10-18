@@ -104,7 +104,7 @@ function AddArtistIndex() {
 
         if (data.data.pageCount > 6) {
           obj.documentName = data.data?.document?.documentName;
-          obj.uploadDocs = data.data?.document?.documentPath;
+          obj.uploadDocs = data.data?.document?.documents;
           obj.managerArtistName = data.data?.managerDetails?.artistName;
           obj.managerArtistSurnameOther1 = data.data?.managerDetails?.artistSurname1;
           obj.managerArtistSurname2 = data.data?.managerDetails?.artistSurname2;

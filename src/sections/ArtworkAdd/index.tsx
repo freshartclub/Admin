@@ -346,7 +346,7 @@ export function ArtworkAdd({ currentProduct }) {
             options={PRODUCT_YEARS_OPTIONS}
           />
           <Field.SingelSelect
-            checkbo
+            checkbox
             name="artworkSeries"
             label="Artwork Series"
             options={PRODUCT_SERIES_OPTIONS}

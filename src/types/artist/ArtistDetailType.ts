@@ -81,6 +81,15 @@ export interface ArtistDetailType {
   logEmail: string;
   logPhone: string;
   logNotes?: string;
+
+  //-----artsistlist-----
+  _id: any;
+  uploadImage: any;
+  profile: any;
+  artistId: string;
+  isActivated: Boolean;
+  createdAt: string;
+  userId: string;
 }
 
 interface cvData {

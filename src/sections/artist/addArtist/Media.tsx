@@ -121,7 +121,6 @@ export function Media({
   const handleRemoveIndividualAdditionalVideo = useCallback(
     (video) => {
       const arr = formProps.getValues('additionalVideo').filter((val) => val.name !== video.name);
-
       setValue('additionalVideo', arr);
     },
     [setValue]

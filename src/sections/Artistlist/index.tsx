@@ -18,7 +18,7 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'Artist Id', width: 180 },
+  { id: 'id', label: 'Artist Id', width: 180 },
   { id: 'group', label: 'Contact', width: 180 },
   { id: 'status', label: 'Status', width: 130 },
   { id: 'create', label: 'Created At', width: 130 },

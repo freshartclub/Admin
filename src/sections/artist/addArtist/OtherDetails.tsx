@@ -2,9 +2,8 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -13,7 +12,6 @@ import { Dialog, Switch, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import { useSearchParams } from 'src/routes/hooks';
-import { useNavigate } from 'react-router-dom';
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
@@ -23,28 +21,25 @@ import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMu
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  // managerArtistName: zod.string().min(1, { message: 'artistName is required!' }),
-  // managerArtistSurnameOther1: zod.string(),
-  // managerArtistSurname2: zod.string(),
-  // managerArtistNickname: zod.string(),
-  // managerArtistContactTo: zod.string(),
-  // managerArtistPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  // managerArtistEmail: zod
-  //   .string()
-  //   .min(1, { message: 'Email is required!' })
-  //   .email({ message: 'Email must be a valid email address!' }),
-  // address: zod.string().min(1, { message: 'Address is required!' }),
-  // managerZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  // managerCity: zod.string().min(1, { message: 'City is required!' }),
-  // managerState: zod.string().min(1, { message: 'Province is required!' }),
-  // managerCountry: zod.string().min(1, { message: 'Country is required!' }),
-  // managerArtistLanguage: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  // managerArtistGender: zod.string().min(1, { message: 'Gender is required!' }),
-  // managerExtraInfo1: zod.string(),
-  // managerExtraInfo2: zod.string(),
-  // managerExtraInfo3: zod.string(),
-  // documentName: zod.string().min(1, { message: 'Document Name is required!' }),
-  // uploadDocs: schemaHelper.files({ required: false }),
+  documentName: zod.string().min(1, { message: 'Document Name is required!' }).optional(),
+  uploadDocs: schemaHelper.files({ required: false }).optional(),
+  managerArtistName: zod.string().optional(),
+  managerArtistSurnameOther1: zod.string().optional(),
+  managerArtistSurname2: zod.string().optional(),
+  managerArtistNickname: zod.string().optional(),
+  managerArtistContactTo: zod.string().optional(),
+  managerArtistPhone: zod.string().optional(),
+  managerArtistEmail: zod.string().optional(),
+  address: zod.string().optional(),
+  managerZipCode: zod.string().optional(),
+  managerCity: zod.string().optional(),
+  managerState: zod.string().optional(),
+  managerCountry: zod.string().optional(),
+  managerArtistLanguage: zod.string().array().optional(),
+  managerArtistGender: zod.string().optional(),
+  managerExtraInfo1: zod.string().optional(),
+  managerExtraInfo2: zod.string().optional(),
+  managerExtraInfo3: zod.string().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -100,45 +95,49 @@ export function OtherDetails({
       managerExtraInfo1: artistFormData?.managerExtraInfo1 || '',
       managerExtraInfo2: artistFormData?.managerExtraInfo2 || '',
       managerExtraInfo3: artistFormData?.managerExtraInfo3 || '',
+      count: 7,
+      isContainsImage: true,
+      isManagerDetails: false,
     }),
     [artistFormData]
   );
-
-  const handleRemoveDocument = () => {
-    setValue('uploadDocs', []);
-  };
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
-  useEffect(() => {
-    methods.watch('uploadDocs');
-  }, []);
 
   const {
-    reset,
-    watch,
     setValue,
     trigger,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  const navigate = useNavigate();
+
+  const handleRemoveDocument = useCallback(
+    (doc) => {
+      const arr = methods.getValues('uploadDocs').filter((val) => val.name !== doc.name);
+      setValue('uploadDocs', arr);
+    },
+    [setValue]
+  );
+
+  useEffect(() => {
+    methods.watch('uploadDocs');
+  }, []);
 
   const onSubmit = handleSubmit(async (data) => {
-    await trigger(undefined, { shouldFocus: true });
     data.count = 7;
     data.isContainsImage = true;
+    data.uploadDocs = methods.getValues('uploadDocs');
+    data.isManagerDetails = false;
     if (isOn) {
       data.isManagerDetails = true;
     }
 
+    await trigger(undefined, { shouldFocus: true });
     mutate({ body: data });
   });
-
-  // const blob = new Blob([methods.getValues('uploadDocs')], { type: 'application/pdf' });
-  // const blobURL = URL.createObjectURL(blob);
 
   const viewNext = () => {
     setTabIndex(0);
@@ -155,40 +154,7 @@ export function OtherDetails({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text disabled={isReadOnly} name="documentName" label="Documents name" />
 
-        <Typography variant="Document">Upload Document</Typography>
-
-        {/* {methods.getValues('uploadDocs') ? (
-          <div className="flex flex-col gap-2">
-            <iframe
-              src={`${import.meta.env.VITE_SERVER_BASE_URL}/uploads/documents/${artistFormData?.uploadDocs}`}
-              width="100%"
-              height="500px"
-              title="PDF Document"
-            />
-            {isReadOnly ? (
-              <span className="text-white opacity-1 bg-black rounded-md px-3 py-2 text-center">
-                Click to Remove
-              </span>
-            ) : (
-              <span
-                onClick={() => methods.setValue('uploadDocs', '')}
-                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer text-center"
-              >
-                Click to Remove
-              </span>
-            )}
-          </div>
-        ) : (
-          <Field.UploadDocument
-            disabled={isReadOnly}
-            accept="application/pdf"
-            multiple
-            helperText={'Plese upload pdf'}
-            name="uploadDocs"
-            maxSize={3145728}
-            onDelete={handleRemoveDocument}
-          />
-        )} */}
+        <Typography variant="body2">Upload Document</Typography>
         <Field.Upload
           disabled={isReadOnly}
           accept="application/pdf"
@@ -197,7 +163,6 @@ export function OtherDetails({
           name="uploadDocs"
           maxSize={3145728}
           onRemove={handleRemoveDocument}
-          // onDelete={handleRemoveDocument}
         />
       </Stack>
     </Card>
@@ -253,7 +218,12 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
-            <Field.Phone disabled={isReadOnly} name="managerArtistPhone" label="Phone number" />
+            <Field.Phone
+              helperText={'Please enter phone number'}
+              disabled={isReadOnly}
+              name="managerArtistPhone"
+              label="Phone number"
+            />
 
             <Field.Text disabled={isReadOnly} name="managerArtistEmail" label="Email address" />
           </Box>
@@ -287,7 +257,7 @@ export function OtherDetails({
           >
             <Field.MultiSelect
               disabled={isReadOnly}
-              helperText=""
+              helperText="Please select language"
               checkbox
               name="managerArtistLanguage"
               placeholder="Select language"
@@ -359,12 +329,12 @@ export function OtherDetails({
         <div className="flex justify-end gap-5">
           {!isReadOnly ? (
             <>
-              <button
+              <span
                 onClick={handleOnActivataion}
                 className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
               >
                 Activate Artist
-              </button>
+              </span>
               <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
                 {isPending ? 'Loading...' : 'Save'}
               </button>

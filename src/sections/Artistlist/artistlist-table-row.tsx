@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -20,11 +18,12 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
+import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDetailType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -66,16 +65,18 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.artistId}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {phoneNo(row?.phone)}
         </TableCell>
-        <div
-          className={`w-fit h-fit flex items-center mt-5 ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
-        >
-          {row?.isActivated ? 'Active' : 'Inactive'}
-        </div>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} >
+          <span
+            className={`w-fit h-fit flex items-center ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+          >
+            {row?.isActivated ? 'Active' : 'Inactive'}
+          </span>
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {fDate(row?.createdAt)}
         </TableCell>
 

@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -13,11 +11,12 @@ import { DialogContent } from '@mui/material';
 import { useState } from 'react';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
+import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDetailType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -81,17 +80,10 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {row?.address?.city}
-        </TableCell>
-
-        <div className={`w-fit h-fit flex items-center mt-5 `}>{row?.address?.country}</div>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
-          {fDate(row?.createdAt)}
-        </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.country}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Button onClick={() => setShowPop(true)} variant="contained">
             Unsuspend Artist
           </Button>

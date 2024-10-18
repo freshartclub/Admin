@@ -27,7 +27,7 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS,FAQ_GROUP_OPTIONS} from 'src/_mock';
+import { _invoices, INVOICE_SERVICE_OPTIONS, FAQ_GROUP_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -47,7 +47,6 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-
 import { ArtworkList } from './data';
 
 import { ArtworkTableRow } from './Artwork-table-row';
@@ -56,17 +55,14 @@ import { ArtworkTableFiltersResult } from './Artwork-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-
-
 const TABLE_HEAD = [
-    { id: 'invoiceNumber', label: 'Artworks' },
-    { id: 'price', label: 'Catalog' },
-    { id: 'createDate', label: 'Comercialization Way' },
-    { id: 'dueDate', label: 'Artist' },
-    { id: 'tag', label: 'Published date' },
-    { id: 'tag', label: 'Status' },
-    { id: '',},
-  ];
+  { id: 'invoiceNumber', label: 'Artworks' },
+  { id: 'price', label: 'Catalog' },
+  { id: 'createDate', label: 'Comercialization Way' },
+  { id: 'dueDate', label: 'Artist' },
+  { id: 'tag', label: 'Published date' },
+  { id: 'status', label: 'Status' },
+];
 
 // ----------------------------------------------------------------------
 
@@ -80,7 +76,6 @@ export function ArtworkListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
-  
 
   const filters = useSetState<IInvoiceTableFilters>({
     name: '',
@@ -225,10 +220,7 @@ export function ArtworkListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
-        
-
         <Card>
-
           <ArtworkTableToolbar
             filters={filters}
             dateError={dateError}
@@ -308,9 +300,9 @@ export function ArtworkListView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, i) => (
                       <ArtworkTableRow
-                        key={row.id}
+                        key={i}
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
@@ -391,23 +383,23 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-//   if (name) {
-//     inputData = inputData.filter(
-//       (invoice) =>
-//         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-//         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-//     );
-//   }
+  //   if (name) {
+  //     inputData = inputData.filter(
+  //       (invoice) =>
+  //         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+  //         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+  //     );
+  //   }
 
   if (status !== 'all') {
     inputData = inputData.filter((invoice) => invoice.status === status);
   }
 
-//   if (service.length) {
-//     inputData = inputData.filter((invoice) =>
-//       invoice.items.some((filterItem) => service.includes(filterItem.service))
-//     );
-//   }
+  //   if (service.length) {
+  //     inputData = inputData.filter((invoice) =>
+  //       invoice.items.some((filterItem) => service.includes(filterItem.service))
+  //     );
+  //   }
 
   if (!dateError) {
     if (startDate && endDate) {
