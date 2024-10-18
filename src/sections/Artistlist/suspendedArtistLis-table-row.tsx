@@ -1,3 +1,5 @@
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -11,12 +13,11 @@ import { DialogContent } from '@mui/material';
 import { useState } from 'react';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
-import { ArtistDetailType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: ArtistDetailType;
+  row: AddArtistComponentProps;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
