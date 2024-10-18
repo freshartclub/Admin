@@ -191,7 +191,7 @@ export function GeneralInformation({
 
           <Field.Text disabled={isReadOnly} name="email" label="Email" />
         </Box>
-    
+
         <Box
           columnGap={2}
           rowGap={3}
@@ -199,12 +199,10 @@ export function GeneralInformation({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.MultiSelect
-            helperText=""
             checkbox
             name="language"
             disabled={isReadOnly}
-            placeholder="Select language"
-            label="language"
+            label="Select language"
             options={PRODUCT_LANGUAGE_OPTIONS}
           />
 

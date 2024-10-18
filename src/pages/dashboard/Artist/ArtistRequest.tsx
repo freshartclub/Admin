@@ -41,7 +41,7 @@ export default function artistList() {
             <RouterLink href={`${paths.dashboard.artist.createArtist}`} variant="contained">
               <span className="bg-black text-white py-2 px-5 rounded-md flex items-center gap-2">
                 {' '}
-                <Iconify icon="mingcute:add-line" /> Create User
+                <Iconify icon="mingcute:add-line" /> Create Artist
               </span>
             </RouterLink>
           }
