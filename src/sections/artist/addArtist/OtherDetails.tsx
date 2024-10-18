@@ -71,7 +71,7 @@ export function OtherDetails({
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
   const { isPending: isActivePending, mutate: activeMutate } =
-    useActivateArtistMutation(handleActivateSuccess);
+    useActivateArtistMutation(handleSuccess);
   const [isOn, setIsOn] = useState(false);
 
   const defaultValues = useMemo(
@@ -137,6 +137,19 @@ export function OtherDetails({
 
     await trigger(undefined, { shouldFocus: true });
     mutate({ body: data });
+  });
+
+  const onActiveSubmit = handleSubmit(async (data) => {
+    data.count = 7;
+    data.isContainsImage = true;
+    data.uploadDocs = methods.getValues('uploadDocs');
+    data.isManagerDetails = false;
+    if (isOn) {
+      data.isManagerDetails = true;
+    }
+
+    await trigger(undefined, { shouldFocus: true });
+    activeMutate({ body: data });
   });
 
   const viewNext = () => {
@@ -306,7 +319,7 @@ export function OtherDetails({
       <DialogActions>
         <div className="flex gap-5">
           <button
-            onClick={activeMutate}
+            onClick={onActiveSubmit}
             className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
           >
             {isActivePending ? 'Loading...' : 'Activate Artist'}
