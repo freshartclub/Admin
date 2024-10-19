@@ -122,6 +122,7 @@ export function ArtworkAdd({ currentProduct }) {
 
   const [mongoDBId, setmongoDBId] = useState(null);
   const [open, setOpen] = useState(true);
+  const [percent, setPercent] = useState(0);
 
   const defaultValues = useMemo(
     () => ({
@@ -228,7 +229,15 @@ export function ArtworkAdd({ currentProduct }) {
         data: data,
         id: mongoDBId,
       };
-      mutate(newData);
+      mutate({
+        newData: newData,
+        onUploadProgress: (progressEvent) => {
+          const { loaded, total } = progressEvent;
+          const percentCompleted = Math.floor((loaded * 100) / total);
+
+          setPercent(percentCompleted);
+        },
+      });
     } catch (error) {
       console.error(error);
     }
@@ -731,7 +740,7 @@ export function ArtworkAdd({ currentProduct }) {
           {/* {renderActions} */}
           <div className="flex justify-end mb-6 mr-6">
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Saving...' : 'Save'}
+              {isPending ? 'Saving ' + percent + '%' : 'Save'}
             </button>
           </div>
         </Stack>

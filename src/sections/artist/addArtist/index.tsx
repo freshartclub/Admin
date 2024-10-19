@@ -85,6 +85,14 @@ function AddArtistIndex() {
           obj.taxPhone = data.data?.invoice?.taxPhone;
           obj.taxBankIBAN = data.data?.invoice?.taxBankIBAN;
           obj.taxBankName = data.data?.invoice?.taxBankName;
+
+          obj.CustomOrder = data.data?.commercilization?.customOrder;
+          obj.PublishingCatalog = data.data?.commercilization?.publishingCatalog;
+          obj.ArtistFees = data.data?.commercilization?.artistFees;
+          obj.ArtistPlus = data.data?.commercilization?.artistPlus;
+          obj.MinNumberOfArtwork = data.data?.commercilization?.minNumberOfArtwork;
+          obj.MaxNumberOfArtwork = data.data?.commercilization?.maxNumberOfArtwork;
+
           delete data.data.invoice;
         }
 

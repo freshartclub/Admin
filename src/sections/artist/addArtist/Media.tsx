@@ -39,6 +39,8 @@ export function Media({
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
+  const [percent, setPercent] = useState(0);
+
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
     setTabIndex(tabIndex + 1);
@@ -81,13 +83,19 @@ export function Media({
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-
     await trigger(undefined, { shouldFocus: true });
     data.count = 4;
     data.isContainsImage = true;
 
-    mutate({ body: data });
+    mutate({
+      body: data,
+      onUploadProgress: (progressEvent) => {
+        const { loaded, total } = progressEvent;
+        const percentCompleted = Math.floor((loaded * 100) / total);
+
+        setPercent(percentCompleted);
+      },
+    });
   });
 
   const handleRemoveMainImage = useCallback(() => {
@@ -218,7 +226,7 @@ export function Media({
         <div className="flex justify-end">
           {!isReadOnly ? (
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Loading...' : 'Save & Next'}
+              {isPending ? 'Saving ' + percent + '%' : 'Save & Next'}
             </button>
           ) : (
             <span

@@ -8,7 +8,7 @@ const useAddArtistMutation = (handleOnSuccess) => {
   const [searchParam, setSearchParam] = useSearchParams();
   const id = searchParam.get('id');
 
-  async function addArtist({ body }: { body: any }) {
+  async function addArtist({ body, onUploadProgress }: { body: any; onUploadProgress: any }) {
     let headers;
     if (body?.isContainsImage) {
       const formData = new FormData();
@@ -29,12 +29,15 @@ const useAddArtistMutation = (handleOnSuccess) => {
       headers = { 'Content-Type': 'application/json' };
     }
 
-    if (id)
-      return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, {
-        headers,
-      });
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body);
+    const config = {
+      headers,
+      onUploadProgress,
+    };
+
+    if (id) return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, config);
   }
+  
   return useMutation({
     mutationFn: addArtist,
     onSuccess: async (res, body) => {
