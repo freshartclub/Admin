@@ -20,10 +20,10 @@ import { useSearchParams } from 'src/routes/hooks';
 
 export const NewProductSchema = zod.object({
   profileImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-  additionalImage: schemaHelper.files({ required: false }),
+  additionalImage: zod.any(),
   inProcessImage: zod.any(),
   mainVideo: schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
-  additionalVideo: schemaHelper.files({ required: false }),
+  additionalVideo: zod.any(),
 });
 
 // ----------------------------------------------------------------------
@@ -59,6 +59,8 @@ export function Media({
       inProcessImage: artistFormData?.inProcessImage || null,
       mainVideo: artistFormData?.mainVideo || null,
       additionalVideo: artistFormData?.additionalVideo || [],
+      isContainsImage: true,
+      count: 4,
     }),
     [artistFormData]
   );
@@ -195,8 +197,9 @@ export function Media({
         >
           <div>
             <Typography variant="mainVideo">Main Video</Typography>
-            <Field.MultiVideo
+            <Field.Upload
               disabled={isReadOnly}
+              accept="video/*"
               name="mainVideo"
               maxSize={5e7}
               onDelete={handleRemoveMainVideo}
@@ -204,8 +207,9 @@ export function Media({
           </div>
           <div>
             <Typography variant="additionalVideo">Additional Video</Typography>
-            <Field.MultiVideo
+            <Field.Upload
               disabled={isReadOnly}
+              accept="video/*"
               onRemoveAll={handleRemoveAdditionalVideos}
               onRemove={handleRemoveIndividualAdditionalVideo}
               multiple

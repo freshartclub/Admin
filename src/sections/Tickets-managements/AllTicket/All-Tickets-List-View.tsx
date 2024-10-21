@@ -1,5 +1,3 @@
-
-
 import type { IOrderItem, IOrderTableFilters } from 'src/types/order';
 
 import { useState, useCallback } from 'react';
@@ -24,7 +22,7 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS,TICKET_OPTIONS } from 'src/_mock';
+import { _orders, ORDER_STATUS_OPTIONS, TICKET_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -45,23 +43,19 @@ import {
 } from 'src/components/table';
 import { tickets } from '../Data';
 
-
-
 import { TicketTableToolbar } from './Tecket-table-toolbar';
 import { OrderTableFiltersResult } from '../order-table-filters-result';
 import { TicketCartd } from './Card';
 
 // ----------------------------------------------------------------------
 
-
 const STATUS_TECKETS = [{ value: 'AllTickets', label: 'AllTickets' }, ...TICKET_OPTIONS];
-
 
 // ----------------------------------------------------------------------
 
 export function TicketsListView() {
   const [selectedTab, setSelectedTab] = useState('AllTickets');
-  
+
   const table = useTable({ defaultOrderBy: 'orderNumber' });
 
   const router = useRouter();
@@ -85,7 +79,6 @@ export function TicketsListView() {
     filters: filters.state,
     dateError,
   });
-  
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -95,8 +88,6 @@ export function TicketsListView() {
     (!!filters.state.startDate && !!filters.state.endDate);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
@@ -109,24 +100,23 @@ export function TicketsListView() {
   return (
     <>
       <DashboardContent>
-      <CustomBreadcrumbs
+        <CustomBreadcrumbs
           heading="Teckets"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Tecket List', href: paths.dashboard.tickets.allList },
-            
+            { name: 'Ticket List', href: paths.dashboard.tickets.allList },
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         <TicketTableToolbar
-            filters={filters}
-            onResetPage={table.onResetPage}
-            dateError={dateError}
-          />
+          filters={filters}
+          onResetPage={table.onResetPage}
+          dateError={dateError}
+        />
         <Card>
           <Tabs
-             value={selectedTab} // Bind the selected value to the state
-             onChange={(event, newValue) => setSelectedTab(newValue)} 
+            value={selectedTab} // Bind the selected value to the state
+            onChange={(event, newValue) => setSelectedTab(newValue)}
             sx={{
               px: 2.5,
               boxShadow: (theme) =>
@@ -142,11 +132,12 @@ export function TicketsListView() {
                 icon={
                   <Label
                     variant={
-                      ((tab.value === 'AllTickets' || tab.value === filters.state.status) && 'filled') ||
+                      ((tab.value === 'AllTickets' || tab.value === filters.state.status) &&
+                        'filled') ||
                       'soft'
                     }
                   >
-                    {['AllTickets', 'new', 'onGoing',].includes(tab.value)
+                    {['AllTickets', 'new', 'onGoing'].includes(tab.value)
                       ? tableData.filter((user) => user.status === tab.value).length
                       : tableData.length}
                   </Label>
@@ -191,18 +182,15 @@ export function TicketsListView() {
             />
 
             <Scrollbar sx={{ minHeight: 444 }}>
-            {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <TicketCartd 
-                       key={row.id}
-                       data={row}
-                       />
-                    ))}
-               {/* <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              {dataFiltered
+                .slice(
+                  table.page * table.rowsPerPage,
+                  table.page * table.rowsPerPage + table.rowsPerPage
+                )
+                .map((row) => (
+                  <TicketCartd key={row.id} data={row} />
+                ))}
+              {/* <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}

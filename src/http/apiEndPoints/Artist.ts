@@ -18,6 +18,7 @@ export const ARTIST_ENDPOINTS = {
   getArtWorkList: `${ADMIN_BASE_URL}/get-artwork-list`,
   getArtistById: `${ADMIN_BASE_URL}/get-artist-by-id`,
   removeArtWorkList: `${ADMIN_BASE_URL}/remove-artwork`,
+  getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
 };
 
 export const USER_ENDPOINTS = {

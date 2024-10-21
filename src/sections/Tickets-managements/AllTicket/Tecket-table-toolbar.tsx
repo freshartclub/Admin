@@ -32,8 +32,7 @@ const STATUS_OPTIONS = [
   { value: 'Technical Finish', label: 'Technical Finish' },
   { value: 'In progress', label: 'In progress' },
   { value: 'Finalise', label: 'Finalise' },
-]
-
+];
 
 export function TicketTableToolbar({ filters, onResetPage, dateError }: Props) {
   const popover = usePopover();
@@ -86,31 +85,26 @@ export function TicketTableToolbar({ filters, onResetPage, dateError }: Props) {
             }}
           />
         </Stack>
-           
-           <Button
-              component={RouterLink}
-              // href={paths.dashboard.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              sx={{ maxWidth: { md: 180 } }}
-            >
-              New Teckets
-            </Button>
-            <Button
-              component={RouterLink}
-              // href={paths.dashboard.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              sx={{ maxWidth: { md: 1800 } }}
-            >
-              New Incident
-            </Button>
+
+        <Button
+          component={RouterLink}
+          // href={paths.dashboard.invoice.new}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          // sx={{ maxWidth: { md: 180 } }}
+        >
+          New Tickets
+        </Button>
+        <Button
+          component={RouterLink}
+          // href={paths.dashboard.invoice.new}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          // sx={{ maxWidth: { md: 1800 } }}
+        >
+          New Incident
+        </Button>
       </Stack>
-      
     </>
   );
 }
-
-
-
-
