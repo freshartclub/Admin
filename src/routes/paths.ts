@@ -1,11 +1,9 @@
 // ----------------------------------------------------------------------
-import { paramCase } from "src/utils/change-case";
-import { hydrateRoot } from "react-dom/client";
+import { paramCase } from 'src/utils/change-case';
+import { hydrateRoot } from 'react-dom/client';
 import { _id, _postTitles } from 'src/_mock/assets';
 import { OtpVerification } from 'src/sections/auth/jwt/opt-verify';
-import { tickets } from "src/sections/Tickets-managements/Data";
-
-
+import { tickets } from 'src/sections/Tickets-managements/Data';
 
 const MOCK_ID = _id[1];
 const MOCK_TITLE = _postTitles[2];
@@ -65,7 +63,7 @@ export const paths = {
 
       artistList: `${ROOTS.DASHBOARD}/artist/list`,
       suspendList: `${ROOTS.DASHBOARD}/artist/suspended-list`,
-    
+
       artistRequest: `${ROOTS.DASHBOARD}/artist/request`,
       artistPendingRequest: `${ROOTS.DASHBOARD}/artist/pending-request`,
       five: `${ROOTS.DASHBOARD}/group/five`,
@@ -113,8 +111,8 @@ export const paths = {
       },
       collection_management: {
         root: `${ROOTS.DASHBOARD}/collection_management`,
-        add: `${ROOTS.DASHBOARD}/artwork/collection_management/add`,  
-        list: `${ROOTS.DASHBOARD}/artwork/collection_management/list`,  
+        add: `${ROOTS.DASHBOARD}/artwork/collection_management/add`,
+        list: `${ROOTS.DASHBOARD}/artwork/collection_management/list`,
       },
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
       artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
@@ -171,35 +169,33 @@ export const paths = {
       },
     },
 
-     logistics: `${ROOTS.DASHBOARD}/logistics`,
+    logistics: `${ROOTS.DASHBOARD}/logistics`,
 
-     couponandpromotions: {
+    couponandpromotions: {
       Root: `${ROOTS.DASHBOARD}/couponandpromotions`,
       add: `${ROOTS.DASHBOARD}/couponandpromotions/add`,
-      list: `${ROOTS.DASHBOARD}/couponandpromotions/list`
-     }, 
+      list: `${ROOTS.DASHBOARD}/couponandpromotions/list`,
+    },
 
-     subscriptionplan: {
+    subscriptionplan: {
       Root: `${ROOTS.DASHBOARD}/subscriptionplan`,
       add: `${ROOTS.DASHBOARD}/subscriptionplan/add`,
       list: `${ROOTS.DASHBOARD}/subscriptionplan/list`,
-      pay: `${ROOTS.DASHBOARD}/subscriptionplan/pay`
-     },
+      pay: `${ROOTS.DASHBOARD}/subscriptionplan/pay`,
+    },
 
-     faq: {
+    faq: {
       Root: `${ROOTS.DASHBOARD}/faq`,
       add: `${ROOTS.DASHBOARD}/faq/add`,
-      list: `${ROOTS.DASHBOARD}/faq/list`
-     },
-     kbdatabase: {
+      list: `${ROOTS.DASHBOARD}/faq/list`,
+    },
+    kbdatabase: {
       Root: `${ROOTS.DASHBOARD}/kbdatabase`,
       add: `${ROOTS.DASHBOARD}/kbdatabase/add`,
-      list: `${ROOTS.DASHBOARD}/kbdatabase/list`
-     },
+      list: `${ROOTS.DASHBOARD}/kbdatabase/list`,
+    },
 
-    
-   
-     contentmanagement: {
+    contentmanagement: {
       Root: `${ROOTS.DASHBOARD}/contentmanagement`,
       list: `${ROOTS.DASHBOARD}/contentmanagement/list`,
       details: `${ROOTS.DASHBOARD}/contentmanagement/details`,
@@ -217,20 +213,16 @@ export const paths = {
       Root: `${ROOTS.DASHBOARD}/tickets`,
       allList: `${ROOTS.DASHBOARD}/tickets/allList`,
       addIncident: `${ROOTS.DASHBOARD}/tickets/addIncident`,
-      singleList: `${ROOTS.DASHBOARD}/tickets/singleList`,
-      // singleList: `${ROOTS.DASHBOARD}/tickets/${tickets.UniqueID}`,
+      singleList: `${ROOTS.DASHBOARD}/tickets/ticket`,
     },
-   
-    
 
     notificationAndMessage: {
       Root: `${ROOTS.DASHBOARD}/notificationAndMessage`,
       addMessage: `${ROOTS.DASHBOARD}/notificationAndMessage/addMessage`,
       addNotification: `${ROOTS.DASHBOARD}/notificationAndMessage/addNotification`,
-      List: `${ROOTS.DASHBOARD}/notificationAndMessage/list`
-     },
+      List: `${ROOTS.DASHBOARD}/notificationAndMessage/list`,
+    },
 
-    
     // try end
   },
 };

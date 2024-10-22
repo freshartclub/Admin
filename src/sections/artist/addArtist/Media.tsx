@@ -199,7 +199,7 @@ export function Media({
             <Typography variant="mainVideo">Main Video</Typography>
             <Field.Upload
               disabled={isReadOnly}
-              accept="video/*"
+              accept="video"
               name="mainVideo"
               maxSize={5e7}
               onDelete={handleRemoveMainVideo}

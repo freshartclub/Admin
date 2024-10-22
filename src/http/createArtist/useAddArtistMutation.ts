@@ -23,11 +23,6 @@ const useAddArtistMutation = (handleOnSuccess) => {
         }
       });
 
-      // log the entires of formData
-      for (var pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-
       body = formData;
       headers = { 'Content-Type': 'multipart/form-data' };
     } else {
@@ -39,8 +34,9 @@ const useAddArtistMutation = (handleOnSuccess) => {
       onUploadProgress,
     };
 
-    if (id) return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, config);
+    // if (id) return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
+    // return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body, config);
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
   }
 
   return useMutation({

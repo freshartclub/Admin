@@ -7,9 +7,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
 
-
 // ----------------------------------------------------------------------
-
 
 const IndexPage = lazy(() => import('src/pages/dashboard/Dashboard'));
 const PageTwo = lazy(() => import('src/pages/dashboard/two'));
@@ -30,16 +28,16 @@ const MediaSupportList = lazy(() => import('src/pages/dashboard/MediaSupportList
 const AddCreadentialsArea = lazy(() => import('src/pages/dashboard/AddCreadentialsArea'));
 const CreadentialsAreaList = lazy(() => import('src/pages/dashboard/CreadentialsAreaList'));
 const AddArtwork = lazy(() => import('src/pages/dashboard/AddArtwok'));
-const UserAccount  = lazy(() => import('src/pages/dashboard/user/account'));
-const UserList  = lazy(() => import('src/pages/dashboard/user/list'));
+const UserAccount = lazy(() => import('src/pages/dashboard/user/account'));
+const UserList = lazy(() => import('src/pages/dashboard/user/list'));
 const CreaetUser = lazy(() => import('src/pages/dashboard/user/new'));
 const UserProfile = lazy(() => import('src/pages/dashboard/user/profile'));
-const InvoiceList  = lazy(() => import('src/pages/dashboard/invoice/list'));
-const InvoiceDetails  = lazy(() => import('src/pages/dashboard/invoice/details'));
-const InvoiceEdit  = lazy(() => import('src/pages/dashboard/invoice/edit'));
-const InvoiceNew  = lazy(() => import('src/pages/dashboard/invoice/new'));
-const OrderList  = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
-const OrderPurcheseList  = lazy(() => import('src/pages/dashboard/order/purcheseList'));
+const InvoiceList = lazy(() => import('src/pages/dashboard/invoice/list'));
+const InvoiceDetails = lazy(() => import('src/pages/dashboard/invoice/details'));
+const InvoiceEdit = lazy(() => import('src/pages/dashboard/invoice/edit'));
+const InvoiceNew = lazy(() => import('src/pages/dashboard/invoice/new'));
+const OrderList = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
+const OrderPurcheseList = lazy(() => import('src/pages/dashboard/order/purcheseList'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
 const ArtistList = lazy(() => import('src/pages/dashboard/Artist/ArtistList'));
 const ArtistRequest = lazy(() => import('src/pages/dashboard/Artist/ArtistRequest'));
@@ -62,17 +60,25 @@ const AddPlan = lazy(() => import('src/pages/dashboard/Subscription-plan/AddSubs
 const PlanList = lazy(() => import('src/pages/dashboard/Subscription-plan/PlanList'));
 const Payment = lazy(() => import('src/pages/dashboard/Subscription-plan/Payment'));
 const AddMassage = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddMassage'));
-const AddNotification = lazy(() => import('src/pages/dashboard/Massage-and-Notification/AddNotification'));
-const ListOfMsgNfc = lazy(() => import('src/pages/dashboard/Massage-and-Notification/ListMassageAndNotification'));
+const AddNotification = lazy(
+  () => import('src/pages/dashboard/Massage-and-Notification/AddNotification')
+);
+const ListOfMsgNfc = lazy(
+  () => import('src/pages/dashboard/Massage-and-Notification/ListMassageAndNotification')
+);
 const TicketList = lazy(() => import('src/pages/dashboard/Ticket-Management/TicketList'));
-const SingelList = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
+const Ticket = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
 const AddIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AddIncident'));
 const SuspendedArtist = lazy(() => import('src/pages/dashboard/Artist/SuspendedArtistList'));
 const AllArtist = lazy(() => import('src/pages/dashboard/Artist/AllArtistList'));
 const AddCatalog = lazy(() => import('src/pages/dashboard/AddArtwok/Catalog/AddCatalog'));
 const CatalogList = lazy(() => import('src/pages/dashboard/AddArtwok/Catalog/CatalogList'));
-const AddCollection = lazy(() => import('src/pages/dashboard/AddArtwok/Collection-Management/AddCollection'));
-const CollectionList = lazy(() => import('src/pages/dashboard/AddArtwok/Collection-Management/CollectionList'));
+const AddCollection = lazy(
+  () => import('src/pages/dashboard/AddArtwok/Collection-Management/AddCollection')
+);
+const CollectionList = lazy(
+  () => import('src/pages/dashboard/AddArtwok/Collection-Management/CollectionList')
+);
 
 const ArtworkList = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkList'));
 
@@ -98,17 +104,16 @@ export const dashboardRoutes = [
         path: 'artist',
         children: [
           // { element: <PageFour />, index: true },
-          {path:'create',  element: <CreateArtist/>},
+          { path: 'create', element: <CreateArtist /> },
           { path: 'add', element: <AddArtistFormIndex /> },
           { path: 'five', element: <PageFive /> },
           { path: 'six', element: <PageSix /> },
-          {path:'list',  element: <ArtistList/>},
-          {path:'all',  element: <AllArtist/>},
-          {path:'request',  element: <ArtistRequest/>},
-          {path:'pending-request',  element: <ArtistPendingRequest/>},
-          {path:'suspended-list',  element: <SuspendedArtist/>},
+          { path: 'list', element: <ArtistList /> },
+          { path: 'all', element: <AllArtist /> },
+          { path: 'request', element: <ArtistRequest /> },
+          { path: 'pending-request', element: <ArtistPendingRequest /> },
+          { path: 'suspended-list', element: <SuspendedArtist /> },
         ],
-
       },
 
       {
@@ -164,51 +169,51 @@ export const dashboardRoutes = [
           {
             path: 'catalog',
             children: [
-              { path: 'add', element: <AddCatalog/> },
-              { path: 'list', element: <CatalogList/> },
+              { path: 'add', element: <AddCatalog /> },
+              { path: 'list', element: <CatalogList /> },
             ],
           },
           {
             path: 'collection_management',
             children: [
-              { path: 'add', element: <AddCollection/> },
-              { path: 'list', element: <CollectionList/> },
+              { path: 'add', element: <AddCollection /> },
+              { path: 'list', element: <CollectionList /> },
             ],
           },
           { path: 'addArtwork', element: <AddArtwork /> },
-          { path: 'artworkList', element: <ArtworkList/> },
-        ]
+          { path: 'artworkList', element: <ArtworkList /> },
+        ],
         // children: [
-          // { path: 'addArtwork', element: <AddArtwork /> },
-          // { path: 'artworkList', element: <div>artworkList</div> },
+        // { path: 'addArtwork', element: <AddArtwork /> },
+        // { path: 'artworkList', element: <div>artworkList</div> },
         // ],
       },
       {
         path: 'order',
         children: [
-          { path: 'subscribe', element: <OrderList/> },
-          { path: 'purchese', element: <OrderPurcheseList/> },
+          { path: 'subscribe', element: <OrderList /> },
+          { path: 'purchese', element: <OrderPurcheseList /> },
           { path: ':id', element: <OrderDetailsPage /> },
         ],
       },
       {
         path: 'invoice',
         children: [
-          { path: 'list', element: <InvoiceList/> },
-          { path: 'details', element: <InvoiceDetails/> },
-          { path: 'create', element: <InvoiceEdit/> },
-          { path: 'edit', element: <InvoiceNew/> },
+          { path: 'list', element: <InvoiceList /> },
+          { path: 'details', element: <InvoiceDetails /> },
+          { path: 'create', element: <InvoiceEdit /> },
+          { path: 'edit', element: <InvoiceNew /> },
         ],
       },
       {
         path: 'user',
         children: [
-          { path: 'Profile', element: <UserProfile/> },
+          { path: 'Profile', element: <UserProfile /> },
           { path: 'cards', element: <div>user cards page</div> },
-          { path: 'list', element: <UserList/> },
-          { path: 'create', element: <CreaetUser/> },
-          { path: 'edit', element: <div>edit page</div>},
-          { path: 'account', element: <UserAccount/> },
+          { path: 'list', element: <UserList /> },
+          { path: 'create', element: <CreaetUser /> },
+          { path: 'edit', element: <div>edit page</div> },
+          { path: 'account', element: <UserAccount /> },
         ],
       },
       // {
@@ -228,47 +233,51 @@ export const dashboardRoutes = [
           { path: 'list', element: <CircleList /> },
           { path: ':title', element: <CircleDetails /> },
           { path: ':title/edit', element: <CircleEdit /> },
-          { path: 'new', element: <AddCircle/> },
+          { path: 'new', element: <AddCircle /> },
         ],
       },
 
       { path: 'logistics', element: <div>This is Logistics page</div> },
 
-      { path: 'couponandpromotions',
-       children:[
-        {path: 'add', element: <AddCoupon/>},
-        {path: 'list', element: <ListOfCoupon/>}
-       ]
+      {
+        path: 'couponandpromotions',
+        children: [
+          { path: 'add', element: <AddCoupon /> },
+          { path: 'list', element: <ListOfCoupon /> },
+        ],
       },
 
-      { path: 'subscriptionplan',
-       children: [
-        {path: 'add',element: <AddPlan/>},
-        {path: 'list',element: <PlanList/>},
-        {path: 'pay', element: <Payment/>}
-       ]
+      {
+        path: 'subscriptionplan',
+        children: [
+          { path: 'add', element: <AddPlan /> },
+          { path: 'list', element: <PlanList /> },
+          { path: 'pay', element: <Payment /> },
+        ],
       },
 
-      { path: 'faq',
-       children: [
-        {path: 'add', element: <AddFaq/>},
-        {path: 'list', element: <FaqList/>}
-       ]
+      {
+        path: 'faq',
+        children: [
+          { path: 'add', element: <AddFaq /> },
+          { path: 'list', element: <FaqList /> },
+        ],
       },
 
-      { path: 'kbdatabase',
-       children:[
-        {path: 'add',element: <AddKB/>},
-        {path: 'list',element: <KBList/>}
-       ]
+      {
+        path: 'kbdatabase',
+        children: [
+          { path: 'add', element: <AddKB /> },
+          { path: 'list', element: <KBList /> },
+        ],
       },
 
       {
         path: 'contentmanagement',
         children: [
-          { path: 'list', element: <ContentList/> },
+          { path: 'list', element: <ContentList /> },
           { path: 'details', element: <div>contentmanagement Details page</div> },
-          { path: 'create', element: <CreateContent/> },
+          { path: 'create', element: <CreateContent /> },
           { path: 'edit', element: <div>contentmanagement edit page</div> },
         ],
       },
@@ -276,21 +285,22 @@ export const dashboardRoutes = [
 
       { path: 'insurance', element: <div> insurance page</div> },
 
-      { path: 'mail', element: <Mail/> },
+      { path: 'mail', element: <Mail /> },
 
-      { path: 'tickets',
-       children: [
-          { path: 'allList', element: <TicketList/> },
-          { path: 'singleList', element: <SingelList/> },
-          { path: 'addIncident', element: <AddIncident/> },
-       ]
+      {
+        path: 'tickets',
+        children: [
+          { path: 'allList', element: <TicketList /> },
+          { path: 'ticket', element: <Ticket /> },
+          { path: 'addIncident', element: <AddIncident /> },
+        ],
       },
       {
         path: 'notificationAndMessage',
         children: [
-          { path: 'addMessage', element: <AddMassage/> },
-          { path: 'addNotification', element: <AddNotification/> },
-          { path: 'list', element: <ListOfMsgNfc/> },
+          { path: 'addMessage', element: <AddMassage /> },
+          { path: 'addNotification', element: <AddNotification /> },
+          { path: 'list', element: <ListOfMsgNfc /> },
         ],
       },
     ],

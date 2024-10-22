@@ -46,6 +46,9 @@ import { tickets } from '../Data';
 import { TicketTableToolbar } from './Tecket-table-toolbar';
 import { OrderTableFiltersResult } from '../order-table-filters-result';
 import { TicketCartd } from './Card';
+import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 // ----------------------------------------------------------------------
 
@@ -54,14 +57,14 @@ const STATUS_TECKETS = [{ value: 'AllTickets', label: 'AllTickets' }, ...TICKET_
 // ----------------------------------------------------------------------
 
 export function TicketsListView() {
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 500);
+  const { data, isLoading, isError, error } = useGetTicketListMutation(debounceSearch);
+
   const [selectedTab, setSelectedTab] = useState('AllTickets');
-
   const table = useTable({ defaultOrderBy: 'orderNumber' });
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
   const [tableData, setTableData] = useState<IOrderItem[]>(_orders);
 
   const filters = useSetState<IOrderTableFilters>({
@@ -74,7 +77,7 @@ export function TicketsListView() {
   const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
 
   const dataFiltered = applyFilter({
-    inputData: tickets,
+    inputData: isLoading ? [] : data,
     comparator: getComparator(table.order, table.orderBy),
     filters: filters.state,
     dateError,
@@ -101,7 +104,7 @@ export function TicketsListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Teckets"
+          heading="Teikets"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ticket List', href: paths.dashboard.tickets.allList },
@@ -109,6 +112,7 @@ export function TicketsListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         <TicketTableToolbar
+          setSearch={setSearch}
           filters={filters}
           onResetPage={table.onResetPage}
           dateError={dateError}
@@ -283,6 +287,7 @@ type ApplyFilterProps = {
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
   const { status, name, startDate, endDate } = filters;
 
+  console.log(inputData);
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
