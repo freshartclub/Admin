@@ -453,13 +453,13 @@ export const INC_TYPE_OPTIONS = [
   { value: 'Type G', label: 'Type G' },
 ];
 export const TICKET_TYPE_OPTIONS = [
-  { value: 'Type A', label: 'Type A' },
-  { value: 'Type B', label: 'Type B' },
-  { value: 'Type C', label: 'Type C' },
-  { value: 'Type D', label: 'Type D' },
-  { value: 'Type E', label: 'Type E' },
-  { value: 'Type F', label: 'Type F' },
-  { value: 'Type G', label: 'Type G' },
+  { value: 'Login', label: 'Login' },
+  { value: 'Feature Request', label: 'Feature Request' },
+  { value: 'Bug', label: 'Bug' },
+  { value: 'Account Recovery', label: 'Account Recovery' },
+  { value: 'Payment', label: 'Payment' },
+  { value: 'Update', label: 'Update' },
+  { value: 'Data Sync', label: 'Data Sync' },
 ];
 export const TICKET_STATUS_OPTIONS = [
   { value: 'Created', label: 'Created' },
