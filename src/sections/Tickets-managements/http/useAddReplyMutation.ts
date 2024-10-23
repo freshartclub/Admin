@@ -7,9 +7,16 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 const useAddReplyMutation = () => {
   const id = useSearchParams().get('id');
 
-  async function ReplyTicket(data: any) {
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, data);
+  async function ReplyTicket(data) {
+    const newData = {
+      ticketType: data.data.ticketType,
+      status: data.data.status,
+      message: data.data.message,
+      userType: 'admin',
+    };
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData);
   }
+
   return useMutation({
     mutationFn: ReplyTicket,
     onSuccess: async (res, body) => {

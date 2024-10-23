@@ -16,7 +16,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useSearchParams } from 'src/routes/hooks';
 import { PRODUCT_STYLE_OPTIONS, PRODUCT_CATAGORYONE_OPTIONS } from 'src/_mock';
-
+import { useWatch } from 'react-hook-form';
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
@@ -67,6 +67,7 @@ export function AboutArtist({
     () => ({
       About: artistFormData?.about || '',
       discipline: artistFormData?.discipline || '',
+      count: 3,
     }),
     [artistFormData]
   );
@@ -75,6 +76,7 @@ export function AboutArtist({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
+
   const {
     trigger,
     handleSubmit,
@@ -82,6 +84,11 @@ export function AboutArtist({
   } = formProps;
 
   const { fields, append, remove } = useFieldArray({
+    control: formProps.control,
+    name: 'discipline',
+  });
+
+  const selectedDisciplines = useWatch({
     control: formProps.control,
     name: 'discipline',
   });
@@ -112,6 +119,16 @@ export function AboutArtist({
     }
   });
 
+  const filterOptions = (index) => {
+    const selectedValues =
+      selectedDisciplines && selectedDisciplines?.map((item) => item.discipline);
+    return PRODUCT_CATAGORYONE_OPTIONS.filter(
+      (option) =>
+        !selectedValues.includes(option.value) ||
+        option.value === selectedDisciplines[index]?.discipline
+    );
+  };
+
   const renderDetails = (
     <Card sx={{ mb: 4 }}>
       <CardHeader title="About Artist" sx={{ mb: 3 }} />
@@ -121,7 +138,7 @@ export function AboutArtist({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">About</Typography>
-          <Field.Editor disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
+          <Field.Editor required disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
         </Stack>
       </Stack>
     </Card>
@@ -134,17 +151,19 @@ export function AboutArtist({
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <div className="flex justify-end">
-          <Button
-            disabled={isReadOnly}
-            size="small"
-            color="primary"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={addArtistCategory}
-          >
-            Add More Discipline
-          </Button>
-        </div>
+        {fields.length === PRODUCT_CATAGORYONE_OPTIONS.length ? null : (
+          <div className="flex justify-end">
+            <Button
+              disabled={isReadOnly}
+              size="small"
+              color="primary"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={addArtistCategory}
+            >
+              Add More Discipline
+            </Button>
+          </div>
+        )}
         {fields.map((item, index) => (
           <Stack
             key={item.id}
@@ -160,10 +179,11 @@ export function AboutArtist({
             >
               <Field.SingelSelect
                 disabled={isReadOnly}
+                required
                 checkbox
                 name={`discipline[${index}].discipline`}
-                label="discipline 1"
-                options={PRODUCT_CATAGORYONE_OPTIONS}
+                label={`Discipline ${index + 1}`}
+                options={filterOptions(index)}
               />
               <Box
                 columnGap={2}
@@ -173,6 +193,7 @@ export function AboutArtist({
               >
                 <Field.MultiSelect
                   checkbox
+                  required
                   disabled={isReadOnly}
                   name={`discipline[${index}].style`}
                   label="Style"
@@ -181,20 +202,18 @@ export function AboutArtist({
               </Box>
             </Box>
 
-            {index !== 0 ? (
-              <div className="flex justify-end mb-2">
-                <Button
-                  disabled={isReadOnly}
-                  size="small"
-                  color="error"
-                  className="flex justify-end"
-                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                  onClick={() => handleRemove(index)}
-                >
-                  Remove
-                </Button>
-              </div>
-            ) : null}
+            <div className="flex justify-end mb-2">
+              <Button
+                disabled={isReadOnly}
+                size="small"
+                color="error"
+                className="flex justify-end"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => handleRemove(index)}
+              >
+                Remove
+              </Button>
+            </div>
           </Stack>
         ))}
       </Stack>

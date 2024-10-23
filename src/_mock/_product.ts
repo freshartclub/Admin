@@ -142,9 +142,9 @@ export const ARTIST_CV_EVENTTYPE = [
 ];
 
 export const ARTIST_CV_EVENTSCOPE = [
-  { value: 'Local', label: 'SLocal' },
+  { value: 'Local', label: 'Local' },
   { value: 'Regional', label: 'Regional' },
-  { value: 'National', label: 'SNational' },
+  { value: 'National', label: 'National' },
   { value: 'International', label: 'International' },
 ];
 
@@ -192,6 +192,13 @@ export const PRODUCT_PUBLISHINGCATALOG_OPTIONS = [
   { value: 'Catagog 3', label: 'Catagog 3' },
   { value: 'Catagog 4', label: 'Catagog 4' },
   { value: 'Catagog 5', label: 'Catagog 5' },
+];
+export const PRODUCT_PICKLIST_OPTIONS = [
+  { value: 'Picklist 1', label: 'Picklist 1' },
+  { value: 'Picklist 2', label: 'Picklist 2' },
+  { value: 'Picklist 3', label: 'Picklist 3' },
+  { value: 'Picklist 4', label: 'Picklist 4' },
+  { value: 'Picklist 5', label: 'Picklist 5' },
 ];
 export const PRODUCT_ARTISTPLUS_OPTIONS = [
   { value: 'Yes', label: 'Yes' },

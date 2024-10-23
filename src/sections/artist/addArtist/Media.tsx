@@ -15,14 +15,15 @@ import CardHeader from '@mui/material/CardHeader';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  profileImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
+  profileImage: schemaHelper.file({ message: { required_error: 'Profile Photo is required!' } }),
   additionalImage: zod.any(),
   inProcessImage: zod.any(),
-  mainVideo: schemaHelper.file({ message: { required_error: 'Main video is required!' } }),
+  mainVideo: zod.any(),
   additionalVideo: zod.any(),
 });
 
@@ -86,6 +87,9 @@ export function Media({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
+    if (!data.profileImage) {
+      return toast.error('Main Photo is required!');
+    }
     data.count = 4;
     data.isContainsImage = true;
 
@@ -157,9 +161,10 @@ export function Media({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <div>
-            <Typography variant="profileImage">Main Photo</Typography>
+            <Typography variant="profileImage">Main Photo *</Typography>
             <Field.Upload
               disabled={isReadOnly}
+              required
               name="profileImage"
               maxSize={3145728}
               onDelete={handleRemoveMainImage}

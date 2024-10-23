@@ -22,6 +22,13 @@ import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutati
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useGetExistingUserDetails } from './http/useGetExistingUserDetails';
 import CreateNewUser from './createNewUser';
+import { TableRow, Link } from '@mui/material';
+import { TableCell } from '@mui/material';
+import { Avatar } from '@mui/material';
+import { ListItemText } from '@mui/material';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useGetUserByIdMutation } from './http/userGetUserByIdMutation';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +48,6 @@ export const CreateArtistFormSchema = zod.object({
   country: schemaHelper.objectOrNull<string | null>({
     message: { required_error: 'Country is required!' },
   }),
-  address: zod.string().min(1, { message: 'Address is required!' }),
   state: zod.string().min(1, { message: 'State is required!' }),
   city: zod.string().min(1, { message: 'City is required!' }),
   zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
@@ -53,6 +59,8 @@ export const CreateExistingArtistFormSchema = zod.object({
   }),
   existingId: zod.string().min(1, { message: 'Id is required!' }),
   existingName: zod.string().min(1, { message: 'Name is required!' }),
+  existingArtistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
+  existingArtistSurname2: zod.string(),
   existingEmail: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -61,7 +69,6 @@ export const CreateExistingArtistFormSchema = zod.object({
   existingCountry: schemaHelper.objectOrNull<string | null>({
     message: { required_error: 'Country is required!' },
   }),
-  existingAddress: zod.string().min(1, { message: 'Address is required!' }),
   existingState: zod.string().min(1, { message: 'State is required!' }),
   existingCity: zod.string().min(1, { message: 'City is required!' }),
   existingZipCode: zod.string().min(1, { message: 'Zip code is required!' }),
@@ -71,19 +78,34 @@ export const CreateExistingArtistFormSchema = zod.object({
 
 export function CreateArtistForm() {
   const [value, setValue] = useState('new');
+  const [open, setOpen] = useState(true);
 
   const id = useSearchParams().get('id');
   const existingUser = useSearchParams().get('extisting');
   const isReadOnly = id !== null;
 
-  const { data, isLoading } = useGetExistingUserDetails(id);
-  const { isPending, mutate } = useCreateArtistMutation();
-
   const methods = useForm({
     resolver: zodResolver(CreateExistingArtistFormSchema),
   });
 
-  const { reset, handleSubmit } = methods;
+  const { data, isLoading } = useGetExistingUserDetails(id);
+  const { isPending, mutate } = useCreateArtistMutation();
+
+  const {
+    reset,
+    watch,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = methods;
+
+  const debounceUserId = useDebounce(methods.getValues('existingId'), 500);
+  const {
+    refetch,
+    data: artistData,
+    isPending: isArtistIdPending,
+  } = useGetUserByIdMutation(debounceUserId);
+
+  const values = watch();
 
   useEffect(() => {
     if (!data) return;
@@ -92,10 +114,11 @@ export function CreateArtistForm() {
         existingAvatar: data?.avatar || null,
         existingId: data?.userId || '',
         existingName: data?.artistName || '',
+        existingArtistSurname1: data?.artistSurname1 || '',
+        existingArtistSurname2: data?.artistSurname2 || '',
         existingEmail: data?.email || '',
         existingPhoneNumber: data?.phone || '',
         existingCountry: data?.address.country || '',
-        existingAddress: data?.address.address || '',
         existingState: data?.address.state || '',
         existingCity: data?.address.city || '',
         existingZipCode: data?.address.zipCode || '',
@@ -110,10 +133,11 @@ export function CreateArtistForm() {
         data: {
           avatar: data.existingAvatar,
           name: data.existingName,
+          artistSurname1: data.existingArtistSurname1,
+          artistSurname2: data.existingArtistSurname2,
           email: data.existingEmail,
           phoneNumber: data.existingPhoneNumber,
           country: data.existingCountry,
-          address: data.existingAddress,
           state: data.existingState,
           city: data.existingCity,
           zipCode: data.existingZipCode,
@@ -127,6 +151,44 @@ export function CreateArtistForm() {
       console.error(error);
     }
   });
+
+  useEffect(() => {
+    if (methods.getValues('existingId') !== '') {
+      refetch();
+    }
+  }, [debounceUserId]);
+
+  const refillData = (data) => {
+    methods.setValue('existingAvatar', data?.avatar);
+    methods.setValue('existingId', data?.artistId);
+    methods.setValue('existingName', data?.artistName);
+    methods.setValue('existingArtistSurname1', data?.artistSurname1);
+    methods.setValue('existingArtistSurname2', data?.artistSurname2);
+    methods.setValue('existingEmail', data?.email);
+    methods.setValue('existingPhoneNumber', data?.phone);
+    methods.setValue('existingCountry', data?.address?.country);
+    methods.setValue('existingState', data?.address?.state);
+    methods.setValue('existingCity', data?.address?.city);
+    methods.setValue('existingZipCode', data?.address?.zipCode);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    const getLocation = () => {
+      fetchCountryByIP();
+    };
+
+    const fetchCountryByIP = async () => {
+      try {
+        const response = await axios.get('https://ipapi.co/json/');
+        methods.setValue('existingCountry', response.data.country_name);
+      } catch (err) {
+        console.log('Failed to fetch country data by IP');
+      }
+    };
+
+    getLocation();
+  }, [methods.getValues('existingCountry')]);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -189,29 +251,82 @@ export function CreateArtistForm() {
 
             <Grid xs={12} md={8}>
               <Card sx={{ p: 3 }}>
-                <Field.Text sx={{ pb: 3 }} name="existingId" label="Existing User Account Id" />
+                <Field.Text
+                  sx={{ pb: 3 }}
+                  required
+                  onClick={() => setOpen(true)}
+                  name="existingId"
+                  label="Existing User Account Id"
+                />
+                {methods.getValues('existingId') && open && (
+                  <div className="absolute top-[5.5rem] w-[93%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto">
+                    <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {artistData && artistData.length > 0 ? (
+                        artistData.map((i, j) => (
+                          <TableCell
+                            onClick={() => refillData(i)}
+                            key={j}
+                            sx={{
+                              cursor: 'pointer',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                              },
+                            }}
+                          >
+                            <Stack spacing={2} direction="row" alignItems="center">
+                              <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
+
+                              <ListItemText
+                                disableTypography
+                                primary={
+                                  <Typography variant="body2" noWrap>
+                                    {i?.artistName} - {i?.userId}
+                                  </Typography>
+                                }
+                                secondary={
+                                  <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                                    {i?.email}
+                                  </Link>
+                                }
+                              />
+                            </Stack>
+                          </TableCell>
+                        ))
+                      ) : (
+                        <TableCell>No Data Available</TableCell>
+                      )}
+                    </TableRow>
+                  </div>
+                )}
                 <Box
                   rowGap={3}
                   columnGap={2}
                   display="grid"
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
                 >
-                  <Field.Text name="existingName" label="Full name" />
-                  <Field.Text disabled={isReadOnly} name="existingEmail" label="Email address" />
-                  <Field.Phone name="existingPhoneNumber" label="Phone number" />
+                  <Field.Text name="existingName" required label="First Name" />
+                  <Field.Text name="existingArtistSurname1" required label="Surname 1" />
+                  <Field.Text name="existingArtistSurname2" label="Surname 2" />
+                  <Field.Text
+                    disabled={isReadOnly}
+                    required
+                    name="existingEmail"
+                    label="Email address"
+                  />
+                  <Field.Phone name="existingPhoneNumber" required label="Phone number" />
 
                   <Field.CountrySelect
                     fullWidth
+                    required
                     name="existingCountry"
                     label="Country"
                     placeholder="Choose a country"
                   />
+                  <Field.Text name="existingZipCode" required label="Zip/code" />
 
-                  <Field.Text name="existingState" label="State/region" />
-                  <Field.Text name="existingCity" label="City" />
-                  <Field.Text name="existingAddress" label="Address" />
-                  <Field.Text name="existingZipCode" label="Zip/code" />
+                  <Field.Text name="existingState" required label="State/region" />
                 </Box>
+                <Field.Text sx={{ mt: 3 }} name="existingCity" required label="City" />
 
                 <Stack alignItems="flex-end" sx={{ mt: 3 }}>
                   <Button type="submit" variant="contained">

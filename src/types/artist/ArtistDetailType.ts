@@ -5,6 +5,7 @@ export interface ArtistDetailType {
   accountId: string;
   artistName: string;
   artistSurname1: string;
+  artistSurname2: string;
   highlights: string;
   cvData: cvData[];
 
@@ -41,6 +42,8 @@ export interface ArtistDetailType {
   CustomOrder: string;
   PublishingCatalog: string;
   ArtistFees: string;
+  artistLevel: string;
+  artProvider: string;
   ArtistPlus?: string;
   MinNumberOfArtwork: string;
   MaxNumberOfArtwork: string;

@@ -61,10 +61,6 @@ export function OtherDetails({
     setArtistFormData({ ...artistFormData, ...data });
   };
 
-  const handleActivateSuccess = (data) => {
-    mutate(data);
-  };
-
   const handleOnActivataion = () => {
     setShowPop(true);
   };
@@ -122,9 +118,25 @@ export function OtherDetails({
     [setValue]
   );
 
+  const handleDuplicateDocument = () => {
+    const arr = methods.getValues('uploadDocs');
+    const seenNames = new Set();
+
+    const uniqueFiles = arr.filter((doc) => {
+      if (seenNames.has(doc.name)) {
+        return false;
+      }
+      seenNames.add(doc.name);
+      return true;
+    });
+
+    setValue('uploadDocs', uniqueFiles);
+  };
+
   useEffect(() => {
     methods.watch('uploadDocs');
-  }, []);
+    handleDuplicateDocument();
+  }, [methods.getValues('uploadDocs')]);
 
   const onSubmit = handleSubmit(async (data) => {
     data.count = 7;
@@ -180,6 +192,7 @@ export function OtherDetails({
       </Stack>
     </Card>
   );
+
   const renderDetails = (
     <Card sx={{ mb: 4 }}>
       <div className="flex justify-between items-center">
@@ -252,7 +265,6 @@ export function OtherDetails({
             <Field.Text disabled={isReadOnly} name="managerZipCode" label="Zip/code" />
             <Field.Text disabled={isReadOnly} name="managerCity" label="City" />
             <Field.Text disabled={isReadOnly} name="managerState" label="Province/State/Region" />
-            {/* <Field.Text name="managerCountry" label="Country" /> */}
             <Field.CountrySelect
               disabled={isReadOnly}
               fullWidth

@@ -44,7 +44,7 @@ const useActivateArtistMutation = (handleSuccess) => {
     mutationFn: activateArtist,
     onSuccess: async (res, body) => {
       toast.success(res?.data.message);
-      navigate(paths.dashboard.root);
+      navigate(paths.dashboard.artist.allArtist);
     },
 
     onError: (res) => {

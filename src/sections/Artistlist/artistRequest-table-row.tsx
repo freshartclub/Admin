@@ -3,22 +3,24 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
-import { IconButton } from '@mui/material';
+import { Avatar, DialogActions, DialogTitle, IconButton } from '@mui/material';
+import { useRejectRequestMutation } from './http/useRejectRequestMutation';
+import { useBanRequestMutation } from './http/useBanRequestMutation';
+import { useState } from 'react';
+import { Dialog } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogContentText } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -31,16 +33,71 @@ type Props = {
 };
 
 export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
-  const confirm = useBoolean();
   const popover = usePopover();
-  // const quickEdit = useBoolean();
-  const navigate = useNavigate();
 
-  const handelEdit = (id) => {
-    navigate(paths.dashboard.artist.addArtist + '?=' + id);
-  };
+  const [banPopUp, setBanPopUp] = useState(false);
+  const [rejectPopUp, setRejectPopUp] = useState(false);
+
+  const { mutate, isPending } = useRejectRequestMutation(setRejectPopUp);
+  const { mutate: banMutate, isPending: banPending } = useBanRequestMutation(setBanPopUp);
 
   const extisting = row?.userId ? true : false;
+
+  const handleReject = async (id) => {
+    mutate(id);
+  };
+
+  const handleBan = async (id) => {
+    banMutate(id);
+  };
+
+  const banDialogBox = (
+    <Dialog
+      open={banPopUp}
+      onClose={() => {
+        setBanPopUp(false);
+      }}
+    >
+      <DialogTitle>Ban Artist Request</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are You Sure you want to ban this Artist Request. This action is irreversible.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleBan(row._id)}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {banPending ? 'Loading...' : 'Ban Request'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const rejectDialogBox = (
+    <Dialog
+      open={rejectPopUp}
+      onClose={() => {
+        setRejectPopUp(false);
+      }}
+    >
+      <DialogTitle>Reject Artist Request</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are You Sure you want to reject this Artist Request. This action is irreversible.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleReject(row._id)}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {isPending ? 'Loading...' : 'Reject Request'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
     <>
@@ -51,8 +108,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            {/* <Avatar alt={row.uploadImage} src={row.profile.mainImage} /> */}
-
+            <Avatar alt={row?.artistName} src={row?.profile?.mainImage} />
             <Stack
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
@@ -102,34 +158,29 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
         <MenuList>
           <MenuItem
             onClick={() => {
-              confirm.onTrue();
+              // confirm.onTrue();
               popover.onClose();
+              setRejectPopUp(true);
             }}
-            sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
             Reject
           </MenuItem>
-          {/* right now we just write here to remember that we have to change this */}
-          {/* onClick={() => handelEdit(row._id)} */}
-          <MenuItem>
+          <MenuItem
+            onClick={() => {
+              // confirm.onTrue();
+              popover.onClose();
+              setBanPopUp(true);
+            }}
+            sx={{ color: 'error.main' }}
+          >
             <Iconify icon="mdi:ban" />
             Ban
           </MenuItem>
         </MenuList>
       </CustomPopover>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to Reject this request?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Reject
-          </Button>
-        }
-      />
+      {banDialogBox}
+      {rejectDialogBox}
     </>
   );
 }

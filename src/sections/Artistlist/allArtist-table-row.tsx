@@ -104,11 +104,15 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
         setShowPop(true);
       },
     },
-    {
+  ];
+
+  if (!row?.isActivated) {
+    actionButtons.push({
       icon: 'charm:circle-tick',
       name: 'Activate Artist',
-    },
-  ];
+      handelEdit: () => {},
+    });
+  }
 
   const dialogBox = (
     <Dialog

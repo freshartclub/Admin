@@ -23,6 +23,7 @@ import {
   PRODUCT_PUBLISHINGCATALOG_OPTIONS,
   PRODUCT_MINNUMBROFARTWORK_OPTIONS,
   PRODUCT_MAXNUMBROFARTWORK_OPTIONS,
+  PRODUCT_PICKLIST_OPTIONS,
 } from 'src/_mock';
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
@@ -46,13 +47,14 @@ export const NewProductSchema = zod.object({
   taxBankIBAN: zod.string(),
   taxBankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
-  // PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
   PublishingCatalog: zod.array(
     zod.object({
       PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
+      ArtistFees: zod.string().min(1, { message: 'Artist Fee is required!' }),
     })
   ),
-  ArtistFees: zod.string().min(1, { message: 'Artist Fees is required!' }),
+  artistLevel: zod.string().min(1, { message: 'Artist Level is required!' }),
+  artProvider: zod.string().min(1, { message: 'Art Provider is required!' }),
   ArtistPlus: zod.string(),
   MinNumberOfArtwork: zod.string().min(1, { message: 'Min Number of Artwork is required!' }),
   MaxNumberOfArtwork: zod.string().min(1, { message: 'Max Number of Artwork is required!' }),
@@ -98,11 +100,13 @@ export function Invoice({
       taxBankIBAN: artistFormData?.taxBankIBAN || '',
       taxBankName: artistFormData?.taxBankName || '',
       CustomOrder: artistFormData?.CustomOrder || '',
+      artistLevel: artistFormData?.artistLevel || '',
+      artProvider: artistFormData?.artProvider || '',
       PublishingCatalog: artistFormData?.PublishingCatalog || '',
-      ArtistFees: artistFormData?.ArtistFees || '',
       ArtistPlus: artistFormData?.ArtistPlus || '',
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
+      count: 5,
     };
     setIbanNumber(artistFormData?.taxBankIBAN);
     return def;
@@ -113,14 +117,7 @@ export function Invoice({
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    trigger,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = formProps;
+  const { trigger, handleSubmit } = formProps;
 
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
@@ -133,39 +130,8 @@ export function Invoice({
   const addCatelog = () => {
     append({ PublishingCatalog: '' });
   };
-  //     setValue('taxNumber', artistFormData?.taxNumber || '12345');
-  //     setValue('taxLegalName', artistFormData?.taxLegalName || 'John Doe');
-  //     setValue('taxAddress', artistFormData?.taxAddress || '31,c21,vijay nager');
-  //     setValue('taxZipCode', artistFormData?.taxZipCode || '12345');
-  //     setValue('TaxCity', artistFormData?.TaxCity || 'Indore');
-  //     setValue('taxProvince', artistFormData?.taxProvince || 'Madhay Pradesh');
-  //     setValue('taxCountry', artistFormData?.taxCountry || 'USA');
-  //     setValue('taxEmail', artistFormData?.taxEmail || 'JohnDoe@gmail.com');
-  //     setValue('taxPhone', artistFormData?.taxPhone || '+917879610316');
-  //     setValue('taxBankIBAN', artistFormData?.taxBankIBAN || 'CBI90210');
-  //     setValue('taxBankName', artistFormData?.taxBankName || 'Bank of America');
-  //     setValue('CustomOrder', artistFormData?.CustomOrder || 'Yes');
-  //     // setValue('PublishingCatalog', artistFormData?.PublishingCatalog || 'Catagog 1');
-  //     if (artistFormData?.catagoryone?.length) {
-  //       setValue('PublishingCatalog', artistFormData.PublishingCatalog);
-  //     } else {
-  //       const mockData = [
-  //         {
-  //           PublishingCatalog: 'Catagog 4',
-  //         },
-  //       ];
-
-  //       mockData.forEach((item) => append(item));
-  //     }
-  //     setValue('ArtistFees', artistFormData?.ArtistFees || '10000');
-  //     setValue('ArtistPlus', artistFormData?.ArtistPlus || 'Yes');
-  //     setValue('MinNumberOfArtwork', artistFormData?.MinNumberOfArtwork || '9');
-  //     setValue('MaxNumberOfArtwork', artistFormData?.MaxNumberOfArtwork || '13');
-  //   }
-  // }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
     await trigger(undefined, { shouldFocus: true });
 
     data.count = 5;
@@ -213,12 +179,12 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="taxNumber" label=" taxNumber/NIF" />
+          <Field.Text disabled={isReadOnly} required name="taxNumber" label=" taxNumber/NIF" />
 
-          <Field.Text disabled={isReadOnly} name="taxLegalName" label="taxLegalName" />
+          <Field.Text disabled={isReadOnly} required name="taxLegalName" label="taxLegalName" />
         </Box>
 
-        <Field.Text disabled={isReadOnly} name="taxAddress" label="Tax Address" />
+        <Field.Text disabled={isReadOnly} required name="taxAddress" label="Tax Address" />
 
         <Box
           columnGap={2}
@@ -226,9 +192,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="taxZipCode" label="Tax Zip/code" />
+          <Field.Text disabled={isReadOnly} required name="taxZipCode" label="Tax Zip/code" />
 
-          <Field.Text disabled={isReadOnly} name="taxCity" label="Tax City" />
+          <Field.Text disabled={isReadOnly} required name="taxCity" label="Tax City" />
         </Box>
         <Box
           columnGap={2}
@@ -236,10 +202,11 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="taxProvince" label="taxProvince" />
+          <Field.Text disabled={isReadOnly} required name="taxProvince" label="taxProvince" />
 
           <Field.CountrySelect
             disabled={isReadOnly}
+            required
             fullWidth
             name="taxCountry"
             label="Tax Country"
@@ -252,9 +219,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="taxEmail" label="Tax Email address" />
+          <Field.Text disabled={isReadOnly} required name="taxEmail" label="Tax Email address" />
 
-          <Field.Phone disabled={isReadOnly} name="taxPhone" label="Tax Phone number" />
+          <Field.Phone disabled={isReadOnly} required name="taxPhone" label="Tax Phone number" />
         </Box>
 
         <Box
@@ -265,16 +232,15 @@ export function Invoice({
         >
           <Field.Text
             disabled={isReadOnly}
+            required
             onChange={hanldeIbanChange}
             value={ibanNumber}
             name="taxBankIBAN"
             label="Bank IBAN"
           />
 
-          <Field.Text disabled={isReadOnly} name="taxBankName" label="taxBankName" />
+          <Field.Text disabled={isReadOnly} required name="taxBankName" label="taxBankName" />
         </Box>
-
-        {/* end my section */}
       </Stack>
     </Card>
   );
@@ -285,18 +251,13 @@ export function Invoice({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           disabled={isReadOnly}
+          required
           checkbox
           name="CustomOrder"
           label="Are you accept custom Order?"
           options={PRODUCT_CUSTOMORDER_OPTIONS}
         />
-        {/* <Field.SingelSelect
-          checkbox
-          name="PublishingCatalog"
-          label="publishing catalogue"
-          options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
-        /> */}
-        {/* try start */}
+
         <Stack>
           <div className="flex justify-end">
             <Button
@@ -306,7 +267,7 @@ export function Invoice({
               startIcon={<Iconify icon="mingcute:add-line" />}
               onClick={addCatelog}
             >
-              Add More Catelog
+              {fields.length === 0 ? 'Add Catalog' : 'Add More Catelog'}
             </Button>
           </div>
           {fields.map((item, index) => (
@@ -324,10 +285,17 @@ export function Invoice({
               >
                 <Field.SingelSelect
                   disabled={isReadOnly}
+                  required
                   checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
                   label="publishing catalogue"
                   options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
+                />
+                <Field.Text
+                  disabled={isReadOnly}
+                  required
+                  name={`PublishingCatalog[${index}].ArtistFees`}
+                  label=" Artist Fees"
                 />
               </Box>
 
@@ -344,8 +312,24 @@ export function Invoice({
             </Stack>
           ))}
         </Stack>
-        {/* try end */}
-        <Field.Text disabled={isReadOnly} name="ArtistFees" label=" Artist Fees" />
+
+        <Field.SingelSelect
+          disabled={isReadOnly}
+          required
+          checkbox
+          name="artistLevel"
+          label="Artist Level"
+          options={PRODUCT_PICKLIST_OPTIONS}
+        />
+
+        <Field.SingelSelect
+          disabled={isReadOnly}
+          required
+          checkbox
+          name="artProvider"
+          label="Is Art Provider"
+          options={PRODUCT_CUSTOMORDER_OPTIONS}
+        />
 
         <Field.SingelSelect
           disabled={isReadOnly}
@@ -356,6 +340,7 @@ export function Invoice({
         />
         <Field.SingelSelect
           disabled={isReadOnly}
+          required
           checkbox
           name="MinNumberOfArtwork"
           label="Min. Number of artworks"
@@ -363,6 +348,7 @@ export function Invoice({
         />
         <Field.SingelSelect
           disabled={isReadOnly}
+          required
           checkbox
           name="MaxNumberOfArtwork"
           label="Max. Number of artworks"
@@ -370,19 +356,6 @@ export function Invoice({
         />
       </Stack>
     </Card>
-  );
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
-
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!artistFormData ? 'Create product' : 'Save changes'}
-      </LoadingButton>
-    </Stack>
   );
 
   return (
@@ -392,7 +365,7 @@ export function Invoice({
           {renderDetails}
 
           {Commercialization}
-          {/* {renderActions} */}
+
           <div className="flex justify-end">
             {!isReadOnly ? (
               <button className="text-white bg-black rounded-md px-3 py-2" type="submit">

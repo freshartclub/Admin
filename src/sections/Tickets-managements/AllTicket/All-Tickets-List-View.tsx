@@ -83,22 +83,22 @@ export function TicketsListView() {
     dateError,
   });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
+  // const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
-  const canReset =
-    !!filters.state.name ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
+  // const canReset =
+  //   !!filters.state.name ||
+  //   filters.state.status !== 'all' ||
+  //   (!!filters.state.startDate && !!filters.state.endDate);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+  // const handleFilterStatus = useCallback(
+  //   (event: React.SyntheticEvent, newValue: string) => {
+  //     table.onResetPage();
+  //     filters.setState({ status: newValue });
+  //   },
+  //   [filters, table]
+  // );
 
   return (
     <>

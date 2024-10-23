@@ -200,7 +200,7 @@ export function ArtworkAdd({ currentProduct }) {
     formState: { isSubmitting, errors },
   } = methods;
 
-  const debounceArtistId = useDebounce(methods.getValues('artistID'), 800);
+  const debounceArtistId = useDebounce(methods.getValues('artistID'), 500);
 
   const {
     refetch,
@@ -294,7 +294,7 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <div className="relative">
-          <Field.Text name="artistID" label=" Artist ID" />
+          <Field.Text name="artistID" label="Artist ID" />
           {methods.getValues('artistID') && open && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

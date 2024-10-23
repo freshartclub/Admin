@@ -7,14 +7,9 @@ async function fetchData() {
   return data.data;
 }
 
-
-
 export const useGetSuspendedArtistList = () => {
   return useQuery({
-    queryKey: [ARTIST_ENDPOINTS.suspendedArtist],
+    queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase],
     queryFn: fetchData,
   });
 };
-
-
-

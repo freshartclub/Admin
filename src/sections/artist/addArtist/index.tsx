@@ -48,6 +48,8 @@ function AddArtistIndex() {
         obj.zipCode = data.data.address.zipCode;
         obj.city = data.data.address.city;
         obj.state = data.data.address.state;
+        obj.discipline = data.data.aboutArtist.discipline;
+        obj.uploadDocs = data.data?.document?.documents;
         delete data.data.address;
 
         if (data.data.pageCount > 1) {
@@ -87,6 +89,8 @@ function AddArtistIndex() {
           obj.taxBankName = data.data?.invoice?.taxBankName;
 
           obj.CustomOrder = data.data?.commercilization?.customOrder;
+          obj.artProvider = data.data?.commercilization?.artProvider;
+          obj.artistLevel = data.data?.commercilization?.artistLevel;
           obj.PublishingCatalog = data.data?.commercilization?.publishingCatalog;
           obj.ArtistFees = data.data?.commercilization?.artistFees;
           obj.ArtistPlus = data.data?.commercilization?.artistPlus;

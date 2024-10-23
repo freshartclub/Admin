@@ -3,22 +3,21 @@ import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
-// User id mogodb
-export const useSuspendArtistMutation = () => {
+export const useRejectRequestMutation = (setRejectPopUp) => {
   const queryClient = useQueryClient();
-  async function CreateArtist(id) {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
+  async function rejectRequest(id) {
+    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.rejectRequest}/${id}`);
     return response;
   }
-  
+
   return useMutation({
-    mutationFn: CreateArtist,
+    mutationFn: rejectRequest,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase],
+        queryKey: [ARTIST_ENDPOINTS.getAllBecomeArtist],
         refetchType: 'all',
       });
-
+      setRejectPopUp(false);
       toast.success(res.data.message);
     },
     onError: (res) => {

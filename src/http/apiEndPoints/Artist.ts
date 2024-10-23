@@ -12,14 +12,18 @@ export const ARTIST_ENDPOINTS = {
   getuser: `${ADMIN_BASE_URL}/get-user`,
   suspendedArtist: `${ADMIN_BASE_URL}/suspended-list`,
   suspendArtist: `${ADMIN_BASE_URL}/suspend-artist`,
+  rejectRequest: `${ADMIN_BASE_URL}/reject-artist-request`,
+  banRequest: `${ADMIN_BASE_URL}/ban-artist-request`,
   unSuspendArtist: `${ADMIN_BASE_URL}/unsuspend-artist`,
   chnageArtistPasswoed: `${ADMIN_BASE_URL}/change-artist-password`,
   addArtwork: `${ADMIN_BASE_URL}/add-artwork`,
   getArtWorkList: `${ADMIN_BASE_URL}/get-artwork-list`,
   getArtistById: `${ADMIN_BASE_URL}/get-artist-by-id`,
+  getUserById: `${ADMIN_BASE_URL}/get-user-by-id`,
   removeArtWorkList: `${ADMIN_BASE_URL}/remove-artwork`,
   getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
   replyTicket: `${ADMIN_BASE_URL}/reply-ticket`,
+  getTicketReply: `${ADMIN_BASE_URL}/get-ticket-replies`,
 };
 
 export const USER_ENDPOINTS = {

@@ -1,10 +1,12 @@
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from '../apiEndPoints/Artist';
+import { paths } from 'src/routes/paths';
 
 const useAddArtistMutation = (handleOnSuccess) => {
+  const navigate = useNavigate();
   const [searchParam, setSearchParam] = useSearchParams();
   const id = searchParam.get('id');
 
@@ -34,8 +36,6 @@ const useAddArtistMutation = (handleOnSuccess) => {
       onUploadProgress,
     };
 
-    // if (id) return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
-    // return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}`, body, config);
     return axiosInstance.post(`${ARTIST_ENDPOINTS.AddArtist}/${id}`, body, config);
   }
 
@@ -44,6 +44,9 @@ const useAddArtistMutation = (handleOnSuccess) => {
     onSuccess: async (res, body) => {
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
+      if (body.body.count === 7) {
+        navigate(paths.dashboard.artist.artistPendingRequest);
+      }
     },
 
     onError: (res) => {

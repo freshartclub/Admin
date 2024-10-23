@@ -23,6 +23,8 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
     const obj = {
       avatar: data?.avatar || null,
       name: data?.artistName || '',
+      artistSurname1: data?.artistSurname1 || '',
+      artistSurname2: data?.artistSurname2 || '',
       email: data?.email || '',
       phoneNumber: data?.phone || '',
       country: data?.address.country || '',
@@ -107,22 +109,24 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
             >
-              <Field.Text name="name" label="Full name" />
-              <Field.Text disabled={isReadOnly} name="email" label="Email address" />
-              <Field.Phone name="phoneNumber" label="Phone number" />
+              <Field.Text name="name" required label="First Name" />
+              <Field.Text name="artistSurname1" required label="Surname 1" />
+              <Field.Text name="artistSurname2" label="Surname 2" />
+              <Field.Text disabled={isReadOnly} required name="email" label="Email address" />
+              <Field.Phone name="phoneNumber" required label="Phone number" />
 
               <Field.CountrySelect
                 fullWidth
+                required
                 name="country"
                 label="Country"
-                placeholder="Choose a country"
+                placeholder="Choose a country *"
               />
 
-              <Field.Text name="state" label="State/region" />
-              <Field.Text name="city" label="City" />
-              <Field.Text name="address" label="Address" />
-              <Field.Text name="zipCode" label="Zip/code" />
+              <Field.Text required name="zipCode" label="Zip/code" />
+              <Field.Text required name="state" label="State/region" />
             </Box>
+            <Field.Text sx={{ mt: 3 }} required name="city" label="City" />
 
             <Stack
               alignItems="flex-end"

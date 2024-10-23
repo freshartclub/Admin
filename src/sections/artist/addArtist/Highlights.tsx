@@ -12,13 +12,9 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-
-import { useRouter, useSearchParams } from 'src/routes/hooks';
-
+import { useSearchParams } from 'src/routes/hooks';
 import { getYearDropDown } from 'src/utils/helper';
-
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
 import { ARTIST_CV_EVENTSCOPE, ARTIST_CV_EVENTTYPE } from 'src/_mock';
@@ -61,6 +57,7 @@ export function Highlights({
     () => ({
       highlights: artistFormData?.highlights,
       cvData: artistFormData?.cvData,
+      count: 2,
     }),
     [artistFormData]
   );
@@ -69,14 +66,7 @@ export function Highlights({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
-  const {
-    reset,
-    watch,
-    setValue,
-    trigger,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = formProps;
+  const { trigger, handleSubmit } = formProps;
   const { fields, append, remove } = useFieldArray({ control: formProps.control, name: 'cvData' });
 
   const handleRemove = (index) => {
@@ -108,7 +98,13 @@ export function Highlights({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Highlights</Typography>
-          <Field.Editor disabled={isReadOnly} name="highlights" sx={{ maxHeight: 480 }} />
+          <Field.Editor
+            required
+            disabled={isReadOnly}
+            helperText="Add Highlights"
+            name="highlights"
+            sx={{ maxHeight: 480 }}
+          />
         </Stack>
       </Stack>
     </Card>
@@ -119,12 +115,7 @@ export function Highlights({
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
           {fields.map((item, index) => (
-            <Stack
-              key={item.id}
-              aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
-              spacing={1.5}
-              className=""
-            >
+            <Stack key={item.id} aligncvs={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
               <Box
                 columnGap={2}
                 rowGap={3}

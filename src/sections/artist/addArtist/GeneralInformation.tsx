@@ -58,9 +58,6 @@ export function GeneralInformation({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const [searchParam, setSearchParam] = useState();
-  const [includeTaxes, setIncludeTaxes] = useState(false);
-
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
@@ -139,9 +136,14 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="artistName" label="Artist name" />
+          <Field.Text disabled={isReadOnly} required name="artistName" label="Artist name" />
 
-          <Field.Text disabled={isReadOnly} name="artistSurname1" label="Artist Surname 1" />
+          <Field.Text
+            disabled={isReadOnly}
+            required
+            name="artistSurname1"
+            label="Artist Surname 1"
+          />
 
           <Field.Text disabled={isReadOnly} name="artistSurname2" label="Artist Surname 2" />
         </Box>
@@ -156,6 +158,7 @@ export function GeneralInformation({
         </Box>
 
         <Field.CountrySelect
+          required
           fullWidth
           name="country"
           label="Country"
@@ -169,12 +172,17 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="zipCode" label="Zip/code" />
-          <Field.Text disabled={isReadOnly} name="city" label="City" />
-          <Field.Text disabled={isReadOnly} name="state" label="state/State/Region" />
+          <Field.Text disabled={isReadOnly} required name="zipCode" label="Zip/code" />
+          <Field.Text disabled={isReadOnly} required name="city" label="City" />
+          <Field.Text disabled={isReadOnly} required name="state" label="state/State/Region" />
         </Box>
 
-        <Field.Text disabled={isReadOnly} name="residentialAddress" label="residentialAddress" />
+        <Field.Text
+          disabled={isReadOnly}
+          required
+          name="residentialAddress"
+          label="residentialAddress"
+        />
 
         <Box
           columnGap={2}
@@ -184,12 +192,13 @@ export function GeneralInformation({
         >
           <Field.Phone
             disabled={isReadOnly}
+            required
             name="phone"
             label="Phone number"
             helperText="Good to go"
           />
 
-          <Field.Text disabled={isReadOnly} name="email" label="Email" />
+          <Field.Text disabled={isReadOnly} required name="email" label="Email" />
         </Box>
 
         <Box
@@ -199,6 +208,7 @@ export function GeneralInformation({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.MultiSelect
+            required
             checkbox
             name="language"
             disabled={isReadOnly}
@@ -207,6 +217,7 @@ export function GeneralInformation({
           />
 
           <Field.SingelSelect
+            required
             checkbox
             disabled={isReadOnly}
             name="gender"
