@@ -89,6 +89,7 @@ export function GeneralInformation({
       gender: artistFormData?.gender || '',
       createDate: artistFormData?.createDate || today(),
       notes: artistFormData?.notes || '',
+      count: 1,
     }),
     [artistFormData]
   );
