@@ -1,68 +1,63 @@
+import type { IUserItem } from 'src/types/user';
+
 import { Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import { useEffect, useState } from 'react';
 import { LoadingScreen } from 'src/components/loading-screen';
-import axiosInstance from 'src/utils/axios';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-import { useQuery } from '@tanstack/react-query';
 import { ArtistRequest } from '../artistRequest-table-row';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { useGetAllArtistRequest } from '../http/useGetAllArtistRequset';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​', width: 140 },
-  { id: 'group', label: 'Contact', width: 140 },
+  { id: 'artistName', label: 'Artist Name​', width: 140 },
+  { id: 'phone', label: 'Contact', width: 140 },
   { id: 'city', label: 'City', width: 140 },
   { id: 'country', label: 'Country', width: 140 },
-  { id: 'create', label: 'Created At', width: 140 },
+  { id: 'createdAt', label: 'Created At', width: 140 },
   { id: 'cv', label: 'CV', width: 100 },
-  { id: 'artist', label: 'Button', width: 100 },
-  { id: 'btns', label: 'Action', width: 80 },
+  { id: 'buttons', label: 'Button', width: 100 },
+  { id: 'action', label: 'Action', width: 80 },
 ];
+
 export function ArtistsRequest() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [_userList, setUserList] = useState<IUserItem[]>([]);
 
-  // dont forget to change uri
-  async function fetchData() {
-    const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllBecomeArtist}`);
-    return data.data;
-  }
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['styleData'],
-    queryFn: fetchData,
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading, isError, error } = useGetAllArtistRequest();
 
   useEffect(() => {
     if (data) {
-      if (data.length === 0) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-      }
+      setUserList(data);
+      setNotFound(data.length === 0);
     }
   }, [data]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  const dataFiltered = applyFilter({
+    inputData: _userList,
+    comparator: getComparator(table.order, table.orderBy),
+  });
 
-  if (isError) {
-    return <div>An error has occurred: {error.message}</div>;
-  }
+  const handleDeleteRow = (id: string) => {
+    console.log(id);
+  };
 
-  const dataFiltered = data;
+  const handleEditRow = (id: string) => {
+    console.log(id);
+  };
 
-  return (
+  return isLoading ? (
+    <LoadingScreen />
+  ) : (
     <Card>
       <Scrollbar>
         <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -115,4 +110,23 @@ export function ArtistsRequest() {
       />
     </Card>
   );
+}
+
+type ApplyFilterProps = {
+  inputData: IUserItem[];
+  comparator: (a: any, b: any) => number;
+};
+
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  return inputData;
 }

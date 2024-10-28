@@ -13,7 +13,7 @@ import { InvoiceAnalytic } from 'src/sections/invoice/invoice-analytic';
 import { InvoiceListView } from 'src/sections/invoice/view';
 
 
-import { ListArtists } from 'src/sections/Artistlist';
+import { ListArtists } from 'src/sections/Artistlist/view/activeArtist';
 
 
 

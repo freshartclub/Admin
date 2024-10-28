@@ -1,31 +1,35 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
+import {
+  Avatar,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+} from '@mui/material';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
-import { Iconify } from 'src/components/iconify';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { fDate } from 'src/utils/format-time';
-import { phoneNo } from 'src/utils/change-case';
-import { Avatar, DialogActions, DialogTitle, IconButton } from '@mui/material';
-import { useRejectRequestMutation } from './http/useRejectRequestMutation';
-import { useBanRequestMutation } from './http/useBanRequestMutation';
+import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
-import { Dialog } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogContentText } from '@mui/material';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { RouterLink } from 'src/routes/components';
+import { paths } from 'src/routes/paths';
+import { ArtistListType } from 'src/types/artist/ArtistDetailType';
+import { phoneNo } from 'src/utils/change-case';
+import { fDate } from 'src/utils/format-time';
+import { useBanRequestMutation } from './http/useBanRequestMutation';
+import { useRejectRequestMutation } from './http/useRejectRequestMutation';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistListType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -108,13 +112,13 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.artistName} src={row?.profile?.mainImage} />
+            <Avatar alt={row?.artistName} src={row?.avatar} />
             <Stack
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row?.artistName}
+                {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}
@@ -124,8 +128,8 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.address.country}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ alignContent: 'center' }}>
           <RouterLink href={`${paths.dashboard.artist.createArtist}/${row._id}`}>

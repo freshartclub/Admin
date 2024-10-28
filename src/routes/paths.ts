@@ -213,6 +213,7 @@ export const paths = {
       Root: `${ROOTS.DASHBOARD}/tickets`,
       allList: `${ROOTS.DASHBOARD}/tickets/allList`,
       addIncident: `${ROOTS.DASHBOARD}/tickets/addIncident`,
+      allIncident: `${ROOTS.DASHBOARD}/tickets/allIncident`,
       singleList: `${ROOTS.DASHBOARD}/tickets/ticket`,
     },
 
@@ -222,7 +223,5 @@ export const paths = {
       addNotification: `${ROOTS.DASHBOARD}/notificationAndMessage/addNotification`,
       List: `${ROOTS.DASHBOARD}/notificationAndMessage/list`,
     },
-
-    // try end
   },
 };

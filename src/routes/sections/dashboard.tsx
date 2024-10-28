@@ -69,6 +69,7 @@ const ListOfMsgNfc = lazy(
 const TicketList = lazy(() => import('src/pages/dashboard/Ticket-Management/TicketList'));
 const Ticket = lazy(() => import('src/pages/dashboard/Ticket-Management/SingleTicket'));
 const AddIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AddIncident'));
+const AllIncident = lazy(() => import('src/pages/dashboard/Ticket-Management/AllIncident'));
 const SuspendedArtist = lazy(() => import('src/pages/dashboard/Artist/SuspendedArtistList'));
 const AllArtist = lazy(() => import('src/pages/dashboard/Artist/AllArtistList'));
 const AddCatalog = lazy(() => import('src/pages/dashboard/AddArtwok/Catalog/AddCatalog'));
@@ -293,6 +294,7 @@ export const dashboardRoutes = [
           { path: 'allList', element: <TicketList /> },
           { path: 'ticket', element: <Ticket /> },
           { path: 'addIncident', element: <AddIncident /> },
+          { path: 'allIncident', element: <AllIncident /> },
         ],
       },
       {

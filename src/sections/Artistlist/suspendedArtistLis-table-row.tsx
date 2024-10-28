@@ -1,23 +1,21 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import { useUnsuspendArtistMutation } from './http/useUnsuspendArtistMutation';
-import { Dialog, DialogActions, DialogContentText, DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
+import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
-import { fDate } from 'src/utils/format-time';
+import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 import { phoneNo } from 'src/utils/change-case';
+import { fDate } from 'src/utils/format-time';
+import { useUnsuspendArtistMutation } from './http/useUnsuspendArtistMutation';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistListType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -25,9 +23,6 @@ type Props = {
 };
 
 export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
-  // const confirm = useBoolean();
-  // const popover = usePopover();
-  // const quickEdit = useBoolean();
   const [showPop, setShowPop] = useState(false);
   const { mutate, isPending } = useUnsuspendArtistMutation(row._id);
 
@@ -71,7 +66,7 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row?.artistName}
+                {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}
@@ -80,9 +75,9 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.country}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.phone ? phoneNo(row?.phone) : 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Button onClick={() => setShowPop(true)} variant="contained">

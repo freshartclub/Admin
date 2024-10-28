@@ -43,7 +43,6 @@ import {
 
 import { ContentTable } from './content-table-row';
 
-
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
@@ -52,8 +51,8 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'company', label: 'Position', width: 220 },
   { id: 'role', label: 'Type', width: 180 },
-    { id: 'createdAt', label: 'Modified', width: 180 },
-//   { id: 'status', label: 'Status', width: 100 },
+  { id: 'createdAt', label: 'Modified', width: 180 },
+  //   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 88 },
 ];
 
@@ -131,8 +130,8 @@ export function ListContent() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Content Management', href: paths.dashboard.contentmanagement.Root },
-          { name: 'List', href: paths.dashboard.contentmanagement.list },
+            { name: 'Content Management', href: paths.dashboard.contentmanagement.Root },
+            { name: 'List', href: paths.dashboard.contentmanagement.list },
           ]}
           action={
             <Button
@@ -148,57 +147,7 @@ export function ListContent() {
         />
 
         <Card>
-          {/* <Tabs
-            value={filters.state.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) =>
-                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
-                      'soft'
-                    }
-                    color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.status === tab.value).length
-                      : tableData.length}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs> */}
-
-          {/* <UserTableToolbar
-            filters={filters}
-            onResetPage={table.onResetPage}
-            options={{ roles: _roles }}
-          /> */}
-
-          {/* {canReset && (
-            <UserTableFiltersResult
-              filters={filters}
-              totalResults={dataFiltered.length}
-              onResetPage={table.onResetPage}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
+         
 
           <Box sx={{ position: 'relative' }}>
             <TableSelectedAction
@@ -245,7 +194,7 @@ export function ListContent() {
                     )
                     .map((row) => (
                       <ContentTable
-                        key={row.id}
+                        key={row._id}
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
@@ -315,6 +264,7 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   const { name, status, role } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+  console.log(stabilizedThis);
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

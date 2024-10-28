@@ -108,3 +108,23 @@ interface ArtistCategory {
   styleone: string;
   styletwo: string;
 }
+
+export interface ArtistListType {
+  _id: string;
+  avatar: string;
+  isActivated: Boolean;
+  userId?: string;
+  artistId: string;
+  artistName: string;
+  artistSurname1: string;
+  artistSurname2: string;
+  uploadImage: any;
+  profile: any;
+  email: string;
+  phone: string;
+  createdAt: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country?: string;
+}

@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -26,11 +24,12 @@ import { useForm } from 'react-hook-form';
 import { useChnagePassword } from './http/useChnagePassword';
 import { fDate } from 'src/utils/format-time';
 import { phoneNo } from 'src/utils/change-case';
+import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistListType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -40,8 +39,6 @@ type Props = {
 export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
-  // const password = useBoolean();
-  // const quickEdit = useBoolean();
   const [showPop, setShowPop] = useState(false);
   const [showPasswordPop, setShowPasswordPop] = useState(false);
 
@@ -202,7 +199,7 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row?.artistName}
+                {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}
@@ -213,11 +210,11 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.state}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.state}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.address?.country}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
@@ -237,8 +234,6 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
           </Stack>
         </TableCell>
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}

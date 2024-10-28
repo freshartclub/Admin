@@ -342,6 +342,7 @@ export const navData = [
         icon: ICONS.job,
         children: [
           { title: 'All Ticket List', path: paths.dashboard.tickets.allList },
+          { title: 'All Incident List', path: paths.dashboard.tickets.allIncident },
           { title: 'Add Incident', path: paths.dashboard.tickets.addIncident },
         ]
       },

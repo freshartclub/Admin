@@ -13,5 +13,3 @@ export const useGetArtistList = () => {
     queryFn: fetchData,
   });
 };
-
-

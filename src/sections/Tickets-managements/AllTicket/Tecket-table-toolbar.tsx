@@ -1,20 +1,8 @@
-import type { IOrderTableFilters } from 'src/types/order';
-import type { UseSetStateReturn } from 'src/hooks/use-set-state';
+import { Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import { Iconify } from 'src/components/iconify';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { Field } from 'src/components/hook-form';
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from '@mui/material';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 
@@ -22,61 +10,13 @@ import { paths } from 'src/routes/paths';
 
 type Props = {
   setSearch: (value: string) => void;
-  dateError: boolean;
   onResetPage: () => void;
-  filters: UseSetStateReturn<IOrderTableFilters>;
 };
 
-const STATUS_OPTIONS = [
-  { value: 'creatad', label: 'creatad' },
-  { value: 'Dispatched', label: 'Dispatched' },
-  { value: 'Technical Finish', label: 'Technical Finish' },
-  { value: 'In progress', label: 'In progress' },
-  { value: 'Finalise', label: 'Finalise' },
-];
 const status = ['Creatad', 'Dispatched', 'Technical Finish', 'In progress', 'Finalise'];
 const weaks = ['1 day', '2 day', '3 day', '4 day', '5 day', '6 day', '7 day'];
 
-// export function TicketTableToolbar({ filters, onResetPage, dateError }: Props) {
-//   const popover = usePopover();
-
-//   const handleFilterName = useCallback(
-//     (event: React.ChangeEvent<HTMLInputElement>) => {
-//       onResetPage();
-//       filters.setState({ name: event.target.value });
-//     },
-//     [filters, onResetPage]
-//   );
-
-//   const handleFilterService = useCallback(
-//     (event: SelectChangeEvent<string[]>) => {
-//       const newValue =
-//         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
-
-//       onResetPage();
-//       filters.setState({ service: newValue });
-//     },
-//     [filters, onResetPage]
-//   );
-
-//   const handleFilterStartDate = useCallback(
-//     (newValue: IDatePickerControl) => {
-//       onResetPage();
-//       filters.setState({ startDate: newValue });
-//     },
-//     [filters, onResetPage]
-//   );
-
-//   const handleFilterEndDate = useCallback(
-//     (newValue: IDatePickerControl) => {
-//       onResetPage();
-//       filters.setState({ endDate: newValue });
-//     },
-//     [filters, onResetPage]
-//   );
-// }
-
-export function TicketTableToolbar({ setSearch, filters, onResetPage, dateError }: Props) {
+export function TicketTableToolbar({ setSearch, onResetPage }: Props) {
   return (
     <>
       <Stack
@@ -94,7 +34,6 @@ export function TicketTableToolbar({ setSearch, filters, onResetPage, dateError 
         >
           <TextField
             fullWidth
-            // value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for Tickets..."
             sx={{ maxWidth: { md: 300 } }}
@@ -112,21 +51,12 @@ export function TicketTableToolbar({ setSearch, filters, onResetPage, dateError 
           <InputLabel htmlFor="Status">Status</InputLabel>
 
           <Select
-            // multiple
-            // value={filters.state.service}
-            // onChange={handleFilterService}
             input={<OutlinedInput label="Status" />}
-            // renderValue={(selected) => selected.map((value) => value).join(', ')}
             inputProps={{ id: 'Status' }}
             sx={{ textTransform: 'capitalize' }}
           >
             {status.map((option) => (
               <MenuItem key={option} value={option}>
-                {/* <Checkbox
-                  disableRipple
-                  size="small"
-                  // checked={filters.state.service.includes(option)}
-                /> */}
                 {option}
               </MenuItem>
             ))}
@@ -137,36 +67,18 @@ export function TicketTableToolbar({ setSearch, filters, onResetPage, dateError 
           <InputLabel htmlFor="ThisWeak">This Weak</InputLabel>
 
           <Select
-            // multiple
-            // value={filters.state.service}
-            // onChange={handleFilterService}
             input={<OutlinedInput label="Status" />}
-            // renderValue={(selected) => selected.map((value) => value).join(', ')}
             inputProps={{ id: 'ThisWeak' }}
             sx={{ textTransform: 'capitalize' }}
           >
             {weaks.map((option) => (
               <MenuItem key={option} value={option}>
-                {/* <Checkbox
-                  disableRipple
-                  size="small"
-                  // checked={filters.state.service.includes(option)}
-                /> */}
                 {option}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
-        <Button
-          component={RouterLink}
-          href={paths.dashboard.tickets.addIncident}
-          variant="contained"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-          sx={{ py: 2, maxWidth: { md: 180 } }}
-        >
-          New Teckets
-        </Button>
         <Button
           component={RouterLink}
           href={paths.dashboard.tickets.addIncident}

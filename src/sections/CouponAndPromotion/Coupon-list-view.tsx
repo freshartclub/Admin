@@ -27,7 +27,7 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS,FAQ_GROUP_OPTIONS} from 'src/_mock';
+import { _invoices, INVOICE_SERVICE_OPTIONS, FAQ_GROUP_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -47,7 +47,6 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-
 import { CouponTableRow } from './coupon-table-row';
 import { CouponTableToolbar } from './coupon-table-toolbar';
 import { CouponFiltersResult } from './coupon-table-filters-result';
@@ -61,7 +60,7 @@ const TABLE_HEAD = [
   { id: 'price', label: 'Coupon Amount' },
   { id: 'sent', label: 'User Sent' },
   { id: 'status', label: 'Status' },
-  { id: '',},
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -205,7 +204,6 @@ export function CouponListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Coupon List', href: paths.dashboard.couponandpromotions.list },
-            
           ]}
           action={
             <Button
@@ -220,10 +218,7 @@ export function CouponListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
-        
-
         <Card>
-
           <CouponTableToolbar
             filters={filters}
             dateError={dateError}

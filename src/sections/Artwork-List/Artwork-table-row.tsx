@@ -115,7 +115,7 @@ export function ArtworkTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row?.artworkType}
+                  {row?.artworkTechnic}
                 </Link>
               }
             />
@@ -124,9 +124,9 @@ export function ArtworkTableRow({
 
         <TableCell align="center">{row?.artworkSeries}</TableCell>
 
-        <TableCell align="center">{row?.commercialization?.upworkOffer}</TableCell>
+        <TableCell align="center">{row?.upworkOffer}</TableCell>
 
-        <TableCell align="center">{row?.artistName}</TableCell>
+        <TableCell align="center">{row?.artistName} {row?.artistSurname1} {row?.artistSurname2}</TableCell>
 
         <TableCell>
           <ListItemText

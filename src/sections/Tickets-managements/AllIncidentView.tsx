@@ -1,48 +1,60 @@
-import type { IUserItem } from 'src/types/user';
+import type { IUserItem, IUserTableFilters } from 'src/types/user';
 
+import { useSetState } from 'src/hooks/use-set-state';
 import { Card, Table, TableBody } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { LoadingScreen } from 'src/components/loading-screen';
+import { useState, useEffect } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
+import { LoadingScreen } from 'src/components/loading-screen';
 import {
+  useTable,
   emptyRows,
+  rowInPage,
   getComparator,
+  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableNoData,
   TablePaginationCustom,
-  useTable,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
-import { useGetPendingArtist } from '../http/useGetAllPendingArtist';
+import { useGetAllIncidentMutation } from './http/useGetAllIncidentMutation';
+import { AllIncidentList } from './AllIncidentList';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { paths } from 'src/routes/paths';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​', width: 180 },
-  { id: 'userId', label: 'User Id', width: 130 },
-  { id: 'phone', label: 'Contact', width: 180 },
-  { id: 'status', label: 'Country', width: 130 },
-  { id: 'createdAt', label: 'Created At', width: 130 },
+  { id: 'group', label: 'Inc Group', width: 130 },
+  { id: 'type', label: 'Inc Type', width: 130 },
+  { id: 'status', label: 'Status', width: 130 },
+  { id: 'date', label: 'Date & Time', width: 130 },
+  { id: 'Initial', label: 'Initial Time', width: 130 },
+  { id: 'end', label: 'End Time', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
 ];
 
-export function ArtistsPendingRequest() {
+export function AllIncidentView() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
-  const [_userList, setUserList] = useState<IUserItem[]>([]);
+  const [_incidentList, setIncidentList] = useState<IUserItem[]>([]);
 
-  const { data, isLoading } = useGetPendingArtist();
+  const { data, isLoading, isError, error } = useGetAllIncidentMutation();
 
   useEffect(() => {
     if (data) {
-      setUserList(data);
+      setIncidentList(data);
       setNotFound(data.length === 0);
     }
   }, [data]);
 
+  const filters = useSetState<IUserTableFilters>({
+    group: '',
+    type: '',
+    date: '',
+    status: 'all',
+  });
+
   const dataFiltered = applyFilter({
-    inputData: _userList,
+    inputData: _incidentList,
     comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
   });
 
   const handleDeleteRow = (id: string) => {
@@ -57,6 +69,14 @@ export function ArtistsPendingRequest() {
     <LoadingScreen />
   ) : (
     <Card>
+      <CustomBreadcrumbs
+        heading="All Incident List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Incident List', href: paths.dashboard.tickets.allIncident },
+        ]}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
       <Scrollbar>
         <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
           <TableHeadCustom
@@ -80,7 +100,7 @@ export function ArtistsPendingRequest() {
                 table.page * table.rowsPerPage + table.rowsPerPage
               )
               .map((row) => (
-                <ArtistPendingRequest
+                <AllIncidentList
                   key={row._id}
                   row={row}
                   selected={table.selected.includes(row._id)}
@@ -112,10 +132,13 @@ export function ArtistsPendingRequest() {
 
 type ApplyFilterProps = {
   inputData: IUserItem[];
+  filters: IUserTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
+  const { name, city, status } = filters;
+
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -125,6 +148,22 @@ function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
+
+  if (name) {
+    inputData = inputData.filter(
+      (user) => user.artistName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+    );
+  }
+
+  if (city) {
+    inputData = inputData.filter(
+      (user) => user?.address?.city.toLowerCase().indexOf(city.toLowerCase()) !== -1
+    );
+  }
+
+  if (status !== 'all') {
+    inputData = inputData.filter((user) => user.status === status);
+  }
 
   return inputData;
 }

@@ -24,6 +24,8 @@ export const ARTIST_ENDPOINTS = {
   getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
   replyTicket: `${ADMIN_BASE_URL}/reply-ticket`,
   getTicketReply: `${ADMIN_BASE_URL}/get-ticket-replies`,
+  addIncident: `${ADMIN_BASE_URL}/add-incident`,
+  getAllIncident: `${ADMIN_BASE_URL}/get-all-incidents`,
 };
 
 export const USER_ENDPOINTS = {

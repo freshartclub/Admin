@@ -12,7 +12,7 @@ import { paths } from 'src/routes/paths';
 import { InvoiceAnalytic } from 'src/sections/invoice/invoice-analytic';
 import { InvoiceListView } from 'src/sections/invoice/view';
 
-import { ListArtist } from 'src/sections/Artistlist';
+import { ListArtist } from 'src/sections/Artistlist/view/activeArtist';
 import { ArtistsRequest } from 'src/sections/Artistlist/view/artistRequest';
 import { RouterLink } from 'src/routes/components';
 import { Iconify } from 'src/components/iconify';

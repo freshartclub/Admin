@@ -1,3 +1,5 @@
+import type { IUserItem } from 'src/types/user';
+
 import { Card, Table, TableBody } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -9,46 +11,50 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { SuspendedArtistList } from '../suspendedArtistLis-table-row';
 import { useGetSuspendedArtistList } from '../http/useGetSuspendedArtist';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​', width: 130 },
-  { id: 'group', label: 'Contact', width: 130 },
+  { id: 'artistName', label: 'Artist Name​', width: 130 },
+  { id: 'phone', label: 'Contact', width: 130 },
   { id: 'city', label: 'City', width: 130 },
   { id: 'country', label: 'Country', width: 130 },
-  { id: 'create', label: 'Created At', width: 130 },
+  { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
 ];
 export function SuspendedArtist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [_userList, setUserList] = useState<IUserItem[]>([]);
 
   const { data, isLoading, isError, error } = useGetSuspendedArtistList();
 
   useEffect(() => {
     if (data) {
-      if (data.length === 0) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-      }
+      setUserList(data);
+      setNotFound(data.length === 0);
     }
   }, [data]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  const dataFiltered = applyFilter({
+    inputData: _userList,
+    comparator: getComparator(table.order, table.orderBy),
+  });
 
-  if (isError) {
-    return <div>An error has occurred: {error.message}</div>;
-  }
+  const handleDeleteRow = (id: string) => {
+    console.log(id);
+  };
 
-  const dataFiltered = data;
+  const handleEditRow = (id: string) => {
+    console.log(id);
+  };
 
-  return (
+  return isLoading ? (
+    <LoadingScreen />
+  ) : (
     <Card>
       <Scrollbar>
         <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -101,4 +107,23 @@ export function SuspendedArtist() {
       />
     </Card>
   );
+}
+
+type ApplyFilterProps = {
+  inputData: IUserItem[];
+  comparator: (a: any, b: any) => number;
+};
+
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  return inputData;
 }

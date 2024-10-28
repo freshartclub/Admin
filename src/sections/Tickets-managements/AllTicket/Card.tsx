@@ -4,6 +4,7 @@ import { fDate } from 'src/utils/format-time';
 
 export function TicketCartd({ data }) {
   const navigate = useNavigate();
+
   const hendleTicketDetail = (data: string) => {
     navigate(`${paths.dashboard.tickets.singleList}?id=${data?._id}`, { state: { data } });
   };
@@ -31,7 +32,9 @@ export function TicketCartd({ data }) {
       <div className="flex gap-4 py-1 items-center justify-between">
         <div className="flex gap-4 pt-3 items-center">
           <img src={data?.image} alt="user Image" className="w-[2rem] h-[2rem] rounded-full" />
-          <span className="text-[#84818A] text-[14px] font-semibold">{data.name}</span>
+          <span className="text-[#84818A] text-[14px] font-semibold">
+            {data.artistName} {data?.artistSurname1} {data?.artistSurname2}
+          </span>
         </div>
 
         <span

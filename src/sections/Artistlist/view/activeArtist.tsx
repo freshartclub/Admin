@@ -14,24 +14,24 @@ import {
   useTable,
 } from 'src/components/table';
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
-import { useGetPendingArtist } from '../http/useGetAllPendingArtist';
+import { ListArtist } from '../activeArtist-table-row';
+import { useGetAllActiveArtist } from '../http/useGetAllActiveArtist';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​', width: 180 },
-  { id: 'userId', label: 'User Id', width: 130 },
+  { id: 'artistName', label: 'Artist Name​', width: 150 },
+  { id: 'artistId', label: 'Artist Id', width: 150 },
   { id: 'phone', label: 'Contact', width: 180 },
-  { id: 'status', label: 'Country', width: 130 },
+  { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
 ];
 
-export function ArtistsPendingRequest() {
+export function ListArtists() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
 
-  const { data, isLoading } = useGetPendingArtist();
+  const { data, isLoading, isError, error } = useGetAllActiveArtist();
 
   useEffect(() => {
     if (data) {
@@ -80,7 +80,7 @@ export function ArtistsPendingRequest() {
                 table.page * table.rowsPerPage + table.rowsPerPage
               )
               .map((row) => (
-                <ArtistPendingRequest
+                <ListArtist
                   key={row._id}
                   row={row}
                   selected={table.selected.includes(row._id)}

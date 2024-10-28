@@ -1,293 +1,144 @@
-import type { IOrderItem, IOrderTableFilters } from 'src/types/order';
+import type { IOrderItem } from 'src/types/order';
 
-import { useState, useCallback } from 'react';
-
-import Tab from '@mui/material/Tab';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
-
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tooltip from '@mui/material/Tooltip';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
+import { TICKET_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS, TICKET_OPTIONS } from 'src/_mock';
+import { varAlpha } from 'src/theme/styles';
 
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Iconify } from 'src/components/iconify';
+import { Label } from 'src/components/label';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
-  emptyRows,
-  rowInPage,
-  TableNoData,
   getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
+  TableSelectedAction,
+  useTable,
 } from 'src/components/table';
-import { tickets } from '../Data';
-
-import { TicketTableToolbar } from './Tecket-table-toolbar';
-import { OrderTableFiltersResult } from '../order-table-filters-result';
-import { TicketCartd } from './Card';
-import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
-
-// ----------------------------------------------------------------------
-
-const STATUS_TECKETS = [{ value: 'AllTickets', label: 'AllTickets' }, ...TICKET_OPTIONS];
-
-// ----------------------------------------------------------------------
+import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
+import { TicketCartd } from './Card';
+import { TicketTableToolbar } from './Tecket-table-toolbar';
 
 export function TicketsListView() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 500);
   const { data, isLoading, isError, error } = useGetTicketListMutation(debounceSearch);
 
-  const [selectedTab, setSelectedTab] = useState('AllTickets');
-  const table = useTable({ defaultOrderBy: 'orderNumber' });
-  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState('allTickets');
+  const table = useTable();
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState<IOrderItem[]>(_orders);
+  const [tableData, setTableData] = useState<IOrderItem[]>([]);
 
-  const filters = useSetState<IOrderTableFilters>({
-    name: '',
-    status: 'all',
-    startDate: null,
-    endDate: null,
-  });
-
-  const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+  useEffect(() => {
+    if (data) {
+      setTableData(data);
+    }
+  }, [data]);
 
   const dataFiltered = applyFilter({
-    inputData: isLoading ? [] : data,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
   });
 
-  // const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
-
-  // const canReset =
-  //   !!filters.state.name ||
-  //   filters.state.status !== 'all' ||
-  //   (!!filters.state.startDate && !!filters.state.endDate);
-
-  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  // const handleFilterStatus = useCallback(
-  //   (event: React.SyntheticEvent, newValue: string) => {
-  //     table.onResetPage();
-  //     filters.setState({ status: newValue });
-  //   },
-  //   [filters, table]
-  // );
-
   return (
-    <>
-      <DashboardContent>
-        <CustomBreadcrumbs
-          heading="Teikets"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ticket List', href: paths.dashboard.tickets.allList },
-          ]}
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-        <TicketTableToolbar
-          setSearch={setSearch}
-          filters={filters}
-          onResetPage={table.onResetPage}
-          dateError={dateError}
-        />
-        <Card>
-          <Tabs
-            value={selectedTab} // Bind the selected value to the state
-            onChange={(event, newValue) => setSelectedTab(newValue)}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) =>
-                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-            }}
-          >
-            {STATUS_TECKETS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="start"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'AllTickets' || tab.value === filters.state.status) &&
-                        'filled') ||
-                      'soft'
-                    }
-                  >
-                    {['AllTickets', 'new', 'onGoing'].includes(tab.value)
-                      ? tableData.filter((user) => user.status === tab.value).length
-                      : tableData.length}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs>
-
-          {/* <OrderTableToolbar
-            filters={filters}
-            onResetPage={table.onResetPage}
-            dateError={dateError}
-          /> */}
-
-          {/* {canReset && (
-            <OrderTableFiltersResult
-              filters={filters}
-              totalResults={dataFiltered.length}
-              onResetPage={table.onResetPage}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
-          <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
+    <DashboardContent>
+      <CustomBreadcrumbs
+        heading="Tickets"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ticket List', href: paths.dashboard.tickets.allList },
+        ]}
+        sx={{ mb: { xs: 3 } }}
+      />
+      <TicketTableToolbar setSearch={setSearch} onResetPage={table.onResetPage} />
+      <Card>
+        <Tabs
+          value={selectedTab}
+          onChange={(event, newValue) => setSelectedTab(newValue)}
+          sx={{
+            px: 2.5,
+            boxShadow: (theme) =>
+              `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
+          }}
+        >
+          {TICKET_OPTIONS.map((tab) => (
+            <Tab
+              key={tab.value}
+              iconPosition="start"
+              value={tab.value}
+              label={tab.label}
+              icon={
+                <Label variant={(tab.value === 'allTickets' && 'filled') || 'soft'}>
+                  {['allTickets', 'new', 'onGoing'].includes(tab.value)
+                    ? tableData.filter((user) => user.status !== tab.value).length
+                    : tableData.length}
+                </Label>
               }
             />
+          ))}
+        </Tabs>
 
-            <Scrollbar sx={{ minHeight: 444 }}>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <TicketCartd key={row.id} data={row} />
-                ))}
-              {/* <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
-                />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>  */}
-            </Scrollbar>
-          </Box>
-
-          <TablePaginationCustom
-            page={table.page}
+        <Box sx={{ position: 'relative' }}>
+          <TableSelectedAction
             dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
+            numSelected={table.selected.length}
+            rowCount={dataFiltered.length}
+            onSelectAllRows={(checked) =>
+              table.onSelectAllRows(
+                checked,
+                dataFiltered.map((row) => row.id)
+              )
+            }
+            action={
+              <Tooltip title="Delete">
+                <IconButton color="primary" onClick={confirm.onTrue}>
+                  <Iconify icon="solar:trash-bin-trash-bold" />
+                </IconButton>
+              </Tooltip>
+            }
           />
-        </Card>
-      </DashboardContent>
 
-      {/* <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      /> */}
-    </>
+          <Scrollbar sx={{ minHeight: 444 }}>
+            {dataFiltered
+              .slice(
+                table.page * table.rowsPerPage,
+                table.page * table.rowsPerPage + table.rowsPerPage
+              )
+              .map((row) => (
+                <TicketCartd key={row._id} data={row} />
+              ))}
+          </Scrollbar>
+        </Box>
+
+        <TablePaginationCustom
+          page={table.page}
+          dense={table.dense}
+          count={dataFiltered.length}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 
-// ----------------------------------------------------------------------
-
 type ApplyFilterProps = {
-  dateError: boolean;
   inputData: IOrderItem[];
-  filters: IOrderTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { status, name, startDate, endDate } = filters;
-
-  console.log(inputData);
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -297,25 +148,6 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-  // if (name) {
-  //   inputData = inputData.filter(
-  //     (order) =>
-  //       order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-  //       order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-  //       order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
-  //   );
-  // }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((order) => order.status === status);
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
-    }
-  }
 
   return inputData;
 }

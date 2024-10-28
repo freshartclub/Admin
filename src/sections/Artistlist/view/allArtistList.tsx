@@ -1,56 +1,63 @@
+import type { IUserItem } from 'src/types/user';
+
 import { Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import { useEffect, useState } from 'react';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​' },
-  { id: 'Contact', label: 'Contact', width: 130 },
+  { id: 'artistName', label: 'Artist Name​' },
+  { id: 'phone', label: 'Contact', width: 130 },
   { id: 'city', label: 'City', width: 130 },
-  { id: 'provnce', label: 'Province', width: 130 },
+  { id: 'state', label: 'Province', width: 130 },
   { id: 'country', label: 'Country', width: 130 },
-  { id: 'Status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Created At', width: 130 },
+  { id: 'isActivated', label: 'Status', width: 130 },
+  { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
 ];
+
 export function AllArtist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [_userList, setUserList] = useState<IUserItem[]>([]);
 
-  const { data, isLoading, isError, error } = useGetArtistList();
+  const { data, isLoading } = useGetArtistList();
 
   useEffect(() => {
     if (data) {
-      if (data.length === 0) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-      }
+      setUserList(data);
+      setNotFound(data.length === 0);
     }
   }, [data]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  const dataFiltered = applyFilter({
+    inputData: _userList,
+    comparator: getComparator(table.order, table.orderBy),
+  });
 
-  if (isError) {
-    return <div>An error has occurred: {error.message}</div>;
-  }
+  const handleDeleteRow = (id: string) => {
+    console.log(id);
+  };
 
-  const dataFiltered = data;
+  const handleEditRow = (id: string) => {
+    console.log(id);
+  };
 
-  return (
+  return isLoading ? (
+    <LoadingScreen />
+  ) : (
     <Card>
       <Scrollbar>
         <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -103,4 +110,23 @@ export function AllArtist() {
       />
     </Card>
   );
+}
+
+type ApplyFilterProps = {
+  inputData: IUserItem[];
+  comparator: (a: any, b: any) => number;
+};
+
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  return inputData;
 }

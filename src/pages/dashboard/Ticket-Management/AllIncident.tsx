@@ -2,10 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { AddIncidentForm } from 'src/sections/Tickets-managements/IncidentForm-view';
+import { AllIncidentView } from 'src/sections/Tickets-managements/AllIncidentView';
+
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Add Incident - ${CONFIG.site.name}` };
+const metadata = { title: `All Incident - ${CONFIG.site.name}` };
 
 export default function StyleList() {
   return (
@@ -15,7 +16,7 @@ export default function StyleList() {
           <title> {metadata.title}</title>
         </Helmet>
 
-        <AddIncidentForm />
+        <AllIncidentView />
       </DashboardContent>
     </>
   );
