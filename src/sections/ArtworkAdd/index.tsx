@@ -144,6 +144,7 @@ export function ArtworkAdd({ currentProduct }) {
       artworkTheme: currentProduct?.artworkTheme || '',
       artworkOrientation: currentProduct?.artworkOrientation || '',
       material: currentProduct?.material || '',
+
       weight: currentProduct?.weight || '',
       lenght: currentProduct?.lenght || '',
       height: currentProduct?.height || '',
@@ -166,6 +167,7 @@ export function ArtworkAdd({ currentProduct }) {
 
       basePrice: currentProduct?.basePrice || '',
       dpersentage: currentProduct?.dpersentage || 0,
+
       vatAmount: currentProduct?.vatAmount || '',
       artistFees: currentProduct?.artistFees || '',
       offensive: currentProduct?.offensive || '',
@@ -406,8 +408,8 @@ export function ArtworkAdd({ currentProduct }) {
             name="images"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
-          // onRemoveAll={handleRemoveAllFiles}
-          // onUpload={() => console.info('ON UPLOAD')}
+            // onRemoveAll={handleRemoveAllFiles}
+            // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box

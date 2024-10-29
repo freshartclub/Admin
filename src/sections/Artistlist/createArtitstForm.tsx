@@ -57,7 +57,7 @@ export const CreateExistingArtistFormSchema = zod.object({
   existingAvatar: schemaHelper.file({
     message: { required_error: 'Avatar is required!', required: false },
   }),
-  existingId: zod.string().min(1, { message: 'Id is required!' }),
+  // existingId: zod.string().min(1, { message: 'Id is required!' }),
   existingName: zod.string().min(1, { message: 'Name is required!' }),
   existingArtistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
   existingArtistSurname2: zod.string(),
