@@ -160,7 +160,7 @@ export function CreateArtistForm() {
 
   const refillData = (data) => {
     methods.setValue('existingAvatar', data?.avatar);
-    methods.setValue('existingId', data?.artistId);
+    methods.setValue('existingId', data?.userId);
     methods.setValue('existingName', data?.artistName);
     methods.setValue('existingArtistSurname1', data?.artistSurname1);
     methods.setValue('existingArtistSurname2', data?.artistSurname2);
