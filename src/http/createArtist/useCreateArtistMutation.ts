@@ -12,6 +12,7 @@ import { useSearchParams } from 'src/routes/hooks';
 const useCreateArtistMutation = () => {
   const navigate = useNavigate();
   const id = useSearchParams().get('id');
+  const existing = useSearchParams().get('extisting');
 
   async function CreateArtist(newData) {
     const formData = new FormData();
@@ -28,6 +29,9 @@ const useCreateArtistMutation = () => {
 
     formData.append('isArtist', newData.isArtist);
     formData.append('value', newData.value);
+    if (newData.isArtist == true && existing == null) {
+      formData.append('_id', newData?._id);
+    }
 
     const headers = {
       'Content-Type': 'multipart/form-data',
@@ -35,6 +39,7 @@ const useCreateArtistMutation = () => {
 
     return axiosInstance.post(`${ARTIST_ENDPOINTS.createNewUser}/${id}`, formData, { headers });
   }
+
   return useMutation({
     mutationFn: CreateArtist,
     onSuccess: async (res, body) => {

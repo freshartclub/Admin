@@ -79,8 +79,9 @@ export const CreateExistingArtistFormSchema = zod.object({
 export function CreateArtistForm() {
   const [value, setValue] = useState('new');
   const [open, setOpen] = useState(true);
+  const [_id, setId] = useState('');
 
-  const id = useSearchParams().get('id');
+  let id = useSearchParams().get('id');
   const existingUser = useSearchParams().get('extisting');
   const isReadOnly = id !== null;
 
@@ -142,6 +143,7 @@ export function CreateArtistForm() {
           city: data.existingCity,
           zipCode: data.existingZipCode,
         },
+        _id: _id,
         isArtist: true,
         value: value,
       };
@@ -159,6 +161,7 @@ export function CreateArtistForm() {
   }, [debounceUserId]);
 
   const refillData = (data) => {
+    setId(data?._id);
     methods.setValue('existingAvatar', data?.avatar);
     methods.setValue('existingId', data?.userId);
     methods.setValue('existingName', data?.artistName);
