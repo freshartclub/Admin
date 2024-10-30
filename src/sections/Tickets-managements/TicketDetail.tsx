@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { Field, Form } from 'src/components/hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TICKET_TYPE_OPTIONS, TICKET_STATUS_OPTIONS } from 'src/_mock';
-import { fDate } from 'src/utils/format-time';
+import { fDate, fTime } from 'src/utils/format-time';
 import useAddReplyMutation from './http/useAddReplyMutation';
 import { useGetReplyMutation } from './http/useGetReplyMutation';
 
@@ -119,37 +119,40 @@ export function TicketDetailView({ ticket }) {
           {data &&
             data.length > 0 &&
             data.map((reply, index) => (
-              <div key={index} className="mt-5 border-b pb-2 mb-2">
-                <Card className="p-5 ml-6">
-                  <div className="flex justify-between gap-4 pb-5">
-                    <div className="flex gap-4">
+              <Card className="px-4 py-2 mt-5 ml-6">
+                {/* <div className="flex justify-between gap-4 pb-5"> */}
+                {/* <div className="flex gap-4">
                       <div
                         className={`w-[1.5rem] h-[1.5rem] rounded-full ${reply.status === 'Created' ? 'bg-[#F8A534]' : reply.status === 'Dispatched' ? 'bg-[#3B8AFF]' : reply.status === 'Technical Finish' ? 'bg-[#8E33FF]' : reply.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
                       ></div>
                       <h2 className="text-[16px] text-black font-bold">{ticket?.ticketId}</h2>
-                    </div>
-                    <div className="flex gap-2 items-center">
+                    </div> */}
+                {/* <div className="flex gap-2 items-center">
                       <div className="bg-[#FFAB00] w-[.6em] h-[.6em] rounded-full"></div>
                       <p className="text-[#84818A] text-[16px] font-semibold">
                         {reply?.ticketType}
                       </p>
-                    </div>
-                    <div className="flex gap-2 items-center">
+                    </div> */}
+                {/* <div className="flex gap-2 items-center">
                       <div className="bg-[#FFAB00] w-[.6em] h-[.6em] rounded-full"></div>
                       <p className="text-[#84818A] text-[16px] font-semibold">{reply?.status}</p>
-                    </div>
-                    <div>
+                    </div> */}
+                {/* <div>
                       <p className="text-[#84818A] text-[14px] font-semibold">
                         Posted at - {fDate(reply?.createdAt)}
                       </p>
-                    </div>
-                  </div>
-                  <h2 className="text-black text-[16px] font-bold">{ticket?.subject}</h2>
-                  <p className="text-[#84818A] text-[14px] font-semibold">
-                    <strong>Issue:</strong> {reply?.message}
-                  </p>
-                </Card>
-              </div>
+                    </div> */}
+                {/* </div> */}
+                <span className="text-gray-400 text-[14px]">
+                  {ticket?.artistName == null ? 'Reply from User' : 'Reply from Admin'}
+                </span>
+                <p className="text-[#575658] font-semibold flex justify-between">
+                  <strong>{reply?.message}</strong>
+                  <span className="text-[#84818A] font-semibold">
+                    Replied At - {fDate(reply?.createdAt)} {fTime(reply?.createdAt)}
+                  </span>
+                </p>
+              </Card>
             ))}
           <Stack spacing={5}>
             {detailForm}
