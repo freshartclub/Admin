@@ -16,6 +16,11 @@ import {
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 import { useGetPendingArtist } from '../http/useGetAllPendingArtist';
+import { Stack } from '@mui/material';
+import { TextField } from '@mui/material';
+import { InputAdornment } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 180 },
@@ -30,8 +35,10 @@ export function ArtistsPendingRequest() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useGetPendingArtist();
+  const { data, isLoading } = useGetPendingArtist(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -53,60 +60,78 @@ export function ArtistsPendingRequest() {
     console.log(id);
   };
 
-  return isLoading ? (
-    <LoadingScreen />
-  ) : (
-    <Card>
-      <Scrollbar>
-        <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-          <TableHeadCustom
-            order={table.order}
-            orderBy={table.orderBy}
-            headLabel={TABLE_HEAD}
-            rowCount={dataFiltered.length}
-            numSelected={table.selected.length}
-            onSort={table.onSort}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row._id)
-              )
-            }
-          />
-          <TableBody>
-            {dataFiltered
-              .slice(
-                table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage
-              )
-              .map((row) => (
-                <ArtistPendingRequest
-                  key={row._id}
-                  row={row}
-                  selected={table.selected.includes(row._id)}
-                  onSelectRow={() => table.onSelectRow(row._id)}
-                  onDeleteRow={() => handleDeleteRow(row._id)}
-                  onEditRow={() => handleEditRow(row._id)}
+  return (
+    <>
+      <Stack marginBottom={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Id/Name..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Stack>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row) => (
+                    <ArtistPendingRequest
+                      key={row._id}
+                      row={row}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={table.dense ? 56 : 76}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-              ))}
-            <TableEmptyRows
-              height={table.dense ? 56 : 76}
-              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-            />
-            <TableNoData notFound={notFound} />
-          </TableBody>
-        </Table>
-      </Scrollbar>
-      <TablePaginationCustom
-        page={table.page}
-        dense={table.dense}
-        count={dataFiltered.length}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onChangeDense={table.onChangeDense}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-      />
-    </Card>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+          <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      )}
+    </>
   );
 }
 
