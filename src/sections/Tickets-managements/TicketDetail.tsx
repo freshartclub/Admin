@@ -119,36 +119,13 @@ export function TicketDetailView({ ticket }) {
           {data &&
             data.length > 0 &&
             data.map((reply, index) => (
-              <Card className="px-4 py-2 mt-5 ml-6">
-                {/* <div className="flex justify-between gap-4 pb-5"> */}
-                {/* <div className="flex gap-4">
-                      <div
-                        className={`w-[1.5rem] h-[1.5rem] rounded-full ${reply.status === 'Created' ? 'bg-[#F8A534]' : reply.status === 'Dispatched' ? 'bg-[#3B8AFF]' : reply.status === 'Technical Finish' ? 'bg-[#8E33FF]' : reply.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
-                      ></div>
-                      <h2 className="text-[16px] text-black font-bold">{ticket?.ticketId}</h2>
-                    </div> */}
-                {/* <div className="flex gap-2 items-center">
-                      <div className="bg-[#FFAB00] w-[.6em] h-[.6em] rounded-full"></div>
-                      <p className="text-[#84818A] text-[16px] font-semibold">
-                        {reply?.ticketType}
-                      </p>
-                    </div> */}
-                {/* <div className="flex gap-2 items-center">
-                      <div className="bg-[#FFAB00] w-[.6em] h-[.6em] rounded-full"></div>
-                      <p className="text-[#84818A] text-[16px] font-semibold">{reply?.status}</p>
-                    </div> */}
-                {/* <div>
-                      <p className="text-[#84818A] text-[14px] font-semibold">
-                        Posted at - {fDate(reply?.createdAt)}
-                      </p>
-                    </div> */}
-                {/* </div> */}
-                <span className="text-gray-400 text-[14px]">
+              <Card className="px-4 py-2 mt-4 ml-6">
+                <span className="text-gray-400 text-[13px]">
                   {ticket?.artistName == null ? 'Reply from User' : 'Reply from Admin'}
                 </span>
                 <p className="text-[#575658] font-semibold flex justify-between">
-                  <strong>{reply?.message}</strong>
-                  <span className="text-[#84818A] font-semibold">
+                  <span>{reply?.message}</span>
+                  <span className="text-[#84818A] text-[12px] font-semibold">
                     Replied At - {fDate(reply?.createdAt)} {fTime(reply?.createdAt)}
                   </span>
                 </p>
