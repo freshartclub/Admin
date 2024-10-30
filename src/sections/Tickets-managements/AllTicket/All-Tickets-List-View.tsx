@@ -31,8 +31,11 @@ import { TicketTableToolbar } from './Tecket-table-toolbar';
 
 export function TicketsListView() {
   const [search, setSearch] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
+  const [days, setDays] = useState<string>('');
+
   const debounceSearch = useDebounce(search, 500);
-  const { data, isLoading, isError, error } = useGetTicketListMutation(debounceSearch);
+  const { data, isLoading } = useGetTicketListMutation(debounceSearch, status, days);
 
   const [selectedTab, setSelectedTab] = useState('allTickets');
   const table = useTable();
@@ -58,9 +61,16 @@ export function TicketsListView() {
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ticket List', href: paths.dashboard.tickets.allList },
         ]}
-        sx={{ mb: { xs: 3 } }}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
-      <TicketTableToolbar setSearch={setSearch} onResetPage={table.onResetPage} />
+      <TicketTableToolbar
+        setSearch={setSearch}
+        setStatus={setStatus}
+        sStatus={status}
+        setDays={setDays}
+        days={days}
+        onResetPage={table.onResetPage}
+      />
       {isLoading ? (
         <LoadingScreen />
       ) : (

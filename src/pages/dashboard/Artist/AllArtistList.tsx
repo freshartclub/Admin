@@ -8,7 +8,7 @@ import { AllArtist } from 'src/sections/Artistlist/view/allArtistList';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `All Artist List - ${CONFIG.site.name}` };
 
 export default function allArtistList() {
   return (

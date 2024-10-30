@@ -9,7 +9,7 @@ import { ListArtists } from 'src/sections/Artistlist/view/activeArtist';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Active Artist List - ${CONFIG.site.name}` };
 
 export default function artistList() {
   return (
