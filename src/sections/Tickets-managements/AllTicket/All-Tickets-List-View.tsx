@@ -61,74 +61,78 @@ export function TicketsListView() {
         sx={{ mb: { xs: 3 } }}
       />
       <TicketTableToolbar setSearch={setSearch} onResetPage={table.onResetPage} />
-      <Card>
-        <Tabs
-          value={selectedTab}
-          onChange={(event, newValue) => setSelectedTab(newValue)}
-          sx={{
-            px: 2.5,
-            boxShadow: (theme) =>
-              `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-          }}
-        >
-          {TICKET_OPTIONS.map((tab) => (
-            <Tab
-              key={tab.value}
-              iconPosition="start"
-              value={tab.value}
-              label={tab.label}
-              icon={
-                <Label variant={(tab.value === 'allTickets' && 'filled') || 'soft'}>
-                  {['allTickets', 'new', 'onGoing'].includes(tab.value)
-                    ? tableData.filter((user) => user.status !== tab.value).length
-                    : tableData.length}
-                </Label>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Tabs
+            value={selectedTab}
+            onChange={(event, newValue) => setSelectedTab(newValue)}
+            sx={{
+              px: 2.5,
+              boxShadow: (theme) =>
+                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
+            }}
+          >
+            {TICKET_OPTIONS.map((tab) => (
+              <Tab
+                key={tab.value}
+                iconPosition="start"
+                value={tab.value}
+                label={tab.label}
+                icon={
+                  <Label variant={(tab.value === 'allTickets' && 'filled') || 'soft'}>
+                    {['allTickets', 'new', 'onGoing'].includes(tab.value)
+                      ? tableData.filter((user) => user.status !== tab.value).length
+                      : tableData.length}
+                  </Label>
+                }
+              />
+            ))}
+          </Tabs>
+
+          <Box sx={{ position: 'relative' }}>
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={dataFiltered.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  dataFiltered.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
               }
             />
-          ))}
-        </Tabs>
 
-        <Box sx={{ position: 'relative' }}>
-          <TableSelectedAction
+            <Scrollbar sx={{ minHeight: 444 }}>
+              {dataFiltered
+                .slice(
+                  table.page * table.rowsPerPage,
+                  table.page * table.rowsPerPage + table.rowsPerPage
+                )
+                .map((row) => (
+                  <TicketCartd key={row._id} data={row} />
+                ))}
+            </Scrollbar>
+          </Box>
+
+          <TablePaginationCustom
+            page={table.page}
             dense={table.dense}
-            numSelected={table.selected.length}
-            rowCount={dataFiltered.length}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row.id)
-              )
-            }
-            action={
-              <Tooltip title="Delete">
-                <IconButton color="primary" onClick={confirm.onTrue}>
-                  <Iconify icon="solar:trash-bin-trash-bold" />
-                </IconButton>
-              </Tooltip>
-            }
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
           />
-
-          <Scrollbar sx={{ minHeight: 444 }}>
-            {dataFiltered
-              .slice(
-                table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage
-              )
-              .map((row) => (
-                <TicketCartd key={row._id} data={row} />
-              ))}
-          </Scrollbar>
-        </Box>
-
-        <TablePaginationCustom
-          page={table.page}
-          dense={table.dense}
-          count={dataFiltered.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-        />
-      </Card>
+        </Card>
+      )}
     </DashboardContent>
   );
 }
