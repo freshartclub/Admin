@@ -16,6 +16,13 @@ import {
 // const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
+import { Iconify } from 'src/components/iconify';
+import { InputAdornment } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Stack } from '@mui/material';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​' },
@@ -32,8 +39,10 @@ export function AllArtist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useGetArtistList();
+  const { data, isLoading } = useGetArtistList(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -55,10 +64,27 @@ export function AllArtist() {
     console.log(id);
   };
 
-  return isLoading ? (
-    <LoadingScreen />
-  ) : (
+  return (
     <Card>
+      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Id/Name..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
+          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+            <Iconify icon="mingcute:add-line" /> Create Artist
+          </span>
+        </RouterLink>
+      </Stack>
       <Scrollbar>
         <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
           <TableHeadCustom
@@ -75,28 +101,32 @@ export function AllArtist() {
               )
             }
           />
-          <TableBody>
-            {dataFiltered
-              .slice(
-                table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage
-              )
-              .map((row) => (
-                <AllArtistList
-                  key={row._id}
-                  row={row}
-                  selected={table.selected.includes(row._id)}
-                  onSelectRow={() => table.onSelectRow(row._id)}
-                  onDeleteRow={() => handleDeleteRow(row._id)}
-                  onEditRow={() => handleEditRow(row._id)}
-                />
-              ))}
-            <TableEmptyRows
-              height={table.dense ? 56 : 76}
-              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-            />
-            <TableNoData notFound={notFound} />
-          </TableBody>
+          {isLoading ? (
+            <LoadingScreen />
+          ) : (
+            <TableBody>
+              {dataFiltered
+                .slice(
+                  table.page * table.rowsPerPage,
+                  table.page * table.rowsPerPage + table.rowsPerPage
+                )
+                .map((row) => (
+                  <AllArtistList
+                    key={row._id}
+                    row={row}
+                    selected={table.selected.includes(row._id)}
+                    onSelectRow={() => table.onSelectRow(row._id)}
+                    onDeleteRow={() => handleDeleteRow(row._id)}
+                    onEditRow={() => handleEditRow(row._id)}
+                  />
+                ))}
+              <TableEmptyRows
+                height={table.dense ? 56 : 76}
+                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+              />
+              <TableNoData notFound={notFound} />
+            </TableBody>
+          )}
         </Table>
       </Scrollbar>
       <TablePaginationCustom
