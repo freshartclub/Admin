@@ -3,7 +3,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Field, Form } from 'src/components/hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TICKET_TYPE_OPTIONS, TICKET_STATUS_OPTIONS } from 'src/_mock';
@@ -22,6 +22,13 @@ export const NewTicketSchema = zod.object({
 export function TicketDetailView({ ticket }) {
   const { data, isLoading, isError, error } = useGetReplyMutation(ticket?._id);
   const { mutateAsync, isPending } = useAddReplyMutation();
+
+  useEffect(() => {
+    if (data) {
+      ticket.status = data[data.length - 1].status;
+      ticket.ticketType = data[data.length - 1].ticketType;
+    }
+  }, [data]);
 
   const defaultValues = useMemo(
     () => ({
