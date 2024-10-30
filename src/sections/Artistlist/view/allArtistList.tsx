@@ -65,7 +65,7 @@ export function AllArtist() {
   };
 
   return (
-    <Card>
+    <>
       <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth
@@ -85,60 +85,63 @@ export function AllArtist() {
           </span>
         </RouterLink>
       </Stack>
-      <Scrollbar>
-        <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-          <TableHeadCustom
-            order={table.order}
-            orderBy={table.orderBy}
-            headLabel={TABLE_HEAD}
-            rowCount={dataFiltered.length}
-            numSelected={table.selected.length}
-            onSort={table.onSort}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row._id)
-              )
-            }
-          />
-          {isLoading ? (
-            <LoadingScreen />
-          ) : (
-            <TableBody>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <AllArtistList
-                    key={row._id}
-                    row={row}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
-                ))}
-              <TableEmptyRows
-                height={table.dense ? 56 : 76}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
               />
-              <TableNoData notFound={notFound} />
-            </TableBody>
-          )}
-        </Table>
-      </Scrollbar>
-      <TablePaginationCustom
-        page={table.page}
-        dense={table.dense}
-        count={dataFiltered.length}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onChangeDense={table.onChangeDense}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-      />
-    </Card>
+
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row) => (
+                    <AllArtistList
+                      key={row._id}
+                      row={row}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={table.dense ? 56 : 76}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                />
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+          <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      )}
+    </>
   );
 }
 
