@@ -23,6 +23,8 @@ export function TicketDetailView({ ticket }) {
   const { data, isLoading, isError, error } = useGetReplyMutation(ticket?._id);
   const { mutateAsync, isPending } = useAddReplyMutation();
 
+  console.log(data);
+
   const defaultValues = useMemo(
     () => ({
       ticketType: ticket?.ticketType || '',
@@ -121,7 +123,7 @@ export function TicketDetailView({ ticket }) {
             data.map((reply, index) => (
               <Card className="px-4 py-2 mt-4 ml-6">
                 <span className="text-gray-400 text-[13px]">
-                  {ticket?.artistName == null ? 'Reply from User' : 'Reply from Admin'}
+                  {reply?.userType === 'user' ? 'Reply from User' : 'Reply from Admin'}
                 </span>
                 <p className="text-[#575658] font-semibold flex justify-between">
                   <span>{reply?.message}</span>
