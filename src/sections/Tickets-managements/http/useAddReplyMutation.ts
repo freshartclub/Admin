@@ -22,14 +22,14 @@ const useAddReplyMutation = () => {
     mutationFn: ReplyTicket,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getTicketReply],
+        queryKey: [`${ARTIST_ENDPOINTS.getTicketReply}/${id}`],
         refetchType: 'all',
       });
-      
+
       toast.success(res.data.message);
     },
 
-    onError: (res) => {
+    onError: (res: any) => {
       toast.error(res.response.data.message);
     },
   });

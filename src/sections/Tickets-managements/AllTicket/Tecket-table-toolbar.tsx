@@ -108,6 +108,15 @@ export function TicketTableToolbar({
         >
           New Incident
         </Button>
+        <Button
+          component={RouterLink}
+          href={paths.dashboard.tickets.addTicket}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          sx={{ py: 2, maxWidth: { md: 180 } }}
+        >
+          Add Ticket
+        </Button>
       </Stack>
     </>
   );

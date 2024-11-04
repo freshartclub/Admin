@@ -1,64 +1,55 @@
-import { z as zod } from 'zod';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Avatar,
-  Input,
   InputAdornment,
   ListItemText,
   TableCell,
   TableRow,
   Typography,
 } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import LoadingButton from '@mui/lab/LoadingButton';
+import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  PRODUCT_YEARS_OPTIONS,
-  ARTWORK_THEME_OPTIONS,
-  ARTWORK_STYLE_OPTIONS,
-  ARTWORK_TAGES_OPTIONS,
-  PRODUCT_SERIES_OPTIONS,
-  ARTWORK_FRAMED_OPTIONS,
+  ARTWORK_AVAILABLETO_OPTIONS,
+  ARTWORK_COLLECTIONLIST_OPTIONS,
   ARTWORK_COLORS_OPTIONS,
-  ARTWORK_TECHNIC_OPTIONS,
-  ARTWORK_HANGING_OPTIONS,
+  ARTWORK_DISCIPLINE_OPTIONS,
+  ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
+  ARTWORK_DOWNWARDOFFER_OPTIONS,
   ARTWORK_EMOTIONS_OPTIONS,
+  ARTWORK_FRAMED_OPTIONS,
+  ARTWORK_HANGING_OPTIONS,
   ARTWORK_MATERIAL_OPTIONS,
   ARTWORK_OFFENSIVE_OPTIONS,
-  ARTWORK_DISCIPLINE_OPTIONS,
-  ARTWORK_PROMOTIONS_OPTIONS,
-  ARTWORK_UPWORKOFFER_OPTIONS,
-  ARTWORK_AVAILABLETO_OPTIONS,
   ARTWORK_ORIENTATION_OPTIONS,
-  ARTWORK_DOWNWARDOFFER_OPTIONS,
+  ARTWORK_PROMOTIONS_OPTIONS,
   ARTWORK_PROMOTIONSCORE_OPTIONS,
-  ARTWORK_COLLECTIONLIST_OPTIONS,
   ARTWORK_PURCHASECATALOG_OPTIONS,
-  ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
+  ARTWORK_STYLE_OPTIONS,
+  ARTWORK_TAGES_OPTIONS,
+  ARTWORK_TECHNIC_OPTIONS,
+  ARTWORK_THEME_OPTIONS,
+  ARTWORK_UPWORKOFFER_OPTIONS,
+  PRODUCT_SERIES_OPTIONS,
+  PRODUCT_YEARS_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import { Link } from '@mui/material';
+import { Field, Form } from 'src/components/hook-form';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { Helmet } from 'react-helmet-async';
-import { Link } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -118,8 +109,6 @@ import { Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
-  const router = useRouter();
-
   const [mongoDBId, setmongoDBId] = useState(null);
   const [open, setOpen] = useState(true);
   const [percent, setPercent] = useState(0);
@@ -255,10 +244,6 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('images', [], { shouldValidate: true });
   }, [setValue]);
 
-  // const handleChangeIncludeTaxes = useCallback((event) => {
-  //   setIncludeTaxes(event.target.checked);
-  // }, []);
-
   const handleRemoveFileone = useCallback(() => {
     setValue('backImage', null);
   }, [setValue]);
@@ -365,8 +350,6 @@ export function ArtworkAdd({ currentProduct }) {
         </Box>
 
         <Field.Text name="productDescription" label="Product Description" multiline rows={4} />
-
-        {/* end my section */}
       </Stack>
     </Card>
   );
@@ -384,12 +367,12 @@ export function ArtworkAdd({ currentProduct }) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <div>
-            <Typography variant="mainImage">Main Photo</Typography>
+            <Typography>Main Photo</Typography>
             <Field.Upload name="mainImage" maxSize={3145728} onDelete={handleRemoveFile} />
           </div>
 
           <div>
-            <Typography variant="backImage">Back Photo</Typography>
+            <Typography>Back Photo</Typography>
             <Field.Upload name="backImage" maxSize={3145728} onDelete={handleRemoveFileone} />
           </div>
 
@@ -406,8 +389,8 @@ export function ArtworkAdd({ currentProduct }) {
             name="images"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
-          // onRemoveAll={handleRemoveAllFiles}
-          // onUpload={() => console.info('ON UPLOAD')}
+            // onRemoveAll={handleRemoveAllFiles}
+            // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box

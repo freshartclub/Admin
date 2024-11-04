@@ -480,10 +480,20 @@ export const INC_SEVERITY_OPTIONS = [
   { value: 'Severity B', label: 'severity B' },
   { value: 'Severity C', label: 'severity C' },
 ];
+export const INC_URGENCY_OPTIONS = [
+  { value: 'urgency A', label: 'Urgency A' },
+  { value: 'urgency B', label: 'Urgency B' },
+  { value: 'urgency C', label: 'Urgency C' },
+];
 export const INC_STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },
   { value: 'Available', label: 'Available' },
   { value: 'Not Available', label: 'Not Available' },
+];
+export const INC_PRIORITY_OPTIONS = [
+  { value: 'Priority A', label: 'Priority A' },
+  { value: 'Priority B', label: 'Priority B' },
+  { value: 'Priority C', label: 'Priority C' },
 ];
 export const COUPON_USEGE_OPTIONS = [
   { value: '1 Time', label: '1 Time' },

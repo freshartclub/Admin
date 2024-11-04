@@ -110,7 +110,7 @@ export const navData = [
           },
           { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
           { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
-        ]
+        ],
         // children: [
         //   { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
         //   { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
@@ -274,37 +274,37 @@ export const navData = [
         title: 'Coupon & Promotions',
         path: paths.dashboard.couponandpromotions.Root,
         icon: ICONS.blank,
-        children:[
-          {title:"Add Coupon", path:paths.dashboard.couponandpromotions.add},
-          {title:"List of Coupon", path:paths.dashboard.couponandpromotions.list}
-        ]
+        children: [
+          { title: 'Add Coupon', path: paths.dashboard.couponandpromotions.add },
+          { title: 'List of Coupon', path: paths.dashboard.couponandpromotions.list },
+        ],
       },
       {
         title: 'Subscription Plan',
         path: paths.dashboard.subscriptionplan.Root,
         icon: ICONS.blank,
-        children:[
-          {title:"Add Plan", path:paths.dashboard.subscriptionplan.add},
-          {title:"Plan List", path:paths.dashboard.subscriptionplan.list},
-        ]
+        children: [
+          { title: 'Add Plan', path: paths.dashboard.subscriptionplan.add },
+          { title: 'Plan List', path: paths.dashboard.subscriptionplan.list },
+        ],
       },
       {
         title: 'FAQ',
         path: paths.dashboard.faq.Root,
         icon: ICONS.file,
-        children:[
-          {title:"Add FAQ", path:paths.dashboard.faq.add},
-          {title:"FAQ List", path:paths.dashboard.faq.list}
-        ]
+        children: [
+          { title: 'Add FAQ', path: paths.dashboard.faq.add },
+          { title: 'FAQ List', path: paths.dashboard.faq.list },
+        ],
       },
       {
         title: 'KB Database',
         path: paths.dashboard.kbdatabase.Root,
         icon: ICONS.blog,
-        children:[
-          {title:"Add KB", path:paths.dashboard.kbdatabase.add},
-          {title:"KB List", path:paths.dashboard.kbdatabase.list}
-        ]
+        children: [
+          { title: 'Add KB', path: paths.dashboard.kbdatabase.add },
+          { title: 'KB List', path: paths.dashboard.kbdatabase.list },
+        ],
       },
 
       {
@@ -343,8 +343,9 @@ export const navData = [
         children: [
           { title: 'All Ticket List', path: paths.dashboard.tickets.allList },
           { title: 'All Incident List', path: paths.dashboard.tickets.allIncident },
+          { title: 'Add Ticket', path: paths.dashboard.tickets.addTicket },
           { title: 'Add Incident', path: paths.dashboard.tickets.addIncident },
-        ]
+        ],
       },
       {
         title: 'Message And Notification',
@@ -352,12 +353,13 @@ export const navData = [
         icon: ICONS.mail,
         children: [
           { title: 'Add Message', path: paths.dashboard.notificationAndMessage.addMessage },
-          { title: 'Add Notification', path: paths.dashboard.notificationAndMessage.addNotification },
+          {
+            title: 'Add Notification',
+            path: paths.dashboard.notificationAndMessage.addNotification,
+          },
           { title: 'List', path: paths.dashboard.notificationAndMessage.List },
-          
-          
         ],
-      }
+      },
       // try end
     ],
   },

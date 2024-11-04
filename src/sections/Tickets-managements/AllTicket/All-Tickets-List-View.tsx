@@ -49,7 +49,10 @@ export function TicketsListView() {
   }, [data]);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData:
+      selectedTab === 'Finalise'
+        ? tableData.filter((item) => item.status === 'Finalise')
+        : tableData,
     comparator: getComparator(table.order, table.orderBy),
   });
 
@@ -91,9 +94,9 @@ export function TicketsListView() {
                 value={tab.value}
                 label={tab.label}
                 icon={
-                  <Label variant={(tab.value === 'allTickets' && 'filled') || 'soft'}>
-                    {['allTickets', 'new', 'onGoing'].includes(tab.value)
-                      ? tableData.filter((user) => user.status !== tab.value).length
+                  <Label variant={(tab.value === selectedTab && 'filled') || 'soft'}>
+                    {tab.value === 'Finalise'
+                      ? tableData.filter((item) => item.status === 'Finalise').length
                       : tableData.length}
                   </Label>
                 }

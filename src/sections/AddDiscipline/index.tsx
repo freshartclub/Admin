@@ -1,46 +1,29 @@
-
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
-import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
-// import {
-//   _tags,
-//   PRODUCT_SIZE_OPTIONS,
-//   PRODUCT_GENDER_OPTIONS,
-//   PRODUCT_COLOR_NAME_OPTIONS,
-//   PRODUCT_CATEGORY_GROUP_OPTIONS,
-// } from 'src/_mock';
-
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { paths } from 'src/routes/paths';
+import useAddDisciplineMutation from './http/useAddDisciplineMutation';
 
 // ----------------------------------------------------------------------
 
 export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 export const NewProductSchema = zod.object({
-    addDisciplinImage: schemaHelper.file({ message: { required_error: 'image is required!' } }),
-    disciplineTitle:zod.string().min(1, { message: 'Title is required!' }),
-    disciplineDescription:zod.string().min(1, { message: 'Discription is required!' }),
+  disciplineImage: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
+  name: zod.string().min(1, { message: 'Title is required!' }),
+  spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
+  description: zod.string().min(1, { message: 'Discription is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -50,15 +33,14 @@ type Props = {
 };
 
 export function AddDisciline({ disciplineFormData }: Props) {
-  const router = useRouter();
-
-  const [includeTaxes, setIncludeTaxes] = useState(false);
+  const { mutate, isPending } = useAddDisciplineMutation();
 
   const defaultValues = useMemo(
     () => ({
-        addDisciplinImage: disciplineFormData?.addDisciplinImage || null,
-        disciplineTitle: disciplineFormData?.disciplineTitle || '',
-        disciplineDescription:disciplineFormData?.disciplineDescription || '',
+      disciplineImage: disciplineFormData?.disciplineImage || null,
+      name: disciplineFormData?.name || '',
+      spanishName: disciplineFormData?.spanishName || '',
+      description: disciplineFormData?.description || '',
     }),
     [disciplineFormData]
   );
@@ -76,152 +58,76 @@ export function AddDisciline({ disciplineFormData }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-//   const values = watch();
-
-//   useEffect(() => {
-//     if (disciplineFormData) {
-//       reset(defaultValues);
-//     }
-//   }, [disciplineFormData, defaultValues, reset]);
-
-//   useEffect(() => {
-//     if (includeTaxes) {
-//       setValue('taxes', 0);
-//     } else {
-//       setValue('taxes', disciplineFormData?.taxes || 0);
-//     }
-//   }, [disciplineFormData?.taxes, includeTaxes, setValue]);
-const handleRemoveFile = useCallback(() => {
-    setValue('addDisciplinImage', null);
+  const handleRemoveFile = useCallback(() => {
+    setValue('disciplineImage', null);
   }, [setValue]);
-
-
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(disciplineFormData ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      if (!data.disciplineImage) {
+        toast.error('Image is required');
+        return;
+      }
+      const formData = new FormData();
+
+      formData.append('disciplineImage', data.disciplineImage);
+      formData.append('name', data.name);
+      formData.append('spanishName', data.spanishName);
+      formData.append('description', data.description);
+
+      mutate(formData);
     } catch (error) {
       console.error(error);
     }
   });
 
-
-  
-
   const renderDetails = (
     <Card>
-      <CardHeader title="Discipline"  sx={{mb:2}}/>
-
-      <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
-      <Box
+        <Box
           columnGap={4}
           rowGap={3}
           display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <div >
-            <Typography variant="addDisciplinImage">Add Image</Typography>
-            <Field.Upload name="addDisciplinImage" maxSize={3145728} onDelete={handleRemoveFile} />
-          </div>
-          <div className='form col-span-2'>
-            <div className='mb-7 mt-7'>
-            <Field.Text name="disciplineTitle" label="Title"/>
-            </div>
-      
-          <Field.Text name="disciplineDescription" label="Description" multiline rows={6} />
+          <Field.Upload
+            required
+            name="disciplineImage"
+            maxSize={3145728}
+            onDelete={handleRemoveFile}
+          />
+          <div className="form flex gap-2 flex-col w-full">
+            <Field.Text required name="name" label="Title" />
+            <Field.Text required name="spanishName" label="Spanish Title" />
+            <Field.Text required name="description" label="Description" multiline rows={6} />
           </div>
         </Box>
-        
       </Stack>
     </Card>
   );
 
-
-//     <Card>
-//       <CardHeader title="Pricing" subheader="Price related inputs" sx={{ mb: 3 }} />
-
-//       <Divider />
-
-//       <Stack spacing={3} sx={{ p: 3 }}>
-//         <Field.Text
-//           name="price"
-//           label="Regular price"
-//           placeholder="0.00"
-//           type="number"
-//           InputLabelProps={{ shrink: true }}
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Box component="span" sx={{ color: 'text.disabled' }}>
-//                   $
-//                 </Box>
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-
-//         <Field.Text
-//           name="priceSale"
-//           label="Sale price"
-//           placeholder="0.00"
-//           type="number"
-//           InputLabelProps={{ shrink: true }}
-//           InputProps={{
-//             startAdornment: (
-//               <InputAdornment position="start">
-//                 <Box component="span" sx={{ color: 'text.disabled' }}>
-//                   $
-//                 </Box>
-//               </InputAdornment>
-//             ),
-//           }}
-//         />
-
-//         <FormControlLabel
-//           control={
-//             <Switch id="toggle-taxes" checked={includeTaxes} onChange={handleChangeIncludeTaxes} />
-//           }
-//           label="Price includes taxes"
-//         />
-
-//         {!includeTaxes && (
-//           <Field.Text
-//             name="taxes"
-//             label="Tax (%)"
-//             placeholder="0.00"
-//             type="number"
-//             InputLabelProps={{ shrink: true }}
-//             InputProps={{
-//               startAdornment: (
-//                 <InputAdornment position="start">
-//                   <Box component="span" sx={{ color: 'text.disabled' }}>
-//                     %
-//                   </Box>
-//                 </InputAdornment>
-//               ),
-//             }}
-//           />
-//         )}
-//       </Stack>
-//     </Card>
-//   );
-
-  
-
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }}>
-        {renderDetails}
+    <>
+      <CustomBreadcrumbs
+        heading="Add Discipline"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Discipline' }]}
+        sx={{ mb: { xs: 3, md: 3 } }}
+      />
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 3 }}>
+          {renderDetails}
 
-      <div className='flex justify-end'>
-        <button type='submit' className='px-3 py-2 text-white bg-black rounded-md'>Add</button>
-      </div>
-      </Stack>
-    </Form>
+          <div className="flex justify-end">
+            <button
+              disabled={isPending}
+              type="submit"
+              className="px-3 py-2 text-white bg-black rounded-md"
+            >
+              {isPending ? 'Adding...' : 'Add Discipline'}
+            </button>
+          </div>
+        </Stack>
+      </Form>
+    </>
   );
 }

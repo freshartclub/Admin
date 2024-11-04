@@ -7,6 +7,7 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 const useCreateArtworkMutation = () => {
   const navigate = useNavigate();
+  
   async function createArtwork({ newData, onUploadProgress }: { newData: any; onUploadProgress: any }) {
     const formData = new FormData();
 

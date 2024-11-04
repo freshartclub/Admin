@@ -1,27 +1,19 @@
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-
-// import { UserQuickEditForm } from './user-quick-edit-form';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -35,9 +27,7 @@ type Props = {
 
 export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
-
   const quickEdit = useBoolean();
 
   return (
@@ -49,38 +39,18 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row.image} src={row.avatarUrl} />
+            <Avatar alt={row?.disciplineImage} src={row?.disciplineImage} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.categoryName}
-              </Link>
-              {/* <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
-              </Box> */}
+              {row.disciplineName}
             </Stack>
           </Stack>
         </TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.disciplineSpanishName}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.disciplineDescription ? row?.disciplineDescription : 'N/A'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.description}</TableCell>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.status === 'active' && 'success') ||
-              (row.status === 'pending' && 'warning') ||
-              (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.status}
-          </Label>
-        </TableCell> */}
 
         <TableCell>
           <Stack direction="row" alignItems="center">
@@ -99,8 +69,6 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
           </Stack>
         </TableCell>
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}

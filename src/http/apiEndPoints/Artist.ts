@@ -1,10 +1,11 @@
 import { ADMIN_BASE_URL } from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
+  addDiscipline: `${ADMIN_BASE_URL}/add-discipline`,
   AddArtist: `${ADMIN_BASE_URL}/artist-register`,
   getArtistDetail: `${ADMIN_BASE_URL}/get-register-artist`,
   activateArtist: `${ADMIN_BASE_URL}/activate-artist`,
-  getAllArtist: `${ADMIN_BASE_URL}/get-all-completed-artists`, // ya get-all-artist active artist wali route hai
+  getAllArtist: `${ADMIN_BASE_URL}/get-all-completed-artists`,
   getAllArtistInDatabase: `${ADMIN_BASE_URL}/get-all-artists`,
   getAllBecomeArtist: `${ADMIN_BASE_URL}/get-artist-request-list`,
   getAllPendingArtist: `${ADMIN_BASE_URL}/get-artist-pending-list`,
@@ -20,11 +21,13 @@ export const ARTIST_ENDPOINTS = {
   getArtWorkList: `${ADMIN_BASE_URL}/get-artwork-list`,
   getArtistById: `${ADMIN_BASE_URL}/get-artist-by-id`,
   getUserById: `${ADMIN_BASE_URL}/get-user-by-id`,
+  getUserByQueryInput: `${ADMIN_BASE_URL}/get-user-by-query-input`,
   removeArtWorkList: `${ADMIN_BASE_URL}/remove-artwork`,
   getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
   replyTicket: `${ADMIN_BASE_URL}/reply-ticket`,
   getTicketReply: `${ADMIN_BASE_URL}/get-ticket-replies`,
   addIncident: `${ADMIN_BASE_URL}/add-incident`,
+  addTicket: `${ADMIN_BASE_URL}/add-ticket`,
   getAllIncident: `${ADMIN_BASE_URL}/get-all-incidents`,
 };
 

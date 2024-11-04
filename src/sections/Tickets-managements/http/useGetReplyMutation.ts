@@ -4,7 +4,6 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getTicketReply}/${id}`);
-  console.log(data.data);
   return data.data;
 }
 
