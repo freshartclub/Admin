@@ -16,11 +16,11 @@ import { DisciplineTableRow } from './Discipline-table-row';
 import { useGetDisciplineMutation } from './http/useGetDisciplineMutation';
 
 const TABLE_HEAD = [
-  { _id: 'disciplineName', label: 'Discipline Name', width: 150 },
-  { _id: 'disciplineSpanishName', label: 'Spanish Name', width: 150 },
-  { _id: 'disciplineDescription', label: 'Description', width: 200 },
-  { _id: 'createdAt', label: 'Created At', width: 150 },
-  { _id: 'actions', label: 'Actions', width: 88 },
+  { id: 'disciplineName', label: 'Discipline Name', width: 150 },
+  { id: 'disciplineSpanishName', label: 'Spanish Name', width: 150 },
+  { id: 'disciplineDescription', label: 'Description', width: 200 },
+  { id: 'createdAt', label: 'Created At', width: 150 },
+  { id: 'actions', label: 'Actions', width: 88 },
 ];
 
 export function DiscipleListCategory() {
@@ -28,7 +28,6 @@ export function DiscipleListCategory() {
   const [notFound, setNotFound] = useState(false);
 
   const { data, isLoading } = useGetDisciplineMutation();
-  console.log(data);
 
   useEffect(() => {
     if (data) {

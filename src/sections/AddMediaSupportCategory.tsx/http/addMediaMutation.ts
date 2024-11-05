@@ -16,7 +16,7 @@ const addMediaMutation = () => {
     mutationFn: AddMedia,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.root);
+      navigate(paths.dashboard.category.mediasupport.list);
     },
 
     onError: (res: any) => {

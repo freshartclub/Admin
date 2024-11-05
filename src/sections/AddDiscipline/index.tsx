@@ -1,7 +1,5 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
@@ -14,6 +12,10 @@ import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { toast } from 'src/components/snackbar';
 import { paths } from 'src/routes/paths';
 import useAddDisciplineMutation from './http/useAddDisciplineMutation';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import { useSearchParams } from 'src/routes/hooks';
+import { useGetDisciplineById } from './http/useGetDisciplineById';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -29,20 +31,23 @@ export const NewProductSchema = zod.object({
 // ----------------------------------------------------------------------
 
 type Props = {
-  disciplineFormData?: AddArtistComponentProps;
+  disciplineFormData?: ArtistDisciplineType;
 };
 
 export function AddDisciline({ disciplineFormData }: Props) {
-  const { mutate, isPending } = useAddDisciplineMutation();
+  const id = useSearchParams().get('id');
+  const { mutate, isPending } = useAddDisciplineMutation(id);
+
+  const { data, isLoading } = useGetDisciplineById(id);
 
   const defaultValues = useMemo(
     () => ({
-      disciplineImage: disciplineFormData?.disciplineImage || null,
-      name: disciplineFormData?.name || '',
-      spanishName: disciplineFormData?.spanishName || '',
-      description: disciplineFormData?.description || '',
+      disciplineImage: data?.disciplineImage || null,
+      name: data?.disciplineName || '',
+      spanishName: data?.disciplineSpanishName || '',
+      description: data?.disciplineDescription || '',
     }),
-    [disciplineFormData]
+    [data]
   );
 
   const methods = useForm<NewProductSchemaType>({
@@ -52,17 +57,27 @@ export function AddDisciline({ disciplineFormData }: Props) {
 
   const {
     reset,
-    watch,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (id && data) {
+      reset({
+        disciplineImage: data?.disciplineImage || null,
+        name: data?.disciplineName || '',
+        spanishName: data?.disciplineSpanishName || '',
+        description: data?.disciplineDescription || '',
+      });
+    }
+  }, [data, reset]);
+
   const handleRemoveFile = useCallback(() => {
     setValue('disciplineImage', null);
   }, [setValue]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data: any) => {
     try {
       if (!data.disciplineImage) {
         toast.error('Image is required');
@@ -105,6 +120,8 @@ export function AddDisciline({ disciplineFormData }: Props) {
       </Stack>
     </Card>
   );
+
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <>

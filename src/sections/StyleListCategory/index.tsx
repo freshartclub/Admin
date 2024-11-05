@@ -1,29 +1,25 @@
 import { Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import { useEffect, useState } from 'react';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { getToken } from 'src/utils/tokenHelper';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
+  useTable,
 } from 'src/components/table';
-import { CategoryTableRow } from './Category-table-row';
-import { useQuery } from '@tanstack/react-query';
-import { useGetStyleListMutation } from './http/useGetStyleListMutation';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
-
-const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+import { CategoryTableRow } from './Category-table-row';
+import { useGetStyleListMutation } from './http/useGetStyleListMutation';
 
 const TABLE_HEAD = [
-  { _id: 'name', label: 'Artwork Style Name', width: 150 },
-  { _id: 'spanishName', label: 'Spanish Name', width: 150 },
-  { _id: 'disciplineName', label: 'Discipline Name', width: 220 },
-  { _id: 'createdAt', label: 'Created At', width: 100 },
-  { _id: 'actions', label: 'Actions', width: 88 },
+  { id: 'name', label: 'Artwork Style Name', width: 150 },
+  { id: 'spanishName', label: 'Spanish Name', width: 150 },
+  { id: 'disciplineName', label: 'Discipline Name', width: 220 },
+  { id: 'createdAt', label: 'Created At', width: 100 },
+  { id: 'actions', label: 'Actions', width: 88 },
 ];
 
 export function StyleListCategory() {

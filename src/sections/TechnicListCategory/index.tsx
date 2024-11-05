@@ -15,11 +15,11 @@ import { useGetTechnicMutation } from './http/useGetTechnicMutation';
 import { TechnicTableRow } from './Technic-table-row';
 
 const TABLE_HEAD = [
-  { _id: 'name', label: 'Technic Name', width: 150 },
-  { _id: 'spanishName', label: 'Spanish Name', width: 150 },
-  { _id: 'disciplineName', label: 'Discipline', width: 220 },
-  { _id: 'createdAt', label: 'Created At', width: 100 },
-  { _id: 'actions', label: 'Actions', width: 88 },
+  { id: 'name', label: 'Technic Name', width: 150 },
+  { id: 'spanishName', label: 'Spanish Name', width: 150 },
+  { id: 'disciplineName', label: 'Discipline', width: 220 },
+  { id: 'createdAt', label: 'Created At', width: 100 },
+  { id: 'actions', label: 'Actions', width: 88 },
 ];
 
 export function TechnicListCategory() {

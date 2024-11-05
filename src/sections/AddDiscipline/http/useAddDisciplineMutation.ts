@@ -5,11 +5,14 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 
-const useAddDisciplineMutation = () => {
+const useAddDisciplineMutation = (id) => {
   const navigate = useNavigate();
 
+  let url = `${ARTIST_ENDPOINTS.addDiscipline}`;
+  if (id) url = `${ARTIST_ENDPOINTS.addDiscipline}?id=${id}`;
+
   async function AddDiscipline(data) {
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.addDiscipline}`, data, {
+    return axiosInstance.post(url, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

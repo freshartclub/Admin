@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
@@ -9,15 +7,16 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
-import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDisciplineType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -41,7 +40,7 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishStyleName}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.discipline.map((discipline) => discipline.disciplineName).join(', ')}
+          {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 

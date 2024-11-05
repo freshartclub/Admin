@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,10 +7,10 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form } from 'src/components/hook-form';
 import { paths } from 'src/routes/paths';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import addStyleMutation from './http/addStyleMutation';
 
@@ -27,7 +25,7 @@ export const NewProductSchema = zod.object({
 // ----------------------------------------------------------------------
 
 type Props = {
-  styleFormData?: AddArtistComponentProps;
+  styleFormData?: ArtistDisciplineType;
 };
 
 export function AddStyleCategory({ styleFormData }: Props) {

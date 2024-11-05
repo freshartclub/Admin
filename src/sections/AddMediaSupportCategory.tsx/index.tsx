@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,6 +12,7 @@ import { Field, Form } from 'src/components/hook-form';
 import { paths } from 'src/routes/paths';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import addMediaMutation from './http/addMediaMutation';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +27,7 @@ export const NewProductSchema = zod.object({
 // ----------------------------------------------------------------------
 
 type Props = {
-  styleFormData?: AddArtistComponentProps;
+  styleFormData?: ArtistDisciplineType;
 };
 
 export function AddMediaSupportCategory({ styleFormData }: Props) {

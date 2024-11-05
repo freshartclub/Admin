@@ -2,6 +2,7 @@ import { ADMIN_BASE_URL, GENERAL_BASE_URL } from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
   addDiscipline: `${ADMIN_BASE_URL}/add-discipline`,
+  getDisciplineById: `${ADMIN_BASE_URL}/get-discipline`,
   addStyle: `${ADMIN_BASE_URL}/add-style`,
   addTheme: `${ADMIN_BASE_URL}/add-theme`,
   addTechnic: `${ADMIN_BASE_URL}/add-technic`,

@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,15 +8,18 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDisciplineType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -26,6 +27,8 @@ type Props = {
 };
 
 export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+  const navigate = useNavigate();
+  
   const confirm = useBoolean();
   const popover = usePopover();
   const quickEdit = useBoolean();
@@ -89,10 +92,8 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
           </MenuItem>
 
           <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
+            sx={{ color: 'primary.dark' }}
+            onClick={() => navigate(`${paths.dashboard.category.discipline.add}?id=${row._id}`)}
           >
             <Iconify icon="solar:pen-bold" />
             Edit

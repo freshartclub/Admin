@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
@@ -13,11 +11,12 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDisciplineType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -39,8 +38,7 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.themeName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishThemeName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
-          {row.discipline.map((discipline) => discipline.disciplineName).join(', ')}
+          {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 

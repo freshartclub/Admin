@@ -128,3 +128,24 @@ export interface ArtistListType {
   zipCode: string;
   country?: string;
 }
+
+export interface ArtistDisciplineType {
+  disciplineImage: any;
+  _id: string;
+  mediaName: string;
+  disciplineSpanishName: string;
+  disciplineDescription: string;
+  spanishMediaName: string;
+  disciplineName: string;
+  styleName: string;
+  spanishStyleName: string;
+  technicName: string;
+  spanishTechnicName: string;
+  themeName: string;
+  spanishThemeName: string;
+  createdAt: string;
+  description: string;
+  name: string;
+  spanishName: string;
+  discipline: Array<string>;
+}
