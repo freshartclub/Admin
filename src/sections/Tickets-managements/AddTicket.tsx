@@ -130,6 +130,7 @@ export function AddTicket({ currentPost }: Props) {
       <Stack spacing={3} sx={{ p: 2 }}>
         <Field.Text
           name="userId"
+          required
           label="Requested By"
           placeholder="Search User By Name, Email or UserId"
         />
@@ -178,14 +179,21 @@ export function AddTicket({ currentPost }: Props) {
             </TableRow>
           </div>
         )}
-        <Field.Text name="artistName" label="Name" />
+        <Field.Text required name="artistName" label="Name" />
         <Field.SingelSelect
           checkbox
+          required
           name="ticketType"
           label="Ticket Type"
           options={TICKET_TYPE_OPTIONS}
         />
-        <Field.SingelSelect checkbox name="status" label="Status" options={TICKET_STATUS_OPTIONS} />
+        <Field.SingelSelect
+          required
+          checkbox
+          name="status"
+          label="Status"
+          options={TICKET_STATUS_OPTIONS}
+        />
 
         <Box
           columnGap={2}
@@ -193,12 +201,22 @@ export function AddTicket({ currentPost }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.SingelSelect name="urgency" label="Urgency" options={INC_URGENCY_OPTIONS} />
-          <Field.SingelSelect name="priority" label="Priority" options={INC_PRIORITY_OPTIONS} />
+          <Field.SingelSelect
+            required
+            name="urgency"
+            label="Urgency"
+            options={INC_URGENCY_OPTIONS}
+          />
+          <Field.SingelSelect
+            required
+            name="priority"
+            label="Priority"
+            options={INC_PRIORITY_OPTIONS}
+          />
         </Box>
 
-        <Field.Text name="subject" label="Ticket Title" />
-        <Field.Text name="message" label="Type your message/issue" multiline rows={4} />
+        <Field.Text name="subject" required label="Ticket Title" />
+        <Field.Text name="message" required label="Type your message/issue" multiline rows={4} />
       </Stack>
     </Card>
   );

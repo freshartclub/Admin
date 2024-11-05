@@ -3,7 +3,6 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search, status, days) {
-  console.log(search, status, days);
   const { data } = await axiosInstance.get(
     `${ARTIST_ENDPOINTS.getAllTickets}?search=${search}&status=${status}&days=${days}`
   );

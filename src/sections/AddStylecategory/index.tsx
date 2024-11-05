@@ -1,39 +1,27 @@
-
-
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import CardHeader from '@mui/material/CardHeader';
 
-
-import { useRouter } from 'src/routes/hooks';
-
-import {
-  _tags,
-  PRODUCT_STYLECATEGORYS_OPTIONS,
-} from 'src/_mock';
-
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-
-// ----------------------------------------------------------------------
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Field, Form } from 'src/components/hook-form';
+import { paths } from 'src/routes/paths';
+import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
+import addStyleMutation from './http/addStyleMutation';
 
 export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 export const NewProductSchema = zod.object({
-    styleTitle:zod.string().min(1, { message: 'Title is required!' }),
-    styleCategory: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-    
+  name: zod.string().min(1, { message: 'Title is required!' }),
+  spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
+  discipline: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -43,14 +31,13 @@ type Props = {
 };
 
 export function AddStyleCategory({ styleFormData }: Props) {
-  const router = useRouter();
-
-  const [includeTaxes, setIncludeTaxes] = useState(false);
-
+  const { data } = useGetDisciplineMutation();
+  
   const defaultValues = useMemo(
     () => ({
-       styleTitle: styleFormData?.styleTitle || '',
-        styleCategory:styleFormData?.styleCategory || [],
+      name: styleFormData?.name || '',
+      spanishName: styleFormData?.spanishName || '',
+      discipline: styleFormData?.discipline || [],
     }),
     [styleFormData]
   );
@@ -61,86 +48,95 @@ export function AddStyleCategory({ styleFormData }: Props) {
   });
 
   const {
-    reset,
     watch,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  const { mutate, isPending } = addStyleMutation();
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(styleFormData ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      await mutate(data);
     } catch (error) {
       console.error(error);
     }
   });
 
-
-  
-
   const renderDetails = (
     <Card>
-      <CardHeader title="Style" sx={{mb:2}}/>
-
-      <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
-      <Box
+        <Box
           columnGap={4}
           rowGap={3}
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
         >
-          
-          <Field.Text name="styleTitle" label="Title"/>
+          <Field.Text required name="name" label="Title" />
+          <Field.Text required name="spanishName" label="Spanish Title" />
 
           <Field.Autocomplete
-          name="styleCategory"
-          label="Categorys"
-          placeholder="+ Categorys"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={PRODUCT_STYLECATEGORYS_OPTIONS.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
-        />
-
+            name="discipline"
+            required
+            label="Discipline"
+            placeholder="+ Discipline"
+            multiple
+            freeSolo
+            disableCloseOnSelect
+            options={data && data.length > 0 ? data : []}
+            getOptionLabel={(option) => option.disciplineName}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
+            renderOption={(props, option) => (
+              <li {...props} key={option._id}>
+                {option.disciplineName}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option._id}
+                  label={option.disciplineName}
+                  size="small"
+                  color="info"
+                  variant="soft"
+                />
+              ))
+            }
+            onChange={(event, value) => {
+              const selectedIds = value.map((item) => item._id);
+              setValue('discipline', selectedIds);
+            }}
+            value={
+              data && data.length > 0
+                ? data.filter((item) => watch('discipline').includes(item._id))
+                : []
+            }
+          />
         </Box>
-        
       </Stack>
     </Card>
   );
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }}>
-        {renderDetails}
+    <>
+      <CustomBreadcrumbs
+        heading="Add Artwork Style"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Artwork Style' }]}
+        sx={{ mb: { xs: 3, md: 3 } }}
+      />
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 5 }}>
+          {renderDetails}
 
-      <div className='flex justify-end'>
-        <button type='submit' className='px-3 py-2 text-white bg-black rounded-md'>Add</button>
-      </div>
-      </Stack>
-    </Form>
+          <div className="flex justify-end">
+            <button type="submit" className="px-3 py-2 text-white bg-black rounded-md">
+              {isPending ? 'Adding...' : 'Add Style'}
+            </button>
+          </div>
+        </Stack>
+      </Form>
+    </>
   );
 }

@@ -1,7 +1,13 @@
-import { ADMIN_BASE_URL } from 'src/utils/BaseUrls';
+import { ADMIN_BASE_URL, GENERAL_BASE_URL } from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
   addDiscipline: `${ADMIN_BASE_URL}/add-discipline`,
+  addStyle: `${ADMIN_BASE_URL}/add-style`,
+  addTheme: `${ADMIN_BASE_URL}/add-theme`,
+  addTechnic: `${ADMIN_BASE_URL}/add-technic`,
+  addMedia: `${ADMIN_BASE_URL}/add-media`,
+  getDiscipline: `${ADMIN_BASE_URL}/list-discipline`,
+  getStyle: `${ADMIN_BASE_URL}/list-style`,
   AddArtist: `${ADMIN_BASE_URL}/artist-register`,
   getArtistDetail: `${ADMIN_BASE_URL}/get-register-artist`,
   activateArtist: `${ADMIN_BASE_URL}/activate-artist`,
@@ -33,4 +39,12 @@ export const ARTIST_ENDPOINTS = {
 
 export const USER_ENDPOINTS = {
   getUserList: `${ADMIN_BASE_URL}/get-all-users`,
+};
+
+export const GENERAL_ENDPOINTS = {
+  getDiscipline: `${GENERAL_BASE_URL}/list-discipline`,
+  getStyle: `${GENERAL_BASE_URL}/list-style`,
+  getTechnic: `${GENERAL_BASE_URL}/list-technic`,
+  getTheme: `${GENERAL_BASE_URL}/list-theme`,
+  getMedia: `${GENERAL_BASE_URL}/list-media`,
 };

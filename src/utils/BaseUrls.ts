@@ -1,5 +1,6 @@
 export const USER_BASE_URL = 'api/users';
 export const ARTIST_BASE_URL = 'api/artist';
+export const GENERAL_BASE_URL = 'api/general';
 export const PAYMENT_BASE_URL = 'api/payment';
 export const COMMENT_BASE_URL = 'api/comment';
 export const CART_BASE_URL = 'api/cart';

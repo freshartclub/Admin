@@ -1,22 +1,19 @@
 import { Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import { useEffect, useState } from 'react';
 import { LoadingScreen } from 'src/components/loading-screen';
-import axiosInstance from 'src/utils/axios';
-import { getToken } from 'src/utils/tokenHelper';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
+  useTable,
 } from 'src/components/table';
-const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
-import { DisciplineTableRow } from './Discipline-table-row';
-import { useQuery } from '@tanstack/react-query';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
+import { DisciplineTableRow } from './Discipline-table-row';
+import { useGetDisciplineMutation } from './http/useGetDisciplineMutation';
 
 const TABLE_HEAD = [
   { _id: 'disciplineName', label: 'Discipline Name', width: 150 },
@@ -27,25 +24,11 @@ const TABLE_HEAD = [
 ];
 
 export function DiscipleListCategory() {
-  const token = getToken();
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
 
-  const fetchData = async () => {
-    const response = await axiosInstance.get(`${BASE_URL}/api/admin/list-discipline`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  };
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['styleData'],
-    queryFn: fetchData,
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading } = useGetDisciplineMutation();
+  console.log(data);
 
   useEffect(() => {
     if (data) {
@@ -57,15 +40,6 @@ export function DiscipleListCategory() {
     }
   }, [data]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
-  if (isError) {
-    return <div>An error has occurred: {error.message}</div>;
-  }
-
-  const dataFiltered = data.data;
   return (
     <div>
       <CustomBreadcrumbs
@@ -73,43 +47,47 @@ export function DiscipleListCategory() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Discipline' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
-      <Card>
-        <Scrollbar>
-          <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              rowCount={dataFiltered.length}
-              numSelected={table.selected.length}
-              onSort={table.onSort}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row._id)
-                )
-              }
-            />
-            <TableBody>
-              {dataFiltered.map((row, i) => (
-                <DisciplineTableRow
-                  key={i}
-                  row={row}
-                  selected={table.selected.includes(row._id)}
-                  onSelectRow={() => table.onSelectRow(row._id)}
-                  onDeleteRow={() => handleDeleteRow(row._id)}
-                  onEditRow={() => handleEditRow(row._id)}
-                />
-              ))}
-              <TableEmptyRows
-                height={table.dense ? 56 : 76}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={data.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    data.map((row) => row._id)
+                  )
+                }
               />
-              <TableNoData notFound={notFound} />
-            </TableBody>
-          </Table>
-        </Scrollbar>
-      </Card>
+              <TableBody>
+                {data.map((row, i) => (
+                  <DisciplineTableRow
+                    key={i}
+                    row={row}
+                    selected={table.selected.includes(row._id)}
+                    onSelectRow={() => table.onSelectRow(row._id)}
+                    onDeleteRow={() => handleDeleteRow(row._id)}
+                    onEditRow={() => handleEditRow(row._id)}
+                  />
+                ))}
+                <TableEmptyRows
+                  height={table.dense ? 56 : 76}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, data.length)}
+                />
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </Card>
+      )}
     </div>
   );
 }

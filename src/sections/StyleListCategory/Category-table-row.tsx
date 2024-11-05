@@ -1,27 +1,18 @@
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-
-// import { UserQuickEditForm } from './user-quick-edit-form';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -35,9 +26,7 @@ type Props = {
 
 export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
-
   const quickEdit = useBoolean();
 
   return (
@@ -47,40 +36,14 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell>
-          <Stack spacing={1} direction="row" alignItems="center">
-            {/* <Avatar alt={row.name} src={row.avatarUrl} /> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.styleName}</TableCell>
 
-            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.styleName}
-              </Link>
-              {/* <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
-              </Box> */}
-            </Stack>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishStyleName}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.discipline.map((discipline) => discipline.disciplineName).join(', ')}
         </TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} spacing={2}>{row.categoryName}</TableCell>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell> */}
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.status === 'active' && 'success') ||
-              (row.status === 'pending' && 'warning') ||
-              (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.status}
-          </Label>
-        </TableCell> */}
 
         <TableCell>
           <Stack direction="row" alignItems="center">
@@ -99,8 +62,6 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
           </Stack>
         </TableCell>
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}
