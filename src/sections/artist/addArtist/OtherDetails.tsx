@@ -68,7 +68,6 @@ export function OtherDetails({
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
   const { isPending: isActivePending, mutate: activeMutate } =
     useActivateArtistMutation(handleSuccess);
-  const [isOn, setIsOn] = useState(false);
 
   const defaultValues = useMemo(
     () => ({
@@ -97,6 +96,8 @@ export function OtherDetails({
     }),
     [artistFormData]
   );
+
+  const [isOn, setIsOn] = useState(artistFormData?.managerArtistName ? true : false);
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -197,7 +198,7 @@ export function OtherDetails({
     <Card sx={{ mb: 4 }}>
       <div className="flex justify-between items-center">
         <CardHeader title="Manager Details (If any)" sx={{ mb: 3 }} />
-        <Switch disabled={isReadOnly} onClick={() => setIsOn((prev) => !prev)} />
+        <Switch disabled={isReadOnly} checked={isOn} onClick={() => setIsOn((prev) => !prev)} />
       </div>
 
       <Divider />
