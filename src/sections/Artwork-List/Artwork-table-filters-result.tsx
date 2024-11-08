@@ -1,13 +1,9 @@
 import type { Theme, SxProps } from '@mui/material/styles';
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-
 import { useCallback } from 'react';
-
 import Chip from '@mui/material/Chip';
-
 import { fDateRangeShortLabel } from 'src/utils/format-time';
-
 import { chipProps, FiltersBlock, FiltersResult } from 'src/layouts/components/filters-result';
 
 

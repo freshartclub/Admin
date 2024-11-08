@@ -112,6 +112,8 @@ export const paths = {
       },
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
       artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
+      artworkDetail: `${ROOTS.DASHBOARD}/artwork/artworkDetail`,
+
     },
 
     // try start

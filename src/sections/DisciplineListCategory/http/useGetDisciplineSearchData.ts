@@ -3,13 +3,13 @@ import { GENERAL_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search) {
-  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getTechnic}?s=${search}`);
+  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDiscipline}?s=${search}`);
   return data.data;
 }
 
-export const useGetTechnicMutation = (search) => {
+export const useGetDisciplineSearchData = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getTechnic}?s=${search}`],
+    queryKey: [`${GENERAL_ENDPOINTS.getDiscipline}?s=${search}`],
     queryFn: () => fetchData(search),
   });
 };

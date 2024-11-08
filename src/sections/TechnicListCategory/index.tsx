@@ -1,3 +1,5 @@
+import type { IUserItem } from 'src/types/user';
+
 import { Card, Table, TableBody } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -5,6 +7,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   emptyRows,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
   TableNoData,
@@ -13,11 +16,16 @@ import {
 import { paths } from 'src/routes/paths';
 import { useGetTechnicMutation } from './http/useGetTechnicMutation';
 import { TechnicTableRow } from './Technic-table-row';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { InputAdornment } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+import { TextField } from '@mui/material';
+import { RouterLink } from 'src/routes/components';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Technic Name', width: 150 },
-  { id: 'spanishName', label: 'Spanish Name', width: 150 },
-  { id: 'disciplineName', label: 'Discipline', width: 220 },
+  { id: 'technicName', label: 'Technic Name', width: 150 },
+  { id: 'spanishTechnicName', label: 'Spanish Name', width: 150 },
+  { id: 'discipline', label: 'Discipline', width: 220 },
   { id: 'createdAt', label: 'Created At', width: 100 },
   { id: 'actions', label: 'Actions', width: 88 },
 ];
@@ -25,18 +33,26 @@ const TABLE_HEAD = [
 export function TechnicListCategory() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 800);
+  const [_list, setList] = useState([]);
 
-  const { data, isLoading } = useGetTechnicMutation();
+  const { data, isLoading } = useGetTechnicMutation(debounceSearch);
 
   useEffect(() => {
     if (data) {
-      if (data.length === 0) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-      }
+      setList(data);
+      setNotFound(data.length === 0);
     }
   }, [data]);
+
+  const dataFiltered = applyFilter({
+    inputData: _list,
+    comparator: getComparator(table.order, table.orderBy),
+  });
+
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return (
     <div>
@@ -44,6 +60,33 @@ export function TechnicListCategory() {
         heading="Technic List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Technic List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
+        action={
+          <div className="flex gap-2">
+            <RouterLink href={`${paths.dashboard.category.technic.add}`}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1">
+                <Iconify icon="mingcute:add-line" /> Add Technic
+              </span>
+            </RouterLink>
+            <RouterLink href={'#'}>
+              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
+                <Iconify icon="mingcute:add-line" /> Export CSV
+              </span>
+            </RouterLink>
+          </div>
+        }
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        fullWidth
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By Technic Name..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
       />
       {isLoading ? (
         <LoadingScreen />
@@ -55,18 +98,18 @@ export function TechnicListCategory() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={data.length}
+                rowCount={dataFiltered.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    data.map((row) => row._id)
+                    dataFiltered.map((row) => row._id)
                   )
                 }
               />
               <TableBody>
-                {data.map((row) => (
+                {dataFiltered.map((row) => (
                   <TechnicTableRow
                     key={row._id}
                     row={row}
@@ -78,7 +121,7 @@ export function TechnicListCategory() {
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, data.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
                 <TableNoData notFound={notFound} />
               </TableBody>
@@ -88,4 +131,22 @@ export function TechnicListCategory() {
       )}
     </div>
   );
+}
+
+type ApplyFilterProps = {
+  inputData: IUserItem[];
+  comparator: (a: any, b: any) => number;
+};
+
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  return inputData;
 }

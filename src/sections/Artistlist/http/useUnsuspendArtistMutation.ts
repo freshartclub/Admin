@@ -14,8 +14,8 @@ export const useUnsuspendArtistMutation = (id) => {
     mutationFn: UnSuspendArtist,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.suspendedArtist],
-        refetchType:"all"
+        queryKey: [`${ARTIST_ENDPOINTS.suspendedArtist}`],
+        refetchType: 'all',
       });
 
       toast.success(res.data.message);

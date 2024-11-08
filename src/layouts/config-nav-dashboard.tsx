@@ -196,16 +196,16 @@ export const navData = [
       },
 
       {
-        title: 'Credentials and Insignias Area',
+        title: 'Credentials and Insignias',
         path: paths.dashboard.creadentialsAndInsigniasArea.root,
         icon: ICONS.course,
         children: [
           {
-            title: 'Add Credentials and Insignias Area',
+            title: 'Add Credentials and Insignias',
             path: paths.dashboard.creadentialsAndInsigniasArea.add,
           },
           {
-            title: 'Credentials and Insignias Area List',
+            title: 'Credentials and Insignias List',
             path: paths.dashboard.creadentialsAndInsigniasArea.list,
           },
         ],

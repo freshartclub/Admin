@@ -6,104 +6,36 @@ import secure from './assets/secure.png';
 import print from './assets/print.png';
 import return1 from './assets/return.png';
 
-import product from './assets/single-product.jpg.png';
-import profile from './assets/profile_photo.png';
-import circle1 from './assets/circle1.png';
-import circle2 from './assets/circle2.png';
-import account_plus from './assets/account-plus-outline.png';
-import chat from './assets/chat-outline.png';
-import dots from './assets/dots-horizontal.png';
-import whtsap from './assets/whatsapp.png';
-import facebook from './assets/facebook.png';
-import twitter from './assets/twitter.png';
-import linkedin from './assets/linkedin.png';
-import arrow from './assets/arrow_2.png';
 import P from './comman/P';
 import Header from './comman/Header';
-import Button from './comman/Button';
 
-const ProductInfo = () => {
-  const overview_date = [
-    {
-      head: 'Author :',
-      name: 'Anthony Martiz',
-    },
-    {
-      head: 'Paper Size :',
-      name: 'A5',
-    },
-    {
-      head: 'Category :',
-      name: 'Painting, 3D Abstract',
-    },
-    {
-      head: 'Width :',
-      name: '16cm',
-    },
-    {
-      head: 'Height :',
-      name: '36cm',
-    },
-    {
-      head: 'Colour :',
-      name: 'Multicolor',
-    },
-    {
-      head: 'Author type :',
-      name: 'Refugee',
-    },
-    {
-      head: 'Painting Info :',
-      name: 'Most Overview',
-    },
-  ];
-
-  const artwork_detail = [
-    {
-      heading: 'Artwork Details : ',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dolore magna aliqua',
-    },
-    {
-      heading: 'Canvas: ',
-      description: 'Lotus Valley',
-    },
-    {
-      heading: 'Dimensions: ',
-      description: 'Dimensions: 304.1 x 212.4 x 15.6 mm',
-    },
-  ];
-
-  const highlight_data = [
-    {
-      list: 'Lorem ipsum dolor sit amet',
-    },
-    {
-      list: 'Lorem ipsum dolor sit amet',
-    },
-    {
-      list: 'Lorem ipsum dolor sit amet',
-    },
-    {
-      list: 'Lorem ipsum dolor sit amet',
-    },
-  ];
+const ProductInfo = ({ data, preview }) => {
+  const mapData = (val) => {
+    if (!val || val.length === 0) return '';
+    return val.join(' | ');
+  };
 
   return (
-    <div className="mt-20">
+    <div className="mt-10">
       <Tabs>
         <TabList>
           <Tab>Description</Tab>
           <Tab>Additional Information</Tab>
-          <Tab>Artist information</Tab>
+          <Tab>Commercialization</Tab>
+          <Tab>Pricing & Shipping</Tab>
+          <Tab>More Details</Tab>
         </TabList>
 
         <TabPanel>
-          <div className="flex gap-8 justify-between my-10">
-            <div className="w-[65%] ">
+          <div className="flex gap-8 justify-between my-5">
+            <div className={`${!preview ? 'w-[75%]' : 'w-[100%]]'}`}>
               <P variant={{ size: 'small', weight: 'semiBold' }} className="text-[#999999]">
                 Product information
               </P>
-              <Header variant={{ size: 'xl', theme: 'dark', weight: 'medium' }} className="my-5">
+              <Header
+                variant={{ size: 'xl', theme: 'dark', weight: 'medium' }}
+                className="my-5 mt-3"
+              >
                 This print from our famous painters and artists posters series, from the mind of
                 Seven Wall Art, with black, and with vertical layout. Animal prints let you show
                 your wild side through your wall decoration. A modern touch for your home.
@@ -112,332 +44,179 @@ const ProductInfo = () => {
                 variant={{ size: 'base', theme: 'dark', weight: 'medium' }}
                 className="text-[#999999]"
               >
-                If you relate, it’s clear you do need a change – but what’s an easy and cost
-                effective way of adding the magic back into your home? The surprisingly simple yet
-                overlooked way to reimagine any space begins with your walls. Think about it – the
-                empty wall space you’ve been sitting opposite for weeks or even years is the perfect
-                blank canvas to begin expressing your unique style and creativity.
+               {data?.productDescription}
               </P>
             </div>
 
-            <div className="w-[25%]">
-              <div className="flex items-center gap-5 my-5">
-                <img src={delivery} alt="" />
-                <div>
-                  <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
-                    Delivery 2-5 days
-                  </P>
-                  <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
-                    Get free shipping over $65.
-                  </P>
+            {!preview && (
+              <div className="w-[25%]">
+                <div className="flex items-center gap-5 my-5">
+                  <img src={delivery} alt="" />
+                  <div>
+                    <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
+                      Delivery 2-5 days
+                    </P>
+                    <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
+                      Get free shipping over $65.
+                    </P>
+                  </div>
                 </div>
+
+                <div className="flex items-center gap-5 my-5">
+                  <img src={secure} alt="" />
+                  <div>
+                    <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
+                      100% secure payment
+                    </P>
+                    <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
+                      Your payment information is safe.
+                    </P>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-5 my-5">
+                  <img src={print} alt="" />
+                  <div>
+                    <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
+                      Premium paper printed
+                    </P>
+                    <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
+                      Printed on premium paper (250 g/m²).
+                    </P>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-5 my-5">
+                  <img src={return1} alt="" />
+                  <div>
+                    <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>Easy Returns</P>
+                    <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
+                      Risk-free 30-day returns.
+                    </P>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </TabPanel>
+
+        <TabPanel>
+          <div className="flex flex-col my-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 place-content-between border-b pb-4">
+              <div>
+                <PreviewData
+                  head="Artwork Orientation"
+                  val={data?.additionalInfo?.artworkOrientation}
+                />
+                <PreviewData head="Artwork Technic" val={data?.additionalInfo?.artworkTechnic} />
+                <PreviewData head="Artwork Theme" val={data?.additionalInfo?.artworkTheme} />
+                <PreviewData head="Artwork Length" val={data?.additionalInfo?.length} />
+                <PreviewData head="Artwork Width" val={data?.additionalInfo?.width} />
+                <PreviewData head="Artwork Height" val={data?.additionalInfo?.height} />
+                <PreviewData head="Artwork Weight" val={data?.additionalInfo?.weight} />
+                <PreviewData
+                  head="Hanging Available"
+                  val={data?.additionalInfo?.hangingAvailable}
+                />
               </div>
 
-              <div className="flex items-center gap-5 my-5">
-                <img src={secure} alt="" />
-                <div>
-                  <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
-                    100% secure payment
-                  </P>
-                  <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
-                    Your payment information is safe.
-                  </P>
-                </div>
+              <div>
+                <PreviewData head="Framed" val={data?.additionalInfo?.framed} />
+                <PreviewData head="Frame Length" val={data?.additionalInfo?.frameLength} />
+                <PreviewData head="Frame Width" val={data?.additionalInfo?.frameWidth} />
+                <PreviewData head="Frame Height" val={data?.additionalInfo?.frameHeight} />
+                <PreviewData head="Artwork Material" val={data?.additionalInfo?.material} />
+                <PreviewData
+                  head="Artwork Style"
+                  val={mapData(data?.additionalInfo?.artworkStyle)}
+                />
+                <PreviewData head="Artwork Color" val={mapData(data?.additionalInfo?.colors)} />
+                <PreviewData
+                  head="Artwork Emotions"
+                  val={mapData(data?.additionalInfo?.emotions)}
+                />
               </div>
-
-              <div className="flex items-center gap-5 my-5">
-                <img src={print} alt="" />
-                <div>
-                  <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>
-                    Premium paper printed
-                  </P>
-                  <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
-                    Printed on premium paper (250 g/m²).
-                  </P>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-5 my-5">
-                <img src={return1} alt="" />
-                <div>
-                  <P variant={{ size: 'base', weight: 'medium', theme: 'dark' }}>Easy Returns</P>
-                  <P variant={{ size: 'base', weight: 'medium' }} className="text-[#999999]">
-                    Risk-free 30-day returns.
-                  </P>
-                </div>
-              </div>
+            </div>
+            <div>
+              <PreviewData2
+                head="Frame Description"
+                val={data?.additionalInfo?.framedDescription}
+              />
+              <PreviewData2
+                head="Hanging Description"
+                val={data?.additionalInfo?.hangingDescription}
+              />
             </div>
           </div>
         </TabPanel>
 
         <TabPanel>
-          <div className="flex gap-10 w-full my-10">
-            <div className="w-[32%]">
-              <Header variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }} className="mb-4">
-                Overview
-              </Header>
-              {overview_date.map((item, index) => (
-                <div key={index} className="flex">
-                  <P
-                    variant={{ size: 'small', theme: 'dark', weight: 'medium' }}
-                    className="w-48 my-1"
-                  >
-                    {item.head}
-                  </P>
-                  <P variant={{ size: 'small', weight: 'medium' }} className="text-[#999999] ">
-                    {item.name}
-                  </P>
-                </div>
-              ))}
-            </div>
-
-            <div className="w-[32%]">
-              {artwork_detail.map((item, index) => (
-                <div key={index} className="my-5">
-                  <Header variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }}>
-                    {item.heading}
-                  </Header>
-                  <P
-                    variant={{
-                      size: 'small',
-                      weight: 'medium',
-                    }}
-                    className="mt-2 text-[#999999]"
-                  >
-                    {item.description}
-                  </P>
-                </div>
-              ))}
-            </div>
-
-            <div className="w-[32%]">
-              <Header variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }}>
-                Highlights:
-              </Header>
-              {highlight_data.map((item, index) => (
-                <div key={index}>
-                  <ul className="list-disc">
-                    <li className="text-[#999999] text-sm font-medium my-4">{item.list}</li>
-                  </ul>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-col my-5">
+            <PreviewData head="Offer Price" val={data?.commercialization?.acceptOfferPrice} />
+            <PreviewData head="Artist Base Fees" val={data?.commercialization?.artistbaseFees} />
+            <PreviewData head="Downward Offer" val={data?.commercialization?.downwardOffer} />
+            <PreviewData head="Price Request" val={data?.commercialization?.priceRequest} />
+            <PreviewData head="Purchase Catalog" val={data?.commercialization?.purchaseCatalog} />
+            <PreviewData head="Upwork Offer" val={data?.commercialization?.upworkOffer} />
           </div>
         </TabPanel>
-
         <TabPanel>
-          <div className="flex gap-10 my-10">
-            <div className="w-[25%]">
-              <div className="bg-white shadow-2xl lg:max-w-xs sm:w-[90%] w-full p-5">
-                <div className="">
-                  <img
-                    src={profile}
-                    alt="Profile"
-                    className="object-cover rounded-full w-full h-full"
-                  />
-
-                  {/* Profile Details */}
-                  <div className="mt-4 text-center">
-                    <Header variant={{ size: 'xl', theme: 'dark', weight: 'bold' }}>
-                      Andrews Martin
-                    </Header>
-                    <P
-                      variant={{
-                        size: 'base',
-                        theme: 'dark',
-                        weight: 'medium',
-                      }}
-                      className="pb-10 mt-1 border-b border-dashed text-[14px]"
-                    >
-                      PAINTER | SCULPTER | ARTIST
-                    </P>
-                  </div>
-                </div>
-
-                {/* Categories and Location */}
-                <div className="mt-2">
-                  <div className="border-b border-dashed py-2">
-                    <Header
-                      variant={{
-                        size: 'lg',
-                        theme: 'dark',
-                        weight: 'semiBold',
-                      }}
-                    >
-                      Category
-                    </Header>
-                    <P
-                      variant={{
-                        size: 'base',
-                        theme: 'dark',
-                        weight: 'normal',
-                      }}
-                      className="my-1 text-[14px]"
-                    >
-                      Painting, abstract, illustration, nudity
-                    </P>
-                  </div>
-                  <div className="border-b border-dashed py-2">
-                    <Header
-                      variant={{
-                        size: 'lg',
-                        theme: 'dark',
-                        weight: 'semiBold',
-                      }}
-                    >
-                      Location
-                    </Header>
-                    <P
-                      variant={{
-                        size: 'base',
-                        theme: 'dark',
-                        weight: 'normal',
-                      }}
-                      className="my-1 text-[14px]"
-                    >
-                      NY, Chicago 452100
-                    </P>
-                  </div>
-                </div>
-
-                {/* Social and Action Icons */}
-                <div className="flex justify-between items-center mt-2">
-                  <div className="flex ">
-                    <div className="relative w-12 h-12 border-4 border-white rounded-full overflow-hidden">
-                      <img src={circle1} alt="Follower 1" className="w-full h-full object-cover" />
-                    </div>
-                    <div className="relative w-12 h-12 border-4 border-white rounded-full overflow-hidden -ml-5">
-                      <img src={circle2} alt="Follower 2" className="w-full h-full object-cover" />
-                    </div>
-
-                    {/* Follower Count */}
-                    <div className="relative w-12 h-12 border-4 border-white rounded-full bg-gray-100 flex items-center justify-center -ml-5">
-                      <span className="font-bold text-black">+256</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between gap-3">
-                    <img src={account_plus} alt="icons" className="w-[20px] h-[20px]" />
-                    <img src={chat} alt="icons" className="w-[20px] h-[20px]" />
-                    <img src={dots} alt="icons" className="w-[20px] h-[20px]" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="my-6">
-                <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>Follow Us On -</P>
-                <div className="flex gap-3 mt-3">
-                  <img src={whtsap} alt="whtsap" />
-                  <img src={facebook} alt="facebook" />
-                  <img src={twitter} alt="twitter" />
-                  <img src={linkedin} alt="linkedin" />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-[75%]">
-              <div className="border mt-8 p-4 ">
-                <Header
-                  variant={{ size: 'lg', theme: 'dark', weight: 'semiBold' }}
-                  className="mb-3 uppercase"
-                >
-                  About
-                </Header>
-                <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="w-[90%]">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                  pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                  officia deserunt mollit anim id est laborum.
-                </P>
-                <div className="flex justify-end">
-                  <Button
-                    className="!p-0 flex items-center mt-2"
-                    variant={{
-                      fontSize: 'md',
-                      theme: 'light',
-                      fontWeight: '600',
-                    }}
-                  >
-                    <P
-                      className="text-[#EE1D52]"
-                      variant={{
-                        size: 'base',
-                        theme: 'dark',
-                        weight: 'semiBold',
-                      }}
-                    >
-                      Show More
-                    </P>
-                    <img src={arrow} alt="arrow" className="ml-2" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="border mt-8 p-4 ">
-                <Header
-                  variant={{ size: 'lg', theme: 'dark', weight: 'semiBold' }}
-                  className="mb-4 uppercase"
-                >
-                  Portfolio
-                </Header>
-
-                <Header
-                  variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }}
-                  className="mb-4"
-                >
-                  2022 -
-                </Header>
-                <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci incidunt
-                  corporis distinctio non quod eum beatae blanditiis doloribus voluptatum sunt.
-                </P>
-
-                <Header
-                  variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }}
-                  className="mb-3 mt-4"
-                >
-                  2021 -
-                </Header>
-                <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci incidunt
-                  corporis distinctio non quod eum beatae blanditiis doloribus voluptatum sunt.
-                </P>
-
-                <div className="flex justify-end">
-                  <Button
-                    className="!p-0 flex items-center mt-2"
-                    variant={{
-                      fontSize: 'md',
-                      theme: 'light',
-                      fontWeight: '600',
-                    }}
-                  >
-                    <P
-                      className="text-[#EE1D52]"
-                      variant={{
-                        size: 'base',
-                        theme: 'dark',
-                        weight: 'semiBold',
-                      }}
-                    >
-                      Show More
-                    </P>
-                    <img src={arrow} alt="arrow" className="ml-2" />
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col my-5">
+            <PreviewData head="Location" val={data?.inventoryShipping?.location} />
+            <PreviewData head="Pin Code" val={data?.inventoryShipping?.pCode} />
+            <PreviewData head="SKU" val={data?.inventoryShipping?.sku} />
+            <PreviewData head="Artist Fees" val={'$ ' + data?.pricing?.artistFees} />
+            <PreviewData head="Base Price" val={'$ ' + data?.pricing?.basePrice} />
+            <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
+            <PreviewData head="Vat Amount" val={'$ ' + data?.pricing?.vatAmount} />
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <div className="flex flex-col my-5">
+            <PreviewData head="Collection List" val={data?.collectionList} />
+            <PreviewData head="Promotion" val={data?.promotions?.promotion} />
+            <PreviewData head="Promotion Score" val={data?.promotions?.promotionScore} />
+            <PreviewData head="Available To" val={data?.restriction?.availableTo} />
+            <PreviewData head="Discount Acceptance" val={data?.restriction?.discountAcceptation} />
           </div>
         </TabPanel>
       </Tabs>
 
-      <>
+      {/* <>
         <img src={product} alt="only image" className="w-full" />
-      </>
+      </> */}
     </div>
   );
 };
+
+function PreviewData({ head, val }) {
+  return (
+    <div className="flex items-center">
+      <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="w-48 my-1">
+        {head} :
+      </P>
+      <P variant={{ size: 'small', weight: 'medium' }} className="text-[#999999] ">
+        {val ? val : 'N/A'}
+      </P>
+    </div>
+  );
+}
+
+function PreviewData2({ head, val }) {
+  return (
+    <div className="my-5">
+      <Header variant={{ size: 'md', theme: 'dark', weight: 'semiBold' }}>{head}</Header>
+      <P
+        variant={{
+          size: 'small',
+          weight: 'medium',
+        }}
+        className="mt-1 text-[#999999]"
+      >
+        {val ? val : 'N/A'}
+      </P>
+    </div>
+  );
+}
 
 export default ProductInfo;

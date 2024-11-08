@@ -39,13 +39,7 @@ const highlightData = [
 ];
 
 const SelectedSection = () => {
-  return (
-    <div className="container mx-auto sm:px-6 px-3">
-      <CommonCardData heading="From this artist" highlightData={highlightData} />
-      <CommonCardData heading="Selected for you" highlightData={highlightData} />
-      <CommonCardData heading="Recent viewed" highlightData={highlightData} />
-    </div>
-  );
+  return <CommonCardData heading="From this artist" highlightData={highlightData} />;
 };
 
 export default SelectedSection;

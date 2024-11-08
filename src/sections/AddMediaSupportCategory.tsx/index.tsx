@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
@@ -13,6 +13,8 @@ import { paths } from 'src/routes/paths';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import addMediaMutation from './http/addMediaMutation';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import { useSearchParams } from 'src/routes/hooks';
+import { useGetMediaById } from './http/useGetMediaById';
 
 // ----------------------------------------------------------------------
 
@@ -31,15 +33,17 @@ type Props = {
 };
 
 export function AddMediaSupportCategory({ styleFormData }: Props) {
+  const id = useSearchParams().get('id');
   const { data } = useGetDisciplineMutation();
+  const { data: styleData, isLoading } = useGetMediaById(id);
 
   const defaultValues = useMemo(
     () => ({
-      name: styleFormData?.name || '',
-      spanishName: styleFormData?.spanishName || '',
-      discipline: styleFormData?.discipline || [],
+      name: styleData?.mediaName || '',
+      spanishName: styleData?.spanishMediaName || '',
+      discipline: (styleData?.discipline && styleData?.discipline.map((item) => item._id)) || [],
     }),
-    [styleFormData]
+    [styleData]
   );
 
   const methods = useForm<NewProductSchemaType>({
@@ -55,7 +59,17 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-  const { mutate, isPending } = addMediaMutation();
+  useEffect(() => {
+    if (id && styleData) {
+      reset({
+        name: styleData?.mediaName || '',
+        spanishName: styleData?.spanishMediaName || '',
+        discipline: styleData?.discipline.map((item) => item._id) || [],
+      });
+    }
+  }, [styleData, reset]);
+
+  const { mutate, isPending } = addMediaMutation(id);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -64,6 +78,14 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
       console.error(error);
     }
   });
+
+  const resetForm = () => {
+    reset({
+      name: '',
+      spanishName: '',
+      discipline: [],
+    });
+  };
 
   const renderDetails = (
     <Card>
@@ -124,8 +146,11 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
   return (
     <>
       <CustomBreadcrumbs
-        heading="Add Theme"
-        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Theme' }]}
+        heading={id ? 'Edit Media' : 'Add Media'}
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: id ? 'Edit Media' : 'Add Media' },
+        ]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
 
@@ -133,9 +158,19 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
         <Stack spacing={{ xs: 3, md: 5 }}>
           {renderDetails}
 
-          <div className="flex justify-end">
-            <button type="submit" className="px-3 py-2 text-white bg-black rounded-md">
-              {isPending ? 'Adding...' : 'Add Theme'}
+          <div className="flex justify-end gap-2">
+            <span
+              onClick={resetForm}
+              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+            >
+              Cancel
+            </span>
+            <button
+              disabled={isPending}
+              type="submit"
+              className="px-3 py-2 text-white bg-black rounded-md"
+            >
+              {isPending ? 'Saving...' : 'Save'}
             </button>
           </div>
         </Stack>

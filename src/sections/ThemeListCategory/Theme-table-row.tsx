@@ -3,15 +3,16 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import useDeleteThemeMutation from './http/useDeleteThemeMutation';
 
 // ----------------------------------------------------------------------
 
@@ -24,9 +25,15 @@ type Props = {
 };
 
 export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+  const navigate = useNavigate();
+  const { mutate, isPending } = useDeleteThemeMutation();
+  
   const confirm = useBoolean();
   const popover = usePopover();
-  const quickEdit = useBoolean();
+
+  const deleteTheme = () => {
+    mutate(row._id);
+  };
 
   return (
     <>
@@ -42,21 +49,14 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
-        <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'end' }}>
+          <IconButton
+            sx={{ marginRight: '10px' }}
+            color={popover.open ? 'inherit' : 'default'}
+            onClick={popover.onOpen}
+          >
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
 
@@ -78,12 +78,7 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
             Delete
           </MenuItem>
 
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
+          <MenuItem onClick={() => navigate(`${paths.dashboard.category.theme.add}?id=${row._id}`)}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
@@ -96,8 +91,8 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+          <Button variant="contained" color="error" onClick={deleteTheme}>
+            {isPending ? 'Deleting...' : 'Delete'}
           </Button>
         }
       />

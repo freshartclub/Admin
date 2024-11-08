@@ -96,6 +96,15 @@ export function AddDisciline({ disciplineFormData }: Props) {
     }
   });
 
+  const resetForm = () => {
+    reset({
+      disciplineImage: null,
+      name: '',
+      spanishName: '',
+      description: '',
+    });
+  };
+
   const renderDetails = (
     <Card>
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -126,21 +135,30 @@ export function AddDisciline({ disciplineFormData }: Props) {
   return (
     <>
       <CustomBreadcrumbs
-        heading="Add Discipline"
-        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Discipline' }]}
+        heading={id ? 'Edit Discipline' : 'Add Discipline'}
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: id ? 'Edit Discipline' : 'Add Discipline' },
+        ]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={{ xs: 3, md: 3 }}>
           {renderDetails}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <span
+              onClick={resetForm}
+              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+            >
+              Cancel
+            </span>
             <button
               disabled={isPending}
               type="submit"
               className="px-3 py-2 text-white bg-black rounded-md"
             >
-              {isPending ? 'Adding...' : 'Add Discipline'}
+              {isPending ? 'Saving...' : 'Save'}
             </button>
           </div>
         </Stack>

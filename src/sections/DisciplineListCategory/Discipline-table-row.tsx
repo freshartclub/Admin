@@ -7,7 +7,6 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
@@ -15,6 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import useDeleteDisciplineMutation from './http/useDeleteDisciplineMutation';
 
 // ----------------------------------------------------------------------
 
@@ -28,10 +28,14 @@ type Props = {
 
 export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const navigate = useNavigate();
-  
+  const { mutate, isPending } = useDeleteDisciplineMutation();
+
   const confirm = useBoolean();
   const popover = usePopover();
-  const quickEdit = useBoolean();
+
+  const deleteDiscipline = async () => {
+    await mutate(row._id);
+  };
 
   return (
     <>
@@ -55,21 +59,14 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
-        <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'end' }}>
+          <IconButton
+            sx={{ marginRight: '10px' }}
+            color={popover.open ? 'inherit' : 'default'}
+            onClick={popover.onOpen}
+          >
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
 
@@ -92,7 +89,6 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
           </MenuItem>
 
           <MenuItem
-            sx={{ color: 'primary.dark' }}
             onClick={() => navigate(`${paths.dashboard.category.discipline.add}?id=${row._id}`)}
           >
             <Iconify icon="solar:pen-bold" />
@@ -105,10 +101,10 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content="Are you sure want to delete?"
+        content="Are you sure want to delete this discipline?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+          <Button variant="contained" color="error" onClick={deleteDiscipline}>
+            {isPending ? 'Deleting...' : 'Delete'}
           </Button>
         }
       />

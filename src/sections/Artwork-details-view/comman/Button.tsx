@@ -1,6 +1,5 @@
 import cn from './cn';
 import * as React from 'react';
-// import { VariantProps, cva } from "class-variance-authority";
 import { cva } from 'class-variance-authority';
 
 export const ButtonVariant = cva('disabled:opacity-70', {

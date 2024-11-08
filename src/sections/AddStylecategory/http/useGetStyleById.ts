@@ -4,13 +4,13 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   if (!id) return {};
-  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDisciplineById}/${id}`);
+  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getStyleById}/${id}`);
   return data.data;
 }
 
-export const useGetDisciplineById = (id) => {
+export const useGetStyleById = (id) => {
   return useQuery({
-    queryKey: ['ThemeList'],
+    queryKey: ['StyleList'],
     queryFn: () => fetchData(id),
   });
 };

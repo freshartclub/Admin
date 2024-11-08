@@ -1,28 +1,31 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { GENERAL_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
 
-export const useSuspendArtistMutation = () => {
+const useDeleteStyleMutation = () => {
   const queryClient = useQueryClient();
 
-  async function CreateArtist(id) {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
+  async function deleteStyle(id) {
+    const response = await axiosInstance.patch(`${GENERAL_ENDPOINTS.deleteStyle}/${id}`);
     return response;
   }
-  
+
   return useMutation({
-    mutationFn: CreateArtist,
+    mutationFn: deleteStyle,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase],
+        queryKey: [GENERAL_ENDPOINTS.getDiscipline],
         refetchType: 'all',
       });
 
       toast.success(res.data.message);
     },
-    onError: (res) => {
+
+    onError: (res: any) => {
       toast.error(res.response.data.message);
     },
   });
 };
+
+export default useDeleteStyleMutation;

@@ -5,10 +5,16 @@ import { toast } from 'src/components/snackbar';
 import { paths } from 'src/routes/paths';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
-const useCreateArtworkMutation = () => {
+const useCreateArtworkMutation = (id) => {
   const navigate = useNavigate();
-  
-  async function createArtwork({ newData, onUploadProgress }: { newData: any; onUploadProgress: any }) {
+
+  async function createArtwork({
+    newData,
+    onUploadProgress,
+  }: {
+    newData: any;
+    onUploadProgress: any;
+  }) {
     const formData = new FormData();
 
     Object.keys(newData.data).forEach((key) => {
@@ -30,14 +36,20 @@ const useCreateArtworkMutation = () => {
       onUploadProgress,
     };
 
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.addArtwork}/${newData.id}`, formData, config);
+    let url = `${ARTIST_ENDPOINTS.addArtwork}/${newData.id}`;
+    if (id) url = `${ARTIST_ENDPOINTS.addArtwork}/${newData.id}?artworkId=${id}`;
+
+    return axiosInstance.post(url, formData, config);
   }
 
   return useMutation({
     mutationFn: createArtwork,
     onSuccess: async (res, body) => {
+      console.log(res.data);
       toast.success(res.data.message);
-      navigate(paths.dashboard.artwork.artworkList);
+      navigate(
+        paths.dashboard.artwork.artworkDetail + '?id=' + res.data.data._id + '&preview=true'
+      );
     },
 
     onError: (res) => {

@@ -4,11 +4,11 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   if (!id) return {};
-  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDisciplineById}/${id}`);
+  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getThemeById}/${id}`);
   return data.data;
 }
 
-export const useGetDisciplineById = (id) => {
+export const useGetThemeById = (id) => {
   return useQuery({
     queryKey: ['ThemeList'],
     queryFn: () => fetchData(id),

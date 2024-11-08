@@ -4,13 +4,13 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   if (!id) return {};
-  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDisciplineById}/${id}`);
+  const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getTechnicById}/${id}`);
   return data.data;
 }
 
-export const useGetDisciplineById = (id) => {
+export const useGetTechnicById = (id) => {
   return useQuery({
-    queryKey: ['ThemeList'],
+    queryKey: ['TechnicList'],
     queryFn: () => fetchData(id),
   });
 };

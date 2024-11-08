@@ -6,66 +6,121 @@ import question from './assets/question.png';
 import Button from './comman/Button';
 import Header from './comman/Header';
 import P from './comman/P';
+import { RouterLink } from 'src/routes/components';
+import usePublishArtworkMutation from './http/usePublishArtworkMutation';
+import { paths } from 'src/routes/paths';
 
-const DiscoverContent = () => {
+const DiscoverContent = ({ data, preview }) => {
+  const { mutate, isPending } = usePublishArtworkMutation(data?._id);
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
+  const tags = (val) => {
+    if (!val || val.length === 0) return '';
+    return val.join(' | ');
+  };
+
+  const publishArtwork = async () => {
+    await mutate();
+  };
+
   return (
     <div>
-      <P variant={{ size: 'small', weight: 'semiBold' }} className="lg:mb-5 mb-3 text-[#999999]">
-        Black & White Fashion
-      </P>
-      <div className="flex gap-2">
-        <Header variant={{ theme: 'dark', weight: 'bold' }} className="xl:text-3xl text-xl">
-          Ornamental Goblet Poster
-        </Header>
-        <P variant={{ size: 'md', theme: 'dark', weight: 'normal' }} className="mt-5 ">
-          (2021)
-        </P>
-      </div>
+      <section className="flex lg:items-center flex-col lg:flex-row justify-between border-b pb-2 gap-1">
+        <div>
+          <Header variant={{ size: '2xl', theme: 'dark', weight: 'bold' }}>
+            {data?.artworkName}
+          </Header>
 
-      <div className="flex lg:pb-5 pb-2 border-b lg:mt-1 gap-1">
-        <P variant={{ size: 'base', theme: 'dark', weight: 'medium' }} className="text-[14px]">
-          Author :
-        </P>
-        <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="text-[14px]">
-          Alfred Frost,Melany Rodriguez
-        </P>
-      </div>
+          <div className="flex lg:pb-2 pb-2 lg:mt-1 gap-1">
+            <Header
+              variant={{ size: 'base', theme: 'dark', weight: 'medium' }}
+              className="text-[14px]"
+            >
+              Author :
+            </Header>
+            <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
+              {name(data?.owner)}
+            </P>
+          </div>
+        </div>
+        <div className="flex gap-2 w-full lg:w-fit">
+          {data?.status !== 'published' ? (
+            <button className="w-full lg:w-fit" onClick={publishArtwork}>
+              <span className="font-bold block text-center rounded-full bg-black text-white px-5 py-3">
+                {isPending ? 'Publishing...' : 'Publish'}
+              </span>
+            </button>
+          ) : null}
+          {preview ? (
+            <RouterLink
+              className="w-full lg:w-fit"
+              href={`${paths.dashboard.artwork.addArtwork}?id=${data?._id}`}
+            >
+              <span className="font-bold block text-center rounded-full border-[1.5px] text-black px-5 py-3">
+                Continue Edit
+              </span>
+            </RouterLink>
+          ) : null}
+        </div>
+      </section>
 
-      <div className="flex gap-2 lg:mt-2 mt-1">
-        <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="text-[14px]">
+      <div className="flex gap-1 lg:mt-2 mt-1">
+        <Header variant={{ size: 'base', theme: 'dark', weight: 'medium' }} className="text-[14px]">
           Years of creation :
+        </Header>
+        <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
+          {data?.artworkCreationYear}
         </P>
-        <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="text-[14px]">
-          2022
+      </div>
+      <div className="flex gap-1 lg:mt-2 mt-1">
+        <Header variant={{ size: 'base', theme: 'dark', weight: 'medium' }} className="text-[14px]">
+          Artwork Series :
+        </Header>
+        <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
+          {data?.artworkSeries}
         </P>
       </div>
 
-      <P
+      {/* <P
         variant={{ size: 'base', theme: 'dark', weight: 'normal' }}
         className="lg:mt-2 mt-1 text-[14px]"
       >
         Newyork, USA
-      </P>
+      </P> */}
 
       <P
         variant={{ size: 'base', theme: 'dark', weight: 'normal' }}
-        className="lg:my-6 my-2 text-[14px]"
+        className="lg:my-4 my-2 text-[14px] text-[#999999]"
       >
-        Quia in harum exercitationem sit sequi omnis. Tenetur id facere illo dolor. Nulla molestiae
-        voluptatem mollitia ullam necessitatibus sit quibusdam.
+        {(data?.productDescription || '')
+          .replace(/(<([^>]+)>)/gi, '')
+          .slice(0, 300)
+          .concat('...')}
       </P>
 
-      <div className="flex">
+      <div className="flex gap-1">
         <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="text-[14px]">
-          Size :{' '}
+          Size :
         </P>
-        <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }} className="text-[14px]">
-          17 x 54 x 55
+        <P
+          variant={{ size: 'base', theme: 'dark', weight: 'normal' }}
+          className="text-[14px] text-[#999999]"
+        >
+          {data?.additionalInfo?.length} x {data?.additionalInfo?.width} x{' '}
+          {data?.additionalInfo?.height}
         </P>
       </div>
 
       <Header variant={{ size: 'xl', theme: 'dark', weight: 'semiBold' }} className="lg:my-4 my-2">
-        $120.00
+        ${data?.pricing?.basePrice}
       </Header>
 
       <div className="flex md:flex-row flex-col xl:gap-10 gap-2">
@@ -75,7 +130,7 @@ const DiscoverContent = () => {
             fontWeight: '600',
             rounded: 'full',
           }}
-          className="text-base flex items-center justify-center   w-full"
+          className={`text-base flex items-center justify-center w-full ${preview && 'pointer-events-none opacity-50'}`}
         >
           <img src={cart} alt="" className="md:mx-2 mx-1" />
           <P variant={{ size: 'base', theme: 'light', weight: 'normal' }}>Add to cart</P>
@@ -86,76 +141,82 @@ const DiscoverContent = () => {
             theme: '',
             rounded: 'full',
           }}
-          className="text-base flex items-center justify-center border  w-full"
+          className={`text-base flex items-center justify-center border  w-full ${preview && 'pointer-events-none opacity-50'}`}
         >
           <img src={mark} alt="" className="md:mx-2 mx-1" />
           <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>Make an offer</P>
         </Button>
       </div>
 
-      <div className="flex lg:flex-row flex-col w-full xl:justify-end lg:justify-between lg:items-center gap-2 lg:my-6 my-3">
-        <div className="flex items-center lg:justify-center gap-2 xl:w-[30%]">
-          <img src={wishlist} alt="whishlist icon" />
-          <P
-            variant={{ size: 'small', weight: 'semiBold' }}
-            className="text-[#999999] uppercase text-[11px]"
-          >
-            Add to Wishlist
-          </P>
+      <div className="flex flex-col justify-between gap-4 my-4">
+        <div
+          className={`flex w-full justify-between gap-1 flex-wrap ${preview && 'pointer-events-none opacity-50'}`}
+        >
+          <div className="flex items-center gap-2">
+            <img src={wishlist} alt="whishlist icon" />
+            <P
+              variant={{ size: 'small', weight: 'semiBold' }}
+              className="text-[#999999] uppercase text-[11px]"
+            >
+              Add to Wishlist
+            </P>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <img src={like} alt="like btn" />
+            <P
+              variant={{ size: 'small', weight: 'semiBold' }}
+              className="text-[#999999] uppercase  text-[11px]"
+            >
+              LIKE
+            </P>
+          </div>
+
+          <div className="flex gap-2 items-center">
+            <img src={question} alt="question" />
+            <P
+              variant={{ size: 'small', weight: 'semiBold' }}
+              className="text-[#999999] uppercase text-[11px]"
+            >
+              Ask Questions
+            </P>
+          </div>
         </div>
 
-        <div className="flex items-center lg:justify-center gap-2 xl:w-[30%]">
-          <img src={like} alt="like btn" />
-          <P
-            variant={{ size: 'small', weight: 'semiBold' }}
-            className="text-[#999999] uppercase  text-[11px]"
-          >
-            LIKE
-          </P>
-        </div>
-
-        <div className="flex gap-2 items-center lg:justify-center xl:w-[30%]">
-          <img src={question} alt="question" />
-          <P
-            variant={{ size: 'small', weight: 'semiBold' }}
-            className="text-[#999999] uppercase text-[11px]"
-          >
-            Ask Questions
-          </P>
-        </div>
-      </div>
-
-      <div>
-        <div className="flex gap-2 my-2">
-          <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-            SKU :
-          </P>
-          <P variant={{ size: 'small', weight: 'medium' }} className=" text-[#999999] text-[14px]">
-            2489
-          </P>
-        </div>
-        <div className="flex gap-2 my-2">
-          <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-            CATEGories :
-          </P>
-          <P
-            variant={{ size: 'small', weight: 'medium' }}
-            className="capitalize text-[#999999] text-[14px]"
-          >
-            All Art pribts posters
-          </P>
-        </div>
-        <div className="flex gap-2 my-2">
-          <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-            tags:
-          </P>
-          <P
-            variant={{ size: 'small', weight: 'medium' }}
-            className="capitalize text-[#999999] text-[14px]"
-          >
-            {' '}
-            Art design graphic art illustration photography
-          </P>
+        <div className="flex flex-wrap w-full justify-between">
+          <div className="flex gap-1">
+            <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
+              SKU :
+            </P>
+            <P
+              variant={{ size: 'small', weight: 'medium' }}
+              className=" text-[#999999] text-[14px]"
+            >
+              {data?.inventoryShipping?.sku}
+            </P>
+          </div>
+          <div className="flex gap-1">
+            <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
+              Discipline :
+            </P>
+            <P
+              variant={{ size: 'small', weight: 'medium' }}
+              className="capitalize text-[#999999] text-[14px]"
+            >
+              {data?.discipline?.artworkDiscipline}
+            </P>
+          </div>
+          <div className="flex gap-1">
+            <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
+              Tags :
+            </P>
+            <P
+              variant={{ size: 'small', weight: 'medium' }}
+              className="capitalize text-[#999999] text-[14px]"
+            >
+              {tags(data?.discipline?.artworkTags)}
+            </P>
+          </div>
         </div>
       </div>
     </div>

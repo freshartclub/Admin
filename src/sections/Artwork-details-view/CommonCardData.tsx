@@ -1,7 +1,6 @@
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-// import "../../App.css";
 import like from './assets/like.png';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -67,6 +66,7 @@ const CommonCardData = ({ heading, highlightData }: HandleLikeClickParams) => {
     navigate('/discover_more');
     window.scroll(0, 0);
   };
+  
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
   };

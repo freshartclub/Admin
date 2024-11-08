@@ -1,15 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
-import axiosInstance from 'src/utils/axios';
-import { toast } from 'src/components/snackbar';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { useNavigate } from 'react-router';
+import { toast } from 'src/components/snackbar';
+import { GENERAL_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { paths } from 'src/routes/paths';
+import axiosInstance from 'src/utils/axios';
 
-const addTechnicMutation = () => {
+const addTechnicMutation = (id) => {
   const navigate = useNavigate();
 
+  let url = `${GENERAL_ENDPOINTS.addTechnic}`;
+  if (id) url = `${GENERAL_ENDPOINTS.addTechnic}?id=${id}`;
+
   async function AddTechnic(data) {
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.addTechnic}`, data);
+    return axiosInstance.post(url, data);
   }
 
   return useMutation({

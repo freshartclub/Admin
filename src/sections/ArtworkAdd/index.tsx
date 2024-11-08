@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Avatar,
   InputAdornment,
@@ -14,11 +13,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
-
-import { useRouter } from 'src/routes/hooks';
 
 import {
   ARTWORK_AVAILABLETO_OPTIONS,
@@ -45,139 +40,147 @@ import {
   PRODUCT_YEARS_OPTIONS,
 } from 'src/_mock';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@mui/material';
-import { Field, Form } from 'src/components/hook-form';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { z as zod } from 'zod';
+import { useGetArtworkById } from '../Artwork-details-view/http/useGetArtworkById';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-// export const NewProductSchema = zod.object({
-//   // artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
-//   // artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
-//   // artistName: zod.string().min(1, { message: 'artistName is required!' }),
-//   // artworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
-//   // artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
-//   // productDescription: zod.string(),
-//   // mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-//   // backImage: schemaHelper.file({ message: { required_error: 'Back Photo is required!' } }),
-//   // InprocssPhoto: schemaHelper.file({ message: { required_error: 'Inprocess Photo is required!' } }),
-//   // images: zod.array(zod.string()).max(5, { message: 'Maximum Limit Five Only' }),
-//   // mainVideo: schemaHelper.file({ message: { required_error: 'Main Video is required!' } }),
-//   // otherVideo: schemaHelper.file({ message: { required_error: 'other Video is required!' } }),
-//   // artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
-//   // artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
-//   // artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
-//   // material: zod.string().min(1, { message: 'material is required!' }),
-//   // weight: zod.string().min(1, { message: 'weight required!' }),
-//   // height: zod.string().min(1, { message: 'height required!' }),
-//   // lenght: zod.string().min(1, { message: 'lenght required!' }),
-//   // width: zod.string().min(1, { message: 'width required!' }),
-//   // hangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
-//   // hangingDescription: zod.string(),
-//   // framed: zod.string().min(1, { message: 'Framed is required!' }),
-//   // framedDescription: zod.string(),
-//   // frameHeight: zod.string().min(1, { message: 'Hight required!' }),
-//   // frameLenght: zod.string().min(1, { message: 'Lenght required!' }),
-//   // frameWidth: zod.string().min(1, { message: 'Width required!' }),
-//   // artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-//   // emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-//   // colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-//   // purchaseCatalog: zod.string().min(1, { message: 'Purchase Catalog required!' }),
-//   // artistFees: zod.string().min(1, { message: 'Artist Fees required!' }),
-//   // downwardOffer: zod.string(),
-//   // upworkOffer: zod.string(),
-//   // acceptOfferPrice: zod.string().min(1, { message: 'Accept offer price is required!' }),
-//   // priceRequest: zod.string(),
-//   // basePrice: zod.string().min(1, { message: 'Base price is required!' }),
-//   // dpersentage: zod.number().min(1, { message: 'Descount not be $0.00' }),
-//   // vatAmount: zod.string(),
-//   // artistbaseFees: zod.string(),
-//   // sku: zod.string().min(1, { message: 'sku is required!' }),
-//   // pCode: zod.string(),
-//   // location: zod.string().min(1, { message: 'location is required!' }),
-//   // artworkDiscipline: zod.string(),
-//   // artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-//   // promotion: zod.string(),
-//   // promotionScore: zod.string(),
-//   // availableTo: zod.string(),
-//   // discountAcceptation: zod.string(),
-//   // collectionList: zod.string(),
-// });
+export const NewProductSchema = zod.object({
+  artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
+  artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
+  artistName: zod.string().min(1, { message: 'artistName is required!' }),
+  artworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
+  artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
+  productDescription: zod.string().optional(),
+  mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
+  backImage: schemaHelper.file({ required: false }).optional(),
+  inProcessImage: schemaHelper.file({ required: false }).optional(),
+  images: zod.array(schemaHelper.file({ required: false })).optional(),
+  mainVideo: schemaHelper.file({ required: false }).optional(),
+  otherVideo: schemaHelper.file({ required: false }).optional(),
+  artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
+  artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
+  artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
+  material: zod.string().min(1, { message: 'material is required!' }),
+  weight: zod.string().min(1, { message: 'weight required!' }),
+  height: zod.string().min(1, { message: 'height required!' }),
+  lenght: zod.string().min(1, { message: 'lenght required!' }),
+  width: zod.string().min(1, { message: 'width required!' }),
+  hangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
+  hangingDescription: zod.string().optional(),
+  framed: zod.string().min(1, { message: 'Framed is required!' }),
+  framedDescription: zod.string().optional(),
+  frameHeight: zod.string().min(1, { message: 'Hight required!' }),
+  frameLenght: zod.string().min(1, { message: 'Lenght required!' }),
+  frameWidth: zod.string().min(1, { message: 'Width required!' }),
+  artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  purchaseCatalog: zod.string().min(1, { message: 'Purchase Catalog required!' }),
+  artistFees: zod.string().min(1, { message: 'Artist Fees required!' }),
+  downwardOffer: zod.string().optional(),
+  upworkOffer: zod.string().optional(),
+  acceptOfferPrice: zod.string().min(1, { message: 'Accept offer price is required!' }),
+  priceRequest: zod.string().optional(),
+  basePrice: zod.string().min(1, { message: 'Base price is required!' }),
+  dpersentage: zod.string().min(1, { message: 'Descount not be $0.00' }),
+  vatAmount: zod.string().optional(),
+  artistbaseFees: zod.string().optional(),
+  sku: zod.string().min(1, { message: 'sku is required!' }),
+  pCode: zod.string().optional(),
+  location: zod.string().min(1, { message: 'location is required!' }),
+  artworkDiscipline: zod.string(),
+  artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  promotion: zod.string().optional(),
+  promotionScore: zod.string().optional(),
+  availableTo: zod.string().optional(),
+  discountAcceptation: zod.string().optional(),
+  collectionList: zod.string().optional(),
+});
 
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
+  const id = useSearchParams().get('id');
+  const { data, isLoading } = useGetArtworkById(id);
+
   const [mongoDBId, setmongoDBId] = useState(null);
   const [open, setOpen] = useState(true);
   const [percent, setPercent] = useState(0);
 
   const defaultValues = useMemo(
     () => ({
-      artworkName: currentProduct?.artworkName || '',
-      artistID: currentProduct?.artistID || '',
-      artistName: currentProduct?.artistName || '',
-      artworkCreationYear: currentProduct?.artworkCreationYear || '',
-      artworkSeries: currentProduct?.artworkSeries || ' ',
-      productDescription: currentProduct?.productDescription || '',
+      artworkName: data?.artworkName || '',
+      artistID: data?.owner?.artistId || '',
+      artistName: data?.owner?.artistName || '',
+      artworkCreationYear: data?.artworkCreationYear || '',
+      artworkSeries: data?.artworkSeries || ' ',
+      productDescription: data?.productDescription || '',
 
-      mainImage: currentProduct?.mainImage || null,
-      backImage: currentProduct?.backImage || null,
-      inProcessImage: currentProduct?.inProcessImage || null,
-      images: currentProduct?.images || [],
-      mainVideo: currentProduct?.mainVideo || null,
-      otherVideo: currentProduct?.otherVideo || null,
+      mainImage: data?.mainImage || null,
+      backImage: data?.backImage || null,
+      inProcessImage: data?.inProcessImage || null,
+      images: data?.images || [],
+      mainVideo: data?.mainVideo || null,
+      otherVideo: data?.otherVideo || null,
 
-      artworkTechnic: currentProduct?.artworkTechnic || '',
-      artworkTheme: currentProduct?.artworkTheme || '',
-      artworkOrientation: currentProduct?.artworkOrientation || '',
-      material: currentProduct?.material || '',
-      weight: currentProduct?.weight || '',
-      lenght: currentProduct?.lenght || '',
-      height: currentProduct?.height || '',
-      width: currentProduct?.width || '',
-      hangingAvailable: currentProduct?.hangingAvailable || '',
-      hangingDescription: currentProduct?.hangingDescription || ' ',
-      framed: currentProduct?.framed || '',
-      framedDescription: currentProduct?.framedDescription || ' ',
-      frameHeight: currentProduct?.frameHeight || '',
-      frameLenght: currentProduct?.frameLenght || '',
-      frameWidth: currentProduct?.frameWidth || '',
-      artworkStyle: currentProduct?.artworkStyle || [],
-      emotions: currentProduct?.emotions || [],
-      colors: currentProduct?.colors || [],
-      purchaseCatalog: currentProduct?.purchaseCatalog || '',
-      downwardOffer: currentProduct?.ArtistFees || '',
-      upworkOffer: currentProduct?.upworkOffer || '',
-      acceptOfferPrice: currentProduct?.acceptOfferPrice || '',
-      priceRequest: currentProduct?.priceRequest || '',
+      artworkTechnic: data?.additionalInfo?.artworkTechnic || '',
+      artworkTheme: data?.additionalInfo?.artworkTheme || '',
+      artworkOrientation: data?.additionalInfo?.artworkOrientation || '',
+      material: data?.additionalInfo?.material || '',
+      weight: data?.additionalInfo?.weight || '',
+      lenght: data?.additionalInfo?.length || '',
+      height: data?.additionalInfo?.height || '',
+      width: data?.additionalInfo?.width || '',
+      hangingAvailable: data?.additionalInfo?.hangingAvailable || '',
+      hangingDescription: data?.additionalInfo?.hangingDescription || ' ',
+      framed: data?.additionalInfo?.framed || '',
+      framedDescription: data?.additionalInfo?.framedDescription || ' ',
+      frameHeight: data?.additionalInfo?.frameHeight || '',
+      frameLenght: data?.additionalInfo?.frameLength || '',
+      frameWidth: data?.additionalInfo?.frameWidth || '',
+      artworkStyle: data?.additionalInfo?.artworkStyle || [],
+      emotions: data?.additionalInfo?.emotions || [],
+      colors: data?.additionalInfo?.colors || [],
+      purchaseCatalog: data?.commercialization?.purchaseCatalog || '',
+      downwardOffer: data?.commercialization?.downwardOffer || '',
+      upworkOffer: data?.commercialization?.upworkOffer || '',
+      acceptOfferPrice: data?.commercialization?.acceptOfferPrice || '',
+      priceRequest: data?.commercialization?.priceRequest || '',
 
-      basePrice: currentProduct?.basePrice || '',
-      dpersentage: currentProduct?.dpersentage || 0,
-      vatAmount: currentProduct?.vatAmount || '',
-      artistFees: currentProduct?.artistFees || '',
-      offensive: currentProduct?.offensive || '',
-      artistbaseFees: currentProduct?.artistbaseFees || '',
+      basePrice: data?.pricing?.basePrice || '',
+      dpersentage: data?.pricing?.dpersentage || '',
+      vatAmount: data?.pricing?.vatAmount || '',
+      artistFees: data?.pricing?.artistFees || '',
+      offensive: data?.offensive || '',
+      artistbaseFees: data?.commercialization?.artistbaseFees || '',
 
-      sku: currentProduct?.sku || '',
-      pCode: currentProduct?.pCode || '',
-      location: currentProduct?.location || '',
-      artworkDiscipline: currentProduct?.artworkDiscipline || '',
-      artworkTags: currentProduct?.artworkTags || [],
-      promotion: currentProduct?.promotion || '',
-      promotionScore: currentProduct?.promotionScore || '',
-      availableTo: currentProduct?.availableTo || '',
-      discountAcceptation: currentProduct?.discountAcceptation || '',
-      collectionList: currentProduct?.collectionList || '',
+      sku: data?.inventoryShipping?.sku || '',
+      pCode: data?.inventoryShipping?.pCode || '',
+      location: data?.inventoryShipping?.location || '',
+      artworkDiscipline: data?.discipline?.artworkDiscipline || '',
+      artworkTags: data?.discipline?.artworkTags || [],
+      promotion: data?.promotions?.promotion || '',
+      promotionScore: data?.promotions?.promotionScore || '',
+      availableTo: data?.restriction?.availableTo || '',
+      discountAcceptation: data?.restriction?.discountAcceptation || '',
+      collectionList: data?.collectionList || '',
     }),
-    [currentProduct]
+    [data]
   );
 
-  const { mutate, isPending } = useCreateArtworkMutation();
+  const { mutate, isPending } = useCreateArtworkMutation(id);
 
   const methods = useForm({
-    // resolver: zodResolver(NewProductSchema),
+    resolver: zodResolver(NewProductSchema),
     defaultValues,
   });
 
@@ -211,6 +214,12 @@ export function ArtworkAdd({ currentProduct }) {
       refetch();
     }
   }, [debounceArtistId]);
+
+  useEffect(() => {
+    if (data && !isLoading) {
+      reset(defaultValues);
+    }
+  }, [data, isLoading]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -377,7 +386,7 @@ export function ArtworkAdd({ currentProduct }) {
           </div>
 
           <div>
-            <Typography variant="inProcessImage">Inprocess Photo</Typography>
+            <Typography>Inprocess Photo</Typography>
             <Field.Upload name="inProcessImage" maxSize={3145728} onDelete={handleRemoveFiletwo} />
           </div>
         </Box>
@@ -385,11 +394,12 @@ export function ArtworkAdd({ currentProduct }) {
           <Typography variant="subtitle2">Details Photos</Typography>
           <Field.Upload
             multiple
+            accpet="image/*"
             thumbnail
             name="images"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
-            // onRemoveAll={handleRemoveAllFiles}
+            onRemoveAll={handleRemoveAllFiles}
             // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
@@ -400,11 +410,11 @@ export function ArtworkAdd({ currentProduct }) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <div>
-            <Typography variant="mainVideo">Main Video</Typography>
+            <Typography>Main Video</Typography>
             <Field.MultiVideo name="mainVideo" maxSize={5e7} onDelete={handleRemoveFileVideo} />
           </div>
           <div>
-            <Typography variant="otherVideo">Other Video</Typography>
+            <Typography>Other Video</Typography>
             <Field.MultiVideo
               name="otherVideo"
               maxSize={5e7}
@@ -568,7 +578,7 @@ export function ArtworkAdd({ currentProduct }) {
           name="dpersentage"
           label="Discounted Percentage"
           placeholder="0.00%"
-          type="number"
+          // type="number"
           InputLabelProps={{ shrink: true }}
           InputProps={{
             startAdornment: (
@@ -647,7 +657,6 @@ export function ArtworkAdd({ currentProduct }) {
       </Stack>
     </Card>
   );
-
   const Restrictions = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Restrictions" sx={{ mb: 3 }} />
@@ -657,7 +666,7 @@ export function ArtworkAdd({ currentProduct }) {
         <Field.SingelSelect
           checkbox
           name="availableTo"
-          label="availableTo"
+          label="Available To"
           options={ARTWORK_AVAILABLETO_OPTIONS}
         />
         <Field.SingelSelect
@@ -669,6 +678,7 @@ export function ArtworkAdd({ currentProduct }) {
       </Stack>
     </Card>
   );
+
   const Collection = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Collection" sx={{ mb: 3 }} />
@@ -685,19 +695,7 @@ export function ArtworkAdd({ currentProduct }) {
     </Card>
   );
 
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
-
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
-      </LoadingButton>
-    </Stack>
-  );
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div>
@@ -720,10 +718,9 @@ export function ArtworkAdd({ currentProduct }) {
               {Collection}
             </div>
           </div>
-          {/* {renderActions} */}
           <div className="flex justify-end mb-6 mr-6">
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Saving ' + percent + '%' : 'Save'}
+              {isPending ? 'Processing ' + percent + '%' : 'Preview'}
             </button>
           </div>
         </Stack>
