@@ -8,6 +8,7 @@ export interface ArtistDetailType {
   artistSurname2: string;
   highlights: string;
   cvData: cvData[];
+  insignia: [];
 
   nickName?: string;
   ArtistId: string;

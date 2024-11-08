@@ -60,7 +60,7 @@ function AddArtistIndex() {
 
         if (data.data.pageCount > 2) {
           obj.about = data.data.aboutArtist.about;
-          obj.artistCatagory = data.data.aboutArtist.category;
+          obj.insignia = data.data.insignia;
           obj.discipline = data.data.aboutArtist.discipline;
           delete data.data.aboutArtist;
         }

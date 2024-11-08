@@ -1,33 +1,20 @@
-
-
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
-import { getToken } from "src/utils/tokenHelper";
-import axiosInstance from 'src/utils/axios';
-
+import { useCallback, useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-
-import { useRouter } from 'src/routes/hooks';
-
+import Grid from '@mui/material/Unstable_Grid2';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
 import { fData } from 'src/utils/format-number';
+import useAddInsigniaMutation from './http/useAddInsigniaMutation';
+import { useGetInsigniaById } from './http/useGetInsigniaById';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { useDispatch } from 'react-redux';
-
-const BASE_URL =  import.meta.env.VITE_SERVER_BASE_URL
 // ----------------------------------------------------------------------
 
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -42,87 +29,89 @@ export const NewUserSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-
 type Props = {
   CreatentialForm?: AddArtistComponentProps;
 };
 
 export function AddCreadentialForm({ CreatentialForm }: Props) {
- 
-  const token = getToken();
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const id = useSearchParams().get('id');
+  const { mutate, isPending } = useAddInsigniaMutation(id);
 
-  
+  const { data, isLoading } = useGetInsigniaById(id);
+
   const defaultValues = useMemo(
     () => ({
-      insigniaImage: CreatentialForm?.insigniaImage || null,
-      isActive: CreatentialForm?.isActive || true,
-      credentialName: CreatentialForm?.credentialName || '',
-      credentialGroup: CreatentialForm?.credentialGroup || '',
-      credentialPriority: CreatentialForm?.credentialPriority || '',
+      insigniaImage: data?.insigniaImage || null,
+      isActive: data?.isActive || true,
+      credentialName: data?.credentialName || '',
+      credentialGroup: data?.credentialGroup || '',
+      credentialPriority: data?.credentialPriority || '',
     }),
-    [CreatentialForm]
+    [data]
   );
 
   const methods = useForm<NewUserSchemaType>({
-    mode: 'onSubmit',
     resolver: zodResolver(NewUserSchema),
     defaultValues,
   });
 
   const {
     reset,
-    watch,
-    control,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
-  
+  useEffect(() => {
+    if (id && data) {
+      reset({
+        insigniaImage: data?.insigniaImage || null,
+        isActive: data?.isActive || true,
+        credentialName: data?.credentialName || '',
+        credentialGroup: data?.credentialGroup || '',
+        credentialPriority: data?.credentialPriority || '',
+      });
+    }
+  }, [data, reset]);
 
-const onSubmit = handleSubmit(async (data) => {
-  const toastId = toast.loading("Loading...");
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      const formData = new FormData();
 
-  try {
-    const formData = new FormData();
-    formData.append('credentialGroup', data.credentialGroup);
-    formData.append('credentialName', data.credentialName);
-    formData.append('credentialPriority', data.credentialPriority);
-    formData.append('insigniaImage', data.insigniaImage);
-    formData.append('isActive', data.isActive);
-    formData.append('token',token);
+      formData.append('credentialGroup', data.credentialGroup);
+      formData.append('credentialName', data.credentialName);
+      formData.append('credentialPriority', data.credentialPriority);
+      formData.append('insigniaImage', data.insigniaImage);
+      formData.append('isActive', data.isActive);
 
-    console.log(formData);
-    
+      mutate(formData);
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
-
-    
-    const response = await axios.post( BASE_URL + '/api/admin/create-insignias',formData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        
-        'Content-Type': 'multipart/form-data', 
-      },
+  const resetForm = () => {
+    reset({
+      insigniaImage: null,
+      isActive: true,
+      credentialName: '',
+      credentialGroup: '',
+      credentialPriority: '',
     });
-    
-    // if (!response.data.success) {
-    //   throw new Error(response.data.message);
-    // }
+  };
 
-    toast.success("Credential form successful");
-    reset()
-  } catch (error) {
-    console.error("Credential form failed", error.response ? error.response.data : error.message);
-    toast.error("Credential form failed");
-  }
-  
-  toast.dismiss(toastId);
-});
+  const optionsIn = [
+    {
+      label: 'Active',
+      value: true,
+    },
+    {
+      label: 'Inactive',
+      value: false,
+    },
+  ];
 
+  if (isLoading) return <LoadingScreen />;
 
-  
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -160,22 +149,32 @@ const onSubmit = handleSubmit(async (data) => {
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
             >
-              <Field.Text name="credentialName" label="Credentials and Insignias Area Name" /> 
-              <Field.Text name="credentialGroup" label="Group" />
-              <Field.Text name="credentialPriority" label="Display Priority" />
-            </Box>
-            <div className='flex justify-between items-center mt-9'>
-              <Field.Switch
+              <Field.Text required name="credentialName" label="Insignia Name" />
+              <Field.Text required name="credentialGroup" label="Insignia Group" />
+              <Field.Text required name="credentialPriority" label="Display Priority" />
+              <Field.SingelSelect
+                helperText="Select if this credential should be active or not"
+                required
+                sx={{ width: 1 }}
+                options={optionsIn}
                 name="isActive"
-                labelPlacement="start"
-                label={<></>}
-                sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
+                label="Active"
               />
-              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!CreatentialForm ? 'Credentials and Insignias Area' : 'Credentials and Insignias Area'}
-                </LoadingButton>
-              </Stack>
+            </Box>
+            <div className="flex justify-end gap-2">
+              <span
+                onClick={resetForm}
+                className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+              >
+                Cancel
+              </span>
+              <button
+                disabled={isPending}
+                type="submit"
+                className="px-3 py-2 text-white bg-black rounded-md"
+              >
+                {isPending ? 'Saving...' : 'Save'}
+              </button>
             </div>
           </Card>
         </Grid>

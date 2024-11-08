@@ -1,25 +1,20 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
-import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
+import { z as zod } from 'zod';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import { today } from 'src/utils/format-time';
-
 import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { GooglePlacesAutoComplete } from 'src/components/hook-form/GooglePlacesAutoComplete';
-import Autocomplete from 'react-google-autocomplete';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { useSearchParams } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
@@ -100,9 +95,6 @@ export function GeneralInformation({
   });
 
   const {
-    reset,
-    watch,
-    setValue,
     trigger,
     handleSubmit,
     formState: { isSubmitting },
@@ -110,9 +102,7 @@ export function GeneralInformation({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
-
     data.count = 1;
-
     mutate({ body: data });
   });
 

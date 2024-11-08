@@ -20,6 +20,9 @@ import { useWatch } from 'react-hook-form';
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useGetInsigniaList } from 'src/sections/CredentialList/http/useGetInsigniaList';
+import { Avatar } from '@mui/material';
+import { Chip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +34,7 @@ export const ArtistCatagory = zod.object({
 
 export const NewProductSchema = zod.object({
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
+  insignia: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   discipline: zod.array(
     zod.object({
       discipline: zod.string().min(1, { message: 'Catagory1 is required!' }),
@@ -62,10 +66,12 @@ export function AboutArtist({
   };
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
+  const { data, isLoading } = useGetInsigniaList();
 
   const defaultValues = useMemo(
     () => ({
       About: artistFormData?.about || '',
+      insignia: artistFormData?.insignia || [],
       discipline: artistFormData?.discipline || '',
       count: 3,
     }),
@@ -79,6 +85,8 @@ export function AboutArtist({
 
   const {
     trigger,
+    setValue,
+    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = formProps;
@@ -101,6 +109,7 @@ export function AboutArtist({
     append({
       discipline: '',
       style: [],
+      insignia: [],
     });
   };
 
@@ -108,6 +117,7 @@ export function AboutArtist({
     const newData = {
       about: data.About,
       discipline: data.discipline,
+      insignia: data.insignia,
       count: 3,
     };
 
@@ -130,7 +140,7 @@ export function AboutArtist({
   };
 
   const renderDetails = (
-    <Card sx={{ mb: 4 }}>
+    <Card sx={{ mb: 1 }}>
       <CardHeader title="About Artist" sx={{ mb: 3 }} />
 
       <Divider />
@@ -144,13 +154,61 @@ export function AboutArtist({
     </Card>
   );
 
+  const ArtistInsignia = (
+    <Card sx={{ mb: 4 }}>
+      <CardHeader title="Artist Insignia" sx={{ mb: 2 }} />
+
+      <Stack sx={{ paddingLeft: 2, mb: 3 }}>
+        <Field.Autocomplete
+          disabled={isReadOnly}
+          name="insignia"
+          required
+          label="Add Insignia"
+          placeholder="Add Insignia"
+          multiple
+          freeSolo
+          disableCloseOnSelect
+          options={data && data.length > 0 ? data : []}
+          getOptionLabel={(option) => option.credentialName}
+          isOptionEqualToValue={(option, value) => option._id === value._id}
+          renderOption={(props, option) => (
+            <div className="flex items-center gap-4" {...props} key={option._id}>
+              <Avatar alt={option?.credentialName} src={option?.insigniaImage} />
+              <span className="ml-2">{option.credentialName}</span>
+            </div>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option._id}
+                label={option.credentialName}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
+          onChange={(event, value) => {
+            const selectedIds = value.map((item) => item._id);
+            setValue('insignia', selectedIds);
+          }}
+          value={
+            data && data.length > 0
+              ? data.filter((item) => watch('insignia').includes(item._id))
+              : []
+          }
+        />
+      </Stack>
+    </Card>
+  );
+
   const ArtistCatagory = (
     <Card sx={{ mb: 4 }}>
-      <CardHeader title="Artist Discipline" sx={{ mb: 3 }} />
-
+      <CardHeader title="Artist Discipline" sx={{ mb: 1 }} />
       <Divider />
 
-      <Stack spacing={3} sx={{ p: 3 }}>
+      <Stack spacing={3} sx={{ paddingLeft: 2 }}>
         {fields.length === PRODUCT_CATAGORYONE_OPTIONS.length ? null : (
           <div className="flex justify-end">
             <Button
@@ -228,20 +286,6 @@ export function AboutArtist({
     setTabIndex(tabIndex + 1);
   };
 
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
-
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!artistFormData ? 'Create product' : 'Save changes'}
-      </LoadingButton>
-    </Stack>
-  );
-
   return (
     <FormProvider {...formProps}>
       <form onSubmit={onSubmit}>
@@ -249,12 +293,10 @@ export function AboutArtist({
           <div className="">
             <div className="">
               {renderDetails}
+              {ArtistInsignia}
 
               {ArtistCatagory}
-
-              {/* {Emergency} */}
             </div>
-            {/* <div className="col-span-1">{comman}</div> */}
           </div>
           <div className="flex justify-end">
             {!isReadOnly ? (

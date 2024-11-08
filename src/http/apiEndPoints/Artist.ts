@@ -30,6 +30,10 @@ export const ARTIST_ENDPOINTS = {
   addIncident: `${ADMIN_BASE_URL}/add-incident`,
   addTicket: `${ADMIN_BASE_URL}/add-ticket`,
   getAllIncident: `${ADMIN_BASE_URL}/get-all-incidents`,
+  addInsignia: `${ADMIN_BASE_URL}/add-insignia`,
+  getInsigniaById: `${ADMIN_BASE_URL}/get-insignia`,
+  getAllInsignia: `${ADMIN_BASE_URL}/get-all-insignia`,
+  deleteInsignia: `${ADMIN_BASE_URL}/delete-insignia`,
 };
 
 export const USER_ENDPOINTS = {
