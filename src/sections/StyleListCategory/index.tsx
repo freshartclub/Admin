@@ -25,6 +25,7 @@ const TABLE_HEAD = [
   { id: 'styleName', label: 'Style Name', width: 150 },
   { id: 'spanishStyleName', label: 'Spanish Name', width: 150 },
   { id: 'discipline', label: 'Discipline', width: 220 },
+  { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 100 },
   { id: 'actions', label: 'Actions', width: 88 },
 ];

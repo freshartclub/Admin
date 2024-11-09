@@ -168,7 +168,9 @@ export function AboutArtist({
           multiple
           freeSolo
           disableCloseOnSelect
-          options={data && data.length > 0 ? data : []}
+          options={
+            data && data.length > 0 ? data.filter((option) => option.isDeleted === false) : []
+          }
           getOptionLabel={(option) => option.credentialName}
           isOptionEqualToValue={(option, value) => option._id === value._id}
           renderOption={(props, option) => (

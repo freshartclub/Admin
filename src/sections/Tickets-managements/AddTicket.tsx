@@ -1,35 +1,26 @@
 import type { IPostItem } from 'src/types/blog';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z as zod } from 'zod';
+import { Avatar, Link, ListItemText, TableCell, TableRow } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { paths } from 'src/routes/paths';
-import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
-  INC_GROUP_OPTIONS,
   INC_PRIORITY_OPTIONS,
-  INC_SEVERITY_OPTIONS,
-  INC_STATUS_OPTIONS,
-  INC_TYPE_OPTIONS,
   INC_URGENCY_OPTIONS,
   TICKET_STATUS_OPTIONS,
   TICKET_TYPE_OPTIONS,
 } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import useAddIncidentMutation from './http/useAddIncidentMutation';
+import { Field, Form } from 'src/components/hook-form';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { useGetUesrByQueryInput } from './http/useGetUserMutation';
+import { paths } from 'src/routes/paths';
+import { z as zod } from 'zod';
 import useAddTicketMutation from './http/useAddTicketMutation';
-import { Avatar, TableCell } from '@mui/material';
-import { TableRow } from '@mui/material';
-import { ListItemText } from '@mui/material';
-import { Link } from '@mui/material';
+import { useGetUesrByQueryInput } from './http/useGetUserMutation';
 
 // ----------------------------------------------------------------------
 

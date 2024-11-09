@@ -26,6 +26,7 @@ const TABLE_HEAD = [
   { id: 'disciplineName', label: 'Discipline Name', width: 150 },
   { id: 'disciplineSpanishName', label: 'Spanish Name', width: 150 },
   { id: 'disciplineDescription', label: 'Description', width: 200 },
+  { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 150 },
   { id: 'actions', label: 'Actions', width: 88 },
 ];

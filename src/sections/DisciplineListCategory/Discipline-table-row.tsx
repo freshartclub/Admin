@@ -35,6 +35,8 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
 
   const deleteDiscipline = async () => {
     await mutate(row._id);
+    popover.onClose();
+    confirm.onFalse();
   };
 
   return (
@@ -57,6 +59,13 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.disciplineDescription ? row?.disciplineDescription : 'N/A'}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <span
+            className={`w-fit flex items-center mt-5 rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+          >
+            {row?.isDeleted ? 'Inactive' : 'Active'}
+          </span>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'end' }}>
@@ -77,16 +86,18 @@ export function DisciplineTableRow({ row, selected, onEditRow, onSelectRow, onDe
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          {row?.isDeleted ? null : (
+            <MenuItem
+              onClick={() => {
+                confirm.onTrue();
+                popover.onClose();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          )}
 
           <MenuItem
             onClick={() => navigate(`${paths.dashboard.category.discipline.add}?id=${row._id}`)}

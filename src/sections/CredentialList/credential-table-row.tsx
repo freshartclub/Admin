@@ -38,6 +38,8 @@ export function CredentialTable({ row, selected, onEditRow, onSelectRow, onDelet
 
   const deleteInsigna = async () => {
     await mutate(row._id);
+    popover.onClose();
+    confirm.onFalse();
   };
 
   return (
@@ -91,16 +93,18 @@ export function CredentialTable({ row, selected, onEditRow, onSelectRow, onDelet
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          {row?.isActive ? (
+            <MenuItem
+              onClick={() => {
+                confirm.onTrue();
+                popover.onClose();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          ) : null}
 
           <MenuItem
             onClick={() =>

@@ -27,12 +27,14 @@ type Props = {
 export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteThemeMutation();
-  
+
   const confirm = useBoolean();
   const popover = usePopover();
 
   const deleteTheme = () => {
     mutate(row._id);
+    popover.onClose();
+    confirm.onFalse();
   };
 
   return (
@@ -46,6 +48,13 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishThemeName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <span
+            className={`w-fit flex items-center mt-5 rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+          >
+            {row?.isDeleted ? 'Inactive' : 'Active'}
+          </span>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
