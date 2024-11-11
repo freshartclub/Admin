@@ -23,6 +23,7 @@ export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Title is required!' }),
   spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   discipline: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  isDeleted: zod.boolean(),
 });
 
 // ----------------------------------------------------------------------
@@ -40,6 +41,7 @@ export function AddStyleCategory({ styleFormData }: Props) {
     () => ({
       name: styleData?.styleName || '',
       spanishName: styleData?.spanishStyleName || '',
+      isDeleted: styleData?.isDeleted || false,
       discipline: (styleData?.discipline && styleData?.discipline.map((item) => item._id)) || [],
     }),
     [styleData]
@@ -63,6 +65,7 @@ export function AddStyleCategory({ styleFormData }: Props) {
       reset({
         name: styleData?.styleName || '',
         spanishName: styleData?.spanishStyleName || '',
+        isDeleted: styleData?.isDeleted || false,
         discipline: styleData?.discipline.map((item) => item._id) || [],
       });
     }
@@ -83,8 +86,20 @@ export function AddStyleCategory({ styleFormData }: Props) {
       name: '',
       spanishName: '',
       discipline: [],
+      isDeleted: false,
     });
   };
+
+  const optionsIn = [
+    {
+      label: 'Active',
+      value: false,
+    },
+    {
+      label: 'Inactive',
+      value: true,
+    },
+  ];
 
   const renderDetails = (
     <Card>
@@ -106,7 +121,7 @@ export function AddStyleCategory({ styleFormData }: Props) {
             multiple
             freeSolo
             disableCloseOnSelect
-            options={data && data.length > 0 ? data : []}
+            options={data && data.length > 0 ? data.filter((item: any) => !item.isDeleted) : []}
             getOptionLabel={(option) => option.disciplineName}
             isOptionEqualToValue={(option, value) => option._id === value._id}
             renderOption={(props, option) => (
@@ -135,6 +150,15 @@ export function AddStyleCategory({ styleFormData }: Props) {
                 ? data.filter((item) => watch('discipline').includes(item._id))
                 : []
             }
+          />
+
+          <Field.SingelSelect
+            helperText="Select if this style should be active or not"
+            required
+            sx={{ width: 1 }}
+            options={optionsIn}
+            name="isDeleted"
+            label="Status"
           />
         </Box>
       </Stack>

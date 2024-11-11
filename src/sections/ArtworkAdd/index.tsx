@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import {
   Avatar,
@@ -19,7 +19,6 @@ import {
   ARTWORK_AVAILABLETO_OPTIONS,
   ARTWORK_COLLECTIONLIST_OPTIONS,
   ARTWORK_COLORS_OPTIONS,
-  ARTWORK_DISCIPLINE_OPTIONS,
   ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
   ARTWORK_DOWNWARDOFFER_OPTIONS,
   ARTWORK_EMOTIONS_OPTIONS,
@@ -33,8 +32,6 @@ import {
   ARTWORK_PURCHASECATALOG_OPTIONS,
   ARTWORK_STYLE_OPTIONS,
   ARTWORK_TAGES_OPTIONS,
-  ARTWORK_TECHNIC_OPTIONS,
-  ARTWORK_THEME_OPTIONS,
   ARTWORK_UPWORKOFFER_OPTIONS,
   PRODUCT_SERIES_OPTIONS,
   PRODUCT_YEARS_OPTIONS,
@@ -43,13 +40,16 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@mui/material';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { z as zod } from 'zod';
 import { useGetArtworkById } from '../Artwork-details-view/http/useGetArtworkById';
+import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
+import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnicMutation';
+import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
-import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -109,6 +109,70 @@ export const NewProductSchema = zod.object({
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
+  const { data: disciplineData } = useGetDisciplineMutation();
+  const { data: technicData } = useGetTechnicMutation();
+  const { data: themeData } = useGetThemeListMutation();
+
+  const PRODUCT_CATAGORYONE_OPTIONS =
+    disciplineData && disciplineData.length > 0
+      ? disciplineData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => ({
+            value: item?.disciplineName,
+            label: item?.disciplineName,
+          }))
+      : [];
+
+  let TechnicArr: any = [];
+  const TechnicOptions =
+    technicData && technicData.length > 0
+      ? technicData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.technicName;
+            localObj.label = item?.technicName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
+
+            TechnicArr.push(localObj);
+
+            return TechnicArr;
+          })
+      : [];
+
+  let ThemeArr: any = [];
+  const ThemeOptions =
+    themeData && themeData.length > 0
+      ? themeData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.themeName;
+            localObj.label = item?.themeName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
+
+            ThemeArr.push(localObj);
+
+            return ThemeArr;
+          })
+      : [];
+
   const id = useSearchParams().get('id');
   const { data, isLoading } = useGetArtworkById(id);
 
@@ -192,15 +256,14 @@ export function ArtworkAdd({ currentProduct }) {
     formState: { isSubmitting, errors },
   } = methods;
 
+  const selectedDisciplines = useWatch({
+    control: methods.control,
+    name: 'artworkDiscipline',
+  });
+
   const debounceArtistId = useDebounce(methods.getValues('artistID'), 500);
 
-  const {
-    refetch,
-    data: artistData,
-    isRefetching,
-    isPending: isArtistIdPending,
-  } = useGetArtistById(debounceArtistId);
-
+  const { refetch, data: artistData } = useGetArtistById(debounceArtistId);
   const values = watch();
 
   useEffect(() => {
@@ -278,6 +341,14 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('artistName', artistData?.artistName);
     setmongoDBId(artistData?._id);
     setOpen(false);
+  };
+
+  const filterTechnicForDiscipline = (selectedDiscipline) => {
+    return TechnicArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
+  };
+
+  const filterThemeForDiscipline = (selectedDiscipline) => {
+    return ThemeArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
   const renderDetails = (
@@ -439,17 +510,37 @@ export function ArtworkAdd({ currentProduct }) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.SingelSelect
-            checkbox
+            checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTechnic"
             label="Artwork Technic"
-            options={ARTWORK_TECHNIC_OPTIONS}
+            // options={ARTWORK_TECHNIC_OPTIONS}
+            options={
+              selectedDisciplines && selectedDisciplines
+                ? filterTechnicForDiscipline(selectedDisciplines)
+                : [
+                    {
+                      value: '',
+                      label: 'Please select discipline first',
+                    },
+                  ]
+            }
           />
 
           <Field.SingelSelect
-            checkbox
+            checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTheme"
             label="Artwork Theme"
-            options={ARTWORK_THEME_OPTIONS}
+            // options={ARTWORK_THEME_OPTIONS}
+            options={
+              selectedDisciplines && selectedDisciplines
+                ? filterThemeForDiscipline(selectedDisciplines)
+                : [
+                    {
+                      value: '',
+                      label: 'Please select discipline first',
+                    },
+                  ]
+            }
           />
         </Box>
         <Field.SingelSelect
@@ -625,7 +716,7 @@ export function ArtworkAdd({ currentProduct }) {
           checkbox
           name="artworkDiscipline"
           label="Artwork Discipline"
-          options={ARTWORK_DISCIPLINE_OPTIONS}
+          options={PRODUCT_CATAGORYONE_OPTIONS}
         />
         <Field.MultiSelect
           checkbox

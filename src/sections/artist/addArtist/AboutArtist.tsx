@@ -1,28 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMemo } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 import { z as zod } from 'zod';
-import { useMemo } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
 
+import { Avatar, Chip } from '@mui/material';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { useSearchParams } from 'src/routes/hooks';
-import { PRODUCT_STYLE_OPTIONS, PRODUCT_CATAGORYONE_OPTIONS } from 'src/_mock';
 import { useWatch } from 'react-hook-form';
-import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useSearchParams } from 'src/routes/hooks';
 import { useGetInsigniaList } from 'src/sections/CredentialList/http/useGetInsigniaList';
-import { Avatar } from '@mui/material';
-import { Chip } from '@mui/material';
+import { useGetDisciplineMutation } from 'src/sections/DisciplineListCategory/http/useGetDisciplineMutation';
+import { useGetStyleListMutation } from 'src/sections/StyleListCategory/http/useGetStyleListMutation';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +50,44 @@ export function AboutArtist({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
+  const { data: disciplineData } = useGetDisciplineMutation();
+  const { data: styleData } = useGetStyleListMutation();
+
+  const PRODUCT_CATAGORYONE_OPTIONS =
+    disciplineData && disciplineData.length > 0
+      ? disciplineData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => ({
+            value: item?.disciplineName,
+            label: item?.disciplineName,
+          }))
+      : [];
+
+  let arr: any = [];
+  const PRODUCT_STYLE_OPTIONS =
+    styleData && styleData.length > 0
+      ? styleData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.styleName;
+            localObj.label = item?.styleName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
+
+            arr.push(localObj);
+
+            return arr;
+          })
+      : [];
+
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
@@ -66,7 +101,7 @@ export function AboutArtist({
   };
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
-  const { data, isLoading } = useGetInsigniaList();
+  const { data } = useGetInsigniaList();
 
   const defaultValues = useMemo(
     () => ({
@@ -137,6 +172,10 @@ export function AboutArtist({
         !selectedValues.includes(option.value) ||
         option.value === selectedDisciplines[index]?.discipline
     );
+  };
+
+  const filterStylesForDiscipline = (selectedDiscipline) => {
+    return arr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
   const renderDetails = (
@@ -257,7 +296,12 @@ export function AboutArtist({
                   disabled={isReadOnly}
                   name={`discipline[${index}].style`}
                   label="Style"
-                  options={PRODUCT_STYLE_OPTIONS}
+                  // options={arr && arr.length > 0 ? arr : []}
+                  options={
+                    selectedDisciplines && selectedDisciplines[index]
+                      ? filterStylesForDiscipline(selectedDisciplines[index].discipline)
+                      : []
+                  }
                 />
               </Box>
             </Box>

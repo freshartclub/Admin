@@ -26,6 +26,7 @@ export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Title is required!' }),
   spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   description: zod.string().min(1, { message: 'Discription is required!' }),
+  isDeleted: zod.boolean(),
 });
 
 // ----------------------------------------------------------------------
@@ -44,6 +45,7 @@ export function AddDisciline({ disciplineFormData }: Props) {
     () => ({
       disciplineImage: data?.disciplineImage || null,
       name: data?.disciplineName || '',
+      isDeleted: data?.isDeleted || false,
       spanishName: data?.disciplineSpanishName || '',
       description: data?.disciplineDescription || '',
     }),
@@ -67,6 +69,7 @@ export function AddDisciline({ disciplineFormData }: Props) {
       reset({
         disciplineImage: data?.disciplineImage || null,
         name: data?.disciplineName || '',
+        isDeleted: data?.isDeleted || false,
         spanishName: data?.disciplineSpanishName || '',
         description: data?.disciplineDescription || '',
       });
@@ -89,6 +92,7 @@ export function AddDisciline({ disciplineFormData }: Props) {
       formData.append('name', data.name);
       formData.append('spanishName', data.spanishName);
       formData.append('description', data.description);
+      formData.append('isDeleted', data.isDeleted);
 
       mutate(formData);
     } catch (error) {
@@ -104,6 +108,17 @@ export function AddDisciline({ disciplineFormData }: Props) {
       description: '',
     });
   };
+
+  const optionsIn = [
+    {
+      label: 'Active',
+      value: false,
+    },
+    {
+      label: 'Inactive',
+      value: true,
+    },
+  ];
 
   const renderDetails = (
     <Card>
@@ -123,7 +138,15 @@ export function AddDisciline({ disciplineFormData }: Props) {
           <div className="form flex gap-2 flex-col w-full">
             <Field.Text required name="name" label="Title" />
             <Field.Text required name="spanishName" label="Spanish Title" />
-            <Field.Text required name="description" label="Description" multiline rows={6} />
+            <Field.Text required name="description" label="Description" multiline rows={3} />
+            <Field.SingelSelect
+              helperText="Select if this discipline should be active or not"
+              required
+              sx={{ width: 1 }}
+              options={optionsIn}
+              name="isDeleted"
+              label="Status"
+            />
           </div>
         </Box>
       </Stack>
