@@ -11,35 +11,34 @@ import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import { useRouter } from 'src/routes/hooks';
-import { paths } from 'src/routes/paths';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Art_provider, ArtworkList, Collections } from 'src/_mock';
-
-import { Field, Form, schemaHelper } from 'src/components/hook-form';
-import { toast } from 'src/components/snackbar';
-
-import { CATAGORY_EXCLUSIVE_OPTIONS, CATAGORY_PLAN_OPTIONS } from 'src/_mock';
+import {
+  Art_provider,
+  ArtworkList,
+  CATAGORY_EXCLUSIVE_OPTIONS,
+  CATAGORY_PLAN_OPTIONS,
+  Collections,
+} from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import useAddCatalogMutation from './http/useAddCatalogMutation';
+import { useGetCatalogById } from './http/useGetCatalogById';
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-  // group: zod.string().min(1, { message: 'group is required!' }),
-  name: zod.string().min(1, { message: 'name is required!' }),
-  description: zod.string().min(1, { message: ' Description is required!' }),
+  catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
+  catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
   artworkList: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  collections: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  provider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  isActive: zod.boolean(),
-  plan: zod.string().min(1, { message: 'plan is required!' }),
-  exclusive: zod.string().min(1, { message: 'Exclusive Catalog is required!' }),
-  image: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
+  catalogCollection: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  subPlan: zod.string().min(1, { message: 'plan is required!' }),
+  exclusiveCatalog: zod.boolean(),
+  catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
 });
 
 // ----------------------------------------------------------------------
@@ -49,28 +48,26 @@ type Props = {
 };
 
 export function AddCatalogForm({ currentPost }: Props) {
-  const router = useRouter();
+  const id = useSearchParams().get('id');
+  const { data, isLoading } = useGetCatalogById(id);
 
-  const preview = useBoolean();
+  const url = `${data?.url}/uploads/users`;
 
   const defaultValues = useMemo(
     () => ({
-      //   group: currentPost?.group || '',
-      name: currentPost?.name || '',
-      description: currentPost?.description || '',
-      artworkList: currentPost?.artworkList || [],
-      collections: currentPost?.collections || [],
-      provider: currentPost?.provider || [],
-      isActive: currentPost?.description || true,
-      plan: currentPost?.plan || '',
-      exclusive: currentPost?.exclusive || '',
-      image: currentPost?.image || null,
+      catalogName: data?.data?.catalogName || '',
+      catalogDesc: data?.data?.catalogDesc || '',
+      artworkList: data?.data?.artworkList || [],
+      catalogCollection: data?.data?.catalogCollection || [],
+      artProvider: data?.data?.artProvider || [],
+      subPlan: data?.data?.subPlan || '',
+      exclusiveCatalog: data?.data?.exclusiveCatalog || false,
+      catalogImg: `${url}/${data?.data?.catalogImg}` || null,
     }),
-    [currentPost]
+    [data?.data]
   );
 
   const methods = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
@@ -83,142 +80,188 @@ export function AddCatalogForm({ currentPost }: Props) {
     formState: { isSubmitting, isValid },
   } = methods;
 
-  const values = watch();
-
   useEffect(() => {
-    if (currentPost) {
-      reset(defaultValues);
+    if (id && data?.data) {
+      reset({
+        catalogName: data?.data?.catalogName || '',
+        catalogDesc: data?.data?.catalogDesc || '',
+        artworkList: data?.data?.artworkList || [],
+        catalogCollection: data?.data?.catalogCollection || [],
+        artProvider: data?.data?.artProvider || [],
+        subPlan: data?.data?.subPlan || '',
+        exclusiveCatalog: data?.data?.exclusiveCatalog || false,
+        catalogImg: data?.data?.catalogImg || null,
+      });
     }
-  }, [currentPost, defaultValues, reset]);
+  }, [data?.data, reset]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const { mutate, isPending } = useAddCatalogMutation(id);
+
+  const onSubmit = handleSubmit(async (data: any) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      preview.onFalse();
-      toast.success(currentPost ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key].forEach((item: any) => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      await mutate(formData);
     } catch (error) {
       console.error(error);
     }
   });
 
-  const handleRemoveMainImage = useCallback(() => {
-    setValue('image', null);
+  const handleRemoveImg = useCallback(() => {
+    setValue('catalogImg', null);
   }, [setValue]);
 
+  const resetForm = () => {
+    reset({
+      catalogName: '',
+      catalogDesc: '',
+      artworkList: [],
+      catalogCollection: [],
+      artProvider: [],
+      subPlan: '',
+      exclusiveCatalog: false,
+      catalogImg: null,
+    });
+  };
+
+  const optionsIn = [
+    {
+      label: 'Yes',
+      value: true,
+    },
+    {
+      label: 'No',
+      value: false,
+    },
+  ];
+
   const renderDetails = (
-    <Card>
-      <Divider />
+    <>
+      <Card sx={{ mb: 2 }}>
+        <Divider />
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <Field.Text required name="catalogName" label="Catalog Name" />
 
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="name" label="Catalog Name" />
+          <Field.Text required name="catalogDesc" label="Catalog Discription" multiline rows={4} />
 
-        <Field.Text name="description" label="Catalog Discription" multiline rows={4} />
-
-        <Field.Autocomplete
-          name="artworkList"
-          label="Artwork List"
-          placeholder="+ list"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={ArtworkList.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
-        />
-        <Field.Autocomplete
-          name="collections"
-          label="Collections"
-          placeholder="+ list"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={Collections.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
-        />
-        <Field.Autocomplete
-          name="provider"
-          label="Art provider"
-          placeholder="+ Art"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={Art_provider.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
-        />
-
-        <Field.Switch
-          name="isActive"
-          labelPlacement="start"
-          label="public"
-          sx={{ mx: 0, width: 1, justifyContent: 'flex' }}
-        />
-      </Stack>
-    </Card>
+          <Field.Autocomplete
+            required
+            name="artworkList"
+            label="Artwork List"
+            placeholder="+ list"
+            multiple
+            freeSolo
+            disableCloseOnSelect
+            options={ArtworkList.map((option) => option)}
+            getOptionLabel={(option) => option}
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                {option}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option}
+                  label={option}
+                  size="small"
+                  color="info"
+                  variant="soft"
+                />
+              ))
+            }
+          />
+          <Field.Autocomplete
+            required
+            name="catalogCollection"
+            label="Collections"
+            placeholder="+ list"
+            multiple
+            freeSolo
+            disableCloseOnSelect
+            options={Collections.map((option) => option)}
+            getOptionLabel={(option) => option}
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                {option}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option}
+                  label={option}
+                  size="small"
+                  color="info"
+                  variant="soft"
+                />
+              ))
+            }
+          />
+          <Field.Autocomplete
+            required
+            name="artProvider"
+            label="Art Provider"
+            placeholder="+ Art"
+            multiple
+            freeSolo
+            disableCloseOnSelect
+            options={Art_provider.map((option) => option)}
+            getOptionLabel={(option) => option}
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                {option}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option}
+                  label={option}
+                  size="small"
+                  color="info"
+                  variant="soft"
+                />
+              ))
+            }
+          />
+        </Stack>
+      </Card>
+      <Card>
+        <CardHeader title="Exclusive Catalog" sx={{ mb: 1 }} />
+        <Divider />
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <Field.SingelSelect
+            required
+            checkbox
+            name="exclusiveCatalog"
+            label="Exclusive Catalog"
+            options={optionsIn}
+          />
+        </Stack>
+      </Card>
+    </>
   );
 
   const renderProperties = (
     <Card sx={{ mb: 2 }}>
-      <CardHeader title="Thumbnail" sx={{ mb: 1 }} />
+      <CardHeader title="Add Image *" sx={{ mb: 2 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <div>
-            <Typography>Photo</Typography>
-            <Field.Upload name="image" maxSize={3145728} onDelete={handleRemoveMainImage} />
-          </div>
-        </Stack>
+        <Field.Upload name="catalogImg" maxSize={3145728} onDelete={handleRemoveImg} />
       </Stack>
     </Card>
   );
@@ -229,8 +272,9 @@ export function AddCatalogForm({ currentPost }: Props) {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
+          required
           checkbox
-          name="plan"
+          name="subPlan"
           label="Subscription Plan"
           options={CATAGORY_PLAN_OPTIONS}
         />
@@ -238,31 +282,14 @@ export function AddCatalogForm({ currentPost }: Props) {
     </Card>
   );
 
-  const exclusive = (
-    <Card>
-      <CardHeader title="Exclusive Catalog" sx={{ mb: 1 }} />
-      <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
-          checkbox
-          name="exclusive"
-          label="Exclusive Catalog"
-          options={CATAGORY_EXCLUSIVE_OPTIONS}
-        />
-      </Stack>
-    </Card>
-  );
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div>
       <CustomBreadcrumbs
         heading="Add Catalog"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          // { name: 'FAQ', href: paths.dashboard.faq.Root},
-          { name: 'Add Catalog' },
-        ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Catalog' }]}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
@@ -271,16 +298,18 @@ export function AddCatalogForm({ currentPost }: Props) {
             <div className="col-span-1">
               {renderProperties}
               {subscription}
-              {exclusive}
             </div>
             <div className="col-span-2">
               {renderDetails}
               <div className="flex flex-row justify-end gap-3 mt-8">
-                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
-                  Cencel
-                </button>
+                <span
+                  onClick={resetForm}
+                  className="bg-white text-black border py-2 px-3 rounded-md"
+                >
+                  Cancel
+                </span>
                 <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                  Save{' '}
+                  {isPending ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>

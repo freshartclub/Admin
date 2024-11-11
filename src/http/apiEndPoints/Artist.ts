@@ -34,6 +34,9 @@ export const ARTIST_ENDPOINTS = {
   getInsigniaById: `${ADMIN_BASE_URL}/get-insignia`,
   getAllInsignia: `${ADMIN_BASE_URL}/get-all-insignia`,
   deleteInsignia: `${ADMIN_BASE_URL}/delete-insignia`,
+  addCatalog: `${ADMIN_BASE_URL}/add-catalog`,
+  getAllCatalog: `${ADMIN_BASE_URL}/get-all-catalog`,
+  getCatalogById: `${ADMIN_BASE_URL}/get-catalog-by-id`,
 };
 
 export const USER_ENDPOINTS = {

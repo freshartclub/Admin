@@ -1,237 +1,84 @@
-import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IInvoice } from 'src/types/invoice';
 
-import { useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
+import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { sumBy } from 'src/utils/helper';
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
+import { paths } from 'src/routes/paths';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS,FAQ_GROUP_OPTIONS} from 'src/_mock';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  rowInPage,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
-
-
-import { catalog } from './data';
-
-
+import { InputAdornment, TextField } from '@mui/material';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useGetAllCatalogList } from '../http/useGetAllCatalog';
 import { CatalogTableRow } from './Catalog-table-row';
-import { InvoiceTableToolbar } from './Kb-table-toolbar';
-import { InvoiceTableFiltersResult } from './Kb-table-filters-result';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-
-
 const TABLE_HEAD = [
-    { id: 'invoiceNumber', label: 'Catalog List' },
-    { id: 'price', label: 'Artworks' },
-    { id: 'createDate', label: 'Subscription Plan' },
-    { id: 'dueDate', label: 'Added' },
-    { id: '',},
-  ];
+  { id: 'catalogName', label: 'Catalog Name', width: 150 },
+  { id: 'artworkList', label: 'Artwork List', width: 220 },
+  { id: 'subPlan', label: 'Subscription Plan', width: 150 },
+  { id: 'createdAt', label: 'Created At', width: 120 },
+  { id: 'actions', label: 'Actions', width: 80 },
+];
 
 // ----------------------------------------------------------------------
 
 export function CatalogListView() {
-  const theme = useTheme();
+  const table = useTable();
+  const [notFound, setNotFound] = useState(false);
+  const [_catalogList, setCatalogList] = useState<IInvoice[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 500);
 
-  const router = useRouter();
+  const { data, isLoading } = useGetAllCatalogList(debounceSearch);
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
-
-  const confirm = useBoolean();
-
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
-  
-
-  const filters = useSetState<IInvoiceTableFilters>({
-    name: '',
-    service: [],
-    status: 'all',
-    startDate: null,
-    endDate: null,
-  });
-
-  const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+  useEffect(() => {
+    if (data?.data) {
+      setCatalogList(data.data);
+      setNotFound(data?.data?.length === 0);
+    }
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
-    inputData: catalog,
+    inputData: _catalogList,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
   });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
-
-  const canReset =
-    !!filters.state.name ||
-    filters.state.service.length > 0 ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-//   const getInvoiceLength = (status: string) =>
-//     catalog.filter((item) => item.status === status).length;
-
-//   const getTotalAmount = (status: string) =>
-//     sumBy(
-//       catalog.filter((item) => item.status === status),
-//       (invoice) => invoice.totalAmount
-//     );
-
-//   const getPercentByStatus = (status: string) =>
-//     (getInvoiceLength(status) / catalog.length) * 100;
-
-//   const TABS = [
-//     {
-//       value: 'all',
-//       label: 'All',
-//       color: 'default',
-//       count: catalog.length,
-//     },
-//     {
-//       value: 'paid',
-//       label: 'Paid',
-//       color: 'success',
-//       count: getInvoiceLength('paid'),
-//     },
-//     {
-//       value: 'pending',
-//       label: 'Pending',
-//       color: 'warning',
-//       count: getInvoiceLength('pending'),
-//     },
-//     {
-//       value: 'overdue',
-//       label: 'Overdue',
-//       color: 'error',
-//       count: getInvoiceLength('overdue'),
-//     },
-//     {
-//       value: 'draft',
-//       label: 'Draft',
-//       color: 'default',
-//       count: getInvoiceLength('draft'),
-//     },
-//   ] as const;
-
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = catalog.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, catalog]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = catalog.filter((row) => !table.selected.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, catalog]);
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
+  const handleViewRow = (id: string) => {};
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
           heading="Catalog List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Catalog List' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.artwork.catalog.add}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Add Catalog
-            </Button>
-            
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Catalog List' }]}
+          sx={{ mb: { xs: 3, md: 3 } }}
         />
 
-        <div className='flex justify-between mb-4'>
-        <TextField
-            // fullWidth
-            // value={filters.state.name}
-            // onChange={handleFilterName}
-            placeholder="Search catalog..."
+        <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+          <TextField
+            fullWidth
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search By Catalog Name..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -240,66 +87,16 @@ export function CatalogListView() {
               ),
             }}
           />
-          <button className='py-1 px-4 rounded-md border border-gray-100 text-black opacity-70'>Filters</button>
-        </div>
-        <Card>
-
-          {/* <InvoiceTableToolbar
-            filters={filters}
-            dateError={dateError}
-            onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
-          /> */}
-
-          {/* {canReset && (
-            <InvoiceTableFiltersResult
-              filters={filters}
-              onResetPage={table.onResetPage}
-              totalResults={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
-          <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) => {
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                );
-              }}
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="iconamoon:send-fill" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="solar:printer-minimalistic-bold" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
+          <RouterLink href={`${paths.dashboard.artwork.catalog.add}`}>
+            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+              <Iconify icon="mingcute:add-line" /> Add Catalog
+            </span>
+          </RouterLink>
+        </Stack>
+        {isLoading ? (
+          <LoadingScreen />
+        ) : (
+          <Card>
             <Scrollbar sx={{ minHeight: 444 }}>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
@@ -327,6 +124,7 @@ export function CatalogListView() {
                       <CatalogTableRow
                         key={row.id}
                         row={row}
+                        url={data?.url}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onViewRow={() => handleViewRow(row.id)}
@@ -344,42 +142,19 @@ export function CatalogListView() {
                 </TableBody>
               </Table>
             </Scrollbar>
-          </Box>
 
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
-        </Card>
+            <TablePaginationCustom
+              page={table.page}
+              dense={table.dense}
+              count={dataFiltered.length}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onChangeDense={table.onChangeDense}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+            />
+          </Card>
+        )}
       </DashboardContent>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }
@@ -387,15 +162,11 @@ export function CatalogListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  dateError: boolean;
   inputData: IInvoice[];
-  filters: IInvoiceTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { name, status, service, startDate, endDate } = filters;
-
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -405,30 +176,6 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-//   if (name) {
-//     inputData = inputData.filter(
-//       (invoice) =>
-//         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-//         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-//     );
-//   }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
-  }
-
-//   if (service.length) {
-//     inputData = inputData.filter((invoice) =>
-//       invoice.items.some((filterItem) => service.includes(filterItem.service))
-//     );
-//   }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => fIsBetween(invoice.createDate, startDate, endDate));
-    }
-  }
 
   return inputData;
 }

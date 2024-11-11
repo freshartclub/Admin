@@ -56,13 +56,8 @@ export function AllArtist() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
-
-  const handleEditRow = (id: string) => {
-    console.log(id);
-  };
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return (
     <>

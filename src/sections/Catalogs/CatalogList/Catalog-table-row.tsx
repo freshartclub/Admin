@@ -1,34 +1,31 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import ListItemText from '@mui/material/ListItemText';
-
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { fDate } from 'src/utils/format-time';
 import { Tooltip } from '@mui/material';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { paths } from 'src/routes/paths';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IInvoice;
+  url: string;
   selected: boolean;
   onSelectRow: () => void;
   onViewRow: () => void;
@@ -38,6 +35,7 @@ type Props = {
 
 export function CatalogTableRow({
   row,
+  url,
   selected,
   onSelectRow,
   onViewRow,
@@ -45,8 +43,15 @@ export function CatalogTableRow({
   onDeleteRow,
 }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
+  const navigate = useNavigate();
+
+  const newUrl = `${url}/uploads/users/${row?.catalogImg}`;
+
+  const list = (val) => {
+    if (!val || val.length === 0) return '';
+    return val.join(', ');
+  };
 
   return (
     <>
@@ -60,14 +65,14 @@ export function CatalogTableRow({
         </TableCell>
 
         <TableCell>
-          <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.name}>{row.name.charAt(0).toUpperCase()}</Avatar>
+          <Stack spacing={2} direction="row" sx={{ whiteSpace: 'nowrap' }}>
+            <Avatar alt={row.catalogName}>{newUrl}</Avatar>
 
             <ListItemText
               disableTypography
               primary={
                 <Typography variant="body2" noWrap>
-                  {row.catalogTitle}
+                  {row?.catalogName}
                 </Typography>
               }
               secondary={
@@ -77,59 +82,23 @@ export function CatalogTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row.name}
+                  {row?.catalogName}
                 </Link>
               }
             />
           </Stack>
         </TableCell>
 
-        <TableCell align="center">{row.numberOfArtworks}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.artworkList)}</TableCell>
 
-        <TableCell align="center">{row.subscriptionPlan}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.subPlan}</TableCell>
 
-        <TableCell align="center">{row.date}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
-        {/* <TableCell>
-          <ListItemText
-            primary={fDate(row.data)}
-            secondary={fTime(row.data)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell> */}
-
-        {/* <TableCell>
-          <ListItemText
-            primary={fDate(row.dueDate)}
-            secondary={fTime(row.dueDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell> */}
-
-        {/* <TableCell>{fCurrency(row.totalAmount)}</TableCell> */}
-
-        {/* <TableCell align="center">{row.createBy}</TableCell>
-
-        <TableCell align="center">{row.tags[0]}</TableCell> */}
-  
-
-    <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                // color={quickEdit.value ? 'inherit' : 'default'}
-                // onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
 
@@ -140,22 +109,13 @@ export function CatalogTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
+          <MenuItem sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>
 
           <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
+            onClick={() => navigate(`${paths.dashboard.artwork.catalog.add}?id=${row._id}`)}
           >
             <Iconify icon="solar:pen-bold" />
             Edit
