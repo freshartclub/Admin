@@ -76,7 +76,7 @@ export function MediaTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-        {row?.isDeleted ? null : (
+          {row?.isDeleted ? null : (
             <MenuItem
               onClick={() => {
                 confirm.onTrue();
@@ -84,9 +84,10 @@ export function MediaTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
               }}
               sx={{ color: 'error.main' }}
             >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          )}
 
           <MenuItem
             onClick={() => navigate(`${paths.dashboard.category.mediasupport.add}?id=${row._id}`)}
