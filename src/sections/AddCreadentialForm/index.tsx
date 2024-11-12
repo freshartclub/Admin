@@ -66,7 +66,7 @@ export function AddCreadentialForm() {
     }
   }, [data, reset]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data: any) => {
     try {
       const formData = new FormData();
 

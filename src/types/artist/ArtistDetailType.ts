@@ -149,4 +149,10 @@ export interface ArtistDisciplineType {
   name: string;
   spanishName: string;
   discipline: Array<string>;
+  isDeleted: Boolean;
+  insigniaImage: any;
+  credentialName: string;
+  credentialPriority: string;
+  credentialGroup: string;
+  isActive: Boolean;
 }

@@ -1,5 +1,3 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -18,11 +16,12 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import useDeleteInsignia from './http/useDeleteInsignia';
 import { Box } from '@mui/material';
+import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: AddArtistComponentProps;
+  row: ArtistDisciplineType;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -67,7 +66,7 @@ export function CredentialTable({ row, selected, onEditRow, onSelectRow, onDelet
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.credentialGroup}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
-            className={`w-fit flex items-center mt-5 rounded-2xl px-2 py-1 ${row?.isActive ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+            className={`w-fit flex items-center rounded-2xl px-2 py-1 ${row?.isActive ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
           >
             {row?.isActive ? 'Active' : 'Inactive'}
           </span>

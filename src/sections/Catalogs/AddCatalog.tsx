@@ -10,14 +10,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import {
-  Art_provider,
-  ArtworkList,
-  CATAGORY_EXCLUSIVE_OPTIONS,
-  CATAGORY_PLAN_OPTIONS,
-  Collections,
-} from 'src/_mock';
+import { Art_provider, ArtworkList, CATAGORY_PLAN_OPTIONS, Collections } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -25,6 +18,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -43,12 +37,9 @@ export const NewPostSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
-
-export function AddCatalogForm({ currentPost }: Props) {
+export function AddCatalogForm() {
   const id = useSearchParams().get('id');
+  const navigate = useNavigate();
   const { data, isLoading } = useGetCatalogById(id);
 
   const url = `${data?.url}/uploads/users`;
@@ -72,13 +63,7 @@ export function AddCatalogForm({ currentPost }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = methods;
+  const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && data?.data) {
@@ -120,19 +105,6 @@ export function AddCatalogForm({ currentPost }: Props) {
   const handleRemoveImg = useCallback(() => {
     setValue('catalogImg', null);
   }, [setValue]);
-
-  const resetForm = () => {
-    reset({
-      catalogName: '',
-      catalogDesc: '',
-      artworkList: [],
-      catalogCollection: [],
-      artProvider: [],
-      subPlan: '',
-      exclusiveCatalog: false,
-      catalogImg: null,
-    });
-  };
 
   const optionsIn = [
     {
@@ -303,7 +275,7 @@ export function AddCatalogForm({ currentPost }: Props) {
               {renderDetails}
               <div className="flex flex-row justify-end gap-3 mt-8">
                 <span
-                  onClick={resetForm}
+                  onClick={() => navigate(paths.dashboard.artwork.catalog.list)}
                   className="bg-white text-black border py-2 px-3 rounded-md"
                 >
                   Cancel

@@ -64,6 +64,9 @@ export function AddDisciline() {
     if (id && data?.data) {
       url = `${data?.url}/uploads/users`;
       reset({
+        disciplineImage: url
+          ? `${url}/${data?.data?.disciplineImage}`
+          : data?.data?.disciplineImage || null,
         name: data?.data?.disciplineName || '',
         isDeleted: data?.data?.isDeleted || false,
         spanishName: data?.data?.disciplineSpanishName || '',
@@ -71,17 +74,6 @@ export function AddDisciline() {
       });
     }
   }, [data?.data, reset]);
-
-  useEffect(() => {
-    if (id && data?.url) {
-      url = `${data?.url}/uploads/users`;
-      reset({
-        disciplineImage: url
-          ? `${url}/${data?.data?.disciplineImage}`
-          : data?.data?.disciplineImage || null,
-      });
-    }
-  }, [data?.url, reset]);
 
   const handleRemoveFile = useCallback(() => {
     setValue('disciplineImage', null);

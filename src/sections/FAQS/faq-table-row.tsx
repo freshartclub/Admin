@@ -1,29 +1,20 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { Tooltip } from '@mui/material';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { paths } from 'src/routes/paths';
+import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -45,8 +36,13 @@ export function FaqTableRow({
   onDeleteRow,
 }: Props) {
   const confirm = useBoolean();
-
+  const navigate = useNavigate();
   const popover = usePopover();
+
+  const list = (val) => {
+    if (!val || val.length === 0) return '';
+    return val.join(', ');
+  };
 
   return (
     <>
@@ -59,69 +55,15 @@ export function FaqTableRow({
           />
         </TableCell>
 
-        <TableCell>
-          <Stack spacing={2} direction="row" alignItems="center">
-            {/* <Avatar alt={row.invoiceTo.name}>{row.invoiceTo.name.charAt(0).toUpperCase()}</Avatar> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqGrp}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqQues}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.tags)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
-            <ListItemText
-              disableTypography
-              primary={
-                <Typography variant="body2" noWrap>
-                  {row.invoiceTo.name}
-                </Typography>
-              }
-              secondary={
-                <Link
-                  noWrap
-                  variant="body2"
-                  onClick={onViewRow}
-                  sx={{ color: 'text.disabled', cursor: 'pointer' }}
-                >
-                  {row.invoiceNumber}
-                </Link>
-              }
-            />
-          </Stack>
-        </TableCell>
-
-        <TableCell>
-          <ListItemText
-            primary={fDate(row.createDate)}
-            secondary={fTime(row.createDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell>
-
-        <TableCell>
-          <ListItemText
-            primary={fDate(row.dueDate)}
-            secondary={fTime(row.dueDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell>
-
-        <TableCell>{fCurrency(row.totalAmount)}</TableCell>
-
-        <TableCell align="center">{row.Tages}</TableCell>
-  
-
-    <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                // color={quickEdit.value ? 'inherit' : 'default'}
-                // onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
 
@@ -143,12 +85,7 @@ export function FaqTableRow({
             Delete
           </MenuItem>
 
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
+          <MenuItem onClick={() => navigate(`${paths.dashboard.faq.add}?id=${row._id}`)}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>

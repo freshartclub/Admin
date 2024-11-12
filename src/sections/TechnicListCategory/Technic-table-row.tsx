@@ -52,7 +52,7 @@ export function TechnicTableRow({ row, selected, onEditRow, onSelectRow, onDelet
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
-            className={`w-fit flex items-center mt-5 rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+            className={`w-fit flex items-center rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
           >
             {row?.isDeleted ? 'Inactive' : 'Active'}
           </span>

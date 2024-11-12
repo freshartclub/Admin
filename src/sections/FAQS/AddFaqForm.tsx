@@ -1,139 +1,134 @@
-import type { IPostItem } from 'src/types/blog';
-
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import CardHeader from '@mui/material/CardHeader';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
 import { _tags } from 'src/_mock';
-
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { useNavigate } from 'react-router';
 import { FAQ_GROUP_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import useAddFAQMutation from './http/useAddFAQMutation';
+import { useGetFAQById } from './http/useGetFAQById';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-  group: zod.string().min(1, { message: 'group is required!' }),
-  faqQuestion: zod.string().min(1, { message: 'faq Question is required!' }),
-  faqDescription: zod.string().min(1, { message: 'faq Description is required!' }),
-  images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
+  faqGrp: zod.string().min(1, { message: 'FAQ Grp is required!' }),
+  faqQues: zod.string().min(1, { message: 'FAQ Question is required!' }),
+  faqAns: zod.string().min(1, { message: 'faq Description is required!' }),
+  faqImg: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
 });
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
+export function AddFaqForm() {
+  const id = useSearchParams().get('id');
+  const { data, isLoading } = useGetFAQById(id);
+  const navigate = useNavigate();
 
-export function AddFaqForm({ currentPost }: Props) {
-  const router = useRouter();
-
-  const preview = useBoolean();
+  const url = `${data?.url}/uploads/users`;
 
   const defaultValues = useMemo(
     () => ({
-      group: currentPost?.group || '',
-      faqQuestion: currentPost?.faqQuestion || '',
-      faqDescription: currentPost?.faqDescription || '',
-      images: currentPost?.images || [],
-      tags: currentPost?.tags || [],
+      faqGrp: data?.data?.faqGrp || '',
+      faqQues: data?.data?.faqQues || '',
+      faqAns: data?.data?.faqAns || '',
+      faqImg: data?.data?.faqImg || [],
+      tags: data?.data?.tags || [],
     }),
-    [currentPost]
+    [data?.data]
   );
 
   const methods = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = methods;
-
+  const { reset, watch, setValue, handleSubmit } = methods;
   const values = watch();
 
   useEffect(() => {
-    if (currentPost) {
-      reset(defaultValues);
+    if (id && data?.data) {
+      reset({
+        faqGrp: data?.data?.faqGrp || '',
+        faqQues: data?.data?.faqQues || '',
+        faqAns: data?.data?.faqAns || '',
+        faqImg: data?.data?.faqImg || [],
+        tags: data?.data?.tags || [],
+      });
     }
-  }, [currentPost, defaultValues, reset]);
+  }, [data?.data, reset]);
+
+  const { mutate, isPending } = useAddFAQMutation(id);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      preview.onFalse();
-      toast.success(currentPost ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key].forEach((item: any) => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      await mutate(formData);
     } catch (error) {
       console.error(error);
     }
   });
 
   const handleRemoveFileDetails = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
+    (inputFile: any) => {
+      const filtered = values.faqImg && values.faqImg?.filter((file) => file !== inputFile);
+      setValue('faqImg', filtered);
     },
-    [setValue, values.images]
+    [setValue, values.faqImg]
   );
 
   const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
+    setValue('faqImg', []);
   }, [setValue]);
 
   const renderDetails = (
     <Card>
-      <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
-          name="group"
-          label="select Group"
+          required
+          name="faqGrp"
+          label="Select Group"
           options={FAQ_GROUP_OPTIONS}
         />
-
-        <Field.Text name="faqQuestion" label="Faq Question" />
-
+        <Field.Text required name="faqQues" label="Faq Question" />
         <Field.Text
-          name="faqDescription"
+          required
+          name="faqAns"
           label="FAQ Answer (write min 250 word)"
           multiline
           rows={4}
         />
 
         <Field.Autocomplete
+          required
           name="tags"
-          label="Tags"
+          label="Tags *"
+          helperText="Must have at least 2 items"
           placeholder="+ Tags"
           multiple
           freeSolo
@@ -164,52 +159,52 @@ export function AddFaqForm({ currentPost }: Props) {
 
   const renderProperties = (
     <Card>
-      <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">images</Typography>
+          <Typography variant="subtitle2">FAQ Images *</Typography>
           <Field.Upload
+            required
             multiple
             thumbnail
-            name="images"
+            helperText="Only 3 files are allowed"
+            name="faqImg"
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
             onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
           />
         </Stack>
       </Stack>
     </Card>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
     <div>
       <CustomBreadcrumbs
-        heading="FAQ"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          // { name: 'FAQ', href: paths.dashboard.faq.Root},
-          { name: 'Add FAQ' },
-        ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        heading="Add FAQ"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add FAQ' }]}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
           <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-1">{renderProperties}</div>
             <div className="col-span-2">
               {renderDetails}
               <div className="flex flex-row justify-end gap-3 mt-8">
-                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
-                  Cencel
-                </button>
+                <span
+                  onClick={() => navigate(paths.dashboard.faq.list)}
+                  className="bg-white text-black border py-2 px-3 rounded-md"
+                >
+                  Cancel
+                </span>
                 <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                  Save FAQ
+                  {isPending ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>
-
-            <div className="col-span-1">{renderProperties}</div>
           </div>
         </Stack>
       </Form>
