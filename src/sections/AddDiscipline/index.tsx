@@ -16,6 +16,7 @@ import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetDisciplineById } from './http/useGetDisciplineById';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -31,25 +32,25 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  disciplineFormData?: ArtistDisciplineType;
-};
-
-export function AddDisciline({ disciplineFormData }: Props) {
+export function AddDisciline() {
   const id = useSearchParams().get('id');
+  const navigate = useNavigate();
   const { mutate, isPending } = useAddDisciplineMutation(id);
 
   const { data, isLoading } = useGetDisciplineById(id);
+  let url = '';
 
   const defaultValues = useMemo(
     () => ({
-      disciplineImage: data?.disciplineImage || null,
-      name: data?.disciplineName || '',
-      isDeleted: data?.isDeleted || false,
-      spanishName: data?.disciplineSpanishName || '',
-      description: data?.disciplineDescription || '',
+      disciplineImage: url
+        ? `${url}/${data?.data?.disciplineName}`
+        : data?.data?.disciplineName || null,
+      name: data?.data?.disciplineName || '',
+      isDeleted: data?.data?.isDeleted || false,
+      spanishName: data?.data?.disciplineSpanishName || '',
+      description: data?.data?.disciplineDescription || '',
     }),
-    [data]
+    [data?.data]
   );
 
   const methods = useForm<NewProductSchemaType>({
@@ -57,24 +58,22 @@ export function AddDisciline({ disciplineFormData }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
-    if (id && data) {
+    if (id && data?.data) {
+      url = `${data?.url}/uploads/users`;
       reset({
-        disciplineImage: data?.disciplineImage || null,
-        name: data?.disciplineName || '',
-        isDeleted: data?.isDeleted || false,
-        spanishName: data?.disciplineSpanishName || '',
-        description: data?.disciplineDescription || '',
+        disciplineImage: url
+          ? `${url}/${data?.data?.disciplineName}`
+          : data?.data?.disciplineName || null,
+        name: data?.data?.disciplineName || '',
+        isDeleted: data?.data?.isDeleted || false,
+        spanishName: data?.data?.disciplineSpanishName || '',
+        description: data?.data?.disciplineDescription || '',
       });
     }
-  }, [data, reset]);
+  }, [data?.data, reset]);
 
   const handleRemoveFile = useCallback(() => {
     setValue('disciplineImage', null);
@@ -99,15 +98,6 @@ export function AddDisciline({ disciplineFormData }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      disciplineImage: null,
-      name: '',
-      spanishName: '',
-      description: '',
-    });
-  };
 
   const optionsIn = [
     {
@@ -171,7 +161,7 @@ export function AddDisciline({ disciplineFormData }: Props) {
 
           <div className="flex justify-end gap-2">
             <span
-              onClick={resetForm}
+              onClick={() => navigate(paths.dashboard.category.discipline.list)}
               className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
             >
               Cancel

@@ -1,19 +1,19 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { z as zod } from 'zod';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { fData } from 'src/utils/format-number';
+import { z as zod } from 'zod';
 import useAddInsigniaMutation from './http/useAddInsigniaMutation';
 import { useGetInsigniaById } from './http/useGetInsigniaById';
+import { useNavigate } from 'react-router';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -29,13 +29,10 @@ export const NewUserSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  CreatentialForm?: AddArtistComponentProps;
-};
-
-export function AddCreadentialForm({ CreatentialForm }: Props) {
+export function AddCreadentialForm() {
   const id = useSearchParams().get('id');
   const { mutate, isPending } = useAddInsigniaMutation(id);
+  const navigate = useNavigate();
 
   const { data, isLoading } = useGetInsigniaById(id);
 
@@ -55,11 +52,7 @@ export function AddCreadentialForm({ CreatentialForm }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && data) {
@@ -88,16 +81,6 @@ export function AddCreadentialForm({ CreatentialForm }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      insigniaImage: null,
-      isActive: true,
-      credentialName: '',
-      credentialGroup: '',
-      credentialPriority: '',
-    });
-  };
 
   const optionsIn = [
     {
@@ -163,7 +146,7 @@ export function AddCreadentialForm({ CreatentialForm }: Props) {
             </Box>
             <div className="flex justify-end gap-2">
               <span
-                onClick={resetForm}
+                onClick={() => navigate(paths.dashboard.creadentialsAndInsigniasArea.list)}
                 className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
               >
                 Cancel

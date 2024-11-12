@@ -16,6 +16,7 @@ import addStyleMutation from './http/addStyleMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetStyleById } from './http/useGetStyleById';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useNavigate } from 'react-router';
 
 export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
@@ -35,6 +36,7 @@ type Props = {
 export function AddStyleCategory({ styleFormData }: Props) {
   const id = useSearchParams().get('id');
   const { data } = useGetDisciplineMutation();
+  const navigate = useNavigate();
   const { data: styleData, isLoading } = useGetStyleById(id);
 
   const defaultValues = useMemo(
@@ -52,13 +54,7 @@ export function AddStyleCategory({ styleFormData }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && styleData) {
@@ -80,15 +76,6 @@ export function AddStyleCategory({ styleFormData }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      name: '',
-      spanishName: '',
-      discipline: [],
-      isDeleted: false,
-    });
-  };
 
   const optionsIn = [
     {
@@ -183,7 +170,7 @@ export function AddStyleCategory({ styleFormData }: Props) {
 
           <div className="flex justify- gap-2">
             <span
-              onClick={resetForm}
+              onClick={() => navigate(paths.dashboard.category.style.list)}
               className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
             >
               Cancel

@@ -15,6 +15,8 @@ import addMediaMutation from './http/addMediaMutation';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetMediaById } from './http/useGetMediaById';
+import { useNavigate } from 'react-router';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -29,12 +31,9 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  styleFormData?: ArtistDisciplineType;
-};
-
-export function AddMediaSupportCategory({ styleFormData }: Props) {
+export function AddMediaSupportCategory() {
   const id = useSearchParams().get('id');
+  const navigate = useNavigate();
   const { data } = useGetDisciplineMutation();
   const { data: styleData, isLoading } = useGetMediaById(id);
 
@@ -53,13 +52,7 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && styleData) {
@@ -81,15 +74,6 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      name: '',
-      spanishName: '',
-      discipline: [],
-      isDeleted: false,
-    });
-  };
 
   const optionsIn = [
     {
@@ -167,6 +151,8 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
     </Card>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
     <>
       <CustomBreadcrumbs
@@ -184,7 +170,7 @@ export function AddMediaSupportCategory({ styleFormData }: Props) {
 
           <div className="flex justify-end gap-2">
             <span
-              onClick={resetForm}
+              onClick={() => navigate(paths.dashboard.category.mediasupport.list)}
               className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
             >
               Cancel

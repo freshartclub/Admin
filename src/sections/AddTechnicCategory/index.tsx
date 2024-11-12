@@ -16,6 +16,7 @@ import addTechnicMutation from './http/addTechnicMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetTechnicById } from './http/useGetTechnicById';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -30,13 +31,10 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  styleFormData?: ArtistDisciplineType;
-};
-
-export function AddtechnicCategory({ styleFormData }: Props) {
+export function AddtechnicCategory() {
   const id = useSearchParams().get('id');
   const { data } = useGetDisciplineMutation();
+  const navigate = useNavigate();
 
   const { data: styleData, isLoading } = useGetTechnicById(id);
 
@@ -55,13 +53,7 @@ export function AddtechnicCategory({ styleFormData }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && styleData) {
@@ -83,15 +75,6 @@ export function AddtechnicCategory({ styleFormData }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      name: '',
-      spanishName: '',
-      discipline: [],
-      isDeleted: false,
-    });
-  };
 
   const optionsIn = [
     {
@@ -187,7 +170,7 @@ export function AddtechnicCategory({ styleFormData }: Props) {
 
           <div className="flex justify-end gap-2">
             <span
-              onClick={resetForm}
+              onClick={() => navigate(paths.dashboard.category.technic.list)}
               className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
             >
               Cancel

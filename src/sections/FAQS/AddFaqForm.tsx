@@ -20,31 +20,26 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { _tags } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
- 
-import {
-    FAQ_GROUP_OPTIONS,
-} from "src/_mock"
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { FAQ_GROUP_OPTIONS } from 'src/_mock';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-    group: zod.string().min(1, { message: 'group is required!' }),
-    faqQuestion: zod.string().min(1, { message: 'faq Question is required!' }),
-    faqDescription: zod.string().min(1, { message: 'faq Description is required!' }),
+  group: zod.string().min(1, { message: 'group is required!' }),
+  faqQuestion: zod.string().min(1, { message: 'faq Question is required!' }),
+  faqDescription: zod.string().min(1, { message: 'faq Description is required!' }),
   images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  
 });
 
 // ----------------------------------------------------------------------
@@ -61,11 +56,10 @@ export function AddFaqForm({ currentPost }: Props) {
   const defaultValues = useMemo(
     () => ({
       group: currentPost?.group || '',
-      faqQuestion:currentPost?.faqQuestion || '',
-      faqDescription:currentPost?.faqDescription || '',
+      faqQuestion: currentPost?.faqQuestion || '',
+      faqDescription: currentPost?.faqDescription || '',
       images: currentPost?.images || [],
       tags: currentPost?.tags || [],
-      
     }),
     [currentPost]
   );
@@ -103,7 +97,7 @@ export function AddFaqForm({ currentPost }: Props) {
       console.error(error);
     }
   });
-  
+
   const handleRemoveFileDetails = useCallback(
     (inputFile) => {
       const filtered = values.images && values.images?.filter((file) => file !== inputFile);
@@ -116,25 +110,27 @@ export function AddFaqForm({ currentPost }: Props) {
     setValue('images', [], { shouldValidate: true });
   }, [setValue]);
 
-  
   const renderDetails = (
     <Card>
-
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-
-        <Field.SingelSelect 
-         checkbox
-         name="group"
-         label="select Group"
-         options={FAQ_GROUP_OPTIONS}
+        <Field.SingelSelect
+          checkbox
+          name="group"
+          label="select Group"
+          options={FAQ_GROUP_OPTIONS}
         />
-        
+
         <Field.Text name="faqQuestion" label="Faq Question" />
 
-        <Field.Text name="faqDescription" label="FAQ Answer (write min 250 word)" multiline rows={4} />
-        
+        <Field.Text
+          name="faqDescription"
+          label="FAQ Answer (write min 250 word)"
+          multiline
+          rows={4}
+        />
+
         <Field.Autocomplete
           name="tags"
           label="Tags"
@@ -162,7 +158,6 @@ export function AddFaqForm({ currentPost }: Props) {
             ))
           }
         />
-        
       </Stack>
     </Card>
   );
@@ -170,9 +165,9 @@ export function AddFaqForm({ currentPost }: Props) {
   const renderProperties = (
     <Card>
       <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-       <Typography variant="subtitle2">images</Typography>
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle2">images</Typography>
           <Field.Upload
             multiple
             thumbnail
@@ -183,15 +178,13 @@ export function AddFaqForm({ currentPost }: Props) {
             onUpload={() => console.info('ON UPLOAD')}
           />
         </Stack>
-       </Stack>
+      </Stack>
     </Card>
   );
 
-  
-
   return (
     <div>
-        <CustomBreadcrumbs
+      <CustomBreadcrumbs
         heading="FAQ"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
@@ -200,28 +193,26 @@ export function AddFaqForm({ currentPost }: Props) {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-   
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={5}> 
-       <div className='grid grid-cols-3 gap-3'>
 
-        <div className='col-span-2'>
-        {renderDetails}
-        <div className='flex flex-row justify-end gap-3 mt-8'>
-        <button type='button' className='bg-white text-black border py-2 px-3 rounded-md'>Cencel</button>
-        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save FAQ</button>
-      </div>
-        </div>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={5}>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              {renderDetails}
+              <div className="flex flex-row justify-end gap-3 mt-8">
+                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
+                  Cencel
+                </button>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  Save FAQ
+                </button>
+              </div>
+            </div>
 
-        <div className='col-span-1'>
-        {renderProperties}
-        </div>
-        </div>
-       
-      </Stack>
-
-      
-    </Form>
+            <div className="col-span-1">{renderProperties}</div>
+          </div>
+        </Stack>
+      </Form>
     </div>
   );
 }

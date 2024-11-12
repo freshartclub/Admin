@@ -15,6 +15,8 @@ import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetD
 import addThemeMutation from './http/addThemeMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetThemeById } from './http/useGetThemeById';
+import { useNavigate } from 'react-router';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -29,13 +31,10 @@ export const NewProductSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  styleFormData?: ArtistDisciplineType;
-};
-
-export function AddThemeCategory({ styleFormData }: Props) {
+export function AddThemeCategory() {
   const id = useSearchParams().get('id');
   const { data } = useGetDisciplineMutation();
+  const navigate = useNavigate();
 
   const { data: styleData, isLoading } = useGetThemeById(id);
 
@@ -54,13 +53,7 @@ export function AddThemeCategory({ styleFormData }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && styleData) {
@@ -82,15 +75,6 @@ export function AddThemeCategory({ styleFormData }: Props) {
       console.error(error);
     }
   });
-
-  const resetForm = () => {
-    reset({
-      name: '',
-      spanishName: '',
-      discipline: [],
-      isDeleted: true,
-    });
-  };
 
   const optionsIn = [
     {
@@ -167,6 +151,8 @@ export function AddThemeCategory({ styleFormData }: Props) {
     </Card>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
     <>
       <CustomBreadcrumbs
@@ -183,7 +169,7 @@ export function AddThemeCategory({ styleFormData }: Props) {
 
           <div className="flex justify-end gap-2">
             <span
-              onClick={resetForm}
+              onClick={() => navigate(paths.dashboard.category.theme.list)}
               className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
             >
               Cancel
