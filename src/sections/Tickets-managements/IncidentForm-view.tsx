@@ -19,19 +19,19 @@ import {
 } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import useAddIncidentMutation from './http/useAddIncidentMutation';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-  incGroup: zod.string().min(1, { message: 'group is required!' }),
+  incGroup: zod.string().min(1, { message: 'Group is required!' }),
   incType: zod.string().min(1, { message: 'Type is required!' }),
   title: zod.string().min(1, { message: 'Title is required!' }),
   description: zod.string().min(1, { message: 'Description is required!' }),
-  date: schemaHelper.date({ message: { required_error: 'date is required!' } }),
-  initTime: zod.string().min(1, { message: 'Initial time is required!' }),
-  endTime: zod.string().min(1, { message: 'End time is required!' }),
+  initTime: schemaHelper.date({ message: { required_error: 'Initial Date is required!' } }),
+  endTime: schemaHelper.date({ message: { required_error: 'End Date is required!' } }),
   severity: zod.string().min(1, { message: 'Severity is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),
   note: zod.string(),
@@ -45,6 +45,7 @@ type Props = {
 
 export function AddIncidentForm({ currentPost }: Props) {
   const { mutateAsync, isPending } = useAddIncidentMutation();
+  const navigate = useNavigate();
 
   const defaultValues = useMemo(
     () => ({
@@ -52,7 +53,6 @@ export function AddIncidentForm({ currentPost }: Props) {
       incType: currentPost?.incType || '',
       title: currentPost?.title || '',
       description: currentPost?.description || '',
-      date: currentPost?.date || '',
       initTime: currentPost?.initTime || '',
       endTime: currentPost?.endTime || '',
       severity: currentPost?.severity || '',
@@ -71,9 +71,7 @@ export function AddIncidentForm({ currentPost }: Props) {
   const {
     reset,
     watch,
-    setValue,
     handleSubmit,
-    formState: { isSubmitting, isValid },
   } = methods;
 
   const values = watch();
@@ -96,25 +94,22 @@ export function AddIncidentForm({ currentPost }: Props) {
 
   const renderDetails = (
     <Card>
-      <Divider />
-
-      <Stack spacing={3} sx={{ p: 3 }}>
+      <Stack spacing={3} sx={{ p: 2 }}>
         <Field.SingelSelect
+          required
           checkbox
           name="incGroup"
           label="Inc. Group"
           options={INC_GROUP_OPTIONS}
         />
-        <Field.SingelSelect checkbox name="incType" label="Inc. Type" options={INC_TYPE_OPTIONS} />
+        <Field.SingelSelect required checkbox name="incType" label="Inc. Type" options={INC_TYPE_OPTIONS} />
 
-        <Field.Text name="title" label="Title" />
+        <Field.Text required name="title" label="Title" />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Description</Typography>
-          <Field.Editor name="description" sx={{ maxHeight: 480 }} />
+          <Field.Editor required name="description" sx={{ maxHeight: 480 }} />
         </Stack>
-
-        <Field.MobileDateTimePicker name="date" label="Incident Date & Time" />
 
         <Box
           columnGap={2}
@@ -122,9 +117,8 @@ export function AddIncidentForm({ currentPost }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.TimePicker name="initTime" label="Init Time" />
-
-          <Field.TimePicker name="endTime" label="End Time" />
+          <Field.MobileDateTimePicker required name="initTime" label="Incident Initial Date" />
+          <Field.MobileDateTimePicker required name="endTime" label="Incident End Date" />
         </Box>
         <Box
           columnGap={2}
@@ -134,14 +128,15 @@ export function AddIncidentForm({ currentPost }: Props) {
         >
           <Field.SingelSelect
             checkbox
+            required
             name="severity"
             label="Severity"
             options={INC_SEVERITY_OPTIONS}
           />
-          <Field.SingelSelect checkbox name="status" label="Status" options={INC_STATUS_OPTIONS} />
+          <Field.SingelSelect required checkbox name="status" label="Status" options={INC_STATUS_OPTIONS} />
         </Box>
 
-        <Field.Text name="note" label="Note" multiline rows={4} />
+        <Field.Text required name="note" label="Note" multiline rows={4} />
       </Stack>
     </Card>
   );
@@ -149,30 +144,25 @@ export function AddIncidentForm({ currentPost }: Props) {
   return (
     <div>
       <CustomBreadcrumbs
-        heading="New Incident"
+        heading="Add Incident"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Incident' }]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              {renderDetails}
-              <div className="flex flex-row justify-start gap-3 mt-8">
-                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
-                  Cancel
-                </button>
-                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                  {isPending ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </div>
 
-            <div className="col-span-1"></div>
+          {renderDetails}
+          <div className="flex flex-row justify-end gap-3 mt-8">
+            <span onClick={() => navigate(paths.dashboard.tickets.allIncident)} className="bg-white cursor-pointer text-black border py-2 px-3 rounded-md">
+              Cancel
+            </span>
+            <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+              {isPending ? 'Saving...' : 'Save'}
+            </button>
           </div>
         </Stack>
       </Form>
-    </div>
+    </div >
   );
 }

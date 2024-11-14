@@ -15,7 +15,7 @@ const useDeleteThemeMutation = () => {
     mutationFn: deleteTheme,
     onSuccess: async (res) => {
       queryClient.invalidateQueries({
-        queryKey: [GENERAL_ENDPOINTS.getDiscipline],
+        queryKey: [GENERAL_ENDPOINTS.getTheme],
         refetchType: 'all',
       });
 

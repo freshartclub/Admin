@@ -361,13 +361,21 @@ export const ARTWORK_PROMOTIONSCORE_OPTIONS = [
   { value: '30 out of 30', label: '30 out of 30' },
 ];
 export const ARTWORK_AVAILABLETO_OPTIONS = [
-  { value: 'Not Available To Guest', label: 'Not Available To Guest' },
-  { value: 'Available To All', label: 'Available To All' },
-  { value: 'Available Only Artist', label: 'Available Only Artist' },
+  { value: 'Available to everybody', label: 'Available to everybody' },
+  {
+    value: 'Available only to registered users (no guests)',
+    label: 'Available only to registered users (no guests)',
+  },
+  { value: 'Available only to subscribers', label: 'Available only to subscribers' },
+  {
+    value: 'Available only to subscribers of this catalog',
+    label: 'Available only to subscribers of this catalog',
+  },
 ];
 export const ARTWORK_DISCOUNTACCEPTATION_OPTIONS = [
-  { value: 'Promotions', label: 'Promotions' },
-  { value: 'Only Artist', label: 'Only Artist' },
+  { value: 'Accept discounts and promotions', label: 'Accept discounts and promotions' },
+  { value: 'Accept only for subscribers', label: 'Accept only for subscribers' },
+  { value: 'Don’t accept any discount', label: 'Don’t accept any discount' },
 ];
 export const ARTWORK_COLLECTIONLIST_OPTIONS = [
   { value: 'Collection 1', label: 'Collection 1' },
@@ -497,9 +505,14 @@ export const INC_SEVERITY_OPTIONS = [
   { value: 'Severity C', label: 'severity C' },
 ];
 export const INC_URGENCY_OPTIONS = [
-  { value: 'urgency A', label: 'Urgency A' },
-  { value: 'urgency B', label: 'Urgency B' },
-  { value: 'urgency C', label: 'Urgency C' },
+  { value: 'Low', label: 'Low' },
+  { value: 'Medium', label: 'Medium' },
+  { value: 'High', label: 'High' },
+];
+export const INC_IMPACT_OPTIONS = [
+  { value: 'Low-Single User', label: 'Low-Single User' },
+  { value: 'Medium-Multiple Users', label: 'Medium-Multiple Users' },
+  { value: 'High-System Wide', label: 'High-System Wide' },
 ];
 export const INC_STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },

@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetStyleListMutation = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getStyle}?s=${search}`],
+    queryKey: [GENERAL_ENDPOINTS.getStyle, search],
     queryFn: () => fetchData(search),
   });
 };

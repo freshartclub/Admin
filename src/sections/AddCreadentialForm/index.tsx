@@ -58,7 +58,7 @@ export function AddCreadentialForm() {
     if (id && data) {
       reset({
         insigniaImage: data?.insigniaImage || null,
-        isActive: data?.isActive || true,
+        isActive: data?.isActive,
         credentialName: data?.credentialName || '',
         credentialGroup: data?.credentialGroup || '',
         credentialPriority: data?.credentialPriority || '',
@@ -81,6 +81,7 @@ export function AddCreadentialForm() {
       console.error(error);
     }
   });
+
 
   const optionsIn = [
     {

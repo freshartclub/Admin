@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetDisciplineSearchData = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getDiscipline}?s=${search}`],
+    queryKey: [GENERAL_ENDPOINTS.getDiscipline, search],
     queryFn: () => fetchData(search),
   });
 };

@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetMediaListMutation = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getMedia}?s=${search}`],
+    queryKey: [GENERAL_ENDPOINTS.getMedia, search],
     queryFn: () => fetchData(search),
   });
 };

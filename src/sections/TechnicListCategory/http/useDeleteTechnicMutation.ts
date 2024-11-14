@@ -7,7 +7,7 @@ const useDeleteTechnicMutation = () => {
   const queryClient = useQueryClient();
 
   async function deleteTechnic(id) {
-    const response = await axiosInstance.patch(`${GENERAL_ENDPOINTS.deleteDiscipline}/${id}`);
+    const response = await axiosInstance.patch(`${GENERAL_ENDPOINTS.deleteTechnic}/${id}`);
     return response;
   }
 
@@ -15,7 +15,7 @@ const useDeleteTechnicMutation = () => {
     mutationFn: deleteTechnic,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [GENERAL_ENDPOINTS.getDiscipline],
+        queryKey: [GENERAL_ENDPOINTS.deleteTechnic],
         refetchType: 'all',
       });
 

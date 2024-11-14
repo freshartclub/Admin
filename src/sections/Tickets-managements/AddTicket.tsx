@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  INC_IMPACT_OPTIONS,
   INC_PRIORITY_OPTIONS,
   INC_URGENCY_OPTIONS,
   TICKET_STATUS_OPTIONS,
@@ -21,6 +22,7 @@ import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
 import useAddTicketMutation from './http/useAddTicketMutation';
 import { useGetUesrByQueryInput } from './http/useGetUserMutation';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +37,7 @@ export const NewPostSchema = zod.object({
   urgency: zod.string().min(1, { message: 'Urgency is required!' }),
   priority: zod.string().min(1, { message: 'Priority is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),
+  impact: zod.string().min(1, { message: 'Impact is required!' }),
   id: zod.string().optional(),
 });
 
@@ -48,6 +51,7 @@ export function AddTicket({ currentPost }: Props) {
   const [open, setOpen] = useState(true);
   const [id, setId] = useState('');
   const { mutate, isPending } = useAddTicketMutation();
+  const navigate = useNavigate()
 
   const defaultValues = useMemo(
     () => ({
@@ -57,6 +61,7 @@ export function AddTicket({ currentPost }: Props) {
       subject: currentPost?.subject || '',
       message: currentPost?.message || '',
       urgency: currentPost?.urgency || '',
+      impact: currentPost?.impact || '',
       priority: currentPost?.priority || '',
       status: currentPost?.status || '',
       id: currentPost?._id || '',
@@ -74,8 +79,7 @@ export function AddTicket({ currentPost }: Props) {
     reset,
     watch,
     setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
+    handleSubmit
   } = methods;
 
   const debounceUserInput = useDebounce(methods.getValues('userId'), 500);
@@ -83,7 +87,6 @@ export function AddTicket({ currentPost }: Props) {
   const {
     refetch,
     data: artistData,
-    isPending: isArtistIdPending,
   } = useGetUesrByQueryInput(debounceUserInput);
 
   const values = watch();
@@ -109,10 +112,19 @@ export function AddTicket({ currentPost }: Props) {
     }
   });
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const refillData = (artistData) => {
     setValue('userId', artistData?.userId);
     setId(artistData?._id);
-    setValue('artistName', artistData?.artistName);
+    setValue('artistName', name(artistData));
     setOpen(false);
   };
 
@@ -147,14 +159,13 @@ export function AddTicket({ currentPost }: Props) {
                         disableTypography
                         primary={
                           <Typography variant="body2" noWrap>
-                            {i?.artistName} - {i?.userId}
+                            {name(i)} - {i?.userId}
                           </Typography>
                         }
                         secondary={
                           <Link
                             noWrap
                             variant="body2"
-                            // onClick={onViewRow}
                             sx={{ color: 'text.disabled' }}
                           >
                             {i?.email}
@@ -190,13 +201,19 @@ export function AddTicket({ currentPost }: Props) {
           columnGap={2}
           rowGap={3}
           display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <Field.SingelSelect
             required
             name="urgency"
             label="Urgency"
             options={INC_URGENCY_OPTIONS}
+          />
+          <Field.SingelSelect
+            required
+            name="impact"
+            label="Impact"
+            options={INC_IMPACT_OPTIONS}
           />
           <Field.SingelSelect
             required
@@ -221,21 +238,15 @@ export function AddTicket({ currentPost }: Props) {
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
-        <Stack spacing={5}>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              {renderDetails}
-              <div className="flex flex-row justify-start gap-3 mt-8">
-                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
-                  Cancel
-                </button>
-                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                  {isPending ? 'Saving...' : 'Add Ticket'}
-                </button>
-              </div>
-            </div>
-
-            <div className="col-span-1"></div>
+        <Stack spacing={3}>
+          {renderDetails}
+          <div className="flex flex-row justify-end gap-3 mt-8">
+            <span onClick={() => navigate(paths.dashboard.tickets.allList)} className="bg-white text-black border py-2 px-3 cursor-pointer rounded-md">
+              Cancel
+            </span>
+            <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+              {isPending ? 'Saving...' : 'Add Ticket'}
+            </button>
           </div>
         </Stack>
       </Form>

@@ -1,21 +1,20 @@
 import type { IOrderItem } from 'src/types/order';
 
-import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Tooltip from '@mui/material/Tooltip';
-import { paths } from 'src/routes/paths';
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useEffect, useState } from 'react';
 import { TICKET_OPTIONS } from 'src/_mock';
-import { DashboardContent } from 'src/layouts/dashboard';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
 import { varAlpha } from 'src/theme/styles';
-
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Label } from 'src/components/label';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   getComparator,
@@ -23,7 +22,6 @@ import {
   TableSelectedAction,
   useTable,
 } from 'src/components/table';
-import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
 import { TicketCartd } from './Card';
@@ -57,12 +55,12 @@ export function TicketsListView() {
   });
 
   return (
-    <DashboardContent>
+    <>
       <CustomBreadcrumbs
-        heading="Tickets"
+        heading="Ticket List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ticket List', href: paths.dashboard.tickets.allList },
+          { name: 'Ticket List' },
         ]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
@@ -146,7 +144,7 @@ export function TicketsListView() {
           />
         </Card>
       )}
-    </DashboardContent>
+    </>
   );
 }
 

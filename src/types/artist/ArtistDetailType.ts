@@ -129,6 +129,11 @@ export interface ArtistListType {
   state: string;
   zipCode: string;
   country?: string;
+  incGroup: string;
+  incType: string;
+  status: string;
+  initTime: string;
+  endTime: string;
 }
 
 export interface ArtistDisciplineType {

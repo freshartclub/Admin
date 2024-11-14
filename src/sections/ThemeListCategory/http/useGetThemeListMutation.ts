@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetThemeListMutation = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getTheme}?s=${search}`],
+    queryKey: [GENERAL_ENDPOINTS.getTheme, search],
     queryFn: () => fetchData(search),
   });
 };

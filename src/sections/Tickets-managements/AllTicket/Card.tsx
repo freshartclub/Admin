@@ -5,7 +5,7 @@ import { fDate } from 'src/utils/format-time';
 export function TicketCartd({ data }) {
   const navigate = useNavigate();
 
-  const hendleTicketDetail = (data: string) => {
+  const hendleTicketDetail = (data: any) => {
     navigate(`${paths.dashboard.tickets.singleList}?id=${data?._id}`, { state: { data } });
   };
 

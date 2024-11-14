@@ -19,7 +19,6 @@ const useDeleteDisciplineMutation = () => {
         refetchType: 'all',
       });
 
-      // Display success message
       toast.success(res.data.message);
     },
 

@@ -512,7 +512,7 @@ export function ArtworkAdd({ currentProduct }) {
 
   const additionalInformation = (
     <Card sx={{ mb: 3 }}>
-      <CardHeader title="Additional Information" sx={{ mb: 3 }} />
+      <CardHeader title="Categorization" sx={{ mb: 2 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -533,7 +533,6 @@ export function ArtworkAdd({ currentProduct }) {
             checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTechnic"
             label="Artwork Technic"
-            // options={ARTWORK_TECHNIC_OPTIONS}
             options={
               selectedDisciplines && selectedDisciplines
                 ? filterTechnicForDiscipline(selectedDisciplines)
@@ -550,7 +549,6 @@ export function ArtworkAdd({ currentProduct }) {
             checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTheme"
             label="Artwork Theme"
-            // options={ARTWORK_THEME_OPTIONS}
             options={
               selectedDisciplines && selectedDisciplines
                 ? filterThemeForDiscipline(selectedDisciplines)
@@ -579,14 +577,14 @@ export function ArtworkAdd({ currentProduct }) {
           <Field.SingelSelect
             checkbox
             name="material"
-            label="material"
+            label="Material"
             options={ARTWORK_MATERIAL_OPTIONS}
           />
 
           <Field.SingelSelect
             checkbox
             name="offensive"
-            label="offensive"
+            label="Offensive"
             options={ARTWORK_OFFENSIVE_OPTIONS}
           />
         </Box>
@@ -596,10 +594,10 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
         >
-          <Field.Text name="weight" label="weight" />
-          <Field.Text name="height" label="height" />
-          <Field.Text name="lenght" label="lenght" />
-          <Field.Text name="width" label="width" />
+          <Field.Text name="weight" label="Weight (in kg)" />
+          <Field.Text name="height" label="Height (in cm)" />
+          <Field.Text name="lenght" label="Lenght (in cm)" />
+          <Field.Text name="width" label="Width (in cm)" />
         </Box>
         <Field.MultiSelect
           checkbox
@@ -620,16 +618,16 @@ export function ArtworkAdd({ currentProduct }) {
           label="framed"
           options={ARTWORK_FRAMED_OPTIONS}
         />
-        <Field.Text name="framedDescription" label="framed Description" multiline rows={3} />
+        <Field.Text name="framedDescription" label="Framed Description" multiline rows={3} />
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="frameHeight" label="Height" />
-          <Field.Text name="frameLenght" label="Lenght" />
-          <Field.Text name="frameWidth" label="Width" />
+          <Field.Text name="FrameHeight" label="Height (in cm)" />
+          <Field.Text name="FrameLenght" label="Lenght (in cm)" />
+          <Field.Text name="FrameWidth" label="Width (in cm)" />
         </Box>
         <Field.MultiSelect
           checkbox
@@ -640,10 +638,10 @@ export function ArtworkAdd({ currentProduct }) {
         <Field.MultiSelect
           checkbox
           name="emotions"
-          label="emotions"
+          label="Emotions"
           options={ARTWORK_EMOTIONS_OPTIONS}
         />
-        <Field.MultiSelect checkbox name="colors" label="colors" options={ARTWORK_COLORS_OPTIONS} />
+        <Field.MultiSelect checkbox name="colors" label="Colors" options={ARTWORK_COLORS_OPTIONS} />
       </Stack>
     </Card>
   );
@@ -837,33 +835,31 @@ export function ArtworkAdd({ currentProduct }) {
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <div>
-      <Form methods={methods} onSubmit={onSubmit}>
-        <Stack spacing={{ xs: 3, md: 5 }}>
-          <div className="grid md:grid-cols-3 gap-3">
-            <div className="col-span-2">
-              {renderDetails}
-              {media}
-              {additionalInformation}
-              {Commercialization}
-              {pricing}
-              {InventoryandShiping}
-            </div>
+    <Form methods={methods} onSubmit={onSubmit}>
+      <Stack spacing={{ xs: 3, md: 3 }}>
+        <div className="grid md:grid-cols-3 gap-2">
+          <div className="col-span-2">
+            {renderDetails}
+            {media}
+            {additionalInformation}
+            {Commercialization}
+            {pricing}
+            {InventoryandShiping}
+          </div>
 
-            <div className="col-span-1">
-              {/* {Discipline} */}
-              {Promotions}
-              {Restrictions}
-              {Collection}
-            </div>
+          <div className="col-span-1">
+            {/* {Discipline} */}
+            {Promotions}
+            {Restrictions}
+            {Collection}
           </div>
-          <div className="flex justify-end mb-6 mr-6">
-            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-              {isPending ? 'Processing ' + percent + '%' : 'Preview'}
-            </button>
-          </div>
-        </Stack>
-      </Form>
-    </div>
+        </div>
+        <div className="flex justify-end mb-6 mr-6">
+          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+            {isPending ? 'Processing ' + percent + '%' : 'Preview'}
+          </button>
+        </div>
+      </Stack>
+    </Form>
   );
 }

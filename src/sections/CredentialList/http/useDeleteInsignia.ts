@@ -3,23 +3,21 @@ import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
+async function deleteInsignia(id) {
+  const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.deleteInsignia}/${id}`);
+  return response;
+}
 const useDeleteInsignia = () => {
   const queryClient = useQueryClient();
-
-  async function deleteInsignia(id) {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.deleteInsignia}/${id}`);
-    return response;
-  }
 
   return useMutation({
     mutationFn: deleteInsignia,
     onSuccess: async (res) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.deleteInsignia],
+        queryKey: [ARTIST_ENDPOINTS.getAllInsignia],
         refetchType: 'all',
       });
 
-      // Display success message
       toast.success(res.data.message);
     },
 

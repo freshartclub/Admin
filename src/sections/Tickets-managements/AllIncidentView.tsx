@@ -1,33 +1,31 @@
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { IUserItem } from 'src/types/user';
 
-import { useSetState } from 'src/hooks/use-set-state';
 import { Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import { useEffect, useState } from 'react';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  rowInPage,
   getComparator,
-  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
   TablePaginationCustom,
+  useTable
 } from 'src/components/table';
-import { useGetAllIncidentMutation } from './http/useGetAllIncidentMutation';
-import { AllIncidentList } from './AllIncidentList';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
+import { AllIncidentList } from './AllIncidentList';
+import { useGetAllIncidentMutation } from './http/useGetAllIncidentMutation';
 
 const TABLE_HEAD = [
-  { id: 'group', label: 'Inc Group', width: 130 },
-  { id: 'type', label: 'Inc Type', width: 130 },
+  { id: 'incGroup', label: 'Inc Group', width: 130 },
+  { id: 'incType', label: 'Inc Type', width: 130 },
   { id: 'status', label: 'Status', width: 130 },
-  { id: 'date', label: 'Date & Time', width: 130 },
-  { id: 'Initial', label: 'Initial Time', width: 130 },
-  { id: 'end', label: 'End Time', width: 130 },
-  { id: 'action', label: 'Action', width: 88 },
+  { id: 'initTime', label: 'Initial Date', width: 130 },
+  { id: 'endTime', label: 'End Date', width: 130 },
+  { id: 'createdAt', label: 'Created At', width: 130 },
+  { id: 'actions', label: 'Action', width: 88 },
 ];
 
 export function AllIncidentView() {
@@ -35,7 +33,7 @@ export function AllIncidentView() {
   const [notFound, setNotFound] = useState(false);
   const [_incidentList, setIncidentList] = useState<IUserItem[]>([]);
 
-  const { data, isLoading, isError, error } = useGetAllIncidentMutation();
+  const { data, isLoading } = useGetAllIncidentMutation();
 
   useEffect(() => {
     if (data) {
@@ -44,101 +42,90 @@ export function AllIncidentView() {
     }
   }, [data]);
 
-  const filters = useSetState<IUserTableFilters>({
-    group: '',
-    type: '',
-    date: '',
-    status: 'all',
-  });
-
   const dataFiltered = applyFilter({
     inputData: _incidentList,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
+  const handleDeleteRow = (id: string) => { };
+  const handleEditRow = (id: string) => { };
 
-  const handleEditRow = (id: string) => {
-    console.log(id);
-  };
-
-  return isLoading ? (
-    <LoadingScreen />
-  ) : (
-    <Card>
+  return (
+    <>
       <CustomBreadcrumbs
         heading="All Incident List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Incident List', href: paths.dashboard.tickets.allIncident },
+          { name: 'Incident List' },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
-      <Scrollbar>
-        <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-          <TableHeadCustom
-            order={table.order}
-            orderBy={table.orderBy}
-            headLabel={TABLE_HEAD}
-            rowCount={dataFiltered.length}
-            numSelected={table.selected.length}
-            onSort={table.onSort}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row._id)
-              )
-            }
-          />
-          <TableBody>
-            {dataFiltered
-              .slice(
-                table.page * table.rowsPerPage,
-                table.page * table.rowsPerPage + table.rowsPerPage
-              )
-              .map((row) => (
-                <AllIncidentList
-                  key={row._id}
-                  row={row}
-                  selected={table.selected.includes(row._id)}
-                  onSelectRow={() => table.onSelectRow(row._id)}
-                  onDeleteRow={() => handleDeleteRow(row._id)}
-                  onEditRow={() => handleEditRow(row._id)}
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row) => (
+                    <AllIncidentList
+                      key={row._id}
+                      row={row}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={table.dense ? 56 : 76}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
-              ))}
-            <TableEmptyRows
-              height={table.dense ? 56 : 76}
-              emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+
+            <TablePaginationCustom
+              page={table.page}
+              dense={table.dense}
+              count={dataFiltered.length}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onChangeDense={table.onChangeDense}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
             />
-            <TableNoData notFound={notFound} />
-          </TableBody>
-        </Table>
-      </Scrollbar>
-      <TablePaginationCustom
-        page={table.page}
-        dense={table.dense}
-        count={dataFiltered.length}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onChangeDense={table.onChangeDense}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-      />
-    </Card>
-  );
+          </Scrollbar>
+        </Card>
+      )}
+    </>
+  )
 }
 
 type ApplyFilterProps = {
   inputData: IUserItem[];
-  filters: IUserTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
-  const { name, city, status } = filters;
-
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -148,22 +135,5 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (user) => user.artistName.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (city) {
-    inputData = inputData.filter(
-      (user) => user?.address?.city.toLowerCase().indexOf(city.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
   return inputData;
 }

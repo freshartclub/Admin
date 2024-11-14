@@ -15,10 +15,10 @@ const useDeleteMediaMutation = () => {
     mutationFn: deleteMedia,
     onSuccess: async (res) => {
       queryClient.invalidateQueries({
-        queryKey: [GENERAL_ENDPOINTS.getDiscipline],
+        queryKey: [GENERAL_ENDPOINTS.getMedia],
         refetchType: 'all',
       });
-      
+
       toast.success(res.data.message);
     },
 

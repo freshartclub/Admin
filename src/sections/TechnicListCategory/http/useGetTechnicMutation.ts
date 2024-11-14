@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetTechnicMutation = (search) => {
   return useQuery({
-    queryKey: [`${GENERAL_ENDPOINTS.getTechnic}?s=${search}`],
+    queryKey: [GENERAL_ENDPOINTS.getTechnic, search],
     queryFn: () => fetchData(search),
   });
 };

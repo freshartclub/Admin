@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetInsigniaList = (search) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.getAllInsignia}?s=${search}`],
+    queryKey: [`${ARTIST_ENDPOINTS.getAllInsignia}`, search],
     queryFn: () => fetchData(search),
   });
 };

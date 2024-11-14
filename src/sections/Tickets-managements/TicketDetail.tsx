@@ -10,6 +10,7 @@ import { TICKET_TYPE_OPTIONS, TICKET_STATUS_OPTIONS } from 'src/_mock';
 import { fDate, fTime } from 'src/utils/format-time';
 import useAddReplyMutation from './http/useAddReplyMutation';
 import { useGetReplyMutation } from './http/useGetReplyMutation';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -20,7 +21,7 @@ export const NewTicketSchema = zod.object({
 });
 
 export function TicketDetailView({ ticket }) {
-  const { data, isLoading, isError, error } = useGetReplyMutation(ticket?._id);
+  const { data, isLoading } = useGetReplyMutation(ticket?._id);
   const { mutateAsync, isPending } = useAddReplyMutation();
 
   const [newData, setNewData] = useState({
@@ -59,7 +60,7 @@ export function TicketDetailView({ ticket }) {
       });
     }
   }, [data, reset]);
-  
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       await mutateAsync({ data });
@@ -106,7 +107,7 @@ export function TicketDetailView({ ticket }) {
           { name: 'Ticket List', href: paths.dashboard.tickets.allList },
           { name: 'Ticket' },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
       <Card className="p-5">
         <div className="flex justify-between gap-4 pb-5">
@@ -136,7 +137,7 @@ export function TicketDetailView({ ticket }) {
         </p>
 
         <Form methods={methods} onSubmit={onSubmit}>
-          {data &&
+          {isLoading ? <LoadingScreen /> : data &&
             data.length > 0 &&
             data.map((reply, index) => (
               <Card key={index} className="px-4 py-2 mt-4 ml-6">
