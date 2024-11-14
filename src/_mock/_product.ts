@@ -148,6 +148,22 @@ export const ARTIST_CV_EVENTSCOPE = [
   { value: 'International', label: 'International' },
 ];
 
+export const ARTIST_SOCIAL_LINKS = [
+  { value: 'Instagram', label: 'Instagram' },
+  { value: 'Facebook', label: 'Facebook' },
+  { value: 'Twitter', label: 'Twitter' },
+  { value: 'Linkedin', label: 'Linkedin' },
+  { value: 'Youtube', label: 'Youtube' },
+  { value: 'Pinterest', label: 'Pinterest' },
+  { value: 'Tumblr', label: 'Tumblr' },
+  { value: 'Vimeo', label: 'Vimeo' },
+  { value: 'Vine', label: 'Vine' },
+  { value: 'Dribbble', label: 'Dribbble' },
+  { value: 'Behance', label: 'Behance' },
+  { value: 'Deviantart', label: 'Deviantart' },
+  { value: 'Flickr', label: 'Flickr' },
+];
+
 export const PRODUCT_STYLEONE_OPTIONS = [
   { value: 'Realism', label: 'Realism' },
   { value: 'Impressionism', label: 'Impressionism' },

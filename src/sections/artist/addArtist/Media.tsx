@@ -23,8 +23,8 @@ export const NewProductSchema = zod.object({
   profileImage: schemaHelper.file({ message: { required_error: 'Profile Photo is required!' } }),
   additionalImage: zod.any(),
   inProcessImage: zod.any(),
-  mainVideo: zod.any(),
-  additionalVideo: zod.any(),
+  mainVideo: schemaHelper.file({ required: false }).optional(),
+  additionalVideo: schemaHelper.file({ required: false }).optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -71,15 +71,7 @@ export function Media({
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    trigger,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = formProps;
-
+  const { setValue, trigger, handleSubmit } = formProps;
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
     name: 'media',
@@ -161,7 +153,7 @@ export function Media({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <div>
-            <Typography variant="profileImage">Main Photo *</Typography>
+            <Typography>Profile Photo *</Typography>
             <Field.Upload
               disabled={isReadOnly}
               required
@@ -201,25 +193,23 @@ export function Media({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <div>
-            <Typography variant="mainVideo">Main Video</Typography>
+            <Typography>Main Video</Typography>
             <Field.Upload
               disabled={isReadOnly}
-              accept="video"
               name="mainVideo"
-              maxSize={5e7}
+              accept="video/*"
               onDelete={handleRemoveMainVideo}
             />
           </div>
           <div>
-            <Typography variant="additionalVideo">Additional Video</Typography>
-            <Field.Upload
+            <Typography>Additional Video</Typography>
+            <Field.MultiVideo
               disabled={isReadOnly}
               accept="video/*"
               onRemoveAll={handleRemoveAdditionalVideos}
               onRemove={handleRemoveIndividualAdditionalVideo}
               multiple
               name="additionalVideo"
-              maxSize={5e7}
             />
           </div>
         </Box>

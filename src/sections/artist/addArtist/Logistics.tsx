@@ -57,7 +57,7 @@ export function Logistic({
       logCountry: artistFormData?.country || artistFormData?.country,
       logEmail: artistFormData?.logEmail || artistFormData?.email,
       logPhone: artistFormData?.logPhone || artistFormData?.phone,
-      logNotes: artistFormData?.logNotes || artistFormData?.notes,
+      logNotes: artistFormData?.logNotes || "",
       count: 6,
     }),
     [artistFormData]

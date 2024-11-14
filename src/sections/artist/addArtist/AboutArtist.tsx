@@ -11,7 +11,6 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { useWatch } from 'react-hook-form';
 import { Field, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
@@ -20,6 +19,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { useGetInsigniaList } from 'src/sections/CredentialList/http/useGetInsigniaList';
 import { useGetDisciplineMutation } from 'src/sections/DisciplineListCategory/http/useGetDisciplineMutation';
 import { useGetStyleListMutation } from 'src/sections/StyleListCategory/http/useGetStyleListMutation';
+import { ARTIST_SOCIAL_LINKS } from 'src/_mock';
 
 // ----------------------------------------------------------------------
 
@@ -32,9 +32,22 @@ export const ArtistCatagory = zod.object({
 export const NewProductSchema = zod.object({
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
   insignia: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  link: zod.array(
+    zod.object({
+      name: zod.string().min(1, { message: 'Name is required!' }),
+      link: zod.string().refine((val) => {
+        try {
+          new URL(val);
+          return val.includes('https://') || val.includes('http://');
+        } catch (e) {
+          return false;
+        }
+      }, { message: 'URL must be a valid URL' })
+    })
+  ),
   discipline: zod.array(
     zod.object({
-      discipline: zod.string().min(1, { message: 'Catagory1 is required!' }),
+      discipline: zod.string().min(1, { message: 'Discipline is required!' }),
       style: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
     })
   ),
@@ -56,36 +69,36 @@ export function AboutArtist({
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
       ? disciplineData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => ({
-            value: item?.disciplineName,
-            label: item?.disciplineName,
-          }))
+        .filter((item: any) => !item.isDeleted)
+        .map((item: any) => ({
+          value: item?.disciplineName,
+          label: item?.disciplineName,
+        }))
       : [];
 
   let arr: any = [];
   const PRODUCT_STYLE_OPTIONS =
     styleData && styleData.length > 0
       ? styleData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
+        .filter((item: any) => !item.isDeleted)
+        .map((item: any) => {
+          let localObj: any = {
+            value: '',
+            label: '',
+            disciplineName: [],
+          };
 
-            localObj.value = item?.styleName;
-            localObj.label = item?.styleName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
+          localObj.value = item?.styleName;
+          localObj.label = item?.styleName;
+          localObj.disciplineName =
+            item?.discipline &&
+            item?.discipline.length > 0 &&
+            item?.discipline.map((item: any) => item?.disciplineName);
 
-            arr.push(localObj);
+          arr.push(localObj);
 
-            return arr;
-          })
+          return arr;
+        })
       : [];
 
   const view = useSearchParams().get('view');
@@ -108,6 +121,7 @@ export function AboutArtist({
       About: artistFormData?.about || '',
       insignia: artistFormData?.insignia || [],
       discipline: artistFormData?.discipline || '',
+      link: artistFormData?.link || '',
       count: 3,
     }),
     [artistFormData]
@@ -118,17 +132,25 @@ export function AboutArtist({
     defaultValues,
   });
 
-  const {
-    trigger,
-    setValue,
-    watch,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = formProps;
+  const { trigger, setValue, watch, handleSubmit } = formProps;
 
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
     name: 'discipline',
+  });
+
+  const {
+    fields: socialFields,
+    append: socialAppend,
+    remove: socialRemove,
+  } = useFieldArray({
+    control: formProps.control,
+    name: 'link',
+  });
+
+  const selectedLinks = useWatch({
+    control: formProps.control,
+    name: 'link',
   });
 
   const selectedDisciplines = useWatch({
@@ -140,11 +162,21 @@ export function AboutArtist({
     remove(index);
   };
 
+  const handleSocialRemove = (index) => {
+    socialRemove(index);
+  };
+
   const addArtistCategory = () => {
     append({
       discipline: '',
       style: [],
-      insignia: [],
+    });
+  };
+
+  const addArtistSocialLinks = () => {
+    socialAppend({
+      name: '',
+      link: '',
     });
   };
 
@@ -153,6 +185,7 @@ export function AboutArtist({
       about: data.About,
       discipline: data.discipline,
       insignia: data.insignia,
+      link: data.link,
       count: 3,
     };
 
@@ -174,30 +207,36 @@ export function AboutArtist({
     );
   };
 
+  const filterSocialLinks = (index) => {
+    const selectedLinksValues = selectedLinks ? selectedLinks.map((name) => name.name) : [];
+    return ARTIST_SOCIAL_LINKS.filter(
+      (option) =>
+        !selectedLinksValues.includes(option.value) || option.value === selectedLinks[index]?.name
+    );
+  };
+
   const filterStylesForDiscipline = (selectedDiscipline) => {
     return arr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
   const renderDetails = (
     <Card sx={{ mb: 1 }}>
-      <CardHeader title="About Artist" sx={{ mb: 3 }} />
+      <CardHeader title="About Artist" sx={{ mb: 2 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">About</Typography>
-          <Field.Editor required disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
-        </Stack>
+        <Field.Editor required disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
       </Stack>
     </Card>
   );
 
   const ArtistInsignia = (
-    <Card sx={{ mb: 4 }}>
+    <Card sx={{ mb: 1 }}>
       <CardHeader title="Artist Insignia" sx={{ mb: 2 }} />
+      <Divider />
 
-      <Stack sx={{ paddingLeft: 2, mb: 3 }}>
+      <Stack sx={{ paddingLeft: 2, mb: 3, mt: 2 }}>
         <Field.Autocomplete
           disabled={isReadOnly}
           name="insignia"
@@ -244,8 +283,65 @@ export function AboutArtist({
     </Card>
   );
 
+  const ArtistSocialLinks = (
+    <Card sx={{ mb: 1 }}>
+      <CardHeader title="Artist Social Links" sx={{ mb: 2 }} />
+      <Divider />
+
+      <Stack spacing={3} mb={3} sx={{ paddingLeft: 2 }}>
+        {socialFields.length === ARTIST_SOCIAL_LINKS.length ? null : (
+          <div className="flex justify-end">
+            <Button
+              disabled={isReadOnly}
+              size="small"
+              color="primary"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={addArtistSocialLinks}
+            >
+              {selectedLinks.length > 0 ? 'Add More Links' : 'Add Link'}
+            </Button>
+          </div>
+        )}
+        <Stack sx={{ paddingLeft: 2 }} spacing={2} mb={2}>
+          {socialFields.map((item, index) => (
+            <Box
+              key={index}
+              columnGap={2}
+              alignItems={"center"}
+              rowGap={2}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: '1fr 1fr 0.3fr' }}
+            >
+              <Field.SingelSelect
+                disabled={isReadOnly}
+                required
+                checkbox
+                name={`link[${index}].name`}
+                label={`Social Link ${index + 1}`}
+                options={filterSocialLinks(index)}
+              />
+
+              <Field.Text disabled={isReadOnly} required name={`link[${index}].link`} label="Url" />
+
+              <Button
+                disabled={isReadOnly}
+                size="small"
+                color="error"
+                className="flex justify-end"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => handleSocialRemove(index)}
+              >
+                Remove
+              </Button>
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
+  );
+
   const ArtistCatagory = (
-    <Card sx={{ mb: 4 }}>
+    <Card sx={{ mb: 2 }}>
       <CardHeader title="Artist Discipline" sx={{ mb: 1 }} />
       <Divider />
 
@@ -259,22 +355,19 @@ export function AboutArtist({
               startIcon={<Iconify icon="mingcute:add-line" />}
               onClick={addArtistCategory}
             >
-              Add More Discipline
+              {selectedDisciplines.length > 0 ? 'Add More Discipline' : 'Add Discipline'}
             </Button>
           </div>
         )}
-        {fields.map((item, index) => (
-          <Stack
-            key={item.id}
-            aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
-            spacing={1.5}
-            className="mb-7"
-          >
+        <Stack spacing={1.5} className="mb-3">
+          {fields.map((item, index) => (
             <Box
+              key={index}
               columnGap={2}
-              rowGap={3}
+              alignItems={"center"}
+              rowGap={2}
               display="grid"
-              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: '1fr 1fr 0.3fr' }}
             >
               <Field.SingelSelect
                 disabled={isReadOnly}
@@ -284,29 +377,20 @@ export function AboutArtist({
                 label={`Discipline ${index + 1}`}
                 options={filterOptions(index)}
               />
-              <Box
-                columnGap={2}
-                rowGap={3}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
-              >
-                <Field.MultiSelect
-                  checkbox
-                  required
-                  disabled={isReadOnly}
-                  name={`discipline[${index}].style`}
-                  label="Style"
-                  // options={arr && arr.length > 0 ? arr : []}
-                  options={
-                    selectedDisciplines && selectedDisciplines[index]
-                      ? filterStylesForDiscipline(selectedDisciplines[index].discipline)
-                      : []
-                  }
-                />
-              </Box>
-            </Box>
 
-            <div className="flex justify-end mb-2">
+              <Field.MultiSelect
+                checkbox
+                required
+                disabled={isReadOnly}
+                name={`discipline[${index}].style`}
+                label="Style"
+                options={
+                  selectedDisciplines && selectedDisciplines[index]
+                    ? filterStylesForDiscipline(selectedDisciplines[index].discipline)
+                    : []
+                }
+              />
+
               <Button
                 disabled={isReadOnly}
                 size="small"
@@ -317,9 +401,9 @@ export function AboutArtist({
               >
                 Remove
               </Button>
-            </div>
-          </Stack>
-        ))}
+            </Box>
+          ))}
+        </Stack>
       </Stack>
     </Card>
   );
@@ -335,12 +419,12 @@ export function AboutArtist({
   return (
     <FormProvider {...formProps}>
       <form onSubmit={onSubmit}>
-        <Stack spacing={{ xs: 3, md: 5 }}>
+        <Stack spacing={{ xs: 3, md: 3 }}>
           <div className="">
             <div className="">
               {renderDetails}
               {ArtistInsignia}
-
+              {ArtistSocialLinks}
               {ArtistCatagory}
             </div>
           </div>

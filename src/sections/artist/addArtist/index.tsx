@@ -43,13 +43,14 @@ function AddArtistIndex() {
         });
 
         setTabState(newTabState);
-        obj.residentialAddress = data.data.address.residentialAddress;
-        obj.country = data.data.address.country;
-        obj.zipCode = data.data.address.zipCode;
-        obj.city = data.data.address.city;
-        obj.state = data.data.address.state;
+        obj.residentialAddress = data.data.address?.residentialAddress;
+        obj.country = data.data.address?.country;
+        obj.zipCode = data.data.address?.zipCode;
+        obj.city = data.data.address?.city;
+        obj.state = data.data.address?.state;
         obj.discipline = data.data.aboutArtist.discipline;
         obj.uploadDocs = data.data?.document?.documents;
+        obj.link = data?.data?.links;
         delete data.data.address;
 
         if (data.data.pageCount > 1) {

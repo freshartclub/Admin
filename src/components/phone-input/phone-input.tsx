@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 import PhoneNumberInput from 'react-phone-number-input/input';
 
 import TextField from '@mui/material/TextField';
@@ -10,10 +10,19 @@ import { CountryListPopover } from './list';
 // ----------------------------------------------------------------------
 
 export const PhoneInput = forwardRef(
-  ({ value, onChange, placeholder, country: inputCountryCode, disableSelect, ...other }, ref) => {
+  (
+    { value, onChange, placeholder, fetchCode, country: inputCountryCode, disableSelect, ...other },
+    ref
+  ) => {
     const defaultCountryCode = getCountryCode(value, inputCountryCode);
 
-    const [selectedCountry, setSelectedCountry] = useState(defaultCountryCode);
+    const [selectedCountry, setSelectedCountry] = useState(
+      fetchCode ? fetchCode : defaultCountryCode
+    );
+
+    useEffect(() => {
+      setSelectedCountry(fetchCode ? fetchCode : defaultCountryCode);
+    }, [fetchCode]);
 
     return (
       <PhoneNumberInput
@@ -46,5 +55,3 @@ export const PhoneInput = forwardRef(
 // ----------------------------------------------------------------------
 
 const CustomInput = forwardRef(({ ...props }, ref) => <TextField inputRef={ref} {...props} />);
-
-

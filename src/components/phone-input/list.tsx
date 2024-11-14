@@ -22,9 +22,7 @@ import { getCountry, applyFilter } from './utils';
 
 export function CountryListPopover({ countryCode, onClickCountry }) {
   const popover = usePopover();
-
   const selectedCountry = getCountry(countryCode);
-
   const [searchCountry, setSearchCountry] = useState('');
 
   const handleSearchCountry = useCallback((event) => {

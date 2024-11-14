@@ -85,6 +85,7 @@ export interface ArtistDetailType {
   logEmail: string;
   logPhone: string;
   logNotes?: string;
+  link: [];
 
   //-----artsistlist-----
   _id: any;

@@ -80,6 +80,7 @@ export function CreateArtistForm() {
   const [value, setValue] = useState('new');
   const [open, setOpen] = useState(true);
   const [_id, setId] = useState('');
+  const [code, setCode] = useState('');
 
   let id = useSearchParams().get('id');
   const existingUser = useSearchParams().get('extisting');
@@ -92,13 +93,7 @@ export function CreateArtistForm() {
   const { data, isLoading } = useGetExistingUserDetails(id);
   const { isPending, mutate } = useCreateArtistMutation();
 
-  const {
-    reset,
-    watch,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = methods;
-
+  const { reset, watch, handleSubmit } = methods;
   const debounceUserId = useDebounce(methods.getValues('existingId'), 500);
   const {
     refetch,
@@ -184,7 +179,8 @@ export function CreateArtistForm() {
     const fetchCountryByIP = async () => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
-        methods.setValue('existingCountry', response.data.country_name);
+        methods.setValue('country', response.data.country_name);
+        methods.setValue('phoneNumber', response.data.country_code);
       } catch (err) {
         console.log('Failed to fetch country data by IP');
       }
@@ -316,15 +312,22 @@ export function CreateArtistForm() {
                     name="existingEmail"
                     label="Email address"
                   />
-                  <Field.Phone name="existingPhoneNumber" required label="Phone number" />
 
                   <Field.CountrySelect
                     fullWidth
                     required
+                    setCode={setCode}
                     name="existingCountry"
                     label="Country"
                     placeholder="Choose a country"
                   />
+                  <Field.Phone
+                    fetchCode={code ? code : ''}
+                    name="existingPhoneNumber"
+                    required
+                    label="Phone number"
+                  />
+
                   <Field.Text name="existingZipCode" required label="Zip/code" />
 
                   <Field.Text name="existingState" required label="State/region" />

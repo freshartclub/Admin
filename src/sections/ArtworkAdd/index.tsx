@@ -34,11 +34,12 @@ import {
   ARTWORK_TAGES_OPTIONS,
   ARTWORK_UPWORKOFFER_OPTIONS,
   PRODUCT_SERIES_OPTIONS,
-  PRODUCT_YEARS_OPTIONS,
 } from 'src/_mock';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
@@ -50,6 +51,11 @@ import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnic
 import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
+import { FormControl } from '@mui/material';
+import { FormLabel } from '@mui/material';
+import { RadioGroup } from '@mui/material';
+import { FormControlLabel } from '@mui/material';
+import { Radio } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -116,61 +122,61 @@ export function ArtworkAdd({ currentProduct }) {
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
       ? disciplineData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => ({
-            value: item?.disciplineName,
-            label: item?.disciplineName,
-          }))
+        .filter((item: any) => !item.isDeleted)
+        .map((item: any) => ({
+          value: item?.disciplineName,
+          label: item?.disciplineName,
+        }))
       : [];
 
   let TechnicArr: any = [];
   const TechnicOptions =
     technicData && technicData.length > 0
       ? technicData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
+        .filter((item: any) => !item.isDeleted)
+        .map((item: any) => {
+          let localObj: any = {
+            value: '',
+            label: '',
+            disciplineName: [],
+          };
 
-            localObj.value = item?.technicName;
-            localObj.label = item?.technicName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
+          localObj.value = item?.technicName;
+          localObj.label = item?.technicName;
+          localObj.disciplineName =
+            item?.discipline &&
+            item?.discipline.length > 0 &&
+            item?.discipline.map((item: any) => item?.disciplineName);
 
-            TechnicArr.push(localObj);
+          TechnicArr.push(localObj);
 
-            return TechnicArr;
-          })
+          return TechnicArr;
+        })
       : [];
 
   let ThemeArr: any = [];
   const ThemeOptions =
     themeData && themeData.length > 0
       ? themeData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
+        .filter((item: any) => !item.isDeleted)
+        .map((item: any) => {
+          let localObj: any = {
+            value: '',
+            label: '',
+            disciplineName: [],
+          };
 
-            localObj.value = item?.themeName;
-            localObj.label = item?.themeName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
+          localObj.value = item?.themeName;
+          localObj.label = item?.themeName;
+          localObj.disciplineName =
+            item?.discipline &&
+            item?.discipline.length > 0 &&
+            item?.discipline.map((item: any) => item?.disciplineName);
 
-            ThemeArr.push(localObj);
+          ThemeArr.push(localObj);
 
-            return ThemeArr;
-          })
+          return ThemeArr;
+        })
       : [];
 
   const id = useSearchParams().get('id');
@@ -179,6 +185,7 @@ export function ArtworkAdd({ currentProduct }) {
   const [mongoDBId, setmongoDBId] = useState(null);
   const [open, setOpen] = useState(true);
   const [percent, setPercent] = useState(0);
+  const [selectedOption, setSelectedOption] = useState('');
 
   const defaultValues = useMemo(
     () => ({
@@ -186,7 +193,7 @@ export function ArtworkAdd({ currentProduct }) {
       artistID: data?.owner?.artistId || '',
       artistName: data?.owner?.artistName || '',
       artworkCreationYear: data?.artworkCreationYear || '',
-      artworkSeries: data?.artworkSeries || ' ',
+      artworkSeries: data?.artworkSeries || '',
       productDescription: data?.productDescription || '',
 
       mainImage: data?.mainImage || null,
@@ -241,6 +248,10 @@ export function ArtworkAdd({ currentProduct }) {
     [data]
   );
 
+  const handleChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
   const { mutate, isPending } = useCreateArtworkMutation(id);
 
   const methods = useForm({
@@ -248,20 +259,13 @@ export function ArtworkAdd({ currentProduct }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = methods;
-
+  const { reset, watch, setValue, handleSubmit } = methods;
   const selectedDisciplines = useWatch({
     control: methods.control,
     name: 'artworkDiscipline',
   });
 
-  const debounceArtistId = useDebounce(methods.getValues('artistID'), 500);
+  const debounceArtistId = useDebounce(methods.getValues('artistID'), 800);
 
   const { refetch, data: artistData } = useGetArtistById(debounceArtistId);
   const values = watch();
@@ -336,9 +340,18 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('otherVideo', null);
   }, [setValue]);
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const refillData = (artistData) => {
     setValue('artistID', artistData?.artistId);
-    setValue('artistName', artistData?.artistName);
+    setValue('artistName', name(artistData));
     setmongoDBId(artistData?._id);
     setOpen(false);
   };
@@ -351,6 +364,8 @@ export function ArtworkAdd({ currentProduct }) {
     return ThemeArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
+  const currentYear = dayjs();
+
   const renderDetails = (
     <Card sx={{ mb: 3, position: 'relative' }}>
       <CardHeader title="General Informations" sx={{ mb: 3 }} />
@@ -359,7 +374,7 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <div className="relative">
-          <Field.Text name="artistID" label="Artist ID" />
+          <Field.Text name="artistID" label="Artist ID" placeholder="Search by artist Name/Email" />
           {methods.getValues('artistID') && open && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -382,7 +397,7 @@ export function ArtworkAdd({ currentProduct }) {
                           disableTypography
                           primary={
                             <Typography variant="body2" noWrap>
-                              {i?.artistName} - {i?.userId}
+                              {i?.artistName} {i?.artistSurname1} {i?.artistSurname2} - {i?.userId}
                             </Typography>
                           }
                           secondary={
@@ -415,12 +430,14 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.SingelSelect
-            checkbox
+          <DatePicker
             name="artworkCreationYear"
-            label="Artwork Creation year"
-            options={PRODUCT_YEARS_OPTIONS}
+            label="Artwork Year"
+            maxDate={currentYear}
+            views={['year']}
+            openTo="year"
           />
+
           <Field.SingelSelect
             checkbox
             name="artworkSeries"
@@ -471,7 +488,7 @@ export function ArtworkAdd({ currentProduct }) {
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
             onRemoveAll={handleRemoveAllFiles}
-            // onUpload={() => console.info('ON UPLOAD')}
+          // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box
@@ -482,15 +499,11 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <div>
             <Typography>Main Video</Typography>
-            <Field.MultiVideo name="mainVideo" maxSize={5e7} onDelete={handleRemoveFileVideo} />
+            <Field.MultiVideo name="mainVideo" onDelete={handleRemoveFileVideo} />
           </div>
           <div>
             <Typography>Other Video</Typography>
-            <Field.MultiVideo
-              name="otherVideo"
-              maxSize={5e7}
-              onDelete={handleRemoveFileotherVideo}
-            />
+            <Field.MultiVideo name="otherVideo" onDelete={handleRemoveFileotherVideo} />
           </div>
         </Box>
       </Stack>
@@ -503,6 +516,13 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
+
+        <Field.SingelSelect
+          checkbox
+          name="artworkDiscipline"
+          label="Artwork Discipline"
+          options={PRODUCT_CATAGORYONE_OPTIONS}
+        />
         <Box
           columnGap={2}
           rowGap={3}
@@ -518,11 +538,11 @@ export function ArtworkAdd({ currentProduct }) {
               selectedDisciplines && selectedDisciplines
                 ? filterTechnicForDiscipline(selectedDisciplines)
                 : [
-                    {
-                      value: '',
-                      label: 'Please select discipline first',
-                    },
-                  ]
+                  {
+                    value: '',
+                    label: 'Please select discipline first',
+                  },
+                ]
             }
           />
 
@@ -535,11 +555,11 @@ export function ArtworkAdd({ currentProduct }) {
               selectedDisciplines && selectedDisciplines
                 ? filterThemeForDiscipline(selectedDisciplines)
                 : [
-                    {
-                      value: '',
-                      label: 'Please select discipline first',
-                    },
-                  ]
+                  {
+                    value: '',
+                    label: 'Please select discipline first',
+                  },
+                ]
             }
           />
         </Box>
@@ -581,6 +601,12 @@ export function ArtworkAdd({ currentProduct }) {
           <Field.Text name="lenght" label="lenght" />
           <Field.Text name="width" label="width" />
         </Box>
+        <Field.MultiSelect
+          checkbox
+          name="artworkTags"
+          label="Artwork Tags"
+          options={ARTWORK_TAGES_OPTIONS}
+        />
         <Field.SingelSelect
           checkbox
           name="hangingAvailable"
@@ -628,12 +654,28 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
-          checkbox
-          name="purchaseCatalog"
-          label="Purchase Catalog"
-          options={ARTWORK_PURCHASECATALOG_OPTIONS}
-        />
+        <FormControl fullWidth component="fieldset">
+          <FormLabel component="legend">Purchase Options</FormLabel>
+          <RadioGroup
+            name="purchaseOptions"
+            sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
+            value={selectedOption}
+            onChange={handleChange}
+          >
+            <FormControlLabel
+              value="subscription"
+              control={<Radio />}
+              label="Subscription"
+              sx={{ flex: 1 }}
+            />
+            <FormControlLabel
+              value="purchase"
+              control={<Radio />}
+              label="Purchase/Sale"
+              sx={{ flex: 1 }}
+            />
+          </RadioGroup>
+        </FormControl>
         <Field.Text name="artistFees" label="Artist Fees" />
         <Field.SingelSelect
           checkbox
@@ -653,6 +695,12 @@ export function ArtworkAdd({ currentProduct }) {
           name="priceRequest"
           label="Price by request"
           options={ARTWORK_UPWORKOFFER_OPTIONS}
+        />
+        <Field.SingelSelect
+          checkbox
+          name="purchaseCatalog"
+          label="Purchase Catalog"
+          options={ARTWORK_PURCHASECATALOG_OPTIONS}
         />
       </Stack>
     </Card>
@@ -706,27 +754,27 @@ export function ArtworkAdd({ currentProduct }) {
       </Stack>
     </Card>
   );
-  const Discipline = (
-    <Card sx={{ mb: 3 }}>
-      <CardHeader title="Discipline" sx={{ mb: 3 }} />
+  // const Discipline = (
+  //   <Card sx={{ mb: 3 }}>
+  //     <CardHeader title="Discipline" sx={{ mb: 3 }} />
 
-      <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
-          checkbox
-          name="artworkDiscipline"
-          label="Artwork Discipline"
-          options={PRODUCT_CATAGORYONE_OPTIONS}
-        />
-        <Field.MultiSelect
-          checkbox
-          name="artworkTags"
-          label="Artwork Tags"
-          options={ARTWORK_TAGES_OPTIONS}
-        />
-      </Stack>
-    </Card>
-  );
+  //     <Divider />
+  //     <Stack spacing={3} sx={{ p: 3 }}>
+  //       <Field.SingelSelect
+  //         checkbox
+  //         name="artworkDiscipline"
+  //         label="Artwork Discipline"
+  //         options={PRODUCT_CATAGORYONE_OPTIONS}
+  //       />
+  //       <Field.MultiSelect
+  //         checkbox
+  //         name="artworkTags"
+  //         label="Artwork Tags"
+  //         options={ARTWORK_TAGES_OPTIONS}
+  //       />
+  //     </Stack>
+  //   </Card>
+  // );
   const Promotions = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Promotions" sx={{ mb: 3 }} />
@@ -803,7 +851,7 @@ export function ArtworkAdd({ currentProduct }) {
             </div>
 
             <div className="col-span-1">
-              {Discipline}
+              {/* {Discipline} */}
               {Promotions}
               {Restrictions}
               {Collection}

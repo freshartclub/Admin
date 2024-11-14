@@ -1,7 +1,7 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { z as zod } from 'zod';
@@ -53,6 +53,7 @@ export function GeneralInformation({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
+  const [code, setCode] = useState('');
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
@@ -151,6 +152,7 @@ export function GeneralInformation({
         <Field.CountrySelect
           required
           fullWidth
+          setCode={setCode}
           name="country"
           label="Country"
           placeholder="Choose a country"
@@ -185,8 +187,8 @@ export function GeneralInformation({
             disabled={isReadOnly}
             required
             name="phone"
+            fetchCode={code ? code : ''}
             label="Phone number"
-            helperText="Good to go"
           />
 
           <Field.Text disabled={isReadOnly} required name="email" label="Email" />

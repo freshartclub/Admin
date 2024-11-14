@@ -12,6 +12,7 @@ const useAddArtistMutation = (handleOnSuccess) => {
 
   async function addArtist({ body, onUploadProgress }: { body: any; onUploadProgress: any }) {
     let headers;
+
     if (body?.isContainsImage) {
       const formData = new FormData();
 

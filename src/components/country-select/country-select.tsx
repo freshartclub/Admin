@@ -5,15 +5,16 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { filledInputClasses } from '@mui/material/FilledInput';
 
 import { countries } from 'src/assets/data';
-
 import { FlagIcon, iconifyClasses } from 'src/components/iconify';
-
 import { getCountry, displayValueByCountryCode } from './utils';
+import { set } from 'nprogress';
+import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
 export function CountrySelect({
   id,
+  setCode,
   label,
   error,
   multiple,
@@ -41,7 +42,8 @@ export function CountrySelect({
           code={country?.code}
           sx={{ mr: 1, width: 22, height: 22, borderRadius: '50%' }}
         />
-        {country?.label} ({country?.code}) +{country?.phone}
+        {/* {country?.label} ({country?.code}) + {country?.phone} */}
+        {country?.label}
       </li>
     );
   };
@@ -65,6 +67,10 @@ export function CountrySelect({
     if (multiple) {
       return <TextField {...baseField} />;
     }
+
+    useEffect(() => {
+      setCode && setCode(country?.code);
+    }, []);
 
     return (
       <TextField

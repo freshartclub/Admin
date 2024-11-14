@@ -16,6 +16,7 @@ import axios from 'axios';
 const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   const [value, setValue] = useState('new');
   const [isArtist, setIsArtist] = useState(false);
+  const [code, setCode] = useState('');
 
   const { isPending, mutate } = useCreateArtistMutation();
 
@@ -64,6 +65,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
         methods.setValue('country', response.data.country_name);
+        methods.setValue('phoneNumber', response.data.country_code);
       } catch (err) {
         console.log('Failed to fetch country data by IP');
       }
@@ -113,14 +115,19 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
               <Field.Text name="artistSurname1" required label="Surname 1" />
               <Field.Text name="artistSurname2" label="Surname 2" />
               <Field.Text disabled={isReadOnly} required name="email" label="Email address" />
-              <Field.Phone name="phoneNumber" required label="Phone number" />
-
               <Field.CountrySelect
                 fullWidth
                 required
+                setCode={setCode}
                 name="country"
                 label="Country"
                 placeholder="Choose a country *"
+              />
+              <Field.Phone
+                fetchCode={code ? code : ''}
+                name="phoneNumber"
+                required
+                label="Phone number"
               />
 
               <Field.Text required name="zipCode" label="Zip/code" />

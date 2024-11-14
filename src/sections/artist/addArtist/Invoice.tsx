@@ -1,33 +1,30 @@
-import type { ExtractIBANResult } from 'ibantools';
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { extractIBAN, validateIBAN } from 'ibantools';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
+import { TableCell, TableRow } from '@mui/material';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
+import Papa from 'papaparse';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import {
   PRODUCT_ARTISTPLUS_OPTIONS,
   PRODUCT_CUSTOMORDER_OPTIONS,
-  PRODUCT_PUBLISHINGCATALOG_OPTIONS,
-  PRODUCT_MINNUMBROFARTWORK_OPTIONS,
   PRODUCT_MAXNUMBROFARTWORK_OPTIONS,
+  PRODUCT_MINNUMBROFARTWORK_OPTIONS,
   PRODUCT_PICKLIST_OPTIONS,
+  PRODUCT_PUBLISHINGCATALOG_OPTIONS,
 } from 'src/_mock';
-import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useSearchParams } from 'src/routes/hooks';
+import { z as zod } from 'zod';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
@@ -70,8 +67,40 @@ export function Invoice({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
-  const [ibanNumber, setIbanNumber] = useState('');
-  const [includeTaxes, setIncludeTaxes] = useState(false);
+  const [csvData, setCsvData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(null);
+  const [filteredBanks, setFilteredBanks] = useState([]);
+  const [selectedBank, setSelectedBank] = useState({ code: '', name: '' });
+
+  useEffect(() => {
+    const loadCSV = async () => {
+      const response = await fetch('/list-bank.csv');
+      const text = await response.text();
+      Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          setCsvData(result.data);
+          setFilteredBanks(result.data);
+        },
+      });
+    };
+    loadCSV();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery === '') {
+      setFilteredBanks(csvData);
+    } else {
+      if (searchQuery !== null) {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const filtered = csvData.filter((item: any) =>
+          item.EUROPEAN_CODE.toLowerCase().includes(lowerCaseQuery)
+        );
+        setFilteredBanks(filtered);
+      }
+    }
+  }, [searchQuery, csvData]);
 
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
@@ -86,8 +115,8 @@ export function Invoice({
   };
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
-  const defaultValues = useMemo(() => {
-    const def = {
+  const defaultValues = useMemo(
+    () => ({
       taxNumber: artistFormData?.taxNumber || '',
       taxLegalName: artistFormData?.taxLegalName || '',
       taxAddress: artistFormData?.taxAddress || '',
@@ -107,10 +136,9 @@ export function Invoice({
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
       count: 5,
-    };
-    setIbanNumber(artistFormData?.taxBankIBAN);
-    return def;
-  }, [artistFormData]);
+    }),
+    [artistFormData]
+  );
 
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -123,6 +151,13 @@ export function Invoice({
     control: formProps.control,
     name: 'PublishingCatalog',
   });
+
+  const handleBankSelect = (code, name) => {
+    setSelectedBank({ code, name });
+    setSearchQuery(null);
+    formProps.setValue('taxBankName', name);
+    formProps.setValue('taxBankIBAN', code);
+  };
 
   const handleRemove = (index) => {
     remove(index);
@@ -138,25 +173,6 @@ export function Invoice({
 
     mutate({ body: data });
   });
-
-  const hanldeIbanChange = (e) => {
-    let ibanDetail: ExtractIBANResult;
-    const val = e.target.value;
-    const { valid } = validateIBAN(val);
-    if (!valid) {
-      formProps.setError('taxBankIBAN', {
-        message: 'Please enter a valid IBAN number',
-      });
-    } else {
-      ibanDetail = extractIBAN(val);
-      formProps.clearErrors('taxBankIBAN');
-      formProps.setValue('taxBankIBAN', val);
-
-      formProps.setValue('taxBankName', ibanDetail.bankIdentifier);
-    }
-
-    setIbanNumber(val);
-  };
 
   const viewNext = () => {
     setTabState((prev) => {
@@ -179,9 +195,9 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} required name="taxNumber" label=" taxNumber/NIF" />
+          <Field.Text disabled={isReadOnly} required name="taxNumber" label=" Tax Number/NIF" />
 
-          <Field.Text disabled={isReadOnly} required name="taxLegalName" label="taxLegalName" />
+          <Field.Text disabled={isReadOnly} required name="taxLegalName" label="Tax Legal Name" />
         </Box>
 
         <Field.Text disabled={isReadOnly} required name="taxAddress" label="Tax Address" />
@@ -202,7 +218,7 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} required name="taxProvince" label="taxProvince" />
+          <Field.Text disabled={isReadOnly} required name="taxProvince" label="Tax Province" />
 
           <Field.CountrySelect
             disabled={isReadOnly}
@@ -228,18 +244,46 @@ export function Invoice({
           columnGap={2}
           rowGap={3}
           display="grid"
+          position="relative"
+          height={searchQuery ? '40vh' : 'auto'}
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.Text
             disabled={isReadOnly}
             required
-            onChange={hanldeIbanChange}
-            value={ibanNumber}
+            value={searchQuery === null ? formProps.getValues('taxBankIBAN') : searchQuery}
+            onChange={(e: any) => setSearchQuery(e.target.value)}
+            onClick={() => setFilteredBanks(csvData)}
+            autoComplete="off"
             name="taxBankIBAN"
             label="Bank IBAN"
           />
+          {searchQuery && (
+            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {filteredBanks && filteredBanks.length > 0 ? (
+                  filteredBanks.map((bank: any, j) => (
+                    <TableCell
+                      onClick={() => handleBankSelect(bank.EUROPEAN_CODE, bank.NAME)}
+                      key={j}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      {bank.EUROPEAN_CODE} - {bank.NAME}
+                    </TableCell>
+                  ))
+                ) : (
+                  <TableCell>No Data Available</TableCell>
+                )}
+              </TableRow>
+            </div>
+          )}
 
-          <Field.Text disabled={isReadOnly} required name="taxBankName" label="taxBankName" />
+          <Field.Text disabled={isReadOnly} required name="taxBankName" label="Bank Name" />
         </Box>
       </Stack>
     </Card>

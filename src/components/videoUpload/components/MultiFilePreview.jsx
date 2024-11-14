@@ -16,15 +16,15 @@ export function MultiFilePreviewVideo({ sx, onRemove, files = [] }) {
         ...sx,
       }}
     >
-      {files.map((file) => {
+      {files.map((file, i) => {
         const fileName = file.name;
         const fileSize = fData(file.size);
-        const previewUrl = URL.createObjectURL(file);
+        const previewUrl = file.includes('https') ? URL.createObjectURL(file) : '';
 
         return (
           <Box
             component="li"
-            key={fileName}
+            key={i}
             sx={{
               py: 1,
               pr: 1,
