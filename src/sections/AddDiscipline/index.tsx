@@ -38,13 +38,10 @@ export function AddDisciline() {
   const { mutate, isPending } = useAddDisciplineMutation(id);
 
   const { data, isLoading } = useGetDisciplineById(id);
-  let url = '';
 
   const defaultValues = useMemo(
     () => ({
-      disciplineImage: url
-        ? `${url}/${data?.data?.disciplineImage}`
-        : data?.data?.disciplineImage || null,
+      disciplineImage:`${data?.url}/users/${data?.data?.disciplineImage}` || null,
       name: data?.data?.disciplineName || '',
       isDeleted: data?.data?.isDeleted || false,
       spanishName: data?.data?.disciplineSpanishName || '',
@@ -62,11 +59,8 @@ export function AddDisciline() {
 
   useEffect(() => {
     if (id && data?.data) {
-      url = `${data?.url}/uploads/users`;
       reset({
-        disciplineImage: url
-          ? `${url}/${data?.data?.disciplineImage}`
-          : data?.data?.disciplineImage || null,
+        disciplineImage: `${data?.url}/users/${data?.data?.disciplineImage}`|| null,
         name: data?.data?.disciplineName || '',
         isDeleted: data?.data?.isDeleted || false,
         spanishName: data?.data?.disciplineSpanishName || '',

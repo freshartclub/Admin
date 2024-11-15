@@ -84,6 +84,8 @@ const CollectionList = lazy(
 
 const ArtworkList = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkList'));
 const ArtworkDetail = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkDetail'));
+const AddPicklist = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkDetail'));
+const Picklist = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkDetail'));
 // ----------------------------------------------------------------------
 
 const layoutContent = (

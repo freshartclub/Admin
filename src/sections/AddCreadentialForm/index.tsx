@@ -38,13 +38,13 @@ export function AddCreadentialForm() {
 
   const defaultValues = useMemo(
     () => ({
-      insigniaImage: data?.insigniaImage || null,
-      isActive: data?.isActive || true,
-      credentialName: data?.credentialName || '',
-      credentialGroup: data?.credentialGroup || '',
-      credentialPriority: data?.credentialPriority || '',
+      insigniaImage: `${data?.url}/users/${data?.data?.insigniaImage}` || null,
+      isActive: data?.data?.isActive || true,
+      credentialName: data?.data?.credentialName || '',
+      credentialGroup: data?.data?.credentialGroup || '',
+      credentialPriority: data?.data?.credentialPriority || '',
     }),
-    [data]
+    [data?.data]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -55,16 +55,16 @@ export function AddCreadentialForm() {
   const { reset, handleSubmit } = methods;
 
   useEffect(() => {
-    if (id && data) {
+    if (id && data?.data) {
       reset({
-        insigniaImage: data?.insigniaImage || null,
-        isActive: data?.isActive,
-        credentialName: data?.credentialName || '',
-        credentialGroup: data?.credentialGroup || '',
-        credentialPriority: data?.credentialPriority || '',
+        insigniaImage: `${data?.url}/users/${data?.data?.insigniaImage}` || null,
+        isActive: data?.data?.isActive,
+        credentialName: data?.data?.credentialName || '',
+        credentialGroup: data?.data?.credentialGroup || '',
+        credentialPriority: data?.data?.credentialPriority || '',
       });
     }
-  }, [data, reset]);
+  }, [data?.data, reset]);
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {

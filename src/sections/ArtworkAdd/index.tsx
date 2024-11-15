@@ -84,7 +84,7 @@ export const NewProductSchema = zod.object({
   hangingDescription: zod.string().optional(),
   framed: zod.string().min(1, { message: 'Framed is required!' }),
   framedDescription: zod.string().optional(),
-  frameHeight: zod.string().min(1, { message: 'Hight required!' }),
+  frameHeight: zod.string().min(1, { message: 'Height required!' }),
   frameLenght: zod.string().min(1, { message: 'Lenght required!' }),
   frameWidth: zod.string().min(1, { message: 'Width required!' }),
   artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
@@ -100,8 +100,9 @@ export const NewProductSchema = zod.object({
   dpersentage: zod.string().min(1, { message: 'Descount not be $0.00' }),
   vatAmount: zod.string().optional(),
   artistbaseFees: zod.string().optional(),
-  sku: zod.string().min(1, { message: 'sku is required!' }),
-  pCode: zod.string().optional(),
+  purchaseOptions: zod.string().min(1, { message: 'Purchase Option is required!' }),
+  purchaseOption: zod.string().optional(),
+  pCode: zod.string().min(1, { message: 'Product Code is required!' }),
   location: zod.string().min(1, { message: 'location is required!' }),
   artworkDiscipline: zod.string(),
   artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
@@ -226,15 +227,14 @@ export function ArtworkAdd({ currentProduct }) {
       upworkOffer: data?.commercialization?.upworkOffer || '',
       acceptOfferPrice: data?.commercialization?.acceptOfferPrice || '',
       priceRequest: data?.commercialization?.priceRequest || '',
-
+      purchaseOption: data?.commercialization?.purchaseOption || '',
+      purchaseOptions: data?.commercialization?.purchaseOptions || '',
       basePrice: data?.pricing?.basePrice || '',
       dpersentage: data?.pricing?.dpersentage || '',
       vatAmount: data?.pricing?.vatAmount || '',
       artistFees: data?.pricing?.artistFees || '',
       offensive: data?.offensive || '',
       artistbaseFees: data?.commercialization?.artistbaseFees || '',
-
-      sku: data?.inventoryShipping?.sku || '',
       pCode: data?.inventoryShipping?.pCode || '',
       location: data?.inventoryShipping?.location || '',
       artworkDiscipline: data?.discipline?.artworkDiscipline || '',
@@ -615,7 +615,7 @@ export function ArtworkAdd({ currentProduct }) {
         <Field.SingelSelect
           checkbox
           name="framed"
-          label="framed"
+          label="Framed"
           options={ARTWORK_FRAMED_OPTIONS}
         />
         <Field.Text name="framedDescription" label="Framed Description" multiline rows={3} />
@@ -674,38 +674,64 @@ export function ArtworkAdd({ currentProduct }) {
             />
           </RadioGroup>
         </FormControl>
-        <Field.Text name="artistFees" label="Artist Fees" />
-        <Field.SingelSelect
-          checkbox
-          name="downwardOffer"
-          label="Downward Offer"
-          options={ARTWORK_DOWNWARDOFFER_OPTIONS}
-        />
-        <Field.SingelSelect
-          checkbox
-          name="upworkOffer"
-          label="Upwork Offer"
-          options={ARTWORK_UPWORKOFFER_OPTIONS}
-        />
-        <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
-        <Field.SingelSelect
-          checkbox
-          name="priceRequest"
-          label="Price by request"
-          options={ARTWORK_UPWORKOFFER_OPTIONS}
-        />
-        <Field.SingelSelect
-          checkbox
-          name="purchaseCatalog"
-          label="Purchase Catalog"
-          options={ARTWORK_PURCHASECATALOG_OPTIONS}
-        />
+        {
+          selectedOption === 'subscription' &&
+          <>
+            <Field.SingelSelect
+              checkbox
+              name="purchaseCatalog"
+              label="Purchase Catalog"
+              options={ARTWORK_PURCHASECATALOG_OPTIONS}
+            />
+            <Field.SingelSelect
+              checkbox
+              name="purchaseOption"
+              label="Purchase Option"
+              options={ARTWORK_PURCHASECATALOG_OPTIONS}
+            />
+          </>
+        }
+        {
+          selectedOption === 'purchase' &&
+          <>
+            <Field.SingelSelect
+              checkbox
+              name="purchaseCatalog"
+              label="Purchase Catalog"
+              options={ARTWORK_PURCHASECATALOG_OPTIONS}
+            />
+            <Field.Text name="artistFees" label="Artist Fees" />
+
+            <Field.SingelSelect
+              checkbox
+              name="upworkOffer"
+              label="Upwork Offer"
+              options={ARTWORK_UPWORKOFFER_OPTIONS}
+            />
+            <Field.SingelSelect
+              checkbox
+              name="downwardOffer"
+              label="Downward Offer"
+              options={ARTWORK_DOWNWARDOFFER_OPTIONS}
+            />
+            <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
+
+
+            <Field.SingelSelect
+              checkbox
+              name="priceRequest"
+              label="Price by request"
+              options={ARTWORK_UPWORKOFFER_OPTIONS}
+            />
+          </>
+        }
+
       </Stack>
     </Card>
   );
   const pricing = (
     <Card sx={{ mb: 3 }}>
-      <CardHeader title="pricing" sx={{ mb: 3 }} />
+      <CardHeader title="Pricing" sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -735,7 +761,7 @@ export function ArtworkAdd({ currentProduct }) {
   );
   const InventoryandShiping = (
     <Card>
-      <CardHeader title="InventoryandShiping" sx={{ mb: 3 }} />
+      <CardHeader title="Inventory and Shipping" sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -745,9 +771,8 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="sku" label="sku" />
           <Field.Text name="pCode" label="Product code" />
-          <Field.Text name="location" label="location" />
+          <Field.Text name="location" label="Location" />
         </Box>
       </Stack>
     </Card>
@@ -782,13 +807,13 @@ export function ArtworkAdd({ currentProduct }) {
         <Field.SingelSelect
           checkbox
           name="promotion"
-          label="promotion"
+          label="Promotion"
           options={ARTWORK_PROMOTIONS_OPTIONS}
         />
         <Field.SingelSelect
           checkbox
           name="promotionScore"
-          label="promotion Score"
+          label="Promotion Score"
           options={ARTWORK_PROMOTIONSCORE_OPTIONS}
         />
       </Stack>

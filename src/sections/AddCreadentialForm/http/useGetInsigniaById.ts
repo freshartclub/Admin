@@ -5,7 +5,7 @@ import axiosInstance from 'src/utils/axios';
 async function fetchData(id) {
   if (!id) return {};
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getInsigniaById}/${id}`);
-  return data.data;
+  return data;
 }
 
 export const useGetInsigniaById = (id) => {

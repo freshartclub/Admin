@@ -39,6 +39,7 @@ export function Media({
 }: AddArtistComponentProps) {
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
+  const url = "https://dev.freshartclub.com/images"
 
   const [percent, setPercent] = useState(0);
 
