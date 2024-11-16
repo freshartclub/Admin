@@ -81,9 +81,12 @@ export function AddDisciline() {
       }
       const formData = new FormData();
 
-      if (!data.disciplineImage.includes("https")) {
+      if (typeof data.disciplineImage === 'string' && !data.disciplineImage.includes("https")) {
+        formData.append('disciplineImage', data.disciplineImage);
+      } else if (data.disciplineImage instanceof File) {
         formData.append('disciplineImage', data.disciplineImage);
       }
+      
       formData.append('name', data.name);
       formData.append('spanishName', data.spanishName);
       formData.append('description', data.description);

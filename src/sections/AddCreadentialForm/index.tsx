@@ -14,13 +14,14 @@ import useAddInsigniaMutation from './http/useAddInsigniaMutation';
 import { useGetInsigniaById } from './http/useGetInsigniaById';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
-  insigniaImage: schemaHelper.file({required: false}).optional(),
+  insigniaImage: schemaHelper.file({ required: false }).optional(),
   credentialName: zod.string().min(1, { message: 'Name is required!' }),
   credentialGroup: zod.string().min(1, { message: 'Group is required!' }),
   credentialPriority: zod.string().min(1, { message: 'Display Priority is required!' }),
@@ -73,7 +74,9 @@ export function AddCreadentialForm() {
         return;
       }
       const formData = new FormData();
-      if(!data.insigniaImage.includes("https")){
+      if (typeof data.insigniaImage === 'string' && !data.insigniaImage.includes("https")) {
+        formData.append('insigniaImage', data.insigniaImage);
+      } else if (data.insigniaImage instanceof File) {
         formData.append('insigniaImage', data.insigniaImage);
       }
 
