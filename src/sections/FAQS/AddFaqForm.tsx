@@ -81,7 +81,7 @@ export function AddFaqForm() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!data.faqImg) {
-        toast.error("Please upload at least one image");
+        return toast.error("Please upload at least one image");
       }
 
       const formData = new FormData();

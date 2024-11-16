@@ -22,7 +22,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
 
   const defaultValues = useMemo(() => {
     const obj = {
-      avatar: data?.avatar || null,
+      avatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/${data?.profile?.mainImage}` : null,
       name: data?.artistName || '',
       artistSurname1: data?.artistSurname1 || '',
       artistSurname2: data?.artistSurname2 || '',

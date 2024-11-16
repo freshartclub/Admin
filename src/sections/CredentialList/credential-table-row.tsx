@@ -23,12 +23,13 @@ import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
 type Props = {
   row: ArtistDisciplineType;
   selected: boolean;
+  url: string;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function CredentialTable({ row,url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function CredentialTable({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteInsignia();
 

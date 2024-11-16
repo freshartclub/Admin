@@ -17,6 +17,14 @@ const useCreateArtistMutation = () => {
   async function CreateArtist(newData) {
     const formData = new FormData();
 
+    if (typeof newData?.data.avatar === 'string' && !newData?.data.avatar.includes('https')) {
+      formData.append('avatar', newData?.data.avatar);
+    } else if (newData?.data.avatar instanceof File) {
+      formData.append('avatar', newData?.data.avatar);
+    }
+
+    delete newData.data.avatar;
+
     Object.keys(newData.data).forEach((key) => {
       if (Array.isArray(newData.data[key])) {
         newData.data[key].forEach((item) => {

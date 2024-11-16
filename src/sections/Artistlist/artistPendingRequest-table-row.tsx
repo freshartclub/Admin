@@ -37,7 +37,7 @@ export function ArtistPendingRequest({
 
       <TableCell>
         <Stack spacing={1} direction="row" alignItems="center">
-          <Avatar alt={row?.avatar} src={row?.avatar} />
+          <Avatar alt={row?.artistName} src={`https://dev.freshartclub.com/${row?.profile?.mainImage}`} />
 
           <Stack
             className=" cursor-pointer"

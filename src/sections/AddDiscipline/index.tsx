@@ -7,16 +7,15 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 
+import { useNavigate } from 'react-router';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { toast } from 'src/components/snackbar';
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddDisciplineMutation from './http/useAddDisciplineMutation';
-import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
-import { useSearchParams } from 'src/routes/hooks';
 import { useGetDisciplineById } from './http/useGetDisciplineById';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 

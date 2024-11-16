@@ -32,7 +32,7 @@ export function ListArtist({ row, selected, onEditRow, onSelectRow, onDeleteRow 
 
       <TableCell>
         <Stack spacing={1} direction="row" alignItems="center">
-          <Avatar alt={row?.avatar} src={row?.avatar} />
+          <Avatar alt={row?.artistName} src={`https://dev.freshartclub.com/${row?.profile?.mainImage}`} />
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
             <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
               {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}

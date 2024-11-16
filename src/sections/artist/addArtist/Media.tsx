@@ -43,7 +43,7 @@ export function Media({
   const id = useSearchParams().get('id');
 
   const isReadOnly = view !== null;
-  const url = "https://dev.freshartclub.com/images"
+  const url = 'https://dev.freshartclub.com/images';
 
   const [percent, setPercent] = useState(0);
 
@@ -62,20 +62,26 @@ export function Media({
   let videoArr = [];
 
   if (id && artistFormData) {
-    artistFormData.additionalImage && artistFormData.additionalImage.length > 0 && artistFormData.additionalImage.forEach((item: any, i) => (
-      imgArr.push(`${url}/users/${item}`)
-    ))
-    artistFormData.additionalVideo && artistFormData.additionalVideo.length > 0 && artistFormData.additionalVideo.forEach((item: any, i) => (
-      videoArr.push(`${url}/videos/${item}`)
-    ))
+    artistFormData.additionalImage &&
+      artistFormData.additionalImage.length > 0 &&
+      artistFormData.additionalImage.forEach((item: any, i) => imgArr.push(`${url}/users/${item}`));
+    artistFormData.additionalVideo &&
+      artistFormData.additionalVideo.length > 0 &&
+      artistFormData.additionalVideo.forEach((item: any, i) =>
+        videoArr.push(`${url}/videos/${item}`)
+      );
   }
-  
+
   const defaultValues = useMemo(
     () => ({
-      profileImage: artistFormData?.profileImage || null,
+      profileImage: artistFormData?.profileImage
+        ? `${url}/users/${artistFormData?.profileImage}`
+        : null,
       additionalImage: imgArr || [],
-      inProcessImage: artistFormData?.inProcessImage || null,
-      mainVideo: artistFormData?.mainVideo || null,
+      inProcessImage: artistFormData?.inProcessImage
+        ? `${url}/users/${artistFormData?.inProcessImage}`
+        : null,
+      mainVideo: artistFormData?.mainVideo ? `${url}/videos/${artistFormData?.mainVideo}` : null,
       additionalVideo: videoArr || [],
       existingImages: artistFormData?.additionalImage || [],
       existingVideos: artistFormData?.additionalVideo || [],
@@ -120,14 +126,14 @@ export function Media({
 
   const handleRemoveAdditionalImages = useCallback(() => {
     setValue('additionalImage', []);
-    setValue("existingImages", []);
+    setValue('existingImages', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalImage = useCallback(
     (image) => {
       const arr = formProps.getValues('additionalImage').filter((val) => val !== image);
       setValue('additionalImage', arr);
-      setValue("existingImages", arr);
+      setValue('existingImages', arr);
     },
     [setValue]
   );
@@ -142,14 +148,14 @@ export function Media({
 
   const handleRemoveAdditionalVideos = useCallback(() => {
     setValue('additionalVideo', []);
-    setValue("existingVideos", []);
+    setValue('existingVideos', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalVideo = useCallback(
     (video) => {
       const arr = formProps.getValues('additionalVideo').filter((val) => val !== video);
       setValue('additionalVideo', arr);
-      setValue("existingVideos", arr);
+      setValue('existingVideos', arr);
     },
     [setValue]
   );
@@ -161,6 +167,8 @@ export function Media({
     });
     setTabIndex(tabIndex + 1);
   };
+
+  const mainVi = formProps.watch('mainVideo');
 
   const media = (
     <Card className="mb-6">
@@ -216,12 +224,43 @@ export function Media({
         >
           <div>
             <Typography>Main Video</Typography>
-            <Field.Upload
-              disabled={isReadOnly}
-              name="mainVideo"
-              accept="video/*"
-              onDelete={handleRemoveMainVideo}
-            />
+            {mainVi ? (
+              <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                <video controls width="100%" height="auto" style={{ borderRadius: '8px' }}>
+                  {
+                    typeof formProps.getValues('mainVideo') === 'string' ?
+                      <source src={`${formProps.getValues('mainVideo')}`} type="video/mp4" /> :
+                      <source src={URL.createObjectURL(formProps.getValues('mainVideo'))} type="video/mp4" />
+                  }
+                  Your browser does not support the video tag.
+                </video>
+                <span
+                  onClick={handleRemoveMainVideo}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: 'rgba(255, 0, 0, 0.7)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    cursor: 'pointer',
+                  }}
+                  title="Delete Video"
+                >
+                  ✖
+                </span>
+              </div>
+            ) : (
+              <Field.Upload
+                disabled={isReadOnly}
+                name="mainVideo"
+                accept="video/*"
+                onDelete={handleRemoveMainVideo}
+              />
+            )}
           </div>
           <div>
             <Typography>Additional Video</Typography>
