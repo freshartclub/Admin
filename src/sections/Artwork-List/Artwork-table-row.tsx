@@ -35,6 +35,7 @@ import { useState } from 'react';
 
 type Props = {
   row: IInvoice;
+  url: string;
   selected: boolean;
   onSelectRow: () => void;
   onViewRow: () => void;
@@ -44,6 +45,7 @@ type Props = {
 
 export function ArtworkTableRow({
   row,
+  url,
   selected,
   onSelectRow,
   onViewRow,
@@ -52,9 +54,7 @@ export function ArtworkTableRow({
 }: Props) {
   const confirm = useBoolean();
   const [showPop, setShowPop] = useState(false);
-
   const popover = usePopover();
-
   const { mutate, isPending } = useRemoveArtWorkList(row._id);
 
   const removeArtWorkList = () => {
@@ -62,6 +62,15 @@ export function ArtworkTableRow({
     if (!isPending) {
       setShowPop(false);
     }
+  };
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
   };
 
   const dialogBox = (
@@ -99,7 +108,7 @@ export function ArtworkTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row?.artworkName}>{row?.artworkName.charAt(0).toUpperCase()}</Avatar>
+            <Avatar alt={row?.artworkName} src={`${url}/${row?.media?.mainImage}`} />
 
             <ListItemText
               disableTypography
@@ -123,10 +132,8 @@ export function ArtworkTableRow({
         </TableCell>
 
         <TableCell align="center">{row?.artworkSeries}</TableCell>
-
         <TableCell align="center">{row?.upworkOffer}</TableCell>
-
-        <TableCell align="center">{row?.artistName} {row?.artistSurname1} {row?.artistSurname2}</TableCell>
+        <TableCell align="center">{name(row)}</TableCell>
 
         <TableCell>
           <ListItemText

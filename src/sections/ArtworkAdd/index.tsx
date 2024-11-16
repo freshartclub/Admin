@@ -111,6 +111,7 @@ export const NewProductSchema = zod.object({
   availableTo: zod.string().optional(),
   discountAcceptation: zod.string().optional(),
   collectionList: zod.string().optional(),
+  existingImages: zod.string().array().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -188,64 +189,70 @@ export function ArtworkAdd({ currentProduct }) {
   const [percent, setPercent] = useState(0);
   const [selectedOption, setSelectedOption] = useState('');
 
+  let arr: any = [];
+  if (id && data?.data) {
+    data?.images && data?.images.length > 0 && data?.images.map((item) => arr.push(`${data?.url}/images/${item}`));
+  }
+
   const defaultValues = useMemo(
     () => ({
-      artworkName: data?.artworkName || '',
-      artistID: data?.owner?.artistId || '',
-      artistName: data?.owner?.artistName || '',
-      artworkCreationYear: data?.artworkCreationYear || '',
-      artworkSeries: data?.artworkSeries || '',
-      productDescription: data?.productDescription || '',
+      artworkName: data?.data?.artworkName || '',
+      artistID: data?.data?.owner?.artistId || '',
+      artistName: data?.data?.owner?.artistName || '',
+      artworkCreationYear: data?.data?.artworkCreationYear || '',
+      artworkSeries: data?.data?.artworkSeries || '',
+      productDescription: data?.data?.productDescription || '',
 
-      mainImage: data?.mainImage || null,
-      backImage: data?.backImage || null,
-      inProcessImage: data?.inProcessImage || null,
-      images: data?.images || [],
-      mainVideo: data?.mainVideo || null,
-      otherVideo: data?.otherVideo || null,
+      mainImage: data?.data?.mainImage ? `${data?.url}/images/${data?.data?.mainImage}` : null,
+      backImage: data?.data?.backImage ? `${data?.url}/images/${data?.data?.backImage}` : null,
+      inProcessImage: data?.data?.inProcessImage ? `${data?.url}/images/${data?.data?.inProcessImage}` : null,
+      images: arr || [],
+      mainVideo: data?.data?.mainVideo ? `${data?.url}/videos/${data?.data?.mainVideo}` : null,
+      otherVideo: data?.data?.otherVideo ? `${data?.url}/videos/${data?.data?.otherVideo}` : null,
+      existingImages: [],
 
-      artworkTechnic: data?.additionalInfo?.artworkTechnic || '',
-      artworkTheme: data?.additionalInfo?.artworkTheme || '',
-      artworkOrientation: data?.additionalInfo?.artworkOrientation || '',
-      material: data?.additionalInfo?.material || '',
-      weight: data?.additionalInfo?.weight || '',
-      lenght: data?.additionalInfo?.length || '',
-      height: data?.additionalInfo?.height || '',
-      width: data?.additionalInfo?.width || '',
-      hangingAvailable: data?.additionalInfo?.hangingAvailable || '',
-      hangingDescription: data?.additionalInfo?.hangingDescription || ' ',
-      framed: data?.additionalInfo?.framed || '',
-      framedDescription: data?.additionalInfo?.framedDescription || ' ',
-      frameHeight: data?.additionalInfo?.frameHeight || '',
-      frameLenght: data?.additionalInfo?.frameLength || '',
-      frameWidth: data?.additionalInfo?.frameWidth || '',
-      artworkStyle: data?.additionalInfo?.artworkStyle || [],
-      emotions: data?.additionalInfo?.emotions || [],
-      colors: data?.additionalInfo?.colors || [],
-      purchaseCatalog: data?.commercialization?.purchaseCatalog || '',
-      downwardOffer: data?.commercialization?.downwardOffer || '',
-      upworkOffer: data?.commercialization?.upworkOffer || '',
-      acceptOfferPrice: data?.commercialization?.acceptOfferPrice || '',
-      priceRequest: data?.commercialization?.priceRequest || '',
-      purchaseOption: data?.commercialization?.purchaseOption || '',
-      purchaseOptions: data?.commercialization?.purchaseOptions || '',
-      basePrice: data?.pricing?.basePrice || '',
-      dpersentage: data?.pricing?.dpersentage || '',
-      vatAmount: data?.pricing?.vatAmount || '',
-      artistFees: data?.pricing?.artistFees || '',
-      offensive: data?.offensive || '',
-      artistbaseFees: data?.commercialization?.artistbaseFees || '',
-      pCode: data?.inventoryShipping?.pCode || '',
-      location: data?.inventoryShipping?.location || '',
-      artworkDiscipline: data?.discipline?.artworkDiscipline || '',
-      artworkTags: data?.discipline?.artworkTags || [],
-      promotion: data?.promotions?.promotion || '',
-      promotionScore: data?.promotions?.promotionScore || '',
-      availableTo: data?.restriction?.availableTo || '',
-      discountAcceptation: data?.restriction?.discountAcceptation || '',
-      collectionList: data?.collectionList || '',
+      artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
+      artworkTheme: data?.data?.additionalInfo?.artworkTheme || '',
+      artworkOrientation: data?.data?.additionalInfo?.artworkOrientation || '',
+      material: data?.data?.additionalInfo?.material || '',
+      weight: data?.data?.additionalInfo?.weight || '',
+      lenght: data?.data?.additionalInfo?.length || '',
+      height: data?.data?.additionalInfo?.height || '',
+      width: data?.data?.additionalInfo?.width || '',
+      hangingAvailable: data?.data?.additionalInfo?.hangingAvailable || '',
+      hangingDescription: data?.data?.additionalInfo?.hangingDescription || ' ',
+      framed: data?.data?.additionalInfo?.framed || '',
+      framedDescription: data?.data?.additionalInfo?.framedDescription || ' ',
+      frameHeight: data?.data?.additionalInfo?.frameHeight || '',
+      frameLenght: data?.data?.additionalInfo?.frameLength || '',
+      frameWidth: data?.data?.additionalInfo?.frameWidth || '',
+      artworkStyle: data?.data?.additionalInfo?.artworkStyle || [],
+      emotions: data?.data?.additionalInfo?.emotions || [],
+      colors: data?.data?.additionalInfo?.colors || [],
+      purchaseCatalog: data?.data?.commercialization?.purchaseCatalog || '',
+      downwardOffer: data?.data?.commercialization?.downwardOffer || '',
+      upworkOffer: data?.data?.commercialization?.upworkOffer || '',
+      acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
+      priceRequest: data?.data?.commercialization?.priceRequest || '',
+      purchaseOption: data?.data?.commercialization?.purchaseOption || '',
+      purchaseOptions: data?.data?.commercialization?.purchaseOptions || '',
+      basePrice: data?.data?.pricing?.basePrice || '',
+      dpersentage: data?.data?.pricing?.dpersentage || '',
+      vatAmount: data?.data?.pricing?.vatAmount || '',
+      artistFees: data?.data?.pricing?.artistFees || '',
+      offensive: data?.data?.offensive || '',
+      artistbaseFees: data?.data?.commercialization?.artistbaseFees || '',
+      pCode: data?.data?.inventoryShipping?.pCode || '',
+      location: data?.data?.inventoryShipping?.location || '',
+      artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
+      artworkTags: data?.data?.discipline?.artworkTags || [],
+      promotion: data?.data?.promotions?.promotion || '',
+      promotionScore: data?.data?.promotions?.promotionScore || '',
+      availableTo: data?.data?.restriction?.availableTo || '',
+      discountAcceptation: data?.data?.restriction?.discountAcceptation || '',
+      collectionList: data?.data?.collectionList || '',
     }),
-    [data]
+    [data?.data]
   );
 
   const handleChange = (event) => {
@@ -312,12 +319,14 @@ export function ArtworkAdd({ currentProduct }) {
     (inputFile) => {
       const filtered = values.images && values.images?.filter((file) => file !== inputFile);
       setValue('images', filtered);
+      setValue('existingImages', filtered);
     },
     [setValue, values.images]
   );
 
   const handleRemoveAllFiles = useCallback(() => {
     setValue('images', [], { shouldValidate: true });
+    setValue('existingImages', [], { shouldValidate: true });
   }, [setValue]);
 
   const handleRemoveFileone = useCallback(() => {
@@ -777,27 +786,7 @@ export function ArtworkAdd({ currentProduct }) {
       </Stack>
     </Card>
   );
-  // const Discipline = (
-  //   <Card sx={{ mb: 3 }}>
-  //     <CardHeader title="Discipline" sx={{ mb: 3 }} />
 
-  //     <Divider />
-  //     <Stack spacing={3} sx={{ p: 3 }}>
-  //       <Field.SingelSelect
-  //         checkbox
-  //         name="artworkDiscipline"
-  //         label="Artwork Discipline"
-  //         options={PRODUCT_CATAGORYONE_OPTIONS}
-  //       />
-  //       <Field.MultiSelect
-  //         checkbox
-  //         name="artworkTags"
-  //         label="Artwork Tags"
-  //         options={ARTWORK_TAGES_OPTIONS}
-  //       />
-  //     </Stack>
-  //   </Card>
-  // );
   const Promotions = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Promotions" sx={{ mb: 3 }} />

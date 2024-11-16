@@ -3,7 +3,7 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 import { z as zod } from 'zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -25,6 +25,8 @@ export const NewProductSchema = zod.object({
   inProcessImage: zod.any(),
   mainVideo: schemaHelper.file({ required: false }).optional(),
   additionalVideo: schemaHelper.file({ required: false }).optional(),
+  existingImages: zod.any().array().optional(),
+  existingVideos: zod.any().array().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -38,6 +40,8 @@ export function Media({
   tabState,
 }: AddArtistComponentProps) {
   const view = useSearchParams().get('view');
+  const id = useSearchParams().get('id');
+
   const isReadOnly = view !== null;
   const url = "https://dev.freshartclub.com/images"
 
@@ -54,13 +58,27 @@ export function Media({
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
+  let imgArr = [];
+  let videoArr = [];
+
+  if (id && artistFormData) {
+    artistFormData.additionalImage && artistFormData.additionalImage.length > 0 && artistFormData.additionalImage.forEach((item: any, i) => (
+      imgArr.push(`${url}/users/${item}`)
+    ))
+    artistFormData.additionalVideo && artistFormData.additionalVideo.length > 0 && artistFormData.additionalVideo.forEach((item: any, i) => (
+      videoArr.push(`${url}/videos/${item}`)
+    ))
+  }
+  
   const defaultValues = useMemo(
     () => ({
       profileImage: artistFormData?.profileImage || null,
-      additionalImage: artistFormData?.additionalImage || [],
+      additionalImage: imgArr || [],
       inProcessImage: artistFormData?.inProcessImage || null,
       mainVideo: artistFormData?.mainVideo || null,
-      additionalVideo: artistFormData?.additionalVideo || [],
+      additionalVideo: videoArr || [],
+      existingImages: artistFormData?.additionalImage || [],
+      existingVideos: artistFormData?.additionalVideo || [],
       isContainsImage: true,
       count: 4,
     }),
@@ -73,18 +91,17 @@ export function Media({
   });
 
   const { setValue, trigger, handleSubmit } = formProps;
-  const { fields, append, remove } = useFieldArray({
-    control: formProps.control,
-    name: 'media',
-  });
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     if (!data.profileImage) {
       return toast.error('Main Photo is required!');
     }
+
     data.count = 4;
     data.isContainsImage = true;
+    data.existingImages = formProps.getValues('existingImages');
+    data.existingVideos = formProps.getValues('existingVideos');
 
     mutate({
       body: data,
@@ -103,12 +120,14 @@ export function Media({
 
   const handleRemoveAdditionalImages = useCallback(() => {
     setValue('additionalImage', []);
+    setValue("existingImages", []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalImage = useCallback(
     (image) => {
-      const arr = formProps.getValues('additionalImage').filter((val) => val.name !== image.name);
+      const arr = formProps.getValues('additionalImage').filter((val) => val !== image);
       setValue('additionalImage', arr);
+      setValue("existingImages", arr);
     },
     [setValue]
   );
@@ -123,12 +142,14 @@ export function Media({
 
   const handleRemoveAdditionalVideos = useCallback(() => {
     setValue('additionalVideo', []);
+    setValue("existingVideos", []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalVideo = useCallback(
     (video) => {
-      const arr = formProps.getValues('additionalVideo').filter((val) => val.name !== video.name);
+      const arr = formProps.getValues('additionalVideo').filter((val) => val !== video);
       setValue('additionalVideo', arr);
+      setValue("existingVideos", arr);
     },
     [setValue]
   );

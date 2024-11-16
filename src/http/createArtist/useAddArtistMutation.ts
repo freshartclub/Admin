@@ -16,6 +16,31 @@ const useAddArtistMutation = (handleOnSuccess) => {
     if (body?.isContainsImage) {
       const formData = new FormData();
 
+      body?.additionalImage &&
+        body?.additionalImage?.forEach((element) => {
+          if (typeof element === 'object') {
+            formData.append('additionalImage', element);
+          }
+        });
+
+      body?.additionalVideo &&
+        body?.additionalVideo?.forEach((element) => {
+          if (typeof element === 'object') {
+            formData.append('additionalVideo', element);
+          }
+        });
+
+      body?.uploadDocs &&
+        body?.uploadDocs?.forEach((element) => {
+          if (typeof element === 'object') {
+            formData.append('uploadDocs', element);
+          }
+        });
+
+      delete body?.additionalImage;
+      delete body?.additionalVideo;
+      delete body?.uploadDocs;
+
       Object.keys(body).forEach((key) => {
         if (Array.isArray(body[key])) {
           body[key].forEach((item) => {

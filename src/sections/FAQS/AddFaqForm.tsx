@@ -2,10 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
+import { toast } from 'src/components/snackbar';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useSearchParams } from 'src/routes/hooks';
@@ -27,8 +26,9 @@ export const NewPostSchema = zod.object({
   faqGrp: zod.string().min(1, { message: 'FAQ Grp is required!' }),
   faqQues: zod.string().min(1, { message: 'FAQ Question is required!' }),
   faqAns: zod.string().min(1, { message: 'faq Description is required!' }),
-  faqImg: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
+  faqImg: schemaHelper.file({ required: false }).optional(),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  existingImages: zod.string().array().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -38,8 +38,6 @@ export function AddFaqForm() {
   const { data, isLoading } = useGetFAQById(id);
   const navigate = useNavigate();
 
-  const url = `${data?.url}/uploads/users`;
-
   const defaultValues = useMemo(
     () => ({
       faqGrp: data?.data?.faqGrp || '',
@@ -47,6 +45,7 @@ export function AddFaqForm() {
       faqAns: data?.data?.faqAns || '',
       faqImg: data?.data?.faqImg || [],
       tags: data?.data?.tags || [],
+      existingImages: []
     }),
     [data?.data]
   );
@@ -59,14 +58,20 @@ export function AddFaqForm() {
   const { reset, watch, setValue, handleSubmit } = methods;
   const values = watch();
 
+  let arr: any = [];
+
   useEffect(() => {
     if (id && data?.data) {
+      data?.data?.faqImg && data?.data?.faqImg.length > 0 && data?.data?.faqImg.forEach((item, i) => (
+        arr.push(`${data?.url}/users/${item}`)
+      ))
       reset({
         faqGrp: data?.data?.faqGrp || '',
         faqQues: data?.data?.faqQues || '',
         faqAns: data?.data?.faqAns || '',
-        faqImg: data?.data?.faqImg || [],
+        faqImg: arr || [],
         tags: data?.data?.tags || [],
+        existingImages: data?.data?.faqImg || [],
       });
     }
   }, [data?.data, reset]);
@@ -75,7 +80,19 @@ export function AddFaqForm() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      if (!data.faqImg) {
+        toast.error("Please upload at least one image");
+      }
+
       const formData = new FormData();
+
+      data?.faqImg && data?.faqImg?.forEach((item: any) => {
+        if (typeof item === 'object') {
+          formData.append('faqImg', item);
+        }
+      })
+
+      delete data?.faqImg;
 
       Object.keys(data).forEach((key) => {
         if (Array.isArray(data[key])) {
@@ -95,14 +112,16 @@ export function AddFaqForm() {
 
   const handleRemoveFileDetails = useCallback(
     (inputFile: any) => {
-      const filtered = values.faqImg && values.faqImg?.filter((file) => file !== inputFile);
+      const filtered = values.faqImg.filter((file) => file !== inputFile);
       setValue('faqImg', filtered);
+      setValue("existingImages", filtered);
     },
     [setValue, values.faqImg]
   );
 
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('faqImg', []);
+  const handleRemoveAllFiles = useCallback(async () => {
+    await setValue('faqImg', []);
+    await setValue('existingImages', []);
   }, [setValue]);
 
   const renderDetails = (
@@ -117,7 +136,6 @@ export function AddFaqForm() {
         />
         <Field.Text required name="faqQues" label="Faq Question" />
         <Field.Text
-          required
           name="faqAns"
           label="FAQ Answer (write min 250 word)"
           multiline

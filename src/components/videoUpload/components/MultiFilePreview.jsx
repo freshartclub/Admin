@@ -19,7 +19,14 @@ export function MultiFilePreviewVideo({ sx, onRemove, files = [] }) {
       {files.map((file, i) => {
         const fileName = file.name;
         const fileSize = fData(file.size);
-        const previewUrl = file.includes('https') ? URL.createObjectURL(file) : '';
+        let previewUrl;
+        if (typeof file === 'string') {
+          previewUrl = file;
+        } else if (file instanceof File) {
+          previewUrl = URL.createObjectURL(file);
+        } else {
+          previewUrl = file;
+        }
 
         return (
           <Box

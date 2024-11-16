@@ -17,6 +17,14 @@ const useCreateArtworkMutation = (id) => {
   }) {
     const formData = new FormData();
 
+    newData?.data?.images && newData?.data?.images?.forEach((item: any) => {
+      if (typeof item === 'object') {
+        formData.append('images', item);
+      }
+    })
+
+    delete newData?.data?.images;
+
     Object.keys(newData.data).forEach((key) => {
       if (Array.isArray(newData.data[key])) {
         newData.data[key].forEach((item) => {
@@ -45,7 +53,6 @@ const useCreateArtworkMutation = (id) => {
   return useMutation({
     mutationFn: createArtwork,
     onSuccess: async (res, body) => {
-      console.log(res.data);
       toast.success(res.data.message);
       navigate(
         paths.dashboard.artwork.artworkDetail + '?id=' + res.data.data._id + '&preview=true'

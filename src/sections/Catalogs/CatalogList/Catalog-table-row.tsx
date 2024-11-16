@@ -46,8 +46,6 @@ export function CatalogTableRow({
   const popover = usePopover();
   const navigate = useNavigate();
 
-  const newUrl = `${url}/uploads/users/${row?.catalogImg}`;
-
   const list = (val) => {
     if (!val || val.length === 0) return '';
     return val.join(', ');
@@ -66,7 +64,7 @@ export function CatalogTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" sx={{ whiteSpace: 'nowrap' }}>
-            <Avatar alt={row.catalogName}>{newUrl}</Avatar>
+            <Avatar alt={row?.catalogName} src={`${url}/users/${row?.catalogImg}`} />
 
             <ListItemText
               disableTypography

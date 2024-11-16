@@ -20,7 +20,7 @@ import { paths } from 'src/routes/paths';
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
-  insigniaImage: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
+  insigniaImage: schemaHelper.file({required: false}).optional(),
   credentialName: zod.string().min(1, { message: 'Name is required!' }),
   credentialGroup: zod.string().min(1, { message: 'Group is required!' }),
   credentialPriority: zod.string().min(1, { message: 'Display Priority is required!' }),
@@ -38,13 +38,13 @@ export function AddCreadentialForm() {
 
   const defaultValues = useMemo(
     () => ({
-      insigniaImage: `${data?.url}/users/${data?.data?.insigniaImage}` || null,
+      insigniaImage: data?.data?.insigniaImage || null,
       isActive: data?.data?.isActive || true,
       credentialName: data?.data?.credentialName || '',
       credentialGroup: data?.data?.credentialGroup || '',
       credentialPriority: data?.data?.credentialPriority || '',
     }),
-    [data?.data]
+    [data]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -68,12 +68,18 @@ export function AddCreadentialForm() {
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
+      if (!data.insigniaImage) {
+        toast.error('Image is required');
+        return;
+      }
       const formData = new FormData();
+      if(!data.insigniaImage.includes("https")){
+        formData.append('insigniaImage', data.insigniaImage);
+      }
 
       formData.append('credentialGroup', data.credentialGroup);
       formData.append('credentialName', data.credentialName);
       formData.append('credentialPriority', data.credentialPriority);
-      formData.append('insigniaImage', data.insigniaImage);
       formData.append('isActive', data.isActive);
 
       mutate(formData);

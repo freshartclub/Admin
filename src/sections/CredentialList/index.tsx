@@ -35,15 +35,17 @@ export function CredentialAreaList() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
+  const [url,setUrl] = useState('');
 
   const { data, isLoading, } = useGetInsigniaList(debounceSearch);
 
   useEffect(() => {
-    if (data) {
-      setList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setList(data?.data);
+      setNotFound(data?.data?.length === 0);
+      setUrl(data?.data?.url);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _list,
@@ -120,6 +122,7 @@ export function CredentialAreaList() {
                     <CredentialTable
                       key={row._id}
                       row={row}
+                      url={url}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

@@ -23,6 +23,7 @@ import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMu
 export const NewProductSchema = zod.object({
   documentName: zod.string().min(1, { message: 'Document Name is required!' }).optional(),
   uploadDocs: schemaHelper.files({ required: false }).optional(),
+  existingDocuments: zod.any().array().optional(),
   managerArtistName: zod.string().optional(),
   managerArtistSurnameOther1: zod.string().optional(),
   managerArtistSurname2: zod.string().optional(),
@@ -53,7 +54,10 @@ export function OtherDetails({
   tabState,
 }: AddArtistComponentProps) {
   const view = useSearchParams().get('view');
+  const id = useSearchParams().get('id');
+
   const isReadOnly = view !== null;
+  const url = "https://dev.freshartclub.com/images"
 
   const [showPop, setShowPop] = useState(false);
 
@@ -69,10 +73,21 @@ export function OtherDetails({
   const { isPending: isActivePending, mutate: activeMutate } =
     useActivateArtistMutation(handleSuccess);
 
+  let documentArr = [];
+
+  if (id && artistFormData) {
+    artistFormData?.uploadDocs && artistFormData?.uploadDocs?.length > 0 && artistFormData?.uploadDocs?.forEach((item: any, i) => (
+      documentArr.push(`${url}/documents/${item}`)
+    ));
+  }
+
+  console.log(documentArr);
+
   const defaultValues = useMemo(
     () => ({
       documentName: artistFormData?.documentName || '',
-      uploadDocs: artistFormData?.uploadDocs || [],
+      uploadDocs: documentArr || [],
+      existingDocuments: artistFormData?.uploadDocs || [],
       managerArtistName: artistFormData?.managerArtistName || '',
       managerArtistSurnameOther1: artistFormData?.managerArtistSurnameOther1 || '',
       managerArtistSurname2: artistFormData?.managerArtistSurname2 || '',
@@ -113,37 +128,40 @@ export function OtherDetails({
 
   const handleRemoveDocument = useCallback(
     (doc) => {
-      const arr = methods.getValues('uploadDocs').filter((val) => val.name !== doc.name);
+      const arr = methods.getValues('uploadDocs').filter((val) => val !== doc);
       setValue('uploadDocs', arr);
+      setValue('existingDocuments', arr);
     },
     [setValue]
   );
 
-  const handleDuplicateDocument = () => {
-    const arr = methods.getValues('uploadDocs');
-    const seenNames = new Set();
+  // const handleDuplicateDocument = () => {
+  //   const arr = methods.getValues('uploadDocs');
+  //   const seenNames = new Set();
 
-    const uniqueFiles = arr.filter((doc) => {
-      if (seenNames.has(doc.name)) {
-        return false;
-      }
-      seenNames.add(doc.name);
-      return true;
-    });
+  //   const uniqueFiles = arr.filter((doc) => {
+  //     if (seenNames.has(doc.name)) {
+  //       return false;
+  //     }
+  //     seenNames.add(doc.name);
+  //     return true;
+  //   });
 
-    setValue('uploadDocs', uniqueFiles);
-  };
+  //   setValue('uploadDocs', uniqueFiles);
+  // };
 
   useEffect(() => {
     methods.watch('uploadDocs');
-    handleDuplicateDocument();
+    // handleDuplicateDocument();
   }, [methods.getValues('uploadDocs')]);
 
   const onSubmit = handleSubmit(async (data) => {
     data.count = 7;
     data.isContainsImage = true;
     data.uploadDocs = methods.getValues('uploadDocs');
+    data.existingDocuments = methods.getValues('existingDocuments');
     data.isManagerDetails = false;
+
     if (isOn) {
       data.isManagerDetails = true;
     }

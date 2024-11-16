@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router';
 export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 export const NewProductSchema = zod.object({
-  disciplineImage: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
+  disciplineImage: schemaHelper.file({ required: false }).optional(),
   name: zod.string().min(1, { message: 'Title is required!' }),
   spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   description: zod.string().min(1, { message: 'Discription is required!' }),
@@ -41,13 +41,13 @@ export function AddDisciline() {
 
   const defaultValues = useMemo(
     () => ({
-      disciplineImage:`${data?.url}/users/${data?.data?.disciplineImage}` || null,
+      disciplineImage: data?.data?.disciplineImage || null,
       name: data?.data?.disciplineName || '',
       isDeleted: data?.data?.isDeleted || false,
       spanishName: data?.data?.disciplineSpanishName || '',
       description: data?.data?.disciplineDescription || '',
     }),
-    [data?.data]
+    [data]
   );
 
   const methods = useForm<NewProductSchemaType>({
@@ -60,7 +60,7 @@ export function AddDisciline() {
   useEffect(() => {
     if (id && data?.data) {
       reset({
-        disciplineImage: `${data?.url}/users/${data?.data?.disciplineImage}`|| null,
+        disciplineImage: `${data?.url}/users/${data?.data?.disciplineImage}` || null,
         name: data?.data?.disciplineName || '',
         isDeleted: data?.data?.isDeleted || false,
         spanishName: data?.data?.disciplineSpanishName || '',
@@ -81,7 +81,9 @@ export function AddDisciline() {
       }
       const formData = new FormData();
 
-      formData.append('disciplineImage', data.disciplineImage);
+      if (!data.disciplineImage.includes("https")) {
+        formData.append('disciplineImage', data.disciplineImage);
+      }
       formData.append('name', data.name);
       formData.append('spanishName', data.spanishName);
       formData.append('description', data.description);

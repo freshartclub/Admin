@@ -52,29 +52,26 @@ export function ArtworkListView() {
   const confirm = useBoolean();
 
   const [notFound, setNotFound] = useState(false);
+  const [url, setUrl] = useState('');
   const [_artworkList, setArtworkList] = useState<IUserItem[]>([]);
 
   const { data, isLoading } = useGetArtworkList();
 
   useEffect(() => {
-    if (data) {
-      setArtworkList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setArtworkList(data?.data);
+      setUrl(data?.url);
+      setNotFound(data?.data?.length === 0);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _artworkList,
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
-
-  const handleEditRow = (id: string) => {
-    console.log(id);
-  };
+  const handleDeleteRow = (id: string) => { };
+  const handleEditRow = (id: string) => { };
 
   return isLoading ? (
     <LoadingScreen />
@@ -164,6 +161,7 @@ export function ArtworkListView() {
                     <ArtworkTableRow
                       key={i}
                       row={row}
+                      url={url}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => table.onSelectRow(row.id)}
                       // onViewRow={() => handleViewRow(row.id)}

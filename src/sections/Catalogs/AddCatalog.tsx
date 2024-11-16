@@ -1,5 +1,3 @@
-import type { IPostItem } from 'src/types/blog';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,6 +8,8 @@ import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { Art_provider, ArtworkList, CATAGORY_PLAN_OPTIONS, Collections } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
@@ -18,7 +18,6 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
-import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -42,8 +41,6 @@ export function AddCatalogForm() {
   const navigate = useNavigate();
   const { data, isLoading } = useGetCatalogById(id);
 
-  const url = `${data?.url}/uploads/users`;
-
   const defaultValues = useMemo(
     () => ({
       catalogName: data?.data?.catalogName || '',
@@ -53,7 +50,7 @@ export function AddCatalogForm() {
       artProvider: data?.data?.artProvider || [],
       subPlan: data?.data?.subPlan || '',
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
-      catalogImg: `${url}/${data?.data?.catalogImg}` || null,
+      catalogImg: data?.data?.catalogImg || null,
     }),
     [data?.data]
   );
@@ -75,7 +72,7 @@ export function AddCatalogForm() {
         artProvider: data?.data?.artProvider || [],
         subPlan: data?.data?.subPlan || '',
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
-        catalogImg: data?.data?.catalogImg || null,
+        catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
       });
     }
   }, [data?.data, reset]);
@@ -84,7 +81,17 @@ export function AddCatalogForm() {
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
+      if (!data.catalogImg) {
+        toast.error('Image is required');
+        return;
+      }
       const formData = new FormData();
+
+      if (!data.catalogImg.includes("https")) {
+        formData.append('catalogImg', data.catalogImg);
+      }
+
+      delete data.catalogImg;
 
       Object.keys(data).forEach((key) => {
         if (Array.isArray(data[key])) {

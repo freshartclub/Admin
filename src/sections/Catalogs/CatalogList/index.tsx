@@ -61,9 +61,9 @@ export function CatalogListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
+  const handleDeleteRow = (id: string) => { };
+  const handleEditRow = (id: string) => { };
+  const handleViewRow = (id: string) => { };
 
   return (
     <>

@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search) {
   const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDiscipline}?s=${search}`);
-  return data.data;
+  return data;
 }
 
 export const useGetDisciplineSearchData = (search) => {
