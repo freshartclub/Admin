@@ -189,6 +189,16 @@ export function CreateArtistForm() {
     getLocation();
   }, [methods.getValues('existingCountry')]);
 
+  const name = (val) => {
+    console.log(val);
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   if (isLoading) return <LoadingScreen />;
 
   return (
@@ -255,6 +265,7 @@ export function CreateArtistForm() {
                   required
                   onClick={() => setOpen(true)}
                   name="existingId"
+                  placeholder='Search By UserId, Name or Email'
                   label="Existing User Account Id"
                 />
                 {methods.getValues('existingId') && open && (
@@ -273,13 +284,13 @@ export function CreateArtistForm() {
                             }}
                           >
                             <Stack spacing={2} direction="row" alignItems="center">
-                              <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
+                              <Avatar alt={i?.artistName}>{`${i?.url}/users/${i?.profile?.mainImage}`}</Avatar>
 
                               <ListItemText
                                 disableTypography
                                 primary={
                                   <Typography variant="body2" noWrap>
-                                    {i?.artistName} - {i?.userId}
+                                    {name(i)} - {i?.userId}
                                   </Typography>
                                 }
                                 secondary={

@@ -63,7 +63,7 @@ export const NewProductSchema = zod.object({
   artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
   artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
   artistName: zod.string().min(1, { message: 'artistName is required!' }),
-  artworkCreationYear: zod.string().min(1, { message: 'Artwork Creation Year is required!' }),
+  artworkCreationYear: zod.any().optional(),
   artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
   productDescription: zod.string().optional(),
   mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
@@ -84,9 +84,9 @@ export const NewProductSchema = zod.object({
   hangingDescription: zod.string().optional(),
   framed: zod.string().min(1, { message: 'Framed is required!' }),
   framedDescription: zod.string().optional(),
-  frameHeight: zod.string().min(1, { message: 'Height required!' }),
-  frameLenght: zod.string().min(1, { message: 'Lenght required!' }),
-  frameWidth: zod.string().min(1, { message: 'Width required!' }),
+  frameHeight: zod.string().optional(),
+  frameLenght: zod.string().optional(),
+  frameWidth: zod.string().optional(),
   artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
@@ -100,8 +100,9 @@ export const NewProductSchema = zod.object({
   dpersentage: zod.string().min(1, { message: 'Descount not be $0.00' }),
   vatAmount: zod.string().optional(),
   artistbaseFees: zod.string().optional(),
-  purchaseOptions: zod.string().min(1, { message: 'Purchase Option is required!' }),
+  purchaseOptions: zod.string().optional(),
   purchaseOption: zod.string().optional(),
+  offensive: zod.string().optional(),
   pCode: zod.string().min(1, { message: 'Product Code is required!' }),
   location: zod.string().min(1, { message: 'location is required!' }),
   artworkDiscipline: zod.string(),
@@ -124,61 +125,61 @@ export function ArtworkAdd({ currentProduct }) {
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
       ? disciplineData
-        .filter((item: any) => !item.isDeleted)
-        .map((item: any) => ({
-          value: item?.disciplineName,
-          label: item?.disciplineName,
-        }))
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => ({
+            value: item?.disciplineName,
+            label: item?.disciplineName,
+          }))
       : [];
 
   let TechnicArr: any = [];
   const TechnicOptions =
     technicData && technicData.length > 0
       ? technicData
-        .filter((item: any) => !item.isDeleted)
-        .map((item: any) => {
-          let localObj: any = {
-            value: '',
-            label: '',
-            disciplineName: [],
-          };
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
 
-          localObj.value = item?.technicName;
-          localObj.label = item?.technicName;
-          localObj.disciplineName =
-            item?.discipline &&
-            item?.discipline.length > 0 &&
-            item?.discipline.map((item: any) => item?.disciplineName);
+            localObj.value = item?.technicName;
+            localObj.label = item?.technicName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
 
-          TechnicArr.push(localObj);
+            TechnicArr.push(localObj);
 
-          return TechnicArr;
-        })
+            return TechnicArr;
+          })
       : [];
 
   let ThemeArr: any = [];
   const ThemeOptions =
     themeData && themeData.length > 0
       ? themeData
-        .filter((item: any) => !item.isDeleted)
-        .map((item: any) => {
-          let localObj: any = {
-            value: '',
-            label: '',
-            disciplineName: [],
-          };
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
 
-          localObj.value = item?.themeName;
-          localObj.label = item?.themeName;
-          localObj.disciplineName =
-            item?.discipline &&
-            item?.discipline.length > 0 &&
-            item?.discipline.map((item: any) => item?.disciplineName);
+            localObj.value = item?.themeName;
+            localObj.label = item?.themeName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
 
-          ThemeArr.push(localObj);
+            ThemeArr.push(localObj);
 
-          return ThemeArr;
-        })
+            return ThemeArr;
+          })
       : [];
 
   const id = useSearchParams().get('id');
@@ -191,7 +192,9 @@ export function ArtworkAdd({ currentProduct }) {
 
   let arr: any = [];
   if (id && data?.data) {
-    data?.images && data?.images.length > 0 && data?.images.map((item) => arr.push(`${data?.url}/images/${item}`));
+    data?.data?.media?.images &&
+      data?.data?.media?.images.length > 0 &&
+      data?.data?.media?.images.map((item) => arr.push(`${data?.url}/users/${item}`));
   }
 
   const defaultValues = useMemo(
@@ -203,12 +206,22 @@ export function ArtworkAdd({ currentProduct }) {
       artworkSeries: data?.data?.artworkSeries || '',
       productDescription: data?.data?.productDescription || '',
 
-      mainImage: data?.data?.mainImage ? `${data?.url}/images/${data?.data?.mainImage}` : null,
-      backImage: data?.data?.backImage ? `${data?.url}/images/${data?.data?.backImage}` : null,
-      inProcessImage: data?.data?.inProcessImage ? `${data?.url}/images/${data?.data?.inProcessImage}` : null,
+      mainImage: data?.data?.media?.mainImage
+        ? `${data?.url}/users/${data?.data?.media?.mainImage}`
+        : null,
+      backImage: data?.data?.media?.backImage
+        ? `${data?.url}/users/${data?.data?.media?.backImage}`
+        : null,
+      inProcessImage: data?.data?.media?.inProcessImage
+        ? `${data?.url}/users/${data?.data?.media?.inProcessImage}`
+        : null,
       images: arr || [],
-      mainVideo: data?.data?.mainVideo ? `${data?.url}/videos/${data?.data?.mainVideo}` : null,
-      otherVideo: data?.data?.otherVideo ? `${data?.url}/videos/${data?.data?.otherVideo}` : null,
+      mainVideo: data?.data?.media?.mainVideo
+        ? `${data?.url}/videos/${data?.data?.media?.mainVideo}`
+        : null,
+      otherVideo: data?.data?.media?.otherVideo
+        ? `${data?.url}/videos/${data?.data?.media?.otherVideo}`
+        : null,
       existingImages: [],
 
       artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
@@ -240,7 +253,7 @@ export function ArtworkAdd({ currentProduct }) {
       dpersentage: data?.data?.pricing?.dpersentage || '',
       vatAmount: data?.data?.pricing?.vatAmount || '',
       artistFees: data?.data?.pricing?.artistFees || '',
-      offensive: data?.data?.offensive || '',
+      offensive: data?.data?.additionalInfo?.offensive || '',
       artistbaseFees: data?.data?.commercialization?.artistbaseFees || '',
       pCode: data?.data?.inventoryShipping?.pCode || '',
       location: data?.data?.inventoryShipping?.location || '',
@@ -257,6 +270,11 @@ export function ArtworkAdd({ currentProduct }) {
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
+    setValue('purchaseOptions', event.target.value);
+  };
+
+  const handleYearChange = (event) => {
+    setValue('artworkCreationYear', event.$y);
   };
 
   const { mutate, isPending } = useCreateArtworkMutation(id);
@@ -266,7 +284,15 @@ export function ArtworkAdd({ currentProduct }) {
     defaultValues,
   });
 
-  const { reset, watch, setValue, handleSubmit } = methods;
+  const {
+    reset,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
+  console.log(errors);
+
   const selectedDisciplines = useWatch({
     control: methods.control,
     name: 'artworkDiscipline',
@@ -301,6 +327,7 @@ export function ArtworkAdd({ currentProduct }) {
         data: data,
         id: mongoDBId,
       };
+
       mutate({
         newData: newData,
         onUploadProgress: (progressEvent) => {
@@ -375,6 +402,13 @@ export function ArtworkAdd({ currentProduct }) {
 
   const currentYear = dayjs();
 
+  useEffect(() => {
+    if (id) {
+      setOpen(false);
+      setmongoDBId(data?.data?.owner?._id);
+    }
+  });
+
   const renderDetails = (
     <Card sx={{ mb: 3, position: 'relative' }}>
       <CardHeader title="General Informations" sx={{ mb: 3 }} />
@@ -383,7 +417,12 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <div className="relative">
-          <Field.Text name="artistID" label="Artist ID" placeholder="Search by artist Name/Email" />
+          <Field.Text
+            disabled={id ? true : false}
+            name="artistID"
+            label="Artist ID"
+            placeholder="Search by artist Name/Email"
+          />
           {methods.getValues('artistID') && open && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -400,7 +439,7 @@ export function ArtworkAdd({ currentProduct }) {
                       }}
                     >
                       <Stack spacing={2} direction="row" alignItems="center">
-                        <Avatar alt={'heyy'}>{i?.avatar}</Avatar>
+                        <Avatar alt={i?.artistName} src={i?.profile?.mainImage} />
 
                         <ListItemText
                           disableTypography
@@ -430,7 +469,7 @@ export function ArtworkAdd({ currentProduct }) {
             </div>
           )}
         </div>
-        <Field.Text name="artistName" label=" Artist Name" />
+        <Field.Text disabled={id ? true : false} name="artistName" label=" Artist Name" />
         <Field.Text name="artworkName" label=" Artwork Name" />
 
         <Box
@@ -442,9 +481,11 @@ export function ArtworkAdd({ currentProduct }) {
           <DatePicker
             name="artworkCreationYear"
             label="Artwork Year"
+            // defaultValue={currentYear}
             maxDate={currentYear}
             views={['year']}
             openTo="year"
+            onChange={(e) => handleYearChange(e)}
           />
 
           <Field.SingelSelect
@@ -497,7 +538,7 @@ export function ArtworkAdd({ currentProduct }) {
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
             onRemoveAll={handleRemoveAllFiles}
-          // onUpload={() => console.info('ON UPLOAD')}
+            // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
         <Box
@@ -525,7 +566,6 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-
         <Field.SingelSelect
           checkbox
           name="artworkDiscipline"
@@ -546,11 +586,11 @@ export function ArtworkAdd({ currentProduct }) {
               selectedDisciplines && selectedDisciplines
                 ? filterTechnicForDiscipline(selectedDisciplines)
                 : [
-                  {
-                    value: '',
-                    label: 'Please select discipline first',
-                  },
-                ]
+                    {
+                      value: '',
+                      label: 'Please select discipline first',
+                    },
+                  ]
             }
           />
 
@@ -562,11 +602,11 @@ export function ArtworkAdd({ currentProduct }) {
               selectedDisciplines && selectedDisciplines
                 ? filterThemeForDiscipline(selectedDisciplines)
                 : [
-                  {
-                    value: '',
-                    label: 'Please select discipline first',
-                  },
-                ]
+                    {
+                      value: '',
+                      label: 'Please select discipline first',
+                    },
+                  ]
             }
           />
         </Box>
@@ -634,9 +674,9 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="FrameHeight" label="Height (in cm)" />
-          <Field.Text name="FrameLenght" label="Lenght (in cm)" />
-          <Field.Text name="FrameWidth" label="Width (in cm)" />
+          <Field.Text name="frameHeight" label="Height (in cm)" />
+          <Field.Text name="frameLenght" label="Lenght (in cm)" />
+          <Field.Text name="frameWidth" label="Width (in cm)" />
         </Box>
         <Field.MultiSelect
           checkbox
@@ -683,8 +723,7 @@ export function ArtworkAdd({ currentProduct }) {
             />
           </RadioGroup>
         </FormControl>
-        {
-          selectedOption === 'subscription' &&
+        {selectedOption === 'subscription' && (
           <>
             <Field.SingelSelect
               checkbox
@@ -699,9 +738,8 @@ export function ArtworkAdd({ currentProduct }) {
               options={ARTWORK_PURCHASECATALOG_OPTIONS}
             />
           </>
-        }
-        {
-          selectedOption === 'purchase' &&
+        )}
+        {selectedOption === 'purchase' && (
           <>
             <Field.SingelSelect
               checkbox
@@ -725,7 +763,6 @@ export function ArtworkAdd({ currentProduct }) {
             />
             <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
 
-
             <Field.SingelSelect
               checkbox
               name="priceRequest"
@@ -733,8 +770,7 @@ export function ArtworkAdd({ currentProduct }) {
               options={ARTWORK_UPWORKOFFER_OPTIONS}
             />
           </>
-        }
-
+        )}
       </Stack>
     </Card>
   );

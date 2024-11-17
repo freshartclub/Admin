@@ -23,14 +23,14 @@ export function ArtworkDetailView() {
 
   useEffect(() => {
     const arr = [
-      data?.media?.mainImage,
-      data?.media?.backImage,
-      data?.media?.inProcessImage,
-      ...(data?.media?.images || []),
+      data?.data?.media?.mainImage,
+      data?.data?.media?.backImage,
+      data?.data?.media?.inProcessImage,
+      ...(data?.data?.media?.images || []),
     ].filter(Boolean);
 
     setImages(arr);
-  }, [data]);
+  }, [data?.data]);
 
   const sliderRef = useRef<Slider>(null);
   const settings = {
@@ -48,7 +48,7 @@ export function ArtworkDetailView() {
     }
   };
 
-  const url = 'http://localhost:5000/uploads/users';
+  const url = 'https://dev.freshartclub.com/images/users';
 
   return isPending ? (
     <LoadingScreen />
@@ -108,7 +108,7 @@ export function ArtworkDetailView() {
           </div>
 
           <div className="lg:w-[50%] w-full">
-            <DiscoverContent data={data} preview={preview} />
+            <DiscoverContent data={data?.data} preview={preview} />
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export function ArtworkDetailView() {
           </Button>
         </div> */}
 
-        <ProductInfo data={data} preview={preview} />
+        <ProductInfo data={data?.data} preview={preview} />
       </div>
       {!preview && <SelectedSection />}
     </>

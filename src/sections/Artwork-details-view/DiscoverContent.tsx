@@ -186,13 +186,13 @@ const DiscoverContent = ({ data, preview }) => {
         <div className="flex flex-wrap w-full justify-between">
           <div className="flex gap-1">
             <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-              SKU :
+              Code :
             </P>
             <P
               variant={{ size: 'small', weight: 'medium' }}
               className=" text-[#999999] text-[14px]"
             >
-              {data?.inventoryShipping?.sku}
+              {data?.inventoryShipping?.pCode}
             </P>
           </div>
           <div className="flex gap-1">

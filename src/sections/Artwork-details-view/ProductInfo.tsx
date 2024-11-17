@@ -164,7 +164,6 @@ const ProductInfo = ({ data, preview }) => {
           <div className="flex flex-col my-5">
             <PreviewData head="Location" val={data?.inventoryShipping?.location} />
             <PreviewData head="Pin Code" val={data?.inventoryShipping?.pCode} />
-            <PreviewData head="SKU" val={data?.inventoryShipping?.sku} />
             <PreviewData head="Artist Fees" val={'$ ' + data?.pricing?.artistFees} />
             <PreviewData head="Base Price" val={'$ ' + data?.pricing?.basePrice} />
             <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
