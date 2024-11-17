@@ -51,7 +51,7 @@ export function CredentialTable({ row, url, selected, onEditRow, onSelectRow, on
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.insigniaImage} src={`${url}/users/${row?.insigniaImage}`} />
+            <Avatar alt={row?.credentialName} src={`${url}/users/${row?.insigniaImage}`} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>

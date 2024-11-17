@@ -25,7 +25,6 @@ import { phoneNo } from 'src/utils/change-case';
 import { fDate } from 'src/utils/format-time';
 import { useBanRequestMutation } from './http/useBanRequestMutation';
 import { useRejectRequestMutation } from './http/useRejectRequestMutation';
-
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -40,6 +39,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
   const popover = usePopover();
 
   const [banPopUp, setBanPopUp] = useState(false);
+  const [showDocsPreview, setShowDocsPreview] = useState(false);
   const [rejectPopUp, setRejectPopUp] = useState(false);
 
   const { mutate, isPending } = useRejectRequestMutation(setRejectPopUp);
@@ -54,6 +54,32 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
   const handleBan = async (id) => {
     banMutate(id);
   };
+
+  const handleDocsPreview = () => {
+    setShowDocsPreview(true);
+  };
+
+  const docsPreviewBox = (
+    <Dialog
+      sx={{ width: '100%' }}
+      open={showDocsPreview}
+      onClose={() => {
+        setShowDocsPreview(false);
+      }}
+    >
+      <DialogContent sx={{ p: 2, width: '100%' }}>
+        <iframe src={`https://dev.freshartclub.com/images/documents/${row?.document?.documents[0]}`} width="100%" height="500px"></iframe>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => setShowDocsPreview(false)}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          Close
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
 
   const banDialogBox = (
     <Dialog
@@ -132,9 +158,9 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ alignContent: 'center' }}>
-          <RouterLink href={`${paths.dashboard.artist.createArtist}/${row._id}`}>
+          <span onClick={handleDocsPreview}>
             <Iconify icon="mdi:eye-outline" />
-          </RouterLink>
+          </span>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <RouterLink
@@ -185,6 +211,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
       </CustomPopover>
       {banDialogBox}
       {rejectDialogBox}
+      {docsPreviewBox}
     </>
   );
 }

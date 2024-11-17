@@ -87,7 +87,9 @@ export function AddCatalogForm() {
       }
       const formData = new FormData();
 
-      if (!data.catalogImg.includes("https")) {
+      if (typeof data.catalogImg === 'string' && !data.catalogImg.includes("https")) {
+        formData.append('catalogImg', data.catalogImg);
+      } else if (data.catalogImg instanceof File) {
         formData.append('catalogImg', data.catalogImg);
       }
 

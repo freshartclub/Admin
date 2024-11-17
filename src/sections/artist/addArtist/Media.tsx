@@ -121,16 +121,19 @@ export function Media({
   });
 
   const handleRemoveMainImage = useCallback(() => {
+    if (isReadOnly) return;
     setValue('profileImage', null);
   }, [setValue]);
 
   const handleRemoveAdditionalImages = useCallback(() => {
+    if (isReadOnly) return;
     setValue('additionalImage', []);
     setValue('existingImages', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalImage = useCallback(
     (image) => {
+      if (isReadOnly) return;
       const arr = formProps.getValues('additionalImage').filter((val) => val !== image);
       setValue('additionalImage', arr);
       setValue('existingImages', arr);
@@ -139,20 +142,24 @@ export function Media({
   );
 
   const handleRemoveInProcessImage = useCallback(() => {
+    if (isReadOnly) return;
     setValue('inProcessImage', null);
   }, [setValue]);
 
   const handleRemoveMainVideo = useCallback(() => {
+    if (isReadOnly) return;
     setValue('mainVideo', null);
   }, [setValue]);
 
   const handleRemoveAdditionalVideos = useCallback(() => {
+    if (isReadOnly) return;
     setValue('additionalVideo', []);
     setValue('existingVideos', []);
   }, [setValue]);
 
   const handleRemoveIndividualAdditionalVideo = useCallback(
     (video) => {
+      if (isReadOnly) return;
       const arr = formProps.getValues('additionalVideo').filter((val) => val !== video);
       setValue('additionalVideo', arr);
       setValue('existingVideos', arr);
@@ -194,19 +201,30 @@ export function Media({
           </div>
 
           <div>
-            <Typography variant="additionalImage">Additional Image</Typography>
+            <Typography>Additional Image</Typography>
             <Field.Upload
+              required
+              multiple
+              disabled={isReadOnly}
+              thumbnail
+              helperText="Only 3 files are allowed at a time (Type accepted: jpg, png, jpeg, webp)"
+              name="additionalImage"
+              maxSize={3145728}
+              onRemove={handleRemoveIndividualAdditionalImage}
+              onRemoveAll={handleRemoveAdditionalImages}
+            />
+            {/* <Field.Upload
               disabled={isReadOnly}
               multiple
               onRemove={handleRemoveIndividualAdditionalImage}
               name="additionalImage"
               maxSize={3145728}
               onRemoveAll={handleRemoveAdditionalImages}
-            />
+            /> */}
           </div>
 
           <div>
-            <Typography variant="inProcessImage">Inprocess Photo</Typography>
+            <Typography>Inprocess Photo</Typography>
             <Field.Upload
               disabled={isReadOnly}
               name="inProcessImage"
@@ -225,7 +243,7 @@ export function Media({
           <div>
             <Typography>Main Video</Typography>
             {mainVi ? (
-              <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <div style={{ position: 'relative', display: 'inline-block', width: '100%', pointerEvents: `${isReadOnly ? 'none' : 'auto'}` }}>
                 <video controls width="100%" height="auto" style={{ borderRadius: '8px' }}>
                   {
                     typeof formProps.getValues('mainVideo') === 'string' ?
@@ -240,13 +258,15 @@ export function Media({
                     position: 'absolute',
                     top: '10px',
                     right: '10px',
-                    background: 'rgba(255, 0, 0, 0.7)',
+                    background: '#c4cdd5',
                     color: 'white',
                     border: 'none',
                     borderRadius: '50%',
                     width: '30px',
-                    height: '30px',
+                    height: '31px',
                     cursor: 'pointer',
+                    paddingLeft: '4px',
+                    paddingTop: '3px',
                   }}
                   title="Delete Video"
                 >
@@ -264,8 +284,21 @@ export function Media({
           </div>
           <div>
             <Typography>Additional Video</Typography>
+            {/* <Field.Upload
+              required
+              multiple
+              disabled={isReadOnly}
+              thumbnail
+              helperText="Only 3 files are allowed"
+              name="additionalVideo"
+              maxSize={3145728}
+              onRemove={handleRemoveIndividualAdditionalVideo}
+              onRemoveAll={handleRemoveAdditionalVideos}
+            /> */}
             <Field.MultiVideo
               disabled={isReadOnly}
+              thumbnail
+              helperText="Only 3 files are allowed at a time"
               accept="video/*"
               onRemoveAll={handleRemoveAdditionalVideos}
               onRemove={handleRemoveIndividualAdditionalVideo}

@@ -62,9 +62,9 @@ export function FaqListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
+  const handleDeleteRow = (id: string) => { };
+  const handleEditRow = (id: string) => { };
+  const handleViewRow = (id: string) => { };
 
   return (
     <>
@@ -142,9 +142,9 @@ export function FaqListView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, i) => (
                       <FaqTableRow
-                        key={row.id}
+                        key={i}
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}

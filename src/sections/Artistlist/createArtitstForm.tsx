@@ -107,7 +107,7 @@ export function CreateArtistForm() {
     if (!data) return;
     if (data) {
       reset({
-        existingAvatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/${data?.profile?.mainImage}` : null,
+        existingAvatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}` : null,
         existingId: data?.userId || '',
         existingName: data?.artistName || '',
         existingArtistSurname1: data?.artistSurname1 || '',

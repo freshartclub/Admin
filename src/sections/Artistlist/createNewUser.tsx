@@ -22,7 +22,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
 
   const defaultValues = useMemo(() => {
     const obj = {
-      avatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/${data?.profile?.mainImage}` : null,
+      avatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}` : null,
       name: data?.artistName || '',
       artistSurname1: data?.artistSurname1 || '',
       artistSurname2: data?.artistSurname2 || '',
@@ -64,8 +64,10 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
     const fetchCountryByIP = async () => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
-        methods.setValue('country', response.data.country_name);
-        methods.setValue('phoneNumber', response.data.country_code);
+        if (methods.getValues('country') === '') {
+          methods.setValue('country', response.data.country_name);
+          methods.setValue('phoneNumber', response.data.country_code);
+        }
       } catch (err) {
         console.log('Failed to fetch country data by IP');
       }

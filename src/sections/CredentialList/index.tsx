@@ -35,7 +35,7 @@ export function CredentialAreaList() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
-  const [url,setUrl] = useState('');
+  const [url, setUrl] = useState('');
 
   const { data, isLoading, } = useGetInsigniaList(debounceSearch);
 
@@ -43,7 +43,7 @@ export function CredentialAreaList() {
     if (data?.data) {
       setList(data?.data);
       setNotFound(data?.data?.length === 0);
-      setUrl(data?.data?.url);
+      setUrl(data?.url);
     }
   }, [data?.data]);
 

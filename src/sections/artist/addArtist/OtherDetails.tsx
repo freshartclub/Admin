@@ -81,8 +81,6 @@ export function OtherDetails({
     ));
   }
 
-  console.log(documentArr);
-
   const defaultValues = useMemo(
     () => ({
       documentName: artistFormData?.documentName || '',
@@ -128,6 +126,7 @@ export function OtherDetails({
 
   const handleRemoveDocument = useCallback(
     (doc) => {
+      if (isReadOnly) return;
       const arr = methods.getValues('uploadDocs').filter((val) => val !== doc);
       setValue('uploadDocs', arr);
       setValue('existingDocuments', arr);
