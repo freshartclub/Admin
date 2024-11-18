@@ -195,7 +195,10 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.artistName} src={`https://dev.freshartclub.com/images/users/${row?.profile?.mainImage}`} />
+            <Avatar
+              alt={row?.artistName}
+              src={`https://dev.freshartclub.com/images/users/${row?.profile?.mainImage}`}
+            />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>

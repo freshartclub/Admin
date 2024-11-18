@@ -284,14 +284,7 @@ export function ArtworkAdd({ currentProduct }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = methods;
-  console.log(errors);
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   const selectedDisciplines = useWatch({
     control: methods.control,
@@ -406,6 +399,8 @@ export function ArtworkAdd({ currentProduct }) {
     if (id) {
       setOpen(false);
       setmongoDBId(data?.data?.owner?._id);
+      setValue('artworkCreationYear', data?.data?.artworkCreationYear);
+      setSelectedOption(data?.data?.commercialization?.purchaseOptions);
     }
   });
 
@@ -481,7 +476,7 @@ export function ArtworkAdd({ currentProduct }) {
           <DatePicker
             name="artworkCreationYear"
             label="Artwork Year"
-            // defaultValue={currentYear}
+           
             maxDate={currentYear}
             views={['year']}
             openTo="year"
@@ -711,12 +706,14 @@ export function ArtworkAdd({ currentProduct }) {
           >
             <FormControlLabel
               value="subscription"
+              checked={selectedOption === 'subscription'}
               control={<Radio />}
               label="Subscription"
               sx={{ flex: 1 }}
             />
             <FormControlLabel
               value="purchase"
+              checked={selectedOption === 'purchase'}
               control={<Radio />}
               label="Purchase/Sale"
               sx={{ flex: 1 }}

@@ -61,14 +61,18 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
 
   const docsPreviewBox = (
     <Dialog
-      sx={{ width: '100%' }}
+      sx={{ width: '37rem',margin:'auto' }}
       open={showDocsPreview}
       onClose={() => {
         setShowDocsPreview(false);
       }}
     >
       <DialogContent sx={{ p: 2, width: '100%' }}>
-        <iframe src={`https://dev.freshartclub.com/images/documents/${row?.document?.documents[0]}`} width="100%" height="500px"></iframe>
+        <iframe
+          src={`https://dev.freshartclub.com/images/documents/${row?.document?.documents[0]}`}
+          width="100%"
+          height="500px"
+        ></iframe>
       </DialogContent>
       <DialogActions>
         <button
@@ -138,7 +142,7 @@ export function ArtistRequest({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.artistName} src={row?.avatar} />
+            <Avatar alt={row?.artistName} src={`${row?.profile?.mainImage}`} />
             <Stack
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}

@@ -80,7 +80,7 @@ export function ArtworkTableRow({
         setShowPop(false);
       }}
     >
-      <DialogTitle>Unsuspend Artist</DialogTitle>
+      <DialogTitle>Remove Artwork</DialogTitle>
       <DialogContent>
         <DialogContentText>Are You Sure you want to remove this Art Work?</DialogContentText>
       </DialogContent>
@@ -108,7 +108,7 @@ export function ArtworkTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row?.artworkName} src={`${url}/${row?.media?.mainImage}`} />
+            <Avatar alt={row?.artworkName} src={`${url}/users/${row?.media?.mainImage}`} />
 
             <ListItemText
               disableTypography
@@ -148,13 +148,13 @@ export function ArtworkTableRow({
           <Label
             variant="soft"
             color={
-              (row.status === 'published' && 'success') ||
-              (row.status === 'failed' && 'warning') ||
-              (row.status === 'draft' && 'error') ||
+              (row.status === 'success' && 'success') ||
+              (row.status === 'pending' && 'warning') ||
+              (row.status === 'rejected' && 'error') ||
               'default'
             }
           >
-            {row?.isApproved}
+            {row?.status}
           </Label>
         </TableCell>
 
@@ -174,20 +174,12 @@ export function ArtworkTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
+          {row?.status === 'pending' && (
+            <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Reject
+            </MenuItem>
+          )}
         </MenuList>
       </CustomPopover>
 

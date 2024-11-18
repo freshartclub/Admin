@@ -25,9 +25,8 @@ import {
   TableNoData,
   TablePaginationCustom,
   TableSelectedAction,
-  useTable
+  useTable,
 } from 'src/components/table';
-
 
 import { LoadingScreen } from 'src/components/loading-screen';
 import { ArtworkTableRow } from './Artwork-table-row';
@@ -40,8 +39,8 @@ const TABLE_HEAD = [
   { id: 'artworkSeries', label: 'Catalog', width: 180 },
   { id: 'upworkOffer', label: 'Comm. Way', width: 180 },
   { id: 'artistName', label: 'Artist Name', width: 180 },
-  { id: 'createdAt', label: 'Published date', width: 180 },
-  { id: 'isApproved', label: 'Status', width: 100 },
+  { id: 'createdAt', label: 'Created At', width: 130 },
+  { id: 'status', label: 'Status', width: 100 },
   { id: 'action', label: 'Action', width: 80 },
 ];
 
@@ -70,8 +69,8 @@ export function ArtworkListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => { };
-  const handleEditRow = (id: string) => { };
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return isLoading ? (
     <LoadingScreen />
