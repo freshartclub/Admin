@@ -35,14 +35,17 @@ export const NewProductSchema = zod.object({
   link: zod.array(
     zod.object({
       name: zod.string().min(1, { message: 'Name is required!' }),
-      link: zod.string().refine((val) => {
-        try {
-          new URL(val);
-          return val.includes('https://') || val.includes('http://');
-        } catch (e) {
-          return false;
-        }
-      }, { message: 'URL must be a valid URL' })
+      link: zod.string().refine(
+        (val) => {
+          try {
+            new URL(val);
+            return val.includes('https://') || val.includes('http://');
+          } catch (e) {
+            return false;
+          }
+        },
+        { message: 'URL must be a valid URL' }
+      ),
     })
   ),
   discipline: zod.array(
@@ -69,36 +72,36 @@ export function AboutArtist({
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
       ? disciplineData
-        .filter((item: any) => !item.isDeleted)
-        .map((item: any) => ({
-          value: item?.disciplineName,
-          label: item?.disciplineName,
-        }))
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => ({
+            value: item?.disciplineName,
+            label: item?.disciplineName,
+          }))
       : [];
 
   let arr: any = [];
   const PRODUCT_STYLE_OPTIONS =
     styleData && styleData.length > 0
       ? styleData
-        .filter((item: any) => !item.isDeleted)
-        .map((item: any) => {
-          let localObj: any = {
-            value: '',
-            label: '',
-            disciplineName: [],
-          };
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
 
-          localObj.value = item?.styleName;
-          localObj.label = item?.styleName;
-          localObj.disciplineName =
-            item?.discipline &&
-            item?.discipline.length > 0 &&
-            item?.discipline.map((item: any) => item?.disciplineName);
+            localObj.value = item?.styleName;
+            localObj.label = item?.styleName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
 
-          arr.push(localObj);
+            arr.push(localObj);
 
-          return arr;
-        })
+            return arr;
+          })
       : [];
 
   const view = useSearchParams().get('view');
@@ -247,13 +250,18 @@ export function AboutArtist({
           freeSolo
           disableCloseOnSelect
           options={
-            data && data.length > 0 ? data.filter((option) => option.isDeleted === false) : []
+            data?.data && data?.data?.length > 0
+              ? data?.data.filter((option) => option.isDeleted === false)
+              : []
           }
           getOptionLabel={(option) => option.credentialName}
           isOptionEqualToValue={(option, value) => option._id === value._id}
           renderOption={(props, option) => (
             <div className="flex items-center gap-4" {...props} key={option._id}>
-              <Avatar alt={option?.credentialName} src={option?.insigniaImage} />
+              <Avatar
+                alt={option?.credentialName}
+                src={`${data?.url}/users/${option?.insigniaImage}`}
+              />
               <span className="ml-2">{option.credentialName}</span>
             </div>
           )}
@@ -261,7 +269,7 @@ export function AboutArtist({
             selected.map((option, index) => (
               <Chip
                 {...getTagProps({ index })}
-                key={option._id}
+                key={index}
                 label={option.credentialName}
                 size="small"
                 color="info"
@@ -274,8 +282,8 @@ export function AboutArtist({
             setValue('insignia', selectedIds);
           }}
           value={
-            data && data.length > 0
-              ? data.filter((item) => watch('insignia').includes(item._id))
+            data?.data && data?.data?.length > 0
+              ? data?.data?.filter((item) => watch('insignia').includes(item._id))
               : []
           }
         />
@@ -307,7 +315,7 @@ export function AboutArtist({
             <Box
               key={index}
               columnGap={2}
-              alignItems={"center"}
+              alignItems={'center'}
               rowGap={2}
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: '1fr 1fr 0.3fr' }}
@@ -364,7 +372,7 @@ export function AboutArtist({
             <Box
               key={index}
               columnGap={2}
-              alignItems={"center"}
+              alignItems={'center'}
               rowGap={2}
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: '1fr 1fr 0.3fr' }}
