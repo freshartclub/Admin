@@ -71,7 +71,7 @@ export const NewProductSchema = zod.object({
   inProcessImage: schemaHelper.file({ required: false }).optional(),
   images: zod.array(schemaHelper.file({ required: false })).optional(),
   mainVideo: schemaHelper.file({ required: false }).optional(),
-  otherVideo: schemaHelper.file({ required: false }).optional(),
+  otherVideo: zod.array(schemaHelper.file({ required: false })).optional(),
   artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
   artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
   artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
@@ -100,7 +100,7 @@ export const NewProductSchema = zod.object({
   dpersentage: zod.string().min(1, { message: 'Descount not be $0.00' }),
   vatAmount: zod.string().optional(),
   artistbaseFees: zod.string().optional(),
-  purchaseOptions: zod.string().optional(),
+  activeTab: zod.string().optional(),
   purchaseOption: zod.string().optional(),
   offensive: zod.string().optional(),
   pCode: zod.string().min(1, { message: 'Product Code is required!' }),
@@ -113,6 +113,7 @@ export const NewProductSchema = zod.object({
   discountAcceptation: zod.string().optional(),
   collectionList: zod.string().optional(),
   existingImages: zod.string().array().optional(),
+  existingVideos: zod.string().array().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -191,10 +192,16 @@ export function ArtworkAdd({ currentProduct }) {
   const [selectedOption, setSelectedOption] = useState('');
 
   let arr: any = [];
+  let videoArr: any = [];
+
   if (id && data?.data) {
     data?.data?.media?.images &&
       data?.data?.media?.images.length > 0 &&
       data?.data?.media?.images.map((item) => arr.push(`${data?.url}/users/${item}`));
+
+    data?.data?.media?.otherVideo &&
+      data?.data?.media?.otherVideo.length > 0 &&
+      data?.data?.media?.otherVideo.map((item) => videoArr.push(`${data?.url}/videos/${item}`));
   }
 
   const defaultValues = useMemo(
@@ -219,10 +226,9 @@ export function ArtworkAdd({ currentProduct }) {
       mainVideo: data?.data?.media?.mainVideo
         ? `${data?.url}/videos/${data?.data?.media?.mainVideo}`
         : null,
-      otherVideo: data?.data?.media?.otherVideo
-        ? `${data?.url}/videos/${data?.data?.media?.otherVideo}`
-        : null,
+      otherVideo: videoArr || [],
       existingImages: [],
+      existingVideos: [],
 
       artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
       artworkTheme: data?.data?.additionalInfo?.artworkTheme || '',
@@ -248,7 +254,7 @@ export function ArtworkAdd({ currentProduct }) {
       acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
       priceRequest: data?.data?.commercialization?.priceRequest || '',
       purchaseOption: data?.data?.commercialization?.purchaseOption || '',
-      purchaseOptions: data?.data?.commercialization?.purchaseOptions || '',
+      activeTab: data?.data?.commercialization?.activeTab || '',
       basePrice: data?.data?.pricing?.basePrice || '',
       dpersentage: data?.data?.pricing?.dpersentage || '',
       vatAmount: data?.data?.pricing?.vatAmount || '',
@@ -270,7 +276,7 @@ export function ArtworkAdd({ currentProduct }) {
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
-    setValue('purchaseOptions', event.target.value);
+    setValue('activeTab', event.target.value);
   };
 
   const handleYearChange = (event) => {
@@ -365,8 +371,18 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('mainVideo', null);
   }, [setValue]);
 
+  const handleRemoveotherVideo = useCallback(
+    (inputFile) => {
+      const filtered = values.otherVideo && values.otherVideo?.filter((file) => file !== inputFile);
+      setValue('otherVideo', filtered);
+      setValue('existingVideos', filtered);
+    },
+    [setValue, values.otherVideo]
+  );
+
   const handleRemoveFileotherVideo = useCallback(() => {
-    setValue('otherVideo', null);
+    setValue('otherVideo', [], { shouldValidate: true });
+    setValue('existingVideos', [], { shouldValidate: true });
   }, [setValue]);
 
   const name = (val) => {
@@ -400,7 +416,7 @@ export function ArtworkAdd({ currentProduct }) {
       setOpen(false);
       setmongoDBId(data?.data?.owner?._id);
       setValue('artworkCreationYear', data?.data?.artworkCreationYear);
-      setSelectedOption(data?.data?.commercialization?.purchaseOptions);
+      setSelectedOption(data?.data?.commercialization?.activeTab);
     }
   });
 
@@ -476,8 +492,8 @@ export function ArtworkAdd({ currentProduct }) {
           <DatePicker
             name="artworkCreationYear"
             label="Artwork Year"
-           
             maxDate={currentYear}
+            defaultValue={dayjs(data?.data?.artworkCreationYear)}
             views={['year']}
             openTo="year"
             onChange={(e) => handleYearChange(e)}
@@ -526,6 +542,7 @@ export function ArtworkAdd({ currentProduct }) {
         <div>
           <Typography variant="subtitle2">Details Photos</Typography>
           <Field.Upload
+            helperText="Only 3 files are allowed at a time"
             multiple
             accpet="image/*"
             thumbnail
@@ -533,22 +550,25 @@ export function ArtworkAdd({ currentProduct }) {
             maxSize={3145728}
             onRemove={handleRemoveFileDetails}
             onRemoveAll={handleRemoveAllFiles}
-            // onUpload={() => console.info('ON UPLOAD')}
           />
         </div>
-        <Box
-          columnGap={2}
-          rowGap={3}
-          display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        >
+        <Box>
           <div>
             <Typography>Main Video</Typography>
             <Field.MultiVideo name="mainVideo" onDelete={handleRemoveFileVideo} />
           </div>
           <div>
             <Typography>Other Video</Typography>
-            <Field.MultiVideo name="otherVideo" onDelete={handleRemoveFileotherVideo} />
+            {/* <Field.MultiVideo name="otherVideo" onDelete={handleRemoveFileotherVideo} /> */}
+            <Field.MultiVideo
+              thumbnail
+              helperText="Only 3 files are allowed at a time"
+              accept="video/*"
+              onRemoveAll={handleRemoveFileotherVideo}
+              onRemove={handleRemoveotherVideo}
+              multiple
+              name="otherVideo"
+            />
           </div>
         </Box>
       </Stack>
@@ -699,7 +719,7 @@ export function ArtworkAdd({ currentProduct }) {
         <FormControl fullWidth component="fieldset">
           <FormLabel component="legend">Purchase Options</FormLabel>
           <RadioGroup
-            name="purchaseOptions"
+            name="activeTab"
             sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
             value={selectedOption}
             onChange={handleChange}
