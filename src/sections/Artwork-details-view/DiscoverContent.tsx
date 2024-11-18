@@ -52,14 +52,14 @@ const DiscoverContent = ({ data, preview }) => {
           </div>
         </div>
         <div className="flex gap-2 w-full lg:w-fit">
-          {data?.status !== 'published' ? (
+          {data?.status !== 'pending' ? (
             <button className="w-full lg:w-fit" onClick={publishArtwork}>
               <span className="font-bold block text-center rounded-full bg-black text-white px-5 py-3">
                 {isPending ? 'Publishing...' : 'Publish'}
               </span>
             </button>
           ) : null}
-          {preview ? (
+          {preview && data?.status !== 'pending' ? (
             <RouterLink
               className="w-full lg:w-fit"
               href={`${paths.dashboard.artwork.addArtwork}?id=${data?._id}`}
