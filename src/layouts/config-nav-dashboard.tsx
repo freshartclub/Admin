@@ -192,6 +192,20 @@ export const navData = [
               },
             ],
           },
+          {
+            title: 'Picklist',
+            path: paths.dashboard.category.picklist.root,
+            children: [
+              {
+                title: 'Add Picklist',
+                path: paths.dashboard.category.picklist.add,
+              },
+              {
+                title: 'All Picklist',
+                path: paths.dashboard.category.picklist.list,
+              },
+            ],
+          },
         ],
       },
 

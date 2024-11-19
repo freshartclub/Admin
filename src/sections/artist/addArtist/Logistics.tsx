@@ -2,7 +2,7 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
@@ -47,20 +47,21 @@ export function Logistic({
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
+  let val;
   const defaultValues = useMemo(
     () => ({
-      logName: artistFormData?.logName || artistFormData?.artistName,
-      logAddress: artistFormData?.logAddress || artistFormData?.residentialAddress,
-      logZipCode: artistFormData?.logZipCode || artistFormData?.zipCode,
-      logCity: artistFormData?.logCity || artistFormData?.city,
-      logProvince: artistFormData?.logProvince || artistFormData?.state,
-      logCountry: artistFormData?.country || artistFormData?.country,
-      logEmail: artistFormData?.logEmail || artistFormData?.email,
-      logPhone: artistFormData?.logPhone || artistFormData?.phone,
-      logNotes: artistFormData?.logNotes || "",
+      logName: artistFormData?.logName || val ? artistFormData?.artistName : '',
+      logAddress: artistFormData?.logAddress || val ? artistFormData?.residentialAddress : '',
+      logZipCode: artistFormData?.logZipCode || val ? artistFormData?.zipCode : '',
+      logCity: artistFormData?.logCity || val ? artistFormData?.city : '',
+      logProvince: artistFormData?.logProvince || val ? artistFormData?.state : '',
+      logCountry: artistFormData?.country || val ? artistFormData?.country : '',
+      logEmail: artistFormData?.logEmail || val ? artistFormData?.email : '',
+      logPhone: artistFormData?.logPhone || val ? artistFormData?.phone : '',
+      logNotes: artistFormData?.logNotes || '',
       count: 6,
     }),
-    [artistFormData]
+    [artistFormData, val]
   );
 
   const handleSuccess = (data) => {
@@ -95,6 +96,12 @@ export function Logistic({
     });
     setTabIndex(tabIndex + 1);
   };
+
+  setTimeout(() => {
+    if (!artistFormData?.logName) {
+      val = window.confirm('Would you like to copy data from general information?');
+    }
+  }, 2000);
 
   const renderDetails = (
     <Card>

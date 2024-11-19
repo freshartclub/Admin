@@ -1,4 +1,4 @@
-import { ADMIN_BASE_URL, GENERAL_BASE_URL } from 'src/utils/BaseUrls';
+import { ADMIN_BASE_URL, GENERAL_BASE_URL, PICKLIST_BASE_URL } from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
   AddArtist: `${ADMIN_BASE_URL}/artist-register`,
@@ -67,4 +67,11 @@ export const GENERAL_ENDPOINTS = {
   deleteDiscipline: `${GENERAL_BASE_URL}/delete-discipline`,
   deleteStyle: `${GENERAL_BASE_URL}/delete-style`,
   deleteMedia: `${GENERAL_BASE_URL}/delete-media`,
+};
+
+export const PICKLIST_ENDPOINTS = {
+  addPicklist: `${PICKLIST_BASE_URL}/add-picklist`,
+  getPicklists: `${PICKLIST_BASE_URL}/get-picklist`,
+  getPicklistById: `${PICKLIST_BASE_URL}/get-picklist-by-id`,
+  updatePicklist: `${PICKLIST_BASE_URL}/update-picklist`,
 };

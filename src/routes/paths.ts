@@ -92,6 +92,11 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/category/mediasupport/add`,
         list: `${ROOTS.DASHBOARD}/category/mediasupport/list`,
       },
+      picklist: {
+        root: `${ROOTS.DASHBOARD}/picklist`,
+        add: `${ROOTS.DASHBOARD}/category/picklist/add`,
+        list: `${ROOTS.DASHBOARD}/category/picklist/list`,
+      },
     },
     creadentialsAndInsigniasArea: {
       root: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea`,
@@ -113,7 +118,6 @@ export const paths = {
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
       artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
       artworkDetail: `${ROOTS.DASHBOARD}/artwork/artworkDetail`,
-
     },
 
     // try start
