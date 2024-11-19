@@ -28,7 +28,7 @@ export const NewPostSchema = zod.object({
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
   artworkList: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   catalogCollection: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  // artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   subPlan: zod.string().min(1, { message: 'plan is required!' }),
   exclusiveCatalog: zod.boolean(),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
@@ -47,7 +47,7 @@ export function AddCatalogForm() {
       catalogDesc: data?.data?.catalogDesc || '',
       artworkList: data?.data?.artworkList || [],
       catalogCollection: data?.data?.catalogCollection || [],
-      artProvider: data?.data?.artProvider || [],
+      // artProvider: data?.data?.artProvider || [],
       subPlan: data?.data?.subPlan || '',
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
       catalogImg: data?.data?.catalogImg || null,
@@ -69,7 +69,7 @@ export function AddCatalogForm() {
         catalogDesc: data?.data?.catalogDesc || '',
         artworkList: data?.data?.artworkList || [],
         catalogCollection: data?.data?.catalogCollection || [],
-        artProvider: data?.data?.artProvider || [],
+        // artProvider: data?.data?.artProvider || [],
         subPlan: data?.data?.subPlan || '',
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
         catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
@@ -191,7 +191,7 @@ export function AddCatalogForm() {
               ))
             }
           />
-          <Field.Autocomplete
+          {/* <Field.Autocomplete
             required
             name="artProvider"
             label="Art Provider"
@@ -218,7 +218,7 @@ export function AddCatalogForm() {
                 />
               ))
             }
-          />
+          /> */}
         </Stack>
       </Card>
       <Card>

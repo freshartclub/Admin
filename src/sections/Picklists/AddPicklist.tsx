@@ -41,8 +41,6 @@ export function AddPicklist() {
   const { data, isLoading } = useGetPicklistMutation();
   const { data: picklistData } = useGetPicklistById(id, name);
 
-  console.log(picklistData);
-
   const [value, setValue] = useState('');
 
   const defaultValues = useMemo(
@@ -163,8 +161,11 @@ export function AddPicklist() {
   return (
     <>
       <CustomBreadcrumbs
-        heading="Add Picklist"
-        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Picklist' }]}
+        heading={`${id ? 'Edit' : 'Add'} Picklist`}
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: `${id ? 'Edit' : 'Add'} Picklist` },
+        ]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
       <Form methods={methods} onSubmit={onSubmit}>
