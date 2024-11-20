@@ -9,7 +9,7 @@ const useAddPicklist = () => {
   const navigate = useNavigate();
 
   async function addPicklist(data) {
-    return axiosInstance.patch(PICKLIST_ENDPOINTS.addPicklist, data);
+    return axiosInstance.post(PICKLIST_ENDPOINTS.addPicklist, data);
   }
 
   return useMutation({

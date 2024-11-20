@@ -1,18 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
-import eye from './assets/eye.png';
-import share from './assets/share.png';
 import DiscoverContent from './DiscoverContent';
 import ProductInfo from './ProductInfo';
 import SelectedSection from './SelectedSection';
 
 import 'slick-carousel/slick/slick-theme.css';
 import 'slick-carousel/slick/slick.css';
-import { useSearchParams } from 'src/routes/hooks';
-import { useGetArtworkById } from './http/useGetArtworkById';
-import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useGetArtworkById } from './http/useGetArtworkById';
 
 export function ArtworkDetailView() {
   const preview = useSearchParams().get('preview');
