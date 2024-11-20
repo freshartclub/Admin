@@ -61,8 +61,8 @@ export function ListAllPicklist() {
   return (
     <div>
       <CustomBreadcrumbs
-        heading="All Styles"
-        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Styles' }]}
+        heading="All Picklists"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Picklists' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
         action={
           <div className="flex gap-2">
@@ -150,7 +150,6 @@ type ApplyFilterProps = {
 };
 
 function applyFilter({ inputData, comparator }: ApplyFilterProps) {
-  console.log(inputData);
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
