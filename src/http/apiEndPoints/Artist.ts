@@ -40,6 +40,10 @@ export const ARTIST_ENDPOINTS = {
   addFAQ: `${ADMIN_BASE_URL}/add-faq`,
   getAllFAQ: `${ADMIN_BASE_URL}/get-all-faq`,
   getFAQById: `${ADMIN_BASE_URL}/get-faq-by-id`,
+  addKB: `${ADMIN_BASE_URL}/add-kb`,
+  getAllKB: `${ADMIN_BASE_URL}/get-all-kb`,
+  getKBById: `${ADMIN_BASE_URL}/get-kb-by-id`,
+  getUserList: `${ADMIN_BASE_URL}/get-all-users`,
 };
 
 export const USER_ENDPOINTS = {

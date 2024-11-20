@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -74,7 +74,7 @@ export function AddCreadentialForm() {
         return;
       }
       const formData = new FormData();
-      if (typeof data.insigniaImage === 'string' && !data.insigniaImage.includes("https")) {
+      if (typeof data.insigniaImage === 'string' && !data.insigniaImage.includes('https')) {
         formData.append('insigniaImage', data.insigniaImage);
       } else if (data.insigniaImage instanceof File) {
         formData.append('insigniaImage', data.insigniaImage);
@@ -91,7 +91,6 @@ export function AddCreadentialForm() {
     }
   });
 
-
   const optionsIn = [
     {
       label: 'Active',
@@ -103,17 +102,22 @@ export function AddCreadentialForm() {
     },
   ];
 
+  const handleRemoveFile = useCallback(() => {
+    methods.setValue('insigniaImage', null);
+  }, [methods.setValue('insigniaImage')]);
+
   if (isLoading) return <LoadingScreen />;
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-            <Box sx={{ mb: 5 }}>
-              <Field.UploadAvatar
+          <Card sx={{ p: 3 }}>
+            <Box>
+              <Field.Upload
                 name="insigniaImage"
                 maxSize={3145728}
+                onDelete={handleRemoveFile}
                 helperText={
                   <Typography
                     variant="caption"

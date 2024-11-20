@@ -47,10 +47,19 @@ export function Logistic({
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   let val;
   const defaultValues = useMemo(
     () => ({
-      logName: artistFormData?.logName || val ? artistFormData?.artistName : '',
+      logName: artistFormData?.logName || val ? name(artistFormData) : '',
       logAddress: artistFormData?.logAddress || val ? artistFormData?.residentialAddress : '',
       logZipCode: artistFormData?.logZipCode || val ? artistFormData?.zipCode : '',
       logCity: artistFormData?.logCity || val ? artistFormData?.city : '',

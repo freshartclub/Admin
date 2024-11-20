@@ -20,46 +20,39 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { _tags,ArtworkList,Collections,Art_provider,_artworks  } from 'src/_mock';
+import { _tags, ArtworkList, Collections, Art_provider, _artworks } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
- 
+
 import {
-    COLLECTION_TAGS_OPTIONS,COLLECTION_STATUS_OPTIONS,COLLECTION_CREATED_OPTIONS
-} from "src/_mock"
+  COLLECTION_TAGS_OPTIONS,
+  COLLECTION_STATUS_OPTIONS,
+  COLLECTION_CREATED_OPTIONS,
+} from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { fData } from 'src/utils/format-number';
-
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-    // group: zod.string().min(1, { message: 'group is required!' }),
-    name: zod.string().min(1, { message: 'name is required!' }),
-    collectionDescription: schemaHelper.editor().min(100, { message: 'Description must be at least 100 characters' }),
-    date: schemaHelper.date({ message: { required_error: 'date is required!' } }),
-    created: zod.string().min(1, { message: ' Creatar is required!' }),
-    artworks: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
-    expertsDescription: zod.string().min(1, { message: ' Description is required!' }),
-    images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
-
-    description: zod.string().min(1, { message: ' Description is required!' }),
-    // artworkList: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    // collections: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    // provider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    // isActive: zod.boolean(),
-    tags: zod.string().min(1, { message: 'Artwork Tags is required!' }),
-    status: zod.string().min(1, { message: 'status is required!' }),
-    image: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
-   
-  
+  name: zod.string().min(1, { message: 'name is required!' }),
+  collectionDescription: schemaHelper
+    .editor()
+    .min(100, { message: 'Description must be at least 100 characters' }),
+  created: zod.string().min(1, { message: ' Creatar is required!' }),
+  artworks: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+  expertsDescription: zod.string().min(1, { message: ' Description is required!' }),
+  images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
+  description: zod.string().min(1, { message: ' Description is required!' }),
+  tags: zod.string().min(1, { message: 'Artwork Tags is required!' }),
+  status: zod.string().min(1, { message: 'status is required!' }),
+  image: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
 });
 
 // ----------------------------------------------------------------------
@@ -69,32 +62,20 @@ type Props = {
 };
 
 export function AddCollectionForm({ currentPost }: Props) {
-  const router = useRouter();
-
   const preview = useBoolean();
-
   const defaultValues = useMemo(
     () => ({
-    //   group: currentPost?.group || '',
-      name:currentPost?.name || '',
+      name: currentPost?.name || '',
       collectionDescription: currentPost?.collectionDescription || '',
-      date: currentPost?.date || null,
       created: currentPost?.created || '',
       artworks: currentPost?.artworks || [],
       avatarUrl: currentPost?.avatarUrl || null,
       expertsDescription: currentPost?.expertsDescription || '',
       images: currentPost?.images || [],
-
-      description:currentPost?.description || '',
-    //   artworkList: currentPost?.artworkList || [], 
-    //   collections: currentPost?.collections  || [], 
-    //   provider: currentPost?.provider  || [], 
-    //   isActive: currentPost?.description || true,
-      tags:currentPost?.tags || '',
-      status:currentPost?.status || '',
+      description: currentPost?.description || '',
+      tags: currentPost?.tags || '',
+      status: currentPost?.status || '',
       image: currentPost?.image || null,
-     
-      
     }),
     [currentPost]
   );
@@ -105,14 +86,7 @@ export function AddCollectionForm({ currentPost }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = methods;
-
+  const { reset, watch, setValue, handleSubmit } = methods;
   const values = watch();
 
   useEffect(() => {
@@ -132,7 +106,7 @@ export function AddCollectionForm({ currentPost }: Props) {
       console.error(error);
     }
   });
-  
+
   const handleRemoveMainImage = useCallback(() => {
     setValue('image', null);
   }, [setValue]);
@@ -151,28 +125,25 @@ export function AddCollectionForm({ currentPost }: Props) {
 
   const renderDetails = (
     <Card>
-     <CardHeader title='General Information' sx={{ mb: 1 }}/>
+      <CardHeader title="General Information" sx={{ mb: 1 }} />
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-
         <Field.Text name="name" label="Collection Name" />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Collection Description</Typography>
           <Field.Editor name="collectionDescription" sx={{ maxHeight: 480 }} />
-        </Stack>    
+        </Stack>
 
-        <Field.DatePicker name="date" label="Creation Date" />
-
-        <Field.SingelSelect 
-         checkbox
-         name="created"
-         label="Created By"
-         options={COLLECTION_CREATED_OPTIONS}
+        <Field.SingelSelect
+          checkbox
+          name="created"
+          label="Created By"
+          options={COLLECTION_CREATED_OPTIONS}
         />
-          
-          <Field.Autocomplete
+
+        <Field.Autocomplete
           name="artworks"
           label="Select Artworks"
           placeholder="+ list"
@@ -200,132 +171,127 @@ export function AddCollectionForm({ currentPost }: Props) {
           }
         />
         <Field.Text name="description" label="Small Discription" multiline rows={4} />
-                
-            <Typography variant="subtitle2">Experts Details</Typography>
-               <div className='mb-3 border border-gray-200 rounded-md p-4'>
-               
-                  <Field.UploadAvatar
-                    name="avatarUrl"
-                    maxSize={3145728}
-                    helperText={
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          mt: 3,
-                          mx: 'auto',
-                          display: 'block',
-                          textAlign: 'center',
-                          color: 'text.disabled',
-                        }}
-                      >
-                        Allowed *.jpeg, *.jpg, *.png, *.gif
-                        <br /> max size of {fData(3145728)}
-                      </Typography>
-                    }
-                  />
-                </div>
 
-            <Field.Text name="expertsDescription" label="Experts Discription" multiline rows={4} />
-
-            <Typography variant="subtitle2">images</Typography>
-          <Field.Upload
-            multiple
-            thumbnail
-            name="images"
+        <Typography variant="subtitle2">Experts Details</Typography>
+        <div className="mb-3 border border-gray-200 rounded-md p-4">
+          <Field.UploadAvatar
+            name="avatarUrl"
             maxSize={3145728}
-            onRemove={handleRemoveFileDetails}
-            onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
+            helperText={
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 3,
+                  mx: 'auto',
+                  display: 'block',
+                  textAlign: 'center',
+                  color: 'text.disabled',
+                }}
+              >
+                Allowed *.jpeg, *.jpg, *.png, *.gif
+                <br /> max size of {fData(3145728)}
+              </Typography>
+            }
           />
+        </div>
+
+        <Field.Text name="expertsDescription" label="Experts Discription" multiline rows={4} />
+
+        <Typography variant="subtitle2">images</Typography>
+        <Field.Upload
+          multiple
+          thumbnail
+          name="images"
+          maxSize={3145728}
+          onRemove={handleRemoveFileDetails}
+          onRemoveAll={handleRemoveAllFiles}
+          onUpload={() => console.info('ON UPLOAD')}
+        />
       </Stack>
     </Card>
   );
 
   const renderProperties = (
-    <Card sx={{mb:2}}>
-      <CardHeader title='Thumbnail' sx={{mb:1}}/>
+    <Card sx={{ mb: 2 }}>
+      <CardHeader title="Thumbnail" sx={{ mb: 1 }} />
       <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Stack spacing={1.5}>
           <div>
             <Typography variant="Image">Photo</Typography>
             <Field.Upload name="image" maxSize={3145728} onDelete={handleRemoveMainImage} />
           </div>
         </Stack>
-       </Stack>
+      </Stack>
     </Card>
   );
-  
+
   const subscription = (
-    <Card sx={{mb:2}}>
-      <CardHeader title='Artwork Tags' sx={{mb:1}}/>
+    <Card sx={{ mb: 2 }}>
+      <CardHeader title="Artwork Tags" sx={{ mb: 1 }} />
       <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Field.SingelSelect 
-         checkbox
-         name="tags"
-         label="Artwork Tags"
-         options={COLLECTION_TAGS_OPTIONS}
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.SingelSelect
+          checkbox
+          name="tags"
+          label="Artwork Tags"
+          options={COLLECTION_TAGS_OPTIONS}
         />
-       </Stack>
+      </Stack>
     </Card>
   );
 
   const exclusive = (
     <Card>
-      <CardHeader title='Status of Collections' sx={{mb:1}}/>
+      <CardHeader title="Status of Collections" sx={{ mb: 1 }} />
       <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Field.SingelSelect 
-         checkbox
-         name="status"
-         label="Artwork Status"
-         options={COLLECTION_STATUS_OPTIONS}
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.SingelSelect
+          checkbox
+          name="status"
+          label="Artwork Status"
+          options={COLLECTION_STATUS_OPTIONS}
         />
-       </Stack>
+      </Stack>
     </Card>
   );
-  
 
   return (
     <div>
-        <CustomBreadcrumbs
+      <CustomBreadcrumbs
         heading="Add Collection"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-        //   { name: 'Artwork', href: paths.dashboard.artwork.Root},
+          //   { name: 'Artwork', href: paths.dashboard.artwork.Root},
           { name: 'Add Collection' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-   
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={5}> 
-       <div className='grid grid-cols-3  gap-3'>
-         
-       
-        <div className='col-span-2'>
-        {renderDetails}
-        <div className='flex flex-row justify-end gap-3 mt-8'>
-        <button type='button' className='bg-white text-black border py-2 px-3 rounded-md'>Cencel</button>
-        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save </button>
-      </div>
-        </div>
-        
-        <div className='col-span-1'>
 
-        {subscription}
-        {renderProperties}
-        
-        {exclusive}
-        </div>
-        
-        </div>
-       
-      </Stack>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={5}>
+          <div className="grid grid-cols-3  gap-3">
+            <div className="col-span-2">
+              {renderDetails}
+              <div className="flex flex-row justify-end gap-3 mt-8">
+                <button type="button" className="bg-white text-black border py-2 px-3 rounded-md">
+                  Cencel
+                </button>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  Save{' '}
+                </button>
+              </div>
+            </div>
 
-      
-    </Form>
+            <div className="col-span-1">
+              {subscription}
+              {renderProperties}
+
+              {exclusive}
+            </div>
+          </div>
+        </Stack>
+      </Form>
     </div>
   );
 }

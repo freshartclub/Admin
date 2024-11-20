@@ -56,6 +56,8 @@ import { FormLabel } from '@mui/material';
 import { RadioGroup } from '@mui/material';
 import { FormControlLabel } from '@mui/material';
 import { Radio } from '@mui/material';
+import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +65,8 @@ export const NewProductSchema = zod.object({
   artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
   artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
   artistName: zod.string().min(1, { message: 'artistName is required!' }),
+  isArtProvider: zod.string().min(1, { message: 'isArtProvider is required!' }),
+  provideArtistName: zod.string().optional(),
   artworkCreationYear: zod.any().optional(),
   artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
   productDescription: zod.string().optional(),
@@ -114,14 +118,19 @@ export const NewProductSchema = zod.object({
   collectionList: zod.string().optional(),
   existingImages: zod.string().array().optional(),
   existingVideos: zod.string().array().optional(),
+  currency: zod.string().min(1, { message: 'currency is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
+  const [pArr, setPArr] = useState<{ value: number; label: number }[]>([]);
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
+  const { data: picklistData } = useGetPicklistMutation();
+
+  const picklist = RenderAllPicklist('Currency');
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -209,6 +218,8 @@ export function ArtworkAdd({ currentProduct }) {
       artworkName: data?.data?.artworkName || '',
       artistID: data?.data?.owner?.artistId || '',
       artistName: data?.data?.owner?.artistName || '',
+      isArtProvider: data?.data?.isArtProvider || '',
+      provideArtistName: data?.data?.provideArtistName || '',
       artworkCreationYear: data?.data?.artworkCreationYear || '',
       artworkSeries: data?.data?.artworkSeries || '',
       productDescription: data?.data?.productDescription || '',
@@ -256,6 +267,7 @@ export function ArtworkAdd({ currentProduct }) {
       purchaseOption: data?.data?.commercialization?.purchaseOption || '',
       activeTab: data?.data?.commercialization?.activeTab || '',
       basePrice: data?.data?.pricing?.basePrice || '',
+      currency: data?.data?.pricing?.currency || '',
       dpersentage: data?.data?.pricing?.dpersentage || '',
       vatAmount: data?.data?.pricing?.vatAmount || '',
       artistFees: data?.data?.pricing?.artistFees || '',
@@ -412,6 +424,12 @@ export function ArtworkAdd({ currentProduct }) {
   const currentYear = dayjs();
 
   useEffect(() => {
+    const tempArr: { value: number; label: number }[] = [];
+    for (let i = 0; i <= 100; i++) {
+      tempArr.push({ value: i, label: i });
+    }
+    setPArr(tempArr);
+
     if (id) {
       setOpen(false);
       setmongoDBId(data?.data?.owner?._id);
@@ -419,6 +437,11 @@ export function ArtworkAdd({ currentProduct }) {
       setSelectedOption(data?.data?.commercialization?.activeTab);
     }
   });
+
+  const options = [
+    { value: 'yes', label: 'Yes' },
+    { value: 'no', label: 'No' },
+  ];
 
   const renderDetails = (
     <Card sx={{ mb: 3, position: 'relative' }}>
@@ -460,12 +483,7 @@ export function ArtworkAdd({ currentProduct }) {
                             </Typography>
                           }
                           secondary={
-                            <Link
-                              noWrap
-                              variant="body2"
-                              // onClick={onViewRow}
-                              sx={{ color: 'text.disabled' }}
-                            >
+                            <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
                               {i?.email}
                             </Link>
                           }
@@ -481,8 +499,11 @@ export function ArtworkAdd({ currentProduct }) {
           )}
         </div>
         <Field.Text disabled={id ? true : false} name="artistName" label=" Artist Name" />
-        <Field.Text name="artworkName" label=" Artwork Name" />
-
+        <Field.Text name="artworkName" label="Artwork Name" />
+        <Field.SingelSelect options={options} name="isArtProvider" label="Is Art Provider" />
+        {methods.getValues('isArtProvider') === 'yes' && (
+          <Field.Text name="artProviderName" label="Art Provider Name" />
+        )}
         <Box
           columnGap={2}
           rowGap={3}
@@ -559,7 +580,6 @@ export function ArtworkAdd({ currentProduct }) {
           </div>
           <div>
             <Typography>Other Video</Typography>
-            {/* <Field.MultiVideo name="otherVideo" onDelete={handleRemoveFileotherVideo} /> */}
             <Field.MultiVideo
               thumbnail
               helperText="Only 3 files are allowed at a time"
@@ -797,8 +817,16 @@ export function ArtworkAdd({ currentProduct }) {
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="basePrice" label="Base Price" />
-        {/* <Field.Text name="dpersentage" label="Discounted Percentage" /> */}
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <Field.Text name="basePrice" label="Base Price" />
+          <Field.SingelSelect
+            required
+            sx={{ minWidth: 150 }}
+            name="currency"
+            label="Currency"
+            options={picklist ? picklist : []}
+          />
+        </Stack>
         <Field.Text
           name="dpersentage"
           label="Discounted Percentage"
@@ -815,7 +843,7 @@ export function ArtworkAdd({ currentProduct }) {
             ),
           }}
         />
-        {/* <Field.Text name="Discounte " label="Discounted Percentage " /> */}
+
         <Field.Text name="vatAmount" label="VAT Amount (%)" />
         <Field.Text name="artistbaseFees" label="Artist Fees" />
       </Stack>
@@ -856,7 +884,7 @@ export function ArtworkAdd({ currentProduct }) {
           checkbox
           name="promotionScore"
           label="Promotion Score"
-          options={ARTWORK_PROMOTIONSCORE_OPTIONS}
+          options={pArr ? pArr : []}
         />
       </Stack>
     </Card>
@@ -915,7 +943,6 @@ export function ArtworkAdd({ currentProduct }) {
           </div>
 
           <div className="col-span-1">
-            {/* {Discipline} */}
             {Promotions}
             {Restrictions}
             {Collection}

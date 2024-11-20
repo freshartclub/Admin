@@ -4,13 +4,13 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   if (!id) return {};
-  const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getFAQById}/${id}`);
+  const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getKBById}/${id}`);
   return data.data;
 }
 
-export const useGetFAQById = (id) => {
+export const useGetKBById = (id) => {
   return useQuery({
-    queryKey: ['catalog'],
+    queryKey: ['kb'],
     queryFn: () => fetchData(id),
   });
 };

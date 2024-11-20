@@ -5,21 +5,21 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { paths } from 'src/routes/paths';
 import axiosInstance from 'src/utils/axios';
 
-const useAddFAQMutation = (id) => {
+const useAddKBMutation = (id) => {
   const navigate = useNavigate();
 
-  let url = `${ARTIST_ENDPOINTS.addFAQ}`;
-  if (id) url = `${ARTIST_ENDPOINTS.addFAQ}?id=${id}`;
+  let url = `${ARTIST_ENDPOINTS.addKB}`;
+  if (id) url = `${ARTIST_ENDPOINTS.addKB}?id=${id}`;
 
-  async function AddFAQ(data) {
+  async function AddKB(data) {
     return axiosInstance.post(url, data);
   }
 
   return useMutation({
-    mutationFn: AddFAQ,
+    mutationFn: AddKB,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.faq.list);
+      navigate(paths.dashboard.kbdatabase.list);
     },
 
     onError: (res: any) => {
@@ -28,4 +28,4 @@ const useAddFAQMutation = (id) => {
   });
 };
 
-export default useAddFAQMutation;
+export default useAddKBMutation;

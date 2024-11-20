@@ -3,15 +3,13 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search) {
-  const { data } = await axiosInstance.get(
-    `${ARTIST_ENDPOINTS.getAllArtistInDatabase}?s=${search}`
-  );
+  const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getUserList}?s=${search}`);
   return data.data;
 }
 
-export const useGetArtistList = (search) => {
+export const useGetAllUser = (search) => {
   return useQuery({
-    queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase, search],
+    queryKey: [ARTIST_ENDPOINTS.getUserList, search],
     queryFn: () => fetchData(search),
   });
 };

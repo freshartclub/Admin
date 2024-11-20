@@ -167,7 +167,7 @@ export function GeneralInformation({
         >
           <Field.Text disabled={isReadOnly} required name="zipCode" label="Zip/code" />
           <Field.Text disabled={isReadOnly} required name="city" label="City" />
-          <Field.Text disabled={isReadOnly} required name="state" label="state/State/Region" />
+          <Field.Text disabled={isReadOnly} required name="state" label="State/Region" />
         </Box>
 
         <Field.Text

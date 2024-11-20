@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
@@ -18,6 +18,8 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
+import { status } from 'nprogress';
+import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
 
 // ----------------------------------------------------------------------
 
@@ -28,9 +30,10 @@ export const NewPostSchema = zod.object({
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
   artworkList: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   catalogCollection: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  // artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   subPlan: zod.string().min(1, { message: 'plan is required!' }),
   exclusiveCatalog: zod.boolean(),
+  status: zod.any(),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
 });
 
@@ -39,7 +42,25 @@ export const NewPostSchema = zod.object({
 export function AddCatalogForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
+  const [picklist, setPicklist] = useState([]);
   const { data, isLoading } = useGetCatalogById(id);
+  const { data: picklistData } = useGetPicklistMutation();
+
+  useEffect(() => {
+    const list =
+      picklistData && picklistData.length > 0
+        ? picklistData.filter((item: any) => item?.picklistName === 'Catalog Status')
+        : [];
+
+    if (list?.length > 0 && list[0]?.picklist?.length > 0) {
+      setPicklist(
+        list[0]?.picklist.map((item: any) => ({
+          label: item.name,
+          value: item.name,
+        }))
+      );
+    }
+  }, [picklistData]);
 
   const defaultValues = useMemo(
     () => ({
@@ -47,9 +68,10 @@ export function AddCatalogForm() {
       catalogDesc: data?.data?.catalogDesc || '',
       artworkList: data?.data?.artworkList || [],
       catalogCollection: data?.data?.catalogCollection || [],
-      // artProvider: data?.data?.artProvider || [],
+      artProvider: data?.data?.artProvider || [],
       subPlan: data?.data?.subPlan || '',
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
+      status: data?.data?.status || '',
       catalogImg: data?.data?.catalogImg || null,
     }),
     [data?.data]
@@ -69,16 +91,16 @@ export function AddCatalogForm() {
         catalogDesc: data?.data?.catalogDesc || '',
         artworkList: data?.data?.artworkList || [],
         catalogCollection: data?.data?.catalogCollection || [],
-        // artProvider: data?.data?.artProvider || [],
+        artProvider: data?.data?.artProvider || [],
         subPlan: data?.data?.subPlan || '',
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
+        status: data?.data?.status || '',
         catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
       });
     }
   }, [data?.data, reset]);
 
   const { mutate, isPending } = useAddCatalogMutation(id);
-
   const onSubmit = handleSubmit(async (data: any) => {
     try {
       if (!data.catalogImg) {
@@ -87,7 +109,7 @@ export function AddCatalogForm() {
       }
       const formData = new FormData();
 
-      if (typeof data.catalogImg === 'string' && !data.catalogImg.includes("https")) {
+      if (typeof data.catalogImg === 'string' && !data.catalogImg.includes('https')) {
         formData.append('catalogImg', data.catalogImg);
       } else if (data.catalogImg instanceof File) {
         formData.append('catalogImg', data.catalogImg);
@@ -132,7 +154,6 @@ export function AddCatalogForm() {
         <Divider />
         <Stack spacing={3} sx={{ p: 3 }}>
           <Field.Text required name="catalogName" label="Catalog Name" />
-
           <Field.Text required name="catalogDesc" label="Catalog Discription" multiline rows={4} />
 
           <Field.Autocomplete
@@ -191,7 +212,7 @@ export function AddCatalogForm() {
               ))
             }
           />
-          {/* <Field.Autocomplete
+          <Field.Autocomplete
             required
             name="artProvider"
             label="Art Provider"
@@ -218,7 +239,13 @@ export function AddCatalogForm() {
                 />
               ))
             }
-          /> */}
+          />
+          <Field.SingelSelect
+            required
+            name="status"
+            label="Status"
+            options={picklist ? picklist : []}
+          />
         </Stack>
       </Card>
       <Card>

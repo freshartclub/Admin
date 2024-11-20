@@ -1,26 +1,23 @@
 import type { IUserItem } from 'src/types/user';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-
-import { UserQuickEditForm } from './user-quick-edit-form';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { Label } from 'src/components/label';
+import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -34,10 +31,17 @@ type Props = {
 
 export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
+  const url = 'https://dev.freshartclub.com/images/users';
 
-  const quickEdit = useBoolean();
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
 
   return (
     <>
@@ -48,11 +52,14 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.avatar} src={row.avatar} />
+            <Avatar
+              alt={row?.artistName}
+              src={row?.profile?.mainImage ? `${url}/${row?.profile?.mainImage}` : ''}
+            />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.artistName}
+                {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row.email}
@@ -62,44 +69,16 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userId}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phone}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.status === 'active' && 'success') ||
-              (row.status === 'pending' && 'warning') ||
-              (row.status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.updatedAt}
-          </Label>
-        </TableCell>
-
-        <TableCell>
-          <Stack direction="row" alignItems="center">
-            {/* <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                color={quickEdit.value ? 'inherit' : 'default'}
-                onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip> */}
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}
@@ -118,16 +97,6 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>
-
-          {/* <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem> */}
         </MenuList>
       </CustomPopover>
 

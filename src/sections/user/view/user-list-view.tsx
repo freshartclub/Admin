@@ -1,160 +1,160 @@
-import { Button, Card, Table, TableBody } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Scrollbar } from 'src/components/scrollbar';
+import type { IUserItem } from 'src/types/user';
+
+import { Button, Card, Stack, Table, TableBody } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
-import axiosInstance from 'src/utils/axios';
-import { getToken } from 'src/utils/tokenHelper';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  TableNoData,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
-const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-
-// import { credentialTable } from "./Discipline-table-row";
-
-
-import { useQuery } from '@tanstack/react-query';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { paths } from 'src/routes/paths';
-
-import { ARTIST_ENDPOINTS, USER_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
-import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
-import { UserTableRow } from '../user-table-row';
 import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
+import { paths } from 'src/routes/paths';
+import { useGetAllUser } from '../http/useGetAllUser';
+import { UserTableRow } from '../user-table-row';
+import { TextField } from '@mui/material';
+import { InputAdornment } from '@mui/material';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Artist Name​' },
-  { id: 'group', label: 'Artist Id', width: 180 },
-  { id: 'group', label: 'Contact', width: 180 },
-  { id: 'status', label: 'Status', width: 130 },
-  { id: 'create', label: 'Create At', width: 220 },
-  { id: '', label: 'Action', width: 88 },
+  { id: 'artistName', label: 'Artist Name​' },
+  { id: 'userId', label: 'User Id', width: 180 },
+  { id: 'phone', label: 'Contact', width: 180 },
+  { id: 'role', label: 'Status', width: 130 },
+  { id: 'createdAt', label: 'Created At', width: 220 },
+  { id: 'actions', label: 'Action', width: 88 },
 ];
+
 export function UserList() {
-  const token = getToken();
-  const [styles, setStyles] = useState([]);
-  // const [table, setTable] = useTable(); // Initialize table state
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [search, setSearch] = useState<string>('');
+  const [_list, setList] = useState([]);
 
-
-// dont forget to change uri
-  async function fetchData() {
-    const { data } = await axiosInstance.get(
-   `${USER_ENDPOINTS.getUserList}`
-    );
-
-    console.log(data);
-    return data.data;
-  }
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['styleData'],
-    queryFn: fetchData,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  console.log(data)
+  const debounceSearch = useDebounce(search, 800);
+  const { data, isLoading } = useGetAllUser(debounceSearch);
 
   useEffect(() => {
     if (data) {
-      if (data.length === 0) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-      }
+      setList(data);
+      setNotFound(data.length === 0);
     }
   }, [data]);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  const dataFiltered = applyFilter({
+    inputData: _list,
+    comparator: getComparator(table.order, table.orderBy),
+  });
 
-  if (isError) {
-    return <div>An error has occurred: {error.message}</div>;
-  }
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
-  const dataFiltered = data;
-  
   return (
     <div>
       <CustomBreadcrumbs
-        heading="List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User List', href: paths.dashboard },
-          //   { name: currentUser?.name },
-        ]}
-
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.user.create}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Create New User
-          </Button>
-        }
-       
-        sx={{ mb: { xs: 3, md: 5 } }}
+        heading="User List"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'User List' }]}
+        sx={{ mb: { xs: 3, md: 2 } }}
       />
-      <Card>
-        <Scrollbar>
-          <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={TABLE_HEAD}
-              rowCount={dataFiltered.length}
-              numSelected={table.selected.length}
-              onSort={table.onSort}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row._id)
-                )
-              }
-            />
-            <TableBody>
-              {dataFiltered
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row) => (
-                  <UserTableRow
-                    key={row._id}
-                    row={row}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
-                ))}
-              <TableEmptyRows
-                height={table.dense ? 56 : 76}
-                emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-              />
-              <TableNoData notFound={notFound} />
-            </TableBody>
-          </Table>
-        </Scrollbar>
-        <TablePaginationCustom
-          page={table.page}
-          dense={table.dense}
-          count={dataFiltered.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onChangeDense={table.onChangeDense}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
+      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By User Id/Name..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
-      </Card>
+        <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
+          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+            <Iconify icon="mingcute:add-line" /> Create User
+          </span>
+        </RouterLink>
+      </Stack>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row) => (
+                    <UserTableRow
+                      key={row._id}
+                      row={row}
+                      selected={table.selected.includes(row._id)}
+                      onSelectRow={() => table.onSelectRow(row._id)}
+                      onDeleteRow={() => handleDeleteRow(row._id)}
+                      onEditRow={() => handleEditRow(row._id)}
+                    />
+                  ))}
+                <TableEmptyRows
+                  height={table.dense ? 56 : 76}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                />
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+          <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      )}
     </div>
   );
+}
+
+type ApplyFilterProps = {
+  inputData: IUserItem[];
+  comparator: (a: any, b: any) => number;
+};
+
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  return inputData;
 }

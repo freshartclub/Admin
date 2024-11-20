@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -22,7 +22,9 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
 
   const defaultValues = useMemo(() => {
     const obj = {
-      avatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}` : null,
+      avatar: data?.profile?.mainImage
+        ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
+        : null,
       name: data?.artistName || '',
       artistSurname1: data?.artistSurname1 || '',
       artistSurname2: data?.artistSurname2 || '',
@@ -76,15 +78,20 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
     getLocation();
   }, [methods.getValues('country')]);
 
+  const handleRemoveFile = useCallback(() => {
+    methods.setValue('avatar', null);
+  }, [methods.setValue('avatar')]);
+
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
+          <Card sx={{ p: 3 }}>
             <Box sx={{ mb: 5 }}>
-              <Field.UploadAvatar
+              <Field.Upload
                 name="avatar"
                 maxSize={3145728}
+                onDelete={handleRemoveFile}
                 helperText={
                   <Typography
                     variant="caption"

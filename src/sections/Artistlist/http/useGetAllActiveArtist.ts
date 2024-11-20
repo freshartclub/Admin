@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetAllActiveArtist = (search) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.getAllArtist}/s=${search}`],
+    queryKey: [ARTIST_ENDPOINTS.getAllArtist, search],
     queryFn: () => fetchData(search),
   });
 };

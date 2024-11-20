@@ -1,5 +1,5 @@
 import { z as zod } from 'zod';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
@@ -95,11 +95,7 @@ export function CreateArtistForm() {
 
   const { reset, watch, handleSubmit } = methods;
   const debounceUserId = useDebounce(methods.getValues('existingId'), 500);
-  const {
-    refetch,
-    data: artistData,
-    isPending: isArtistIdPending,
-  } = useGetUserByIdMutation(debounceUserId);
+  const { refetch, data: artistData } = useGetUserByIdMutation(debounceUserId);
 
   const values = watch();
 
@@ -107,7 +103,9 @@ export function CreateArtistForm() {
     if (!data) return;
     if (data) {
       reset({
-        existingAvatar: data?.profile?.mainImage ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}` : null,
+        existingAvatar: data?.profile?.mainImage
+          ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
+          : null,
         existingId: data?.userId || '',
         existingName: data?.artistName || '',
         existingArtistSurname1: data?.artistSurname1 || '',
@@ -199,6 +197,10 @@ export function CreateArtistForm() {
     return fullName.trim();
   };
 
+  const handleRemoveFile = useCallback(() => {
+    methods.setValue('existingAvatar', null);
+  }, [methods.setValue('existingAvatar')]);
+
   if (isLoading) return <LoadingScreen />;
 
   return (
@@ -233,11 +235,12 @@ export function CreateArtistForm() {
         <Form methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={3}>
             <Grid xs={12} md={4}>
-              <Card sx={{ pt: 10, pb: 5, px: 3 }}>
+              <Card sx={{ p: 3 }}>
                 <Box sx={{ mb: 5 }}>
-                  <Field.UploadAvatar
+                  <Field.Upload
                     name="existingAvatar"
                     maxSize={3145728}
+                    onDelete={handleRemoveFile}
                     helperText={
                       <Typography
                         variant="caption"
@@ -265,7 +268,7 @@ export function CreateArtistForm() {
                   required
                   onClick={() => setOpen(true)}
                   name="existingId"
-                  placeholder='Search By UserId, Name or Email'
+                  placeholder="Search By UserId, Name or Email"
                   label="Existing User Account Id"
                 />
                 {methods.getValues('existingId') && open && (
@@ -284,7 +287,9 @@ export function CreateArtistForm() {
                             }}
                           >
                             <Stack spacing={2} direction="row" alignItems="center">
-                              <Avatar alt={i?.artistName}>{`${i?.url}/users/${i?.profile?.mainImage}`}</Avatar>
+                              <Avatar
+                                alt={i?.artistName}
+                              >{`${i?.url}/users/${i?.profile?.mainImage}`}</Avatar>
 
                               <ListItemText
                                 disableTypography

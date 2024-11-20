@@ -18,8 +18,8 @@ import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetInsigniaList } from 'src/sections/CredentialList/http/useGetInsigniaList';
 import { useGetDisciplineMutation } from 'src/sections/DisciplineListCategory/http/useGetDisciplineMutation';
+import { RenderAllPicklist } from 'src/sections/Picklists/RenderAllPicklist';
 import { useGetStyleListMutation } from 'src/sections/StyleListCategory/http/useGetStyleListMutation';
-import { ARTIST_SOCIAL_LINKS } from 'src/_mock';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +68,7 @@ export function AboutArtist({
 }: AddArtistComponentProps) {
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: styleData } = useGetStyleListMutation();
+  const renderPicklist = RenderAllPicklist('Social Media');
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -212,7 +213,7 @@ export function AboutArtist({
 
   const filterSocialLinks = (index) => {
     const selectedLinksValues = selectedLinks ? selectedLinks.map((name) => name.name) : [];
-    return ARTIST_SOCIAL_LINKS.filter(
+    return renderPicklist.filter(
       (option) =>
         !selectedLinksValues.includes(option.value) || option.value === selectedLinks[index]?.name
     );
@@ -220,6 +221,10 @@ export function AboutArtist({
 
   const filterStylesForDiscipline = (selectedDiscipline) => {
     return arr.filter((style) => style.disciplineName.includes(selectedDiscipline));
+  };
+
+  const handleSocialLinkOpen = (index) => {
+    window.open(selectedLinks[index]?.link, '_blank');
   };
 
   const renderDetails = (
@@ -297,7 +302,7 @@ export function AboutArtist({
       <Divider />
 
       <Stack spacing={3} mb={3} sx={{ paddingLeft: 2 }}>
-        {socialFields.length === ARTIST_SOCIAL_LINKS.length ? null : (
+        {socialFields.length === renderPicklist.length ? null : (
           <div className="flex justify-end">
             <Button
               disabled={isReadOnly}
@@ -331,16 +336,30 @@ export function AboutArtist({
 
               <Field.Text disabled={isReadOnly} required name={`link[${index}].link`} label="Url" />
 
-              <Button
-                disabled={isReadOnly}
-                size="small"
-                color="error"
-                className="flex justify-end"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleSocialRemove(index)}
-              >
-                Remove
-              </Button>
+              <Box>
+                {selectedLinks[index]?.link ? (
+                  <Button
+                    disabled={isReadOnly}
+                    size="small"
+                    color="primary"
+                    className="flex justify-end"
+                    startIcon={<Iconify icon="majesticons:open" />}
+                    onClick={() => handleSocialLinkOpen(index)}
+                  >
+                    Open Link
+                  </Button>
+                ) : null}
+                <Button
+                  disabled={isReadOnly}
+                  size="small"
+                  color="error"
+                  className="flex justify-end"
+                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                  onClick={() => handleSocialRemove(index)}
+                >
+                  Remove
+                </Button>
+              </Box>
             </Box>
           ))}
         </Stack>

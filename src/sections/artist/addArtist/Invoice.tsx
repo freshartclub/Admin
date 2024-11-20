@@ -44,17 +44,19 @@ export const NewProductSchema = zod.object({
   taxBankIBAN: zod.string(),
   taxBankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
-  PublishingCatalog: zod.array(
-    zod.object({
-      PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
-      ArtistFees: zod.string().min(1, { message: 'Artist Fee is required!' }),
-    })
-  ),
+  PublishingCatalog: zod
+    .array(
+      zod.object({
+        PublishingCatalog: zod.string().min(1, { message: 'Publishing Catalog is required!' }),
+        ArtistFees: zod.string().min(1, { message: 'Artist Fee is required!' }),
+      })
+    )
+    .min(1, { message: 'Publishing Catalog is required!' }),
   artistLevel: zod.string().min(1, { message: 'Artist Level is required!' }),
   artProvider: zod.string().min(1, { message: 'Art Provider is required!' }),
   ArtistPlus: zod.string(),
-  MinNumberOfArtwork: zod.string().min(1, { message: 'Min Number of Artwork is required!' }),
-  MaxNumberOfArtwork: zod.string().min(1, { message: 'Max Number of Artwork is required!' }),
+  MinNumberOfArtwork: zod.number().min(1, { message: 'Min Number of Artwork is required!' }),
+  MaxNumberOfArtwork: zod.number().min(1, { message: 'Max Number of Artwork is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -71,6 +73,7 @@ export function Invoice({
   const [searchQuery, setSearchQuery] = useState(null);
   const [filteredBanks, setFilteredBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState({ code: '', name: '' });
+  const [arr, setArr] = useState<{ value: number; label: number }[]>([]);
 
   useEffect(() => {
     const loadCSV = async () => {
@@ -93,9 +96,16 @@ export function Invoice({
       setFilteredBanks(csvData);
     } else {
       if (searchQuery !== null) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
+        let lookup = searchQuery.toLowerCase();
+        const iban = searchQuery.replace(/\s+/g, '');
+
+        if (searchQuery.length >= 8) {
+          const countryISO = iban.slice(0, 2).toLowerCase();
+          const bankCode = iban.slice(4, 8);
+          lookup = `${countryISO}${bankCode}`;
+        }
         const filtered = csvData.filter((item: any) =>
-          item.EUROPEAN_CODE.toLowerCase().includes(lowerCaseQuery)
+          item.EUROPEAN_CODE.toLowerCase().includes(lookup)
         );
         setFilteredBanks(filtered);
       }
@@ -114,24 +124,35 @@ export function Invoice({
     });
   };
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
   const defaultValues = useMemo(
     () => ({
       taxNumber: artistFormData?.taxNumber || '',
-      taxLegalName: artistFormData?.taxLegalName || '',
-      taxAddress: artistFormData?.taxAddress || '',
-      taxZipCode: artistFormData?.taxZipCode || '',
-      taxCity: artistFormData?.taxCity || '',
-      taxProvince: artistFormData?.taxProvince || '',
-      taxCountry: artistFormData?.taxCountry || '',
-      taxEmail: artistFormData?.taxEmail || '',
-      taxPhone: artistFormData?.taxPhone || '',
+      taxLegalName: artistFormData?.taxLegalName || name(artistFormData),
+      taxAddress: artistFormData?.taxAddress || artistFormData?.residentialAddress,
+      taxZipCode: artistFormData?.taxZipCode || artistFormData?.zipCode,
+      taxCity: artistFormData?.taxCity || artistFormData?.city,
+      taxProvince: artistFormData?.taxProvince || artistFormData?.state,
+      taxCountry: artistFormData?.taxCountry || artistFormData?.country,
+      taxEmail: artistFormData?.email || artistFormData?.taxEmail,
+      taxPhone: artistFormData?.phone || artistFormData?.taxPhone,
       taxBankIBAN: artistFormData?.taxBankIBAN || '',
       taxBankName: artistFormData?.taxBankName || '',
       CustomOrder: artistFormData?.CustomOrder || '',
       artistLevel: artistFormData?.artistLevel || '',
       artProvider: artistFormData?.artProvider || '',
-      PublishingCatalog: artistFormData?.PublishingCatalog || '',
+      PublishingCatalog: artistFormData?.PublishingCatalog || [
+        { PublishingCatalog: '', ArtistFees: '' },
+      ],
       ArtistPlus: artistFormData?.ArtistPlus || '',
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
@@ -156,7 +177,7 @@ export function Invoice({
     setSelectedBank({ code, name });
     setSearchQuery(null);
     formProps.setValue('taxBankName', name);
-    formProps.setValue('taxBankIBAN', code);
+    formProps.setValue('taxBankIBAN', searchQuery);
   };
 
   const handleRemove = (index) => {
@@ -168,11 +189,17 @@ export function Invoice({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
-
     data.count = 5;
-
     mutate({ body: data });
   });
+
+  useEffect(() => {
+    const tempArr: { value: number; label: number }[] = [];
+    for (let i = 0; i <= 99; i++) {
+      tempArr.push({ value: i, label: i });
+    }
+    setArr(tempArr);
+  }, []);
 
   const viewNext = () => {
     setTabState((prev) => {
@@ -196,10 +223,8 @@ export function Invoice({
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.Text disabled={isReadOnly} required name="taxNumber" label=" Tax Number/NIF" />
-
           <Field.Text disabled={isReadOnly} required name="taxLegalName" label="Tax Legal Name" />
         </Box>
-
         <Field.Text disabled={isReadOnly} required name="taxAddress" label="Tax Address" />
 
         <Box
@@ -208,18 +233,6 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} required name="taxZipCode" label="Tax Zip/code" />
-
-          <Field.Text disabled={isReadOnly} required name="taxCity" label="Tax City" />
-        </Box>
-        <Box
-          columnGap={2}
-          rowGap={3}
-          display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        >
-          <Field.Text disabled={isReadOnly} required name="taxProvince" label="Tax Province" />
-
           <Field.CountrySelect
             disabled={isReadOnly}
             required
@@ -228,6 +241,16 @@ export function Invoice({
             label="Tax Country"
             placeholder="Choose a country"
           />
+          <Field.Text disabled={isReadOnly} required name="taxCity" label="Tax City" />
+        </Box>
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+        >
+          <Field.Text disabled={isReadOnly} required name="taxZipCode" label="Tax Zip/code" />
+          <Field.Text disabled={isReadOnly} required name="taxProvince" label="Tax Province" />
         </Box>
         <Box
           columnGap={2}
@@ -298,7 +321,7 @@ export function Invoice({
           required
           checkbox
           name="CustomOrder"
-          label="Are you accept custom Order?"
+          label="Are you accepting custom Order?"
           options={PRODUCT_CUSTOMORDER_OPTIONS}
         />
 
@@ -316,10 +339,9 @@ export function Invoice({
           </div>
           {fields.map((item, index) => (
             <Stack
-              key={item.id}
+              key={index}
               aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
               spacing={1.5}
-              className=""
             >
               <Box
                 columnGap={2}
@@ -343,16 +365,17 @@ export function Invoice({
                 />
               </Box>
 
-              <Button
-                disabled={isReadOnly}
-                size="small"
-                color="error"
-                className="flex justify-end"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
+              {index > 0 && (
+                <Button
+                  disabled={isReadOnly}
+                  size="small"
+                  color="error"
+                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                  onClick={() => handleRemove(index)}
+                >
+                  Remove
+                </Button>
+              )}
             </Stack>
           ))}
         </Stack>
@@ -388,7 +411,7 @@ export function Invoice({
           checkbox
           name="MinNumberOfArtwork"
           label="Min. Number of artworks"
-          options={PRODUCT_MINNUMBROFARTWORK_OPTIONS}
+          options={arr}
         />
         <Field.SingelSelect
           disabled={isReadOnly}
@@ -396,7 +419,7 @@ export function Invoice({
           checkbox
           name="MaxNumberOfArtwork"
           label="Max. Number of artworks"
-          options={PRODUCT_MAXNUMBROFARTWORK_OPTIONS}
+          options={arr}
         />
       </Stack>
     </Card>

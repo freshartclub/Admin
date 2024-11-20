@@ -1,335 +1,165 @@
-import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IInvoice } from 'src/types/invoice';
 
-import { useState, useCallback } from 'react';
-
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
+import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
+import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { sumBy } from 'src/utils/helper';
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
+import { paths } from 'src/routes/paths';
+import { FAQ_GROUP_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS,FAQ_GROUP_OPTIONS} from 'src/_mock';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
-  rowInPage,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  useTable
 } from 'src/components/table';
-
-import { artistData } from './data';
-
+import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { KbTableRow } from './Kb-table-row';
-import { InvoiceTableToolbar } from './Kb-table-toolbar';
-import { InvoiceTableFiltersResult } from './Kb-table-filters-result';
+import { useGetAllKB } from './http/useGetAllKB';
 
 // ----------------------------------------------------------------------
-
-
 
 const TABLE_HEAD = [
-    { id: 'invoiceNumber', label: 'Title KB' },
-    { id: 'price', label: 'Text By Title' },
-    { id: 'createDate', label: 'Group' },
-    { id: 'dueDate', label: 'Rating' },
-    { id: 'tag', label: 'Date' },
-    { id: 'tag', label: 'Create By' },
-    { id: 'tag', label: 'Tags' },
-    { id: '',},
-  ];
-
-// ----------------------------------------------------------------------
+  { id: 'kbGrp', label: 'KB Group', width: 100 },
+  { id: 'kbTitle', label: 'Title', width: 150 },
+  { id: 'kbDesc', label: 'Description', width: 200 },
+  { id: 'tags', label: 'Tags', width: 100 },
+  { id: 'createdAt', label: 'Created At', width: 100 },
+  { id: 'actions', label: 'Actions', width: 80 },
+];
 
 export function KbListView() {
-  const theme = useTheme();
+  const table = useTable();
+  const [notFound, setNotFound] = useState(false);
+  const [_kbList, setKBList] = useState<IInvoice[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const [grp, setGrp] = useState<string>('');
+  const debounceSearch = useDebounce(search, 500);
 
-  const router = useRouter();
+  const { data, isLoading } = useGetAllKB(debounceSearch, grp);
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
-
-  const confirm = useBoolean();
-
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
-  
-
-  const filters = useSetState<IInvoiceTableFilters>({
-    name: '',
-    service: [],
-    status: 'all',
-    startDate: null,
-    endDate: null,
-  });
-
-  const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+  useEffect(() => {
+    if (data) {
+      setKBList(data);
+      setNotFound(data?.length === 0);
+    }
+  }, [data]);
 
   const dataFiltered = applyFilter({
-    inputData: artistData,
+    inputData: _kbList,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
   });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
-
-  const canReset =
-    !!filters.state.name ||
-    filters.state.service.length > 0 ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const getInvoiceLength = (status: string) =>
-    artistData.filter((item) => item.status === status).length;
-
-  const getTotalAmount = (status: string) =>
-    sumBy(
-      artistData.filter((item) => item.status === status),
-      (invoice) => invoice.totalAmount
-    );
-
-  const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / artistData.length) * 100;
-
-  const TABS = [
-    {
-      value: 'all',
-      label: 'All',
-      color: 'default',
-      count: artistData.length,
-    },
-    {
-      value: 'paid',
-      label: 'Paid',
-      color: 'success',
-      count: getInvoiceLength('paid'),
-    },
-    {
-      value: 'pending',
-      label: 'Pending',
-      color: 'warning',
-      count: getInvoiceLength('pending'),
-    },
-    {
-      value: 'overdue',
-      label: 'Overdue',
-      color: 'error',
-      count: getInvoiceLength('overdue'),
-    },
-    {
-      value: 'draft',
-      label: 'Draft',
-      color: 'default',
-      count: getInvoiceLength('draft'),
-    },
-  ] as const;
-
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = artistData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, artistData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = artistData.filter((row) => !table.selected.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, artistData]);
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
+  const handleViewRow = (id: string) => {};
 
   return (
-    <>
-      <DashboardContent>
-        <CustomBreadcrumbs
-          heading="KB List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            // { name: 'KB Database', href: paths.dashboard.faq.Root },
-            { name: 'KB List' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.faq.add}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Add KB
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
+    <DashboardContent>
+      <CustomBreadcrumbs
+        heading="KB List"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'KB List' }]}
+        action={
+          <RouterLink href={`${paths.dashboard.kbdatabase.add}`}>
+            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2">
+              <Iconify icon="mingcute:add-line" /> Add KB
+            </span>
+          </RouterLink>
+        }
+        sx={{ mb: { xs: 3, md: 3 } }}
+      />
+      <Stack sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }} direction="row">
+        <TextField
+          sx={{ width: '70%' }}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By KB Title..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+        <FormControl sx={{ width: '28%' }}>
+          <InputLabel htmlFor="KB Group">KB Group</InputLabel>
+          <Select
+            label="KB Group"
+            inputProps={{ id: 'faq' }}
+            onChange={(e) => setGrp(e.target.value)}
+            value={grp}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            <MenuItem key={'All'} value={'All'}>
+              {'All'}
+            </MenuItem>
+            {FAQ_GROUP_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
 
-        
-
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
         <Card>
+          <Scrollbar sx={{ minHeight: 444 }}>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={dataFiltered.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row.id)
+                  )
+                }
+              />
 
-          <InvoiceTableToolbar
-            filters={filters}
-            dateError={dateError}
-            onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
-          />
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((row) => (
+                    <KbTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => table.onSelectRow(row.id)}
+                      onViewRow={() => handleViewRow(row.id)}
+                      onEditRow={() => handleEditRow(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                    />
+                  ))}
 
-          {canReset && (
-            <InvoiceTableFiltersResult
-              filters={filters}
-              onResetPage={table.onResetPage}
-              totalResults={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
-
-          <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) => {
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                );
-              }}
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="iconamoon:send-fill" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="solar:printer-minimalistic-bold" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
-            <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
+                <TableEmptyRows
+                  height={table.dense ? 56 : 56 + 20}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                 />
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <KbTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </Box>
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
 
           <TablePaginationCustom
             page={table.page}
@@ -341,46 +171,20 @@ export function KbListView() {
             onRowsPerPageChange={table.onChangeRowsPerPage}
           />
         </Card>
-      </DashboardContent>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
-    </>
+      )}
+    </DashboardContent>
   );
 }
 
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  dateError: boolean;
   inputData: IInvoice[];
-  filters: IInvoiceTableFilters;
+
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { name, status, service, startDate, endDate } = filters;
-
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -390,30 +194,6 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-//   if (name) {
-//     inputData = inputData.filter(
-//       (invoice) =>
-//         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-//         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-//     );
-//   }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
-  }
-
-//   if (service.length) {
-//     inputData = inputData.filter((invoice) =>
-//       invoice.items.some((filterItem) => service.includes(filterItem.service))
-//     );
-//   }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => fIsBetween(invoice.createDate, startDate, endDate));
-    }
-  }
 
   return inputData;
 }

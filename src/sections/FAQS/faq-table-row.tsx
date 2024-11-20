@@ -57,7 +57,7 @@ export function FaqTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqGrp}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqQues}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.tags)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.tags) === '' ? 'N/A' : list(row?.tags)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
