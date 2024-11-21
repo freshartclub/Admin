@@ -91,6 +91,8 @@ function AddArtistIndex() {
 
           obj.CustomOrder = data.data?.commercilization?.customOrder;
           obj.artProvider = data.data?.commercilization?.artProvider;
+          obj.scoreProfessional = data.data?.commercilization?.scoreProfessional;
+          obj.scorePlatform = data.data?.commercilization?.scorePlatform;
           obj.artistLevel = data.data?.commercilization?.artistLevel;
           obj.PublishingCatalog = data.data?.commercilization?.publishingCatalog;
           obj.ArtistFees = data.data?.commercilization?.artistFees;

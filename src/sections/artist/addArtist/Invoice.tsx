@@ -54,7 +54,9 @@ export const NewProductSchema = zod.object({
     .min(1, { message: 'Publishing Catalog is required!' }),
   artistLevel: zod.string().min(1, { message: 'Artist Level is required!' }),
   artProvider: zod.string().min(1, { message: 'Art Provider is required!' }),
-  ArtistPlus: zod.string(),
+  ArtistPlus: zod.string().optional(),
+  scoreProfessional: zod.string().optional(),
+  scorePlatform: zod.string().optional(),
   MinNumberOfArtwork: zod.number().min(1, { message: 'Min Number of Artwork is required!' }),
   MaxNumberOfArtwork: zod.number().min(1, { message: 'Max Number of Artwork is required!' }),
 });
@@ -153,6 +155,8 @@ export function Invoice({
       PublishingCatalog: artistFormData?.PublishingCatalog || [
         { PublishingCatalog: '', ArtistFees: '' },
       ],
+      scoreProfessional: artistFormData?.scoreProfessional || '',
+      scorePlatform: artistFormData?.scorePlatform || '',
       ArtistPlus: artistFormData?.ArtistPlus || '',
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
@@ -338,11 +342,7 @@ export function Invoice({
             </Button>
           </div>
           {fields.map((item, index) => (
-            <Stack
-              key={index}
-              aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
-              spacing={1.5}
-            >
+            <Stack key={index} aligncvs={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
               <Box
                 columnGap={2}
                 rowGap={3}
@@ -405,6 +405,8 @@ export function Invoice({
           label="Artist +++"
           options={PRODUCT_ARTISTPLUS_OPTIONS}
         />
+        <Field.Text disabled={isReadOnly} name="scoreProfessional" label="Score Professional" />
+        <Field.Text disabled={isReadOnly} name="scorePlatform" label="Score Platform" />
         <Field.SingelSelect
           disabled={isReadOnly}
           required

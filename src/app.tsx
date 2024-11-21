@@ -16,6 +16,7 @@ import { SettingsDrawer, defaultSettings, SettingsProvider } from 'src/component
 import { AuthProvider } from 'src/auth/context/jwt';
 import { store } from './store/store';
 import { I18nProvider, LocalizationProvider } from './locales';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ export default function App() {
               </SettingsProvider>
             </AuthProvider>
           </Provider>
+          <ReactQueryDevtools initialIsOpen={true} />
         </QueryClientProvider>
       </I18nProvider>
     </LocalizationProvider>

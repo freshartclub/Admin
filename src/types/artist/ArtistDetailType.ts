@@ -46,6 +46,8 @@ export interface ArtistDetailType {
   artistLevel: string;
   artProvider: string;
   ArtistPlus?: string;
+  scorePlatform: string;
+  scoreProfessional: string;
   MinNumberOfArtwork: string;
   MaxNumberOfArtwork: string;
   Description: string;

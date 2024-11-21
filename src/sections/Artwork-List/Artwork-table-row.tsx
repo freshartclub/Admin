@@ -58,18 +58,21 @@ export function ArtworkTableRow({
   const [validate, setValidate] = useState(false);
 
   const popover = usePopover();
-  const { mutate, isPending } = useRemoveArtWorkList(row._id);
-  const { mutate: validateMuate, isPending: validatePending } = useValidateartWork(row._id);
+  const { mutateAsync, isPending } = useRemoveArtWorkList(row._id);
+  const { mutateAsync: validateMuate, isPending: validatePending } = useValidateartWork(row._id);
 
   const removeArtWorkList = () => {
-    mutate();
-    if (!isPending) {
+    mutateAsync().then(() => {
       setShowPop(false);
-    }
+      popover.onClose();
+    });
   };
 
   const validateArtwork = () => {
-    validateMuate();
+    validateMuate().then(() => {
+      setValidate(false);
+      popover.onClose();
+    });
   };
 
   const name = (val) => {

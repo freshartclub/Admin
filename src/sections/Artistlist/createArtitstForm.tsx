@@ -197,9 +197,9 @@ export function CreateArtistForm() {
     return fullName.trim();
   };
 
-  const handleRemoveFile = useCallback(() => {
-    methods.setValue('existingAvatar', null);
-  }, [methods.setValue('existingAvatar')]);
+  // const handleRemoveFile = useCallback(() => {
+  //   methods.setValue('existingAvatar', null);
+  // }, [methods.setValue('existingAvatar')]);
 
   if (isLoading) return <LoadingScreen />;
 
