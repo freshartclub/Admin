@@ -188,7 +188,6 @@ export function CreateArtistForm() {
   }, [methods.getValues('existingCountry')]);
 
   const name = (val) => {
-    console.log(val);
     let fullName = val?.artistName || '';
 
     if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
@@ -197,9 +196,7 @@ export function CreateArtistForm() {
     return fullName.trim();
   };
 
-  // const handleRemoveFile = useCallback(() => {
-  //   methods.setValue('existingAvatar', null);
-  // }, [methods.setValue('existingAvatar')]);
+  const handleRemoveFile = () => methods.setValue('existingAvatar', null);
 
   if (isLoading) return <LoadingScreen />;
 

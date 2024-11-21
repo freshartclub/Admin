@@ -70,7 +70,7 @@ export function CountrySelect({
 
     useEffect(() => {
       setCode && setCode(country?.code);
-    }, []);
+    }, [country?.code]);
 
     return (
       <TextField
