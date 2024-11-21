@@ -57,7 +57,7 @@ export function OtherDetails({
   const id = useSearchParams().get('id');
 
   const isReadOnly = view !== null;
-  const url = "https://dev.freshartclub.com/images"
+  const url = 'https://dev.freshartclub.com/images';
 
   const [showPop, setShowPop] = useState(false);
 
@@ -76,9 +76,11 @@ export function OtherDetails({
   let documentArr = [];
 
   if (id && artistFormData) {
-    artistFormData?.uploadDocs && artistFormData?.uploadDocs?.length > 0 && artistFormData?.uploadDocs?.forEach((item: any, i) => (
-      documentArr.push(`${url}/documents/${item}`)
-    ));
+    artistFormData?.uploadDocs &&
+      artistFormData?.uploadDocs?.length > 0 &&
+      artistFormData?.uploadDocs?.forEach((item: any, i) =>
+        documentArr.push(`${url}/documents/${item}`)
+      );
   }
 
   const defaultValues = useMemo(
@@ -199,6 +201,7 @@ export function OtherDetails({
 
         <Typography variant="body2">Upload Document</Typography>
         <Field.Upload
+          thumbnail
           disabled={isReadOnly}
           accept="application/pdf"
           multiple

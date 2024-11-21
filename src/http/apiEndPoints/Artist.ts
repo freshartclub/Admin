@@ -44,6 +44,7 @@ export const ARTIST_ENDPOINTS = {
   getAllKB: `${ADMIN_BASE_URL}/get-all-kb`,
   getKBById: `${ADMIN_BASE_URL}/get-kb-by-id`,
   getUserList: `${ADMIN_BASE_URL}/get-all-users`,
+  validateArtwork: `${ADMIN_BASE_URL}/validate-artwork`,
 };
 
 export const USER_ENDPOINTS = {

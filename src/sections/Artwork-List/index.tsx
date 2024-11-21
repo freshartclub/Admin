@@ -36,10 +36,10 @@ import { useGetArtworkList } from './http/useGetArtworkList';
 
 const TABLE_HEAD = [
   { id: 'artworkName', label: 'Artwork Name', width: 180 },
-  { id: 'artworkSeries', label: 'Catalog', width: 180 },
-  { id: 'upworkOffer', label: 'Comm. Way', width: 180 },
   { id: 'artistName', label: 'Artist Name', width: 180 },
-  { id: 'createdAt', label: 'Created At', width: 130 },
+  { id: 'discipline', label: 'Discipline', width: 100 },
+  { id: 'artworkSeries', label: 'Catalog', width: 100 },
+  { id: 'createdAt', label: 'Created At', width: 100 },
   { id: 'status', label: 'Status', width: 100 },
   { id: 'action', label: 'Action', width: 80 },
 ];

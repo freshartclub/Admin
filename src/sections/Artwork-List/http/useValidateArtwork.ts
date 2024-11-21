@@ -1,17 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
 
-export const useRemoveArtWorkList = (id) => {
+export const useValidateartWork = (id) => {
   const queryClient = useQueryClient();
-  async function removeArtWork() {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.removeArtWorkList}/${id}`);
-
+  async function validateArtWork() {
+    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.validateArtwork}/${id}`);
     return response;
   }
+
   return useMutation({
-    mutationFn: removeArtWork,
+    mutationFn: validateArtWork,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
         queryKey: [ARTIST_ENDPOINTS.getArtWorkList],

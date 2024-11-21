@@ -30,6 +30,7 @@ import { DialogTitle } from '@mui/material';
 import { DialogContent } from '@mui/material';
 import { DialogContentText } from '@mui/material';
 import { useState } from 'react';
+import { useValidateartWork } from './http/useValidateArtwork';
 
 // ----------------------------------------------------------------------
 
@@ -54,14 +55,21 @@ export function ArtworkTableRow({
 }: Props) {
   const confirm = useBoolean();
   const [showPop, setShowPop] = useState(false);
+  const [validate, setValidate] = useState(false);
+
   const popover = usePopover();
   const { mutate, isPending } = useRemoveArtWorkList(row._id);
+  const { mutate: validateMuate, isPending: validatePending } = useValidateartWork(row._id);
 
   const removeArtWorkList = () => {
     mutate();
     if (!isPending) {
       setShowPop(false);
     }
+  };
+
+  const validateArtwork = () => {
+    validateMuate();
   };
 
   const name = (val) => {
@@ -87,9 +95,31 @@ export function ArtworkTableRow({
       <DialogActions>
         <button
           onClick={removeArtWorkList}
-          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+          className="text-white bg-green-400 rounded-lg px-5 py-2 hover:bg-green-500 font-medium"
         >
           {isPending ? 'Removing...' : 'Remove'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const validateDialogBox = (
+    <Dialog
+      open={validate}
+      onClose={() => {
+        setValidate(false);
+      }}
+    >
+      <DialogTitle>Validate Artwork</DialogTitle>
+      <DialogContent>
+        <DialogContentText>You are about to validate this Artwork. Are you sure?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={validateArtwork}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {validatePending ? 'Validating...' : 'Validate'}
         </button>
       </DialogActions>
     </Dialog>
@@ -130,10 +160,9 @@ export function ArtworkTableRow({
             />
           </Stack>
         </TableCell>
-
-        <TableCell align="center">{row?.artworkSeries}</TableCell>
-        <TableCell align="center">{row?.upworkOffer}</TableCell>
-        <TableCell align="center">{name(row)}</TableCell>
+        <TableCell>{name(row)}</TableCell>
+        <TableCell>{row?.discipline?.artworkDiscipline}</TableCell>
+        <TableCell>{row?.artworkSeries}</TableCell>
 
         <TableCell>
           <ListItemText
@@ -148,7 +177,7 @@ export function ArtworkTableRow({
           <Label
             variant="soft"
             color={
-              (row.status === 'success' && 'success') ||
+              (row.status === 'published' && 'success') ||
               (row.status === 'pending' && 'warning') ||
               (row.status === 'rejected' && 'error') ||
               'default'
@@ -174,16 +203,38 @@ export function ArtworkTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {row?.status === 'pending' && (
-            <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
-              <Iconify icon="solar:trash-bin-trash-bold" />
-              Reject
+          <MenuItem onClick={() => setShowPop(true)}>
+            <Iconify icon="ph:key-return-fill" />
+            Request Return
+          </MenuItem>
+          {row?.status === 'published' ? (
+            <MenuItem>
+              <Iconify icon="ic:outline-published-with-changes" />
+              Published
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={() => setValidate(true)}>
+              <Iconify icon="grommet-icons:validate" />
+              Validate
             </MenuItem>
           )}
+          <MenuItem onClick={() => setShowPop(true)}>
+            <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
+            ReValidate
+          </MenuItem>
+          <MenuItem onClick={() => setShowPop(true)}>
+            <Iconify icon="iconoir:info-empty" />
+            Not Available
+          </MenuItem>
+          <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
         </MenuList>
       </CustomPopover>
 
       {dialogBox}
+      {validateDialogBox}
     </>
   );
 }

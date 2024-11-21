@@ -62,7 +62,7 @@ export function ArtworkDetailView() {
       <div className="container mx-auto md:px-6 px-3">
         <div className="flex lg:flex-row flex-col items-center gap-10 mt-5">
           <div className="flex md:flex-row flex-col gap-4 lg:w-[50%] w-full items-center">
-            <div className="flex md:flex-col flex-row md:gap-0 gap-2 w-[15%] lg:ml-4">
+            <div className="flex md:flex-col justify-center flex-row md:gap-0 gap-2 w-[15%] lg:ml-4">
               {images &&
                 images.length > 0 &&
                 images.map((img, i) => (
@@ -109,18 +109,7 @@ export function ArtworkDetailView() {
             <DiscoverContent data={data?.data} preview={preview} />
           </div>
         </div>
-
-        {/* <div className="flex justify-center md:w-[50%] w-full gap-10 mb-10">
-          <div className="flex gap-1">
-            <img src={eye} alt="eye" className="w-[19px] h-[12px] mt-1" />
-            <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>View in Room</P>
-          </div>
-          <Button className="flex gap-1 !p-0">
-            <img src={share} alt="share" className="w-[19px] h-[16px] mt-1" />
-            <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>Share</P>
-          </Button>
-        </div> */}
-
+        
         <ProductInfo data={data?.data} preview={preview} />
       </div>
       {!preview && <SelectedSection />}

@@ -1,11 +1,9 @@
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-
 import delivery from './assets/delivery.png';
 import secure from './assets/secure.png';
 import print from './assets/print.png';
 import return1 from './assets/return.png';
-
 import P from './comman/P';
 import Header from './comman/Header';
 
@@ -44,7 +42,7 @@ const ProductInfo = ({ data, preview }) => {
                 variant={{ size: 'base', theme: 'dark', weight: 'medium' }}
                 className="text-[#999999]"
               >
-               {data?.productDescription}
+                {data?.productDescription}
               </P>
             </div>
 
@@ -152,18 +150,40 @@ const ProductInfo = ({ data, preview }) => {
 
         <TabPanel>
           <div className="flex flex-col my-5">
-            <PreviewData head="Offer Price" val={data?.commercialization?.acceptOfferPrice} />
-            <PreviewData head="Artist Base Fees" val={data?.commercialization?.artistbaseFees} />
-            <PreviewData head="Downward Offer" val={data?.commercialization?.downwardOffer} />
-            <PreviewData head="Price Request" val={data?.commercialization?.priceRequest} />
-            <PreviewData head="Purchase Catalog" val={data?.commercialization?.purchaseCatalog} />
-            <PreviewData head="Upwork Offer" val={data?.commercialization?.upworkOffer} />
+            <PreviewData
+              head="Selected Method"
+              val={(data?.commercialization?.activeTab).toUpperCase()}
+            />
+            {data?.commercialization?.activeTab === 'purchase' ? (
+              <>
+                <PreviewData head="Offer Price" val={data?.commercialization?.acceptOfferPrice} />
+                <PreviewData
+                  head="Artist Base Fees"
+                  val={data?.commercialization?.artistbaseFees}
+                />
+                <PreviewData head="Downward Offer" val={data?.commercialization?.downwardOffer} />
+                <PreviewData head="Price Request" val={data?.commercialization?.priceRequest} />
+                <PreviewData
+                  head="Purchase Catalog"
+                  val={data?.commercialization?.purchaseCatalog}
+                />
+                <PreviewData head="Upwork Offer" val={data?.commercialization?.upworkOffer} />
+              </>
+            ) : (
+              <>
+                <PreviewData
+                  head="Subscription Catalog"
+                  val={data?.commercialization?.subscriptionCatalog}
+                />
+                <PreviewData head="Purchase Option" val={data?.commercialization?.purchaseOption} />
+              </>
+            )}
           </div>
         </TabPanel>
         <TabPanel>
           <div className="flex flex-col my-5">
             <PreviewData head="Location" val={data?.inventoryShipping?.location} />
-            <PreviewData head="Pin Code" val={data?.inventoryShipping?.pCode} />
+            <PreviewData head="Product Code" val={data?.inventoryShipping?.pCode} />
             <PreviewData head="Artist Fees" val={'$ ' + data?.pricing?.artistFees} />
             <PreviewData head="Base Price" val={'$ ' + data?.pricing?.basePrice} />
             <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
@@ -180,10 +200,6 @@ const ProductInfo = ({ data, preview }) => {
           </div>
         </TabPanel>
       </Tabs>
-
-      {/* <>
-        <img src={product} alt="only image" className="w-full" />
-      </> */}
     </div>
   );
 };

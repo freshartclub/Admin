@@ -94,7 +94,8 @@ export const NewProductSchema = zod.object({
   artworkStyle: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   emotions: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  purchaseCatalog: zod.string().min(1, { message: 'Purchase Catalog required!' }),
+  purchaseCatalog: zod.string().optional(),
+  subscriptionCatalog: zod.string().optional(),
   artistFees: zod.string().optional(),
   downwardOffer: zod.string().optional(),
   upworkOffer: zod.string().optional(),
@@ -128,7 +129,6 @@ export function ArtworkAdd({ currentProduct }) {
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
-  const { data: picklistData } = useGetPicklistMutation();
 
   const picklist = RenderAllPicklist('Currency');
 
@@ -260,6 +260,7 @@ export function ArtworkAdd({ currentProduct }) {
       emotions: data?.data?.additionalInfo?.emotions || [],
       colors: data?.data?.additionalInfo?.colors || [],
       purchaseCatalog: data?.data?.commercialization?.purchaseCatalog || '',
+      subscriptionCatalog: data?.data?.commercialization?.subscriptionCatalog || '',
       downwardOffer: data?.data?.commercialization?.downwardOffer || '',
       upworkOffer: data?.data?.commercialization?.upworkOffer || '',
       acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
@@ -502,7 +503,7 @@ export function ArtworkAdd({ currentProduct }) {
         <Field.Text name="artworkName" label="Artwork Name" />
         <Field.SingelSelect options={options} name="isArtProvider" label="Is Art Provider" />
         {methods.getValues('isArtProvider') === 'yes' && (
-          <Field.Text name="artProviderName" label="Art Provider Name" />
+          <Field.Text name="provideArtistName" label="Art Provider Name" />
         )}
         <Box
           columnGap={2}
@@ -764,8 +765,8 @@ export function ArtworkAdd({ currentProduct }) {
           <>
             <Field.SingelSelect
               checkbox
-              name="purchaseCatalog"
-              label="Purchase Catalog"
+              name="subscriptionCatalog"
+              label="Subscription Catalog"
               options={ARTWORK_PURCHASECATALOG_OPTIONS}
             />
             <Field.SingelSelect
