@@ -206,7 +206,7 @@ export function ArtworkTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem onClick={() => setShowPop(true)}>
+          <MenuItem>
             <Iconify icon="ph:key-return-fill" />
             Request Return
           </MenuItem>
@@ -221,11 +221,11 @@ export function ArtworkTableRow({
               Validate
             </MenuItem>
           )}
-          <MenuItem onClick={() => setShowPop(true)}>
+          <MenuItem>
             <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
             ReValidate
           </MenuItem>
-          <MenuItem onClick={() => setShowPop(true)}>
+          <MenuItem>
             <Iconify icon="iconoir:info-empty" />
             Not Available
           </MenuItem>
