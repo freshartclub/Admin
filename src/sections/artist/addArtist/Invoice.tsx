@@ -342,7 +342,7 @@ export function Invoice({
             </Button>
           </div>
           {fields.map((item, index) => (
-            <Stack key={index} aligncvs={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
+            <Stack key={index} spacing={1.5}>
               <Box
                 columnGap={2}
                 rowGap={3}
@@ -354,14 +354,14 @@ export function Invoice({
                   required
                   checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
-                  label="publishing catalogue"
+                  label="Publishing catalogue"
                   options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
                 />
                 <Field.Text
                   disabled={isReadOnly}
                   required
                   name={`PublishingCatalog[${index}].ArtistFees`}
-                  label=" Artist Fees"
+                  label="Artist Fees"
                 />
               </Box>
 

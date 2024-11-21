@@ -2,7 +2,7 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
@@ -14,6 +14,10 @@ import CardHeader from '@mui/material/CardHeader';
 import { useSearchParams } from 'src/routes/hooks';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { Dialog, DialogActions } from '@mui/material';
+import { DialogTitle } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogContentText } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +48,8 @@ export function Logistic({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(false);
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
@@ -56,21 +62,20 @@ export function Logistic({
     return fullName.trim();
   };
 
-  let val;
   const defaultValues = useMemo(
     () => ({
-      logName: artistFormData?.logName || val ? name(artistFormData) : '',
-      logAddress: artistFormData?.logAddress || val ? artistFormData?.residentialAddress : '',
-      logZipCode: artistFormData?.logZipCode || val ? artistFormData?.zipCode : '',
-      logCity: artistFormData?.logCity || val ? artistFormData?.city : '',
-      logProvince: artistFormData?.logProvince || val ? artistFormData?.state : '',
-      logCountry: artistFormData?.country || val ? artistFormData?.country : '',
-      logEmail: artistFormData?.logEmail || val ? artistFormData?.email : '',
-      logPhone: artistFormData?.logPhone || val ? artistFormData?.phone : '',
+      logName: artistFormData?.logName || value ? name(artistFormData) : '',
+      logAddress: artistFormData?.logAddress || value ? artistFormData?.residentialAddress : '',
+      logZipCode: artistFormData?.logZipCode || value ? artistFormData?.zipCode : '',
+      logCity: artistFormData?.logCity || value ? artistFormData?.city : '',
+      logProvince: artistFormData?.logProvince || value ? artistFormData?.state : '',
+      logCountry: artistFormData?.country || value ? artistFormData?.country : '',
+      logEmail: artistFormData?.logEmail || value ? artistFormData?.email : '',
+      logPhone: artistFormData?.logPhone || value ? artistFormData?.phone : '',
       logNotes: artistFormData?.logNotes || '',
       count: 6,
     }),
-    [artistFormData, val]
+    [artistFormData, value]
   );
 
   const handleSuccess = (data) => {
@@ -89,7 +94,7 @@ export function Logistic({
     defaultValues,
   });
 
-  const { trigger, handleSubmit } = methods;
+  const { trigger, reset, handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -97,6 +102,20 @@ export function Logistic({
 
     mutate({ body: data });
   });
+
+  useEffect(() => {
+    reset({
+      logName: value ? name(artistFormData) : artistFormData?.logName,
+      logAddress: value ? artistFormData?.residentialAddress : artistFormData?.logAddress,
+      logZipCode: value ? artistFormData?.zipCode : artistFormData?.logAddress,
+      logCity: value ? artistFormData?.city : artistFormData?.logAddress,
+      logProvince: value ? artistFormData?.state : artistFormData?.logAddress,
+      logCountry: value ? artistFormData?.country : artistFormData?.logAddress,
+      logEmail: value ? artistFormData?.email : artistFormData?.logAddress,
+      logPhone: value ? artistFormData?.phone : artistFormData?.logAddress,
+      logNotes: value ? artistFormData?.logNotes : artistFormData?.logAddress,
+    });
+  }, [value]);
 
   const viewNext = () => {
     setTabState((prev) => {
@@ -106,11 +125,47 @@ export function Logistic({
     setTabIndex(tabIndex + 1);
   };
 
-  setTimeout(() => {
-    if (!artistFormData?.logName) {
-      val = window.confirm('Would you like to copy data from general information?');
-    }
-  }, 2000);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!methods.getValues('logName')) {
+        setOpen(true);
+      }
+    }, 1000);
+
+    // Cleanup the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const copyDialogBox = (
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false);
+      }}
+    >
+      <DialogTitle>Copy Data</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Would you like to copy data from General Information?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <span
+          onClick={() => {
+            setValue(true);
+            setOpen(false);
+          }}
+          className="cursor-pointer text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          Copy Data
+        </span>
+        <span
+          onClick={() => setOpen(false)}
+          className="cursor-pointer text-white bg-red-600 rounded-lg px-5 py-2 hover:bg-red-700 font-medium"
+        >
+          Close
+        </span>
+      </DialogActions>
+    </Dialog>
+  );
 
   const renderDetails = (
     <Card>
@@ -192,6 +247,7 @@ export function Logistic({
           )}
         </div>
       </Stack>
+      {copyDialogBox}
     </Form>
   );
 }
