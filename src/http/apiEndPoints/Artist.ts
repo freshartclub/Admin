@@ -1,4 +1,9 @@
-import { ADMIN_BASE_URL, GENERAL_BASE_URL, PICKLIST_BASE_URL } from 'src/utils/BaseUrls';
+import {
+  ADMIN_BASE_URL,
+  GENERAL_BASE_URL,
+  PICKLIST_BASE_URL,
+  ORDER_BASE_URL,
+} from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
   AddArtist: `${ADMIN_BASE_URL}/artist-register`,
@@ -25,6 +30,7 @@ export const ARTIST_ENDPOINTS = {
   getUserByQueryInput: `${ADMIN_BASE_URL}/get-user-by-query-input`,
   removeArtWorkList: `${ADMIN_BASE_URL}/remove-artwork`,
   getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
+  getTicketDetail: `${ADMIN_BASE_URL}/get-ticket`,
   replyTicket: `${ADMIN_BASE_URL}/reply-ticket`,
   getTicketReply: `${ADMIN_BASE_URL}/get-ticket-replies`,
   addIncident: `${ADMIN_BASE_URL}/add-incident`,
@@ -79,4 +85,9 @@ export const PICKLIST_ENDPOINTS = {
   getPicklists: `${PICKLIST_BASE_URL}/get-picklist`,
   getPicklistById: `${PICKLIST_BASE_URL}/get-picklist-by-id`,
   updatePicklist: `${PICKLIST_BASE_URL}/update-picklist`,
+};
+
+export const ORDER_ENDPOINTS = {
+  getSubscriptionOrder: `${ORDER_BASE_URL}/get-subscription-order`,
+  getPurchaseOrder: `${ORDER_BASE_URL}/get-purchase-order`,
 };

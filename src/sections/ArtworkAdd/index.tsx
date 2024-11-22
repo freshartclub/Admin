@@ -131,6 +131,7 @@ export function ArtworkAdd({ currentProduct }) {
   const { data: themeData } = useGetThemeListMutation();
 
   const picklist = RenderAllPicklist('Currency');
+  const plans = RenderAllPicklist('Plans');
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -767,7 +768,7 @@ export function ArtworkAdd({ currentProduct }) {
               checkbox
               name="subscriptionCatalog"
               label="Subscription Catalog"
-              options={ARTWORK_PURCHASECATALOG_OPTIONS}
+              options={plans}
             />
             <Field.SingelSelect
               checkbox

@@ -1,4 +1,12 @@
-import { Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -41,28 +49,6 @@ export function TicketTableToolbar({
         direction={{ xs: 'column', md: 'row' }}
         sx={{ mb: { xs: 2.5, md: 1 } }}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={2}
-          flexGrow={1}
-          sx={{ width: 'fit-content' }}
-        >
-          <TextField
-            fullWidth
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search By Ticket Id..."
-            sx={{ maxWidth: { md: 300 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Stack>
-
         <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="Status">Status</InputLabel>
 
@@ -99,24 +85,31 @@ export function TicketTableToolbar({
           </Select>
         </FormControl>
 
-        <Button
-          component={RouterLink}
-          href={paths.dashboard.tickets.addIncident}
-          variant="contained"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-          sx={{ py: 2, maxWidth: { md: 180 } }}
-        >
-          New Incident
-        </Button>
-        <Button
-          component={RouterLink}
-          href={paths.dashboard.tickets.addTicket}
-          variant="contained"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-          sx={{ py: 2, maxWidth: { md: 180 } }}
-        >
-          Add Ticket
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: '100%' }}>
+          <TextField
+            fullWidth
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search By Ticket Id..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <RouterLink href={`${paths.dashboard.tickets.addIncident}`}>
+            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+              <Iconify icon="mingcute:add-line" /> Add Incident
+            </span>
+          </RouterLink>
+          <RouterLink href={`${paths.dashboard.tickets.addTicket}`}>
+            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[8rem]">
+              <Iconify icon="mingcute:add-line" /> Add Ticket
+            </span>
+          </RouterLink>
+        </Box>
       </Stack>
     </>
   );

@@ -78,9 +78,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
     getLocation();
   }, [methods.getValues('country')]);
 
-  const handleRemoveFile = useCallback(() => {
-    methods.setValue('avatar', null);
-  }, [methods.setValue('avatar')]);
+  const handleRemoveFile = () => methods.setValue('avatar', null);
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -162,7 +160,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
                 variant="contained"
                 color="success"
               >
-                {isPending && isArtist ? ' Loading...' : 'Create User With Artist Account'}
+                {isPending && isArtist ? 'Loading...' : 'Create User With Artist Account'}
               </Button>
             </Stack>
           </Card>

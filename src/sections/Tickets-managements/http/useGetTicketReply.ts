@@ -7,10 +7,9 @@ async function fetchData(id) {
   return data.data;
 }
 
-export const useGetReplyMutation = (id) => {
+export const useGetTicketReply = (id) => {
   return useQuery({
     queryKey: [`${ARTIST_ENDPOINTS.getTicketReply}/${id}`],
     queryFn: () => fetchData(id),
-    // enabled: false,
   });
 };

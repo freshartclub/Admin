@@ -29,18 +29,28 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 type Props = {
   row: IOrderItem;
+  url: string;
   selected: boolean;
   onViewRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteRow }: Props) {
+export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
   const collapse = useBoolean();
-
   const popover = usePopover();
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
+  console.log(row);
 
   const renderPrimary = (
     <TableRow hover selected={selected}>
@@ -54,49 +64,42 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
 
       <TableCell>
         <Link color="inherit" onClick={onViewRow} underline="always" sx={{ cursor: 'pointer' }}>
-          {row.orderNumber}
+          {row?.orderID}
         </Link>
       </TableCell>
 
       <TableCell>
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar alt={row.customer.name} src={row.customer.avatarUrl} />
+          <Avatar
+            alt={row?.user?.artistName}
+            src={`${url}/users/${row?.user?.profile?.mainImage}`}
+          />
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-            <Box component="span">{row.customer.name}</Box>
+            <Box component="span">{name(row?.user)}</Box>
             <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row.customer.email}
+              {row?.user?.email}
             </Box>
           </Stack>
         </Stack>
       </TableCell>
-
-      <TableCell>
-        <ListItemText
-          primary={fDate(row.createdAt)}
-          secondary={fTime(row.createdAt)}
-          primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-          secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-        />
-      </TableCell>
-
-      <TableCell align="center"> {row.totalQuantity} </TableCell>
-
-      <TableCell> {fCurrency(row.subtotal)} </TableCell>
+      <TableCell align='center'>{row?.items?.length}</TableCell>
+      <TableCell> {row?.subTotal} </TableCell>
 
       <TableCell>
         <Label
           variant="soft"
           color={
-            (row.status === 'completed' && 'success') ||
+            (row.status === 'success' && 'success') ||
             (row.status === 'pending' && 'warning') ||
             (row.status === 'cancelled' && 'error') ||
             'default'
           }
         >
-          {row.status}
+          {row?.status}
         </Label>
       </TableCell>
+      <TableCell>{fDate(row?.createdAt)}</TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
         <IconButton
@@ -124,9 +127,9 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Paper sx={{ m: 1.5 }}>
-            {row.items.map((item) => (
+            {row.items.map((item, i) => (
               <Stack
-                key={item.id}
+                key={i}
                 direction="row"
                 alignItems="center"
                 sx={{
@@ -137,21 +140,23 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
                 }}
               >
                 <Avatar
-                  src={item.coverUrl}
+                  src={`${url}/users/${item?.artWork?.media?.mainImage}`}
                   variant="rounded"
                   sx={{ width: 48, height: 48, mr: 2 }}
                 />
 
                 <ListItemText
-                  primary={item.name}
-                  secondary={item.sku}
+                  primary={item?.artWork?.artworkName}
+                  secondary={item?.artWork?.inventoryShipping?.pCode}
                   primaryTypographyProps={{ typography: 'body2' }}
                   secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
                 />
 
                 <div>x{item.quantity} </div>
 
-                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
+                <Box sx={{ width: 110, textAlign: 'right' }}>
+                  {fCurrency(item?.artWork?.pricing?.basePrice)}
+                </Box>
               </Stack>
             ))}
           </Paper>
@@ -163,7 +168,6 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
   return (
     <>
       {renderPrimary}
-
       {renderSecondary}
 
       <CustomPopover
