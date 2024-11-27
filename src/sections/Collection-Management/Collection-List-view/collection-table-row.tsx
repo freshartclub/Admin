@@ -1,34 +1,29 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
+import { fDate } from 'src/utils/format-time';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { Tooltip } from '@mui/material';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IInvoice;
+  url: string;
   selected: boolean;
   onSelectRow: () => void;
   onViewRow: () => void;
@@ -38,6 +33,7 @@ type Props = {
 
 export function CollectionTableRow({
   row,
+  url,
   selected,
   onSelectRow,
   onViewRow,
@@ -45,13 +41,19 @@ export function CollectionTableRow({
   onDeleteRow,
 }: Props) {
   const confirm = useBoolean();
-
   const popover = usePopover();
+
+  const navigate = useNavigate();
+
+  const tags = (val) => {
+    if (!val || val.length === 0) return '';
+    return val.slice(0, 3).join(' | ');
+  };
 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        <TableCell sx={{ whiteSpace: 'nowrap' }} padding="checkbox">
           <Checkbox
             checked={selected}
             onClick={onSelectRow}
@@ -59,70 +61,36 @@ export function CollectionTableRow({
           />
         </TableCell>
 
-        <TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.collectionTitle}>{row.collectionTitle.charAt(0).toUpperCase()}</Avatar>
+            {row?.collectionFile.includes('.png') ||
+            row?.collectionFile.includes('.jpg') ||
+            row?.collectionFile.includes('.jpeg') ||
+            row?.collectionFile.includes('.webp') ? (
+              <Avatar alt={row.collectionTitle} src={`${url}/users/${row?.collectionFile}`} />
+            ) : (
+              <Avatar alt={row.collectionTitle} src={row?.collectionName} />
+            )}
 
             <ListItemText
               disableTypography
               primary={
                 <Typography variant="body2" noWrap>
-                  {row.collectionTitle}
+                  {row.collectionName}
                 </Typography>
               }
-              // secondary={
-              //   <Link
-              //     noWrap
-              //     variant="body2"
-              //     onClick={onViewRow}
-              //     sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              //   >
-              //     {row.invoiceNumber}
-              //   </Link>
-              // }
             />
           </Stack>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.createdBy}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tags(row?.artworkTags)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.status}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
-        <TableCell>
-          <ListItemText
-            primary={fDate(row.createdDate)}
-            secondary={fTime(row.createdDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell>
-
-        {/* <TableCell>
-          <ListItemText
-            primary={fDate(row.dueDate)}
-            secondary={fTime(row.dueDate)}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
-          />
-        </TableCell> */}
-
-        {/* <TableCell>{fCurrency(row.totalAmount)}</TableCell> */}
-        <TableCell align="center">{row.createdBy}</TableCell>
-
-        <TableCell align="left">{row.tags.join(", ")}</TableCell>
-  
-
-    <TableCell>
-          <Stack direction="row" alignItems="center">
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton
-                // color={quickEdit.value ? 'inherit' : 'default'}
-                // onClick={quickEdit.onTrue}
-              >
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </Stack>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
 
@@ -145,10 +113,9 @@ export function CollectionTableRow({
           </MenuItem>
 
           <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
+            onClick={() =>
+              navigate(`${paths.dashboard.artwork.collection_management.add}?id=${row._id}`)
+            }
           >
             <Iconify icon="solar:pen-bold" />
             Edit

@@ -7,7 +7,7 @@ export type UseDebounceReturn = string;
 export function useDebounce(value: string, delay = 800): UseDebounceReturn {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
-  const debounceHandler = useCallback(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -17,11 +17,7 @@ export function useDebounce(value: string, delay = 800): UseDebounceReturn {
     };
   }, [value, delay]);
 
-  useEffect(() => {
-    debounceHandler();
-  }, [debounceHandler]);
-
   const memoizedValue = useMemo(() => debouncedValue, [debouncedValue]);
-
+  
   return memoizedValue;
 }

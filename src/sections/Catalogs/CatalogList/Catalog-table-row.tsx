@@ -12,14 +12,13 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { fDate } from 'src/utils/format-time';
-import { Tooltip } from '@mui/material';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
-import { useNavigate } from 'react-router';
+import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -46,9 +45,12 @@ export function CatalogTableRow({
   const popover = usePopover();
   const navigate = useNavigate();
 
-  const list = (val) => {
-    if (!val || val.length === 0) return '';
-    return val.join(', ');
+  const viewArtworkList = (val) => {
+    if (!val || val.length === 0) return 'N/A';
+    return val
+      .map((item) => item.artworkName)
+      .slice(0, 2)
+      .join(', ');
   };
 
   return (
@@ -87,7 +89,7 @@ export function CatalogTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.artworkList)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{viewArtworkList(row?.artworkList)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.subPlan}</TableCell>
 

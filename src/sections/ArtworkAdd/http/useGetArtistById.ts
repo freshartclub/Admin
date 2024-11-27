@@ -11,6 +11,6 @@ export const useGetArtistById = (input) => {
   return useQuery({
     queryKey: [ARTIST_ENDPOINTS.getArtistById, input],
     queryFn: () => fetchData(input),
-    enabled: false,
+    enabled: true,
   });
 };

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
+import { Avatar, Link, ListItemText, TableCell, TableRow, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
@@ -10,16 +11,19 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { Art_provider, ArtworkList, CATAGORY_PLAN_OPTIONS, Collections } from 'src/_mock';
+import { Art_provider, CATAGORY_PLAN_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
+import { useGetSearchedArtworks } from '../Collection-Management/http/useGetSearchedArtworks';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
-import { status } from 'nprogress';
-import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
+import { useGetSearchCollection } from './http/useGetSearchCollection';
 
 // ----------------------------------------------------------------------
 
@@ -28,10 +32,12 @@ export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 export const NewPostSchema = zod.object({
   catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
-  artworkList: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  catalogCollection: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  artworkList: zod.string().array().min(1, { message: 'Must have at least 1 items!' }),
+  artworkNames: zod.string().array(),
+  catalogCollection: zod.string().array().min(1, { message: 'Must have at least 1 items!' }),
+  collectionNames: zod.string().array(),
   artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  subPlan: zod.string().min(1, { message: 'plan is required!' }),
+  subPlan: zod.string().array().min(1, { message: 'Plan is required!' }),
   exclusiveCatalog: zod.boolean(),
   status: zod.any(),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
@@ -42,34 +48,28 @@ export const NewPostSchema = zod.object({
 export function AddCatalogForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
-  const [picklist, setPicklist] = useState([]);
   const { data, isLoading } = useGetCatalogById(id);
-  const { data: picklistData } = useGetPicklistMutation();
+  const [search, setSearch] = useState('');
+  const [searchColl, setSearchColl] = useState('');
 
-  useEffect(() => {
-    const list =
-      picklistData && picklistData.length > 0
-        ? picklistData.filter((item: any) => item?.picklistName === 'Catalog Status')
-        : [];
+  const picklist = RenderAllPicklist('Catalog Status');
 
-    if (list?.length > 0 && list[0]?.picklist?.length > 0) {
-      setPicklist(
-        list[0]?.picklist.map((item: any) => ({
-          label: item.name,
-          value: item.name,
-        }))
-      );
-    }
-  }, [picklistData]);
+  const searchDebounce = useDebounce(search, 1000);
+  const { data: artworkData } = useGetSearchedArtworks(searchDebounce);
+
+  const searchCollDebounce = useDebounce(searchColl, 1000);
+  const { data: collData } = useGetSearchCollection(searchCollDebounce);
 
   const defaultValues = useMemo(
     () => ({
       catalogName: data?.data?.catalogName || '',
       catalogDesc: data?.data?.catalogDesc || '',
-      artworkList: data?.data?.artworkList || [],
-      catalogCollection: data?.data?.catalogCollection || [],
+      artworkList: data?.data?.artworkList?.map((item) => item?._id) || [],
+      artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
+      catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
+      collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
       artProvider: data?.data?.artProvider || [],
-      subPlan: data?.data?.subPlan || '',
+      subPlan: data?.data?.subPlan || [],
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
       status: data?.data?.status || '',
       catalogImg: data?.data?.catalogImg || null,
@@ -89,10 +89,12 @@ export function AddCatalogForm() {
       reset({
         catalogName: data?.data?.catalogName || '',
         catalogDesc: data?.data?.catalogDesc || '',
-        artworkList: data?.data?.artworkList || [],
-        catalogCollection: data?.data?.catalogCollection || [],
+        artworkList: data?.data?.artworkList?.map((item) => item?._id) || [],
+        artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
+        catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
+        collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
         artProvider: data?.data?.artProvider || [],
-        subPlan: data?.data?.subPlan || '',
+        subPlan: data?.data?.subPlan || [],
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
         status: data?.data?.status || '',
         catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
@@ -137,6 +139,64 @@ export function AddCatalogForm() {
     setValue('catalogImg', null);
   }, [setValue]);
 
+  const refillData = (item) => {
+    const currentArtworkList = methods.getValues('artworkList') || [];
+    const currentArtworkNames = methods.getValues('artworkNames') || [];
+
+    if (!currentArtworkList.includes(item?._id)) {
+      setValue('artworkList', [...currentArtworkList, item?._id]);
+    }
+
+    if (!currentArtworkNames.includes(item?.artworkName)) {
+      setValue('artworkNames', [...currentArtworkNames, item?.artworkName]);
+    }
+
+    setSearch('');
+  };
+
+  const refillCollData = (item) => {
+    const catalogCollection = methods.getValues('catalogCollection') || [];
+    const collectionNames = methods.getValues('collectionNames') || [];
+
+    if (!catalogCollection.includes(item?._id)) {
+      setValue('catalogCollection', [...catalogCollection, item?._id]);
+    }
+
+    if (!collectionNames.includes(item?.collectionName)) {
+      setValue('collectionNames', [...collectionNames, item?.collectionName]);
+    }
+
+    setSearchColl('');
+  };
+
+  const handleRemoveArtwokrk = (index) => {
+    const currentArtworkList = methods.getValues('artworkList') || [];
+    const currentArtworkNames = methods.getValues('artworkNames') || [];
+
+    setValue(
+      'artworkList',
+      currentArtworkList.filter((_, i) => i !== index)
+    );
+    setValue(
+      'artworkNames',
+      currentArtworkNames.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleRemoveCollection = (index) => {
+    const catalogCollection = methods.getValues('catalogCollection') || [];
+    const collectionNames = methods.getValues('collectionNames') || [];
+
+    setValue(
+      'catalogCollection',
+      catalogCollection.filter((_, i) => i !== index)
+    );
+    setValue(
+      'collectionNames',
+      collectionNames.filter((_, i) => i !== index)
+    );
+  };
+
   const optionsIn = [
     {
       label: 'Yes',
@@ -154,64 +214,161 @@ export function AddCatalogForm() {
         <Divider />
         <Stack spacing={3} sx={{ p: 3 }}>
           <Field.Text required name="catalogName" label="Catalog Name" />
-          <Field.Text required name="catalogDesc" label="Catalog Discription" multiline rows={4} />
+          <Field.Text required name="catalogDesc" label="Catalog Description" multiline rows={4} />
+          <div className="relative">
+            <Field.Text
+              name="CollectionSearch"
+              label="Add Collection To List"
+              placeholder="Search by Collection Name"
+              value={searchColl}
+              onChange={(e) => setSearchColl(e.target.value)}
+            />
+            {searchColl && (
+              <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+                <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {collData && collData.length > 0 ? (
+                    collData.map((i, j) => (
+                      <TableCell
+                        onClick={() => refillCollData(i)}
+                        key={j}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                          },
+                        }}
+                      >
+                        <Stack spacing={2} direction="row" alignItems="center">
+                          <Avatar alt={i?.collectionName} src={i?.collectionFile} />
 
-          <Field.Autocomplete
-            required
-            name="artworkList"
-            label="Artwork List"
-            placeholder="+ list"
-            multiple
-            freeSolo
-            disableCloseOnSelect
-            options={ArtworkList.map((option) => option)}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography variant="body2" noWrap>
+                                {i?.collectionName}
+                              </Typography>
+                            }
+                            secondary={
+                              <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                                {i?.createdBy}
+                              </Link>
+                            }
+                          />
+                        </Stack>
+                      </TableCell>
+                    ))
+                  ) : (
+                    <TableCell>No Data Available</TableCell>
+                  )}
+                </TableRow>
+              </div>
             )}
-            renderTags={(selected, getTagProps) =>
-              selected.map((option, index) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  key={option}
-                  label={option}
-                  size="small"
-                  color="info"
-                  variant="soft"
-                />
-              ))
-            }
-          />
-          <Field.Autocomplete
-            required
-            name="catalogCollection"
-            label="Collections"
-            placeholder="+ list"
-            multiple
-            freeSolo
-            disableCloseOnSelect
-            options={Collections.map((option) => option)}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
+          </div>
+          {methods.watch('collectionNames') && methods.getValues('collectionNames').length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-[-1rem]">
+              {methods.getValues('collectionNames').map((i, index) => (
+                <Stack
+                  direction={'row'}
+                  alignItems="center"
+                  sx={{
+                    display: 'flex',
+                    gap: 0.3,
+                    backgroundColor: 'rgb(214 244 249)',
+                    color: 'rgb(43 135 175)',
+                    fontSize: '14px',
+                    padding: '3px 7px',
+                    borderRadius: '9px',
+                  }}
+                  key={index}
+                >
+                  <span>{i}</span>
+                  <Iconify
+                    icon="material-symbols:close-rounded"
+                    sx={{ cursor: 'pointer', padding: '2px' }}
+                    onClick={() => handleRemoveCollection(index)}
+                  />
+                </Stack>
+              ))}
+            </div>
+          )}
+
+          <div className="relative">
+            <Field.Text
+              name="artworkSearch"
+              label="Add Artwork To List"
+              placeholder="Search by Artwork Id/Name"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+                <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {artworkData && artworkData.length > 0 ? (
+                    artworkData.map((i, j) => (
+                      <TableCell
+                        onClick={() => refillData(i)}
+                        key={j}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                          },
+                        }}
+                      >
+                        <Stack spacing={2} direction="row" alignItems="center">
+                          <Avatar alt={i?.artworkName} src={i?.media?.mainImage} />
+
+                          <ListItemText
+                            disableTypography
+                            primary={
+                              <Typography variant="body2" noWrap>
+                                {i?.artworkName}
+                              </Typography>
+                            }
+                            secondary={
+                              <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                                {i?.inventoryShipping?.pCode}
+                              </Link>
+                            }
+                          />
+                        </Stack>
+                      </TableCell>
+                    ))
+                  ) : (
+                    <TableCell>No Data Available</TableCell>
+                  )}
+                </TableRow>
+              </div>
             )}
-            renderTags={(selected, getTagProps) =>
-              selected.map((option, index) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  key={option}
-                  label={option}
-                  size="small"
-                  color="info"
-                  variant="soft"
-                />
-              ))
-            }
-          />
+          </div>
+          {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-[-1rem]">
+              {methods.getValues('artworkNames').map((i, index) => (
+                <Stack
+                  direction={'row'}
+                  alignItems="center"
+                  sx={{
+                    display: 'flex',
+                    gap: 0.3,
+                    backgroundColor: 'rgb(214 244 249)',
+                    color: 'rgb(43 135 175)',
+                    fontSize: '14px',
+                    padding: '3px 7px',
+                    borderRadius: '9px',
+                  }}
+                  key={index}
+                >
+                  <span>{i}</span>
+                  <Iconify
+                    icon="material-symbols:close-rounded"
+                    sx={{ cursor: 'pointer', padding: '2px' }}
+                    onClick={() => handleRemoveArtwokrk(index)}
+                  />
+                </Stack>
+              ))}
+            </div>
+          )}
+
           <Field.Autocomplete
             required
             name="artProvider"
@@ -279,13 +436,41 @@ export function AddCatalogForm() {
       <CardHeader title="Subscription Plan" sx={{ mb: 1 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
+        <Field.Autocomplete
+          required
+          name="subPlan"
+          label="Subscription Plan *"
+          placeholder="+ Subscription Plan"
+          multiple
+          freeSolo
+          disableCloseOnSelect
+          options={CATAGORY_PLAN_OPTIONS.map((option) => option.value)}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option) => (
+            <li {...props} key={option}>
+              {option}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option}
+                label={option}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
+        />
+        {/* <Field.SingelSelect
           required
           checkbox
           name="subPlan"
           label="Subscription Plan"
           options={CATAGORY_PLAN_OPTIONS}
-        />
+        /> */}
       </Stack>
     </Card>
   );

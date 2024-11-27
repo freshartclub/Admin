@@ -28,7 +28,6 @@ import {
   ARTWORK_OFFENSIVE_OPTIONS,
   ARTWORK_ORIENTATION_OPTIONS,
   ARTWORK_PROMOTIONS_OPTIONS,
-  ARTWORK_PROMOTIONSCORE_OPTIONS,
   ARTWORK_PURCHASECATALOG_OPTIONS,
   ARTWORK_STYLE_OPTIONS,
   ARTWORK_TAGES_OPTIONS,
@@ -56,8 +55,9 @@ import { FormLabel } from '@mui/material';
 import { RadioGroup } from '@mui/material';
 import { FormControlLabel } from '@mui/material';
 import { Radio } from '@mui/material';
-import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
+// import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
+import { easeOut } from 'framer-motion';
 
 // ----------------------------------------------------------------------
 
@@ -67,15 +67,15 @@ export const NewProductSchema = zod.object({
   artistName: zod.string().min(1, { message: 'artistName is required!' }),
   isArtProvider: zod.string().min(1, { message: 'isArtProvider is required!' }),
   provideArtistName: zod.string().optional(),
-  artworkCreationYear: zod.any().optional(),
+  artworkCreationYear: zod.string().optional(),
   artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
   productDescription: zod.string().optional(),
   mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
   backImage: schemaHelper.file({ required: false }).optional(),
   inProcessImage: schemaHelper.file({ required: false }).optional(),
-  images: zod.array(schemaHelper.file({ required: false })).optional(),
+  images: zod.any(),
   mainVideo: schemaHelper.file({ required: false }).optional(),
-  otherVideo: zod.array(schemaHelper.file({ required: false })).optional(),
+  otherVideo: zod.any(),
   artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
   artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
   artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
@@ -102,9 +102,17 @@ export const NewProductSchema = zod.object({
   acceptOfferPrice: zod.string().optional(),
   priceRequest: zod.string().optional(),
   basePrice: zod.string().min(1, { message: 'Base price is required!' }),
-  dpersentage: zod.string().min(1, { message: 'Descount not be $0.00' }),
+  dpersentage: zod
+    .string()
+    .min(1, { message: 'Discount should not be $0.00' })
+    .refine(
+      (value) => {
+        const parsed = parseFloat(value);
+        return !isNaN(parsed) && parsed <= 100;
+      },
+      { message: 'Discount percentage cannot exceed 100%' }
+    ),
   vatAmount: zod.string().optional(),
-  artistbaseFees: zod.string().optional(),
   activeTab: zod.string().optional(),
   purchaseOption: zod.string().optional(),
   offensive: zod.string().optional(),
@@ -113,19 +121,21 @@ export const NewProductSchema = zod.object({
   artworkDiscipline: zod.string(),
   artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   promotion: zod.string().optional(),
-  promotionScore: zod.string().optional(),
+  promotionScore: zod.any(),
   availableTo: zod.string().optional(),
   discountAcceptation: zod.string().optional(),
   collectionList: zod.string().optional(),
-  existingImages: zod.string().array().optional(),
-  existingVideos: zod.string().array().optional(),
+  existingImages: zod.any().array().optional(),
+  existingVideos: zod.any().array().optional(),
   currency: zod.string().min(1, { message: 'currency is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
 export function ArtworkAdd({ currentProduct }) {
-  const [pArr, setPArr] = useState<{ value: number; label: number }[]>([]);
+  const [pArr, setPArr] = useState<{ value: string; label: string }[]>([]);
+  const [year, setYear] = useState('');
+  const [search, setSearch] = useState('');
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
@@ -234,13 +244,13 @@ export function ArtworkAdd({ currentProduct }) {
       inProcessImage: data?.data?.media?.inProcessImage
         ? `${data?.url}/users/${data?.data?.media?.inProcessImage}`
         : null,
-      images: arr || [],
       mainVideo: data?.data?.media?.mainVideo
         ? `${data?.url}/videos/${data?.data?.media?.mainVideo}`
         : null,
+      images: arr || [],
       otherVideo: videoArr || [],
-      existingImages: [],
-      existingVideos: [],
+      existingImages: data?.data?.media?.images || [],
+      existingVideos: data?.data?.media?.otherVideo || [],
 
       artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
       artworkTheme: data?.data?.additionalInfo?.artworkTheme || '',
@@ -267,6 +277,7 @@ export function ArtworkAdd({ currentProduct }) {
       acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
       priceRequest: data?.data?.commercialization?.priceRequest || '',
       purchaseOption: data?.data?.commercialization?.purchaseOption || '',
+      artistbaseFees: data?.data?.commercialization?.artistbaseFees || '',
       activeTab: data?.data?.commercialization?.activeTab || '',
       basePrice: data?.data?.pricing?.basePrice || '',
       currency: data?.data?.pricing?.currency || '',
@@ -274,7 +285,6 @@ export function ArtworkAdd({ currentProduct }) {
       vatAmount: data?.data?.pricing?.vatAmount || '',
       artistFees: data?.data?.pricing?.artistFees || '',
       offensive: data?.data?.additionalInfo?.offensive || '',
-      artistbaseFees: data?.data?.commercialization?.artistbaseFees || '',
       pCode: data?.data?.inventoryShipping?.pCode || '',
       location: data?.data?.inventoryShipping?.location || '',
       artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
@@ -288,15 +298,6 @@ export function ArtworkAdd({ currentProduct }) {
     [data?.data]
   );
 
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
-    setValue('activeTab', event.target.value);
-  };
-
-  const handleYearChange = (event) => {
-    setValue('artworkCreationYear', event.$y);
-  };
-
   const { mutate, isPending } = useCreateArtworkMutation(id);
 
   const methods = useForm({
@@ -305,28 +306,21 @@ export function ArtworkAdd({ currentProduct }) {
   });
 
   const { reset, watch, setValue, handleSubmit } = methods;
+  const values = watch();
 
   const selectedDisciplines = useWatch({
     control: methods.control,
     name: 'artworkDiscipline',
   });
 
-  const debounceArtistId = useDebounce(methods.getValues('artistID'), 800);
-
-  const { refetch, data: artistData } = useGetArtistById(debounceArtistId);
-  const values = watch();
+  const debounceArtistId = useDebounce(search, 1000);
+  const { data: artistData } = useGetArtistById(debounceArtistId);
 
   useEffect(() => {
     if (currentProduct) {
       reset(defaultValues);
     }
   }, [currentProduct, defaultValues, reset]);
-
-  useEffect(() => {
-    if (methods.getValues('artistID') !== '') {
-      refetch();
-    }
-  }, [debounceArtistId]);
 
   useEffect(() => {
     if (data && !isLoading) {
@@ -336,6 +330,14 @@ export function ArtworkAdd({ currentProduct }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      methods.setValue('artworkCreationYear', year);
+      methods.setValue('activeTab', selectedOption);
+
+      data.artworkCreationYear = methods.getValues('artworkCreationYear');
+      data.activeTab = methods.getValues('activeTab');
+      data.existingImages = methods.getValues('existingImages');
+      data.existingVideos = methods.getValues('existingVideos');
+
       const newData = {
         data: data,
         id: mongoDBId,
@@ -412,7 +414,7 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('artistID', artistData?.artistId);
     setValue('artistName', name(artistData));
     setmongoDBId(artistData?._id);
-    setOpen(false);
+    setSearch('');
   };
 
   const filterTechnicForDiscipline = (selectedDiscipline) => {
@@ -426,19 +428,30 @@ export function ArtworkAdd({ currentProduct }) {
   const currentYear = dayjs();
 
   useEffect(() => {
-    const tempArr: { value: number; label: number }[] = [];
+    const tempArr: { value: string; label: string }[] = [];
     for (let i = 0; i <= 100; i++) {
-      tempArr.push({ value: i, label: i });
+      tempArr.push({ value: `${i}`, label: `${i}` });
     }
     setPArr(tempArr);
 
     if (id) {
       setOpen(false);
       setmongoDBId(data?.data?.owner?._id);
-      setValue('artworkCreationYear', data?.data?.artworkCreationYear);
       setSelectedOption(data?.data?.commercialization?.activeTab);
+      setYear(data?.data?.artworkCreationYear);
     }
-  });
+  }, [data?.data]);
+
+  const getValue = () => {
+    console.log(search);
+    return methods.getValues('artistID') ? methods.getValues('artistID') : search ? search : '';
+  };
+
+  const removeText = () => {
+    setValue('artistID', '');
+    setValue('artistName', '');
+    setSearch('');
+  };
 
   const options = [
     { value: 'yes', label: 'Yes' },
@@ -458,8 +471,29 @@ export function ArtworkAdd({ currentProduct }) {
             name="artistID"
             label="Artist ID"
             placeholder="Search by artist Name/Email"
+            value={
+              search ? search : methods.getValues('artistID') ? methods.getValues('artistID') : ''
+            }
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (methods.getValues('artistID')) methods.setValue('artistID', '');
+            }}
+            InputLabelProps={{ shrink: true }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Box
+                    onClick={removeText}
+                    component="span"
+                    sx={{ color: 'text.disabled', fontSize: '0.85rem', cursor: 'pointer' }}
+                  >
+                    X
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
           />
-          {methods.getValues('artistID') && open && (
+          {search !== '' && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {artistData && artistData.length > 0 ? (
@@ -500,7 +534,7 @@ export function ArtworkAdd({ currentProduct }) {
             </div>
           )}
         </div>
-        <Field.Text disabled={id ? true : false} name="artistName" label=" Artist Name" />
+        <Field.Text disabled name="artistName" label=" Artist Name" />
         <Field.Text name="artworkName" label="Artwork Name" />
         <Field.SingelSelect options={options} name="isArtProvider" label="Is Art Provider" />
         {methods.getValues('isArtProvider') === 'yes' && (
@@ -515,11 +549,15 @@ export function ArtworkAdd({ currentProduct }) {
           <DatePicker
             name="artworkCreationYear"
             label="Artwork Year"
+            // value={dayjs(data?.data?.artworkCreationYear) || currentYear}
             maxDate={currentYear}
             defaultValue={dayjs(data?.data?.artworkCreationYear)}
             views={['year']}
             openTo="year"
-            onChange={(e) => handleYearChange(e)}
+            onChange={(e) => {
+              const selectedYear = (e as any).$y.toString();
+              setYear(selectedYear);
+            }}
           />
 
           <Field.SingelSelect
@@ -744,7 +782,7 @@ export function ArtworkAdd({ currentProduct }) {
             name="activeTab"
             sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
             value={selectedOption}
-            onChange={handleChange}
+            onChange={(e) => setSelectedOption(e.target.value)}
           >
             <FormControlLabel
               value="subscription"
@@ -786,7 +824,7 @@ export function ArtworkAdd({ currentProduct }) {
               label="Purchase Catalog"
               options={ARTWORK_PURCHASECATALOG_OPTIONS}
             />
-            <Field.Text name="artistFees" label="Artist Fees" />
+            <Field.Text name="artistbaseFees" label="Artist Fees" />
 
             <Field.SingelSelect
               checkbox
@@ -820,7 +858,21 @@ export function ArtworkAdd({ currentProduct }) {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-          <Field.Text name="basePrice" label="Base Price" />
+          <Field.Text
+            name="basePrice"
+            label="Base Price"
+            placeholder="Base Price"
+            InputLabelProps={{ shrink: true }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                    {methods.getValues('currency')}
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
+          />
           <Field.SingelSelect
             required
             sx={{ minWidth: 150 }}
@@ -834,20 +886,24 @@ export function ArtworkAdd({ currentProduct }) {
           label="Discounted Percentage"
           placeholder="0.00%"
           // type="number"
+        />
+
+        <Field.Text name="vatAmount" label="VAT Amount (%)" />
+        <Field.Text
+          name="artistFees"
+          label="Artist Fees"
+          placeholder="Artist Fees"
           InputLabelProps={{ shrink: true }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Box component="span" sx={{ color: 'text.disabled' }}>
-                  $
+                <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                  {methods.getValues('currency')}
                 </Box>
               </InputAdornment>
             ),
           }}
         />
-
-        <Field.Text name="vatAmount" label="VAT Amount (%)" />
-        <Field.Text name="artistbaseFees" label="Artist Fees" />
       </Stack>
     </Card>
   );

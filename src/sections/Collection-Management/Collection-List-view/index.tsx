@@ -1,367 +1,202 @@
-import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IInvoice } from 'src/types/invoice';
 
-import { useState, useCallback } from 'react';
-
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { sumBy } from 'src/utils/helper';
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS,FAQ_GROUP_OPTIONS} from 'src/_mock';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  rowInPage,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
-
-import { artistCollections } from './data';
-
-
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useGetAllCollectionList } from '../http/useGetAllCollection';
 import { CollectionTableRow } from './collection-table-row';
-import { CollectionTableToolbar } from './collection-table-toolbar';
-import { CollectionTableFiltersResult } from './collection-table-filters-result';
+import { Iconify } from 'src/components/iconify';
+import { RouterLink } from 'src/routes/components';
+import { InputAdornment } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Stack } from '@mui/material';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-
-
 const TABLE_HEAD = [
-    { id: 'invoiceNumber', label: 'Colletion List' },
-    { id: 'createDate', label: 'Created_date' },
-    { id: 'dueDate', label: 'created_by' },
-    { id: 'tag', label: 'tags'  },
-    { id: '',},
-  ];
+  { id: 'collectionName', label: 'Colletion Name', width: 140 },
+  { id: 'createdBy', label: 'Created By', width: 140 },
+  { id: 'artworkTags', label: 'Artwork Tags', width: 200 },
+  { id: 'status', label: 'Status', width: 100 },
+  { id: 'createdAt', label: 'Created At', width: 140 },
+  { id: 'actions', label: 'Actions', wdith: 80 },
+];
 
 // ----------------------------------------------------------------------
 
 export function CollectionListView() {
-  const theme = useTheme();
+  const table = useTable();
+  const [notFound, setNotFound] = useState(false);
+  const [_collectionList, setCollectionList] = useState<IInvoice[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 1000);
 
-  const router = useRouter();
+  const { data, isLoading } = useGetAllCollectionList(debounceSearch);
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
-
-  const confirm = useBoolean();
-
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
-  
-
-  const filters = useSetState<IInvoiceTableFilters>({
-    name: '',
-    service: [],
-    status: 'all',
-    startDate: null,
-    endDate: null,
-  });
-
-  const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+  useEffect(() => {
+    if (data?.data) {
+      setCollectionList(data.data);
+      setNotFound(data?.data?.length === 0);
+    }
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
-    inputData: artistCollections,
+    inputData: _collectionList,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
   });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
-
-  const canReset =
-    !!filters.state.name ||
-    filters.state.service.length > 0 ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const getInvoiceLength = (status: string) =>
-    artistCollections.filter((item) => item.status === status).length;
-
-  const getTotalAmount = (status: string) =>
-    sumBy(
-      artistCollections.filter((item) => item.status === status),
-      (invoice) => invoice.totalAmount
-    );
-
-  const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / artistCollections.length) * 100;
-
-  const TABS = [
-    {
-      value: 'all',
-      label: 'All',
-      color: 'default',
-      count: artistCollections.length,
-    },
-    {
-      value: 'paid',
-      label: 'Paid',
-      color: 'success',
-      count: getInvoiceLength('paid'),
-    },
-    {
-      value: 'pending',
-      label: 'Pending',
-      color: 'warning',
-      count: getInvoiceLength('pending'),
-    },
-    {
-      value: 'overdue',
-      label: 'Overdue',
-      color: 'error',
-      count: getInvoiceLength('overdue'),
-    },
-    {
-      value: 'draft',
-      label: 'Draft',
-      color: 'default',
-      count: getInvoiceLength('draft'),
-    },
-  ] as const;
-
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = artistCollections.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, artistCollections]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = artistCollections.filter((row) => !table.selected.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, artistCollections]);
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
+  const handleViewRow = (id: string) => {};
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
           heading="Collection List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Collection List' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.artwork.collection_management.add}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Add Collections
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Collection List' }]}
+          sx={{ mb: { xs: 3, md: 3 } }}
         />
-
-        
-
-        <Card>
-
-          <CollectionTableToolbar
-            filters={filters}
-            dateError={dateError}
-            onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
+        <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+          <TextField
+            fullWidth
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search By Collection Name..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
           />
+          <RouterLink href={`${paths.dashboard.artwork.collection_management.add}`}>
+            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[11rem]">
+              <Iconify icon="mingcute:add-line" /> Add Collection
+            </span>
+          </RouterLink>
+        </Stack>
 
-          {canReset && (
-            <CollectionTableFiltersResult
-              filters={filters}
-              onResetPage={table.onResetPage}
-              totalResults={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
+        {isLoading ? (
+          <LoadingScreen />
+        ) : (
+          <Card>
+            <Box sx={{ position: 'relative' }}>
+              {/* <TableSelectedAction
+            dense={table.dense}
+            numSelected={table.selected.length}
+            rowCount={dataFiltered.length}
+            onSelectAllRows={(checked) => {
+              table.onSelectAllRows(
+                checked,
+                dataFiltered.map((row) => row.id)
+              );
+            }}
+            action={
+              <Stack direction="row">
+                <Tooltip title="Sent">
+                  <IconButton color="primary">
+                    <Iconify icon="iconamoon:send-fill" />
+                  </IconButton>
+                </Tooltip>
 
-          <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) => {
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                );
-              }}
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="iconamoon:send-fill" />
-                    </IconButton>
-                  </Tooltip>
+                <Tooltip title="Download">
+                  <IconButton color="primary">
+                    <Iconify icon="eva:download-outline" />
+                  </IconButton>
+                </Tooltip>
 
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
+                <Tooltip title="Print">
+                  <IconButton color="primary">
+                    <Iconify icon="solar:printer-minimalistic-bold" />
+                  </IconButton>
+                </Tooltip>
 
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="solar:printer-minimalistic-bold" />
-                    </IconButton>
-                  </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            }
+          /> */}
 
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
-            <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
-                />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <CollectionTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+              <Scrollbar sx={{ minHeight: 444 }}>
+                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+                  <TableHeadCustom
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={dataFiltered.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    onSelectAllRows={(checked) =>
+                      table.onSelectAllRows(
+                        checked,
+                        dataFiltered.map((row) => row.id)
+                      )
+                    }
                   />
 
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </Box>
+                  <TableBody>
+                    {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row, i) => (
+                        <CollectionTableRow
+                          key={i}
+                          row={row}
+                          url={data?.url}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                        />
+                      ))}
 
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
-        </Card>
+                    <TableEmptyRows
+                      height={table.dense ? 56 : 56 + 20}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                    />
+
+                    <TableNoData notFound={notFound} />
+                  </TableBody>
+                </Table>
+              </Scrollbar>
+            </Box>
+
+            <TablePaginationCustom
+              page={table.page}
+              dense={table.dense}
+              count={dataFiltered.length}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onChangeDense={table.onChangeDense}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+            />
+          </Card>
+        )}
       </DashboardContent>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }
@@ -369,15 +204,11 @@ export function CollectionListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  dateError: boolean;
   inputData: IInvoice[];
-  filters: IInvoiceTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { name, status, service, startDate, endDate } = filters;
-
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -387,30 +218,6 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-//   if (name) {
-//     inputData = inputData.filter(
-//       (invoice) =>
-//         invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-//         invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-//     );
-//   }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
-  }
-
-//   if (service.length) {
-//     inputData = inputData.filter((invoice) =>
-//       invoice.items.some((filterItem) => service.includes(filterItem.service))
-//     );
-//   }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => fIsBetween(invoice.createDate, startDate, endDate));
-    }
-  }
 
   return inputData;
 }

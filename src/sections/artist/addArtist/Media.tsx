@@ -1,21 +1,21 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
-import { z as zod } from 'zod';
-import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import { Typography } from '@mui/material';
-import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { toast } from 'sonner';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
-import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 

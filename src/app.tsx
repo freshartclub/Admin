@@ -16,7 +16,8 @@ import { SettingsDrawer, defaultSettings, SettingsProvider } from 'src/component
 import { AuthProvider } from 'src/auth/context/jwt';
 import { store } from './store/store';
 import { I18nProvider, LocalizationProvider } from './locales';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,9 +31,12 @@ export default function App() {
     mapIds: ['DEMO_MAP_ID'],
   });
 
+  const { t, i18n } = useTranslation();
+
   return (
     <LocalizationProvider>
       <I18nProvider>
+        {/* <div>{t("description")}</div> */}
         <QueryClientProvider client={queryClient}>
           <Provider store={store}>
             <Toaster position="top-right" />

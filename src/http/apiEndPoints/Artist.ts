@@ -43,6 +43,9 @@ export const ARTIST_ENDPOINTS = {
   addCatalog: `${ADMIN_BASE_URL}/add-catalog`,
   getAllCatalog: `${ADMIN_BASE_URL}/get-all-catalog`,
   getCatalogById: `${ADMIN_BASE_URL}/get-catalog-by-id`,
+  addCollection: `${ADMIN_BASE_URL}/add-collection`,
+  getAllCollection: `${ADMIN_BASE_URL}/get-all-collection`,
+  getCollectionById: `${ADMIN_BASE_URL}/get-collection-by-id`,
   addFAQ: `${ADMIN_BASE_URL}/add-faq`,
   getAllFAQ: `${ADMIN_BASE_URL}/get-all-faq`,
   getFAQById: `${ADMIN_BASE_URL}/get-faq-by-id`,
@@ -51,6 +54,8 @@ export const ARTIST_ENDPOINTS = {
   getKBById: `${ADMIN_BASE_URL}/get-kb-by-id`,
   getUserList: `${ADMIN_BASE_URL}/get-all-users`,
   validateArtwork: `${ADMIN_BASE_URL}/validate-artwork`,
+  getSearchedArtwork: `${ADMIN_BASE_URL}/get-search-artwork`,
+  getSearchedCollection: `${ADMIN_BASE_URL}/get-search-collection`,
 };
 
 export const USER_ENDPOINTS = {

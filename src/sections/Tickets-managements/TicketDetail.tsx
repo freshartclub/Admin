@@ -1,4 +1,4 @@
-import { Box, Card, CardHeader, Stack } from '@mui/material';
+import { Box, Card, CardHeader, MenuList, Stack } from '@mui/material';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
@@ -13,6 +13,9 @@ import { useGetTicketDetailMutation } from './http/useGetTicketDetailMutation';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useGetTicketReply } from './http/useGetTicketReply';
+import { Iconify } from 'src/components/iconify';
+import { MenuItem } from '@mui/material';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -29,6 +32,7 @@ export function TicketDetailView() {
   const { data: reply, isLoading: replyLoading } = useGetTicketReply(id);
   const { mutateAsync, isPending } = useAddReplyMutation();
 
+  const popover = usePopover();
   const defaultValues = useMemo(
     () => ({
       email: data?.user?.email || '',
@@ -59,12 +63,22 @@ export function TicketDetailView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await mutateAsync({ data });
-      reset();
+      await mutateAsync({ data }).then(() => {
+        reset();
+      });
     } catch (error) {
       console.error(error);
     }
   });
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -106,52 +120,108 @@ export function TicketDetailView() {
           { name: 'Ticket List', href: paths.dashboard.tickets.allList },
           { name: 'Ticket' },
         ]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
-      <Stack mb={3} direction="row" alignItems="center" justifyContent="space-between">
-        <div className="flex gap-4">
-          <span
-            className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.status === 'Created' ? 'bg-[#F8A534]' : data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
-          ></span>
-          <h2 className="text-[16px] text-black font-bold">{data?.ticketId}</h2>
-        </div>
+      <Card sx={{ p: 2, border: '1px solid #E0E0E0' }}>
+        <Stack mb={3} direction="row" alignItems="center" justifyContent="space-between">
+          <div className="flex gap-4">
+            <span
+              className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.status === 'Created' ? 'bg-[#F8A534]' : data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
+            ></span>
+            <h2 className="text-[16px] text-black font-bold">{data?.ticketId}</h2>
+            <span
+              onClick={popover.onOpen}
+              className="bg-green-500 text-white rounded-sm px-1 pr-2 flex items-center cursor-pointer"
+            >
+              <Iconify icon="si:unfold-more-duotone" /> See More
+            </span>
+            <CustomPopover
+              open={popover.open}
+              anchorEl={popover.anchorEl}
+              onClose={popover.onClose}
+              slotProps={{ arrow: { placement: 'left-top' } }}
+            >
+              <MenuList>
+                <MenuItem>
+                  <Iconify icon="tabler:urgent" />
+                  Urgency - {data?.urgency}
+                </MenuItem>
+                <MenuItem>
+                  <Iconify icon="flat-color-icons:high-priority" />
+                  Priority - {data?.priority}
+                </MenuItem>
+                <MenuItem>
+                  <Iconify icon="game-icons:gooey-impact" />
+                  Impact - {data?.impact}
+                </MenuItem>
+                <MenuItem>
+                  <Iconify icon="gridicons:status" />
+                  Status - {data?.status}
+                </MenuItem>
+              </MenuList>
+            </CustomPopover>
+          </div>
 
-        <span className="text-[#84818A] text-[14px]">Posted at - {fDate(data?.createdAt)}</span>
-      </Stack>
-      <Stack spacing={1}>
-        <h2 className="text-black text-[18px] font-bold">{data?.subject}</h2>
-        <p className="text-[#84818A]">{data?.message}</p>
-      </Stack>
-      <Card className="p-5">
-        <Form methods={methods} onSubmit={onSubmit}>
-          {replyLoading ? (
-            <LoadingScreen />
-          ) : (
-            reply &&
-            reply.length > 0 &&
-            reply.map((reply, index) => (
-              <Card key={index} className="px-4 py-2 mt-4 ml-6">
-                <span className="text-gray-400 text-[13px]">
-                  {reply?.userType === 'user' ? 'Reply from User' : 'Reply from Admin'}
-                </span>
-                <p className="text-[#575658] font-semibold flex justify-between">
-                  <span>{reply?.message}</span>
-                  <span className="text-[#84818A] text-[12px] font-semibold">
-                    Replied At - {fDate(reply?.createdAt)} {fTime(reply?.createdAt)}
-                  </span>
-                </p>
-              </Card>
-            ))
-          )}
-          <Stack>
-            {detailForm}
-            <div className="flex flex-row justify-end gap-3">
-              <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                {isPending ? 'Submitting...' : 'Submit Reply'}
-              </button>
-            </div>
-          </Stack>
-        </Form>
+          <span className="text-[14px] flex items-center gap-3">
+            <span>{fDate(data?.createdAt)}</span> {fTime(data?.createdAt)}
+          </span>
+        </Stack>
+        <Stack spacing={1}>
+          <h2 className="text-black text-[18px] font-bold">{data?.subject}</h2>
+          <p className="text-[#84818A]">{data?.message}</p>
+        </Stack>
+        <Box className="p-5">
+          <div className="max-h-[50vh] overflow-y-scroll">
+            {replyLoading ? (
+              <LoadingScreen />
+            ) : (
+              reply &&
+              reply.length > 0 &&
+              reply.map((reply, index) => (
+                <div
+                  key={index}
+                  className={`px-4 py-2 mt-2 rounded-sm cursor-pointer ${reply?.userType !== 'user' ? 'bg-zinc-100' : null} hover:bg-zinc-100`}
+                >
+                  <Stack direction={'row'} justifyContent={'space-between'}>
+                    <Box display={'flex'} alignItems={'center'} gap={0.5}>
+                      <Iconify icon="mingcute:user-4-line" width={24} height={24} />
+                      <span>
+                        {reply?.userType === 'user' ? (
+                          <>
+                            {`${name(data?.user)} wrote `}
+                            <span className="text-[#858585]">({data?.user?.email})</span> :
+                          </>
+                        ) : (
+                          <>
+                            {`Admin wrote `}
+                            <span className="text-[#858585]">(Admin)</span> :
+                          </>
+                        )}
+                      </span>
+                    </Box>
+                    <Box
+                      sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
+                      className="text-[14px]"
+                    >
+                      <span>{fDate(reply?.createdAt)}</span> {fTime(reply?.createdAt)}
+                    </Box>
+                  </Stack>
+                  <Box className="ml-7 py-2">{reply?.message}</Box>
+                </div>
+              ))
+            )}
+          </div>
+          <Form methods={methods} onSubmit={onSubmit}>
+            <Stack>
+              {detailForm}
+              <div className="flex flex-row justify-end gap-3">
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Submitting...' : 'Submit Reply'}
+                </button>
+              </div>
+            </Stack>
+          </Form>
+        </Box>
       </Card>
     </>
   );
