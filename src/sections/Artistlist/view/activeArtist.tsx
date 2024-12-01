@@ -13,15 +13,16 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { Stack, TextField } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { ListArtist } from '../activeArtist-table-row';
 import { useGetAllActiveArtist } from '../http/useGetAllActiveArtist';
+import { useNavigate } from 'react-router';
+import { paths } from 'src/routes/paths';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​', width: 150 },
+  { id: 'artistName', label: 'Artist Name​', width: 200 },
   { id: 'artistId', label: 'Artist Id', width: 150 },
   { id: 'phone', label: 'Contact', width: 180 },
   { id: 'status', label: 'Status', width: 130 },
@@ -31,31 +32,29 @@ const TABLE_HEAD = [
 
 export function ListArtists() {
   const table = useTable();
+  const navigate = useNavigate();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 1000);
 
   const { data, isLoading, isError, error } = useGetAllActiveArtist(debounceSearch);
 
   useEffect(() => {
-    if (data) {
-      setUserList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setUserList(data?.data);
+      setNotFound(data?.data.length === 0);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
-
+  const handleDeleteRow = (id: string) => {};
   const handleEditRow = (id: string) => {
-    console.log(id);
+    navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
   };
 
   return (
@@ -104,6 +103,7 @@ export function ListArtists() {
                     <ListArtist
                       key={row._id}
                       row={row}
+                      url={data?.url}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

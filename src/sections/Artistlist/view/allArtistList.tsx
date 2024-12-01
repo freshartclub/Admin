@@ -23,9 +23,10 @@ import { InputAdornment } from '@mui/material';
 import { TextField } from '@mui/material';
 import { Stack } from '@mui/material';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useNavigate } from 'react-router';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​' },
+  { id: 'artistName', label: 'Artist Name​', width: 200 },
   { id: 'phone', label: 'Contact', width: 130 },
   { id: 'city', label: 'City', width: 130 },
   { id: 'state', label: 'Province', width: 130 },
@@ -37,6 +38,7 @@ const TABLE_HEAD = [
 
 export function AllArtist() {
   const table = useTable();
+  const navigate = useNavigate();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
@@ -45,11 +47,11 @@ export function AllArtist() {
   const { data, isLoading } = useGetArtistList(debounceSearch);
 
   useEffect(() => {
-    if (data) {
-      setUserList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setUserList(data?.data);
+      setNotFound(data?.data?.length === 0);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
@@ -57,7 +59,9 @@ export function AllArtist() {
   });
 
   const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
+  const handleEditRow = (id: string) => {
+    navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
+  };
 
   return (
     <>
@@ -111,6 +115,7 @@ export function AllArtist() {
                     <AllArtistList
                       key={row._id}
                       row={row}
+                      url={data?.url}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

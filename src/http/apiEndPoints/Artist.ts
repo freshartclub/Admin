@@ -18,7 +18,9 @@ export const ARTIST_ENDPOINTS = {
   suspendedArtist: `${ADMIN_BASE_URL}/suspended-list`,
   suspendArtist: `${ADMIN_BASE_URL}/suspend-artist`,
   rejectRequest: `${ADMIN_BASE_URL}/reject-artist-request`,
+  unRejectRequest: `${ADMIN_BASE_URL}/unreject-artist-request`,
   banRequest: `${ADMIN_BASE_URL}/ban-artist-request`,
+  unBanRequest: `${ADMIN_BASE_URL}/unban-artist-request`,
   unSuspendArtist: `${ADMIN_BASE_URL}/unsuspend-artist`,
   chnageArtistPasswoed: `${ADMIN_BASE_URL}/change-artist-password`,
   addArtwork: `${ADMIN_BASE_URL}/add-artwork`,
@@ -45,6 +47,7 @@ export const ARTIST_ENDPOINTS = {
   getCatalogById: `${ADMIN_BASE_URL}/get-catalog-by-id`,
   addCollection: `${ADMIN_BASE_URL}/add-collection`,
   getAllCollection: `${ADMIN_BASE_URL}/get-all-collection`,
+  getCatalogList: `${ADMIN_BASE_URL}/get-catalog-list`,
   getCollectionById: `${ADMIN_BASE_URL}/get-collection-by-id`,
   addFAQ: `${ADMIN_BASE_URL}/add-faq`,
   getAllFAQ: `${ADMIN_BASE_URL}/get-all-faq`,
@@ -56,6 +59,8 @@ export const ARTIST_ENDPOINTS = {
   validateArtwork: `${ADMIN_BASE_URL}/validate-artwork`,
   getSearchedArtwork: `${ADMIN_BASE_URL}/get-search-artwork`,
   getSearchedCollection: `${ADMIN_BASE_URL}/get-search-collection`,
+  addSeries: `${ADMIN_BASE_URL}/add-series-to-artist`,
+  getSeriesList: `${ADMIN_BASE_URL}/get-series-list`,
 };
 
 export const USER_ENDPOINTS = {

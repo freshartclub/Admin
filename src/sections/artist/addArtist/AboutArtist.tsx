@@ -214,7 +214,7 @@ export function AboutArtist({
   const filterSocialLinks = (index) => {
     const selectedLinksValues = selectedLinks ? selectedLinks.map((name) => name.name) : [];
     return renderPicklist.filter(
-      (option) =>
+      (option: any) =>
         !selectedLinksValues.includes(option.value) || option.value === selectedLinks[index]?.name
     );
   };
@@ -230,12 +230,8 @@ export function AboutArtist({
   const renderDetails = (
     <Card sx={{ mb: 1 }}>
       <CardHeader title="About Artist" sx={{ mb: 2 }} />
-
       <Divider />
-
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Editor required disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
-      </Stack>
+      <Field.Editor required disabled={isReadOnly} name="About" sx={{ maxHeight: 480 }} />
     </Card>
   );
 

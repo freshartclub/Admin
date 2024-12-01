@@ -21,6 +21,8 @@ import { TextField } from '@mui/material';
 import { InputAdornment } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useNavigate } from 'react-router';
+import { paths } from 'src/routes/paths';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 180 },
@@ -33,6 +35,7 @@ const TABLE_HEAD = [
 
 export function ArtistsPendingRequest() {
   const table = useTable();
+  const navigate = useNavigate();
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
@@ -41,23 +44,20 @@ export function ArtistsPendingRequest() {
   const { data, isLoading } = useGetPendingArtist(debounceSearch);
 
   useEffect(() => {
-    if (data) {
-      setUserList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setUserList(data?.data);
+      setNotFound(data?.data.length === 0);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
-
+  const handleDeleteRow = (id: string) => {};
   const handleEditRow = (id: string) => {
-    console.log(id);
+    navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
   };
 
   return (
@@ -106,6 +106,7 @@ export function ArtistsPendingRequest() {
                     <ArtistPendingRequest
                       key={row._id}
                       row={row}
+                      url={data?.url}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

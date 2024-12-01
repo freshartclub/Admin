@@ -30,13 +30,14 @@ import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 
 type Props = {
   row: ArtistListType;
+  url: string;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
   const [showPop, setShowPop] = useState(false);
@@ -110,6 +111,16 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
       handelEdit: () => {},
     });
   }
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
 
   const dialogBox = (
     <Dialog
@@ -195,14 +206,11 @@ export function AllArtistList({ row, selected, onEditRow, onSelectRow, onDeleteR
 
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar
-              alt={row?.artistName}
-              src={`https://dev.freshartclub.com/images/users/${row?.profile?.mainImage}`}
-            />
+            <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
+                {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}

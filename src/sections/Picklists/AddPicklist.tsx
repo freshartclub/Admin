@@ -131,7 +131,7 @@ export function AddPicklist() {
               onClick={handleSave}
               disabled={!value.trim()}
             >
-              Save
+              Select
             </Button>
           </div>
           <Field.Text disabled required name="picklistName" label="Picklist Name" />

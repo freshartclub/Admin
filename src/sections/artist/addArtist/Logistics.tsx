@@ -50,6 +50,7 @@ export function Logistic({
 }: AddArtistComponentProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(false);
+  const [code, setCode] = useState('');
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
 
@@ -107,13 +108,13 @@ export function Logistic({
     reset({
       logName: value ? name(artistFormData) : artistFormData?.logName,
       logAddress: value ? artistFormData?.residentialAddress : artistFormData?.logAddress,
-      logZipCode: value ? artistFormData?.zipCode : artistFormData?.logAddress,
-      logCity: value ? artistFormData?.city : artistFormData?.logAddress,
-      logProvince: value ? artistFormData?.state : artistFormData?.logAddress,
-      logCountry: value ? artistFormData?.country : artistFormData?.logAddress,
-      logEmail: value ? artistFormData?.email : artistFormData?.logAddress,
-      logPhone: value ? artistFormData?.phone : artistFormData?.logAddress,
-      logNotes: value ? artistFormData?.logNotes : artistFormData?.logAddress,
+      logZipCode: value ? artistFormData?.zipCode : artistFormData?.logZipCode,
+      logCity: value ? artistFormData?.city : artistFormData?.logCity,
+      logProvince: value ? artistFormData?.state : artistFormData?.logProvince,
+      logCountry: value ? artistFormData?.country : artistFormData?.logCountry,
+      logEmail: value ? artistFormData?.email : artistFormData?.logEmail,
+      logPhone: value ? artistFormData?.phone : artistFormData?.logPhone,
+      logNotes: value ? artistFormData?.logNotes : artistFormData?.logNotes,
     });
   }, [value]);
 
@@ -169,13 +170,11 @@ export function Logistic({
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Logistics" sx={{ mb: 3 }} />
-
+      <CardHeader title="Logistics" sx={{ mb: 2 }} />
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text disabled={isReadOnly} required name="logName" label="Log name" />
-
+        <Field.Text disabled={isReadOnly} required name="logName" label="Logistic name" />
         <Field.Text disabled={isReadOnly} required name="logAddress" label="Logistic Address" />
 
         <Box
@@ -184,9 +183,16 @@ export function Logistic({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} required name="logZipCode" label="Log Zip/code" />
-
-          <Field.Text disabled={isReadOnly} required name="logCity" label=" Log City" />
+          <Field.CountrySelect
+            disabled={isReadOnly}
+            required
+            fullWidth
+            setCode={setCode}
+            name="logCountry"
+            label="Logistic Country"
+            placeholder="Choose a country"
+          />
+          <Field.Text disabled={isReadOnly} required name="logZipCode" label="Logistic Zip/code" />
         </Box>
 
         <Box
@@ -195,31 +201,29 @@ export function Logistic({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
+          <Field.Text disabled={isReadOnly} required name="logCity" label="Logistic City" />
           <Field.Text
             disabled={isReadOnly}
             required
             name="logProvince"
-            label="Log Province/State/Region"
+            label="Logistic State/Region"
           />
 
-          <Field.CountrySelect
+          <Field.Text disabled={isReadOnly} required name="logEmail" label="Logistic Email" />
+
+          <Field.Phone
+            fetchCode={methods.getValues('logPhone') ? null : code ? code : ''}
             disabled={isReadOnly}
             required
-            fullWidth
-            name="logCountry"
-            label="Log Country"
-            placeholder="Choose a country"
+            name="logPhone"
+            label="Logistic Phone"
           />
-
-          <Field.Text disabled={isReadOnly} required name="logEmail" label="Email address" />
-
-          <Field.Phone disabled={isReadOnly} required name="logPhone" label="Log Phone number" />
         </Box>
 
         <Field.Text
           disabled={isReadOnly}
           name="logNotes"
-          label="Log Additional Notes"
+          label="Logistic Additional Notes"
           multiline
           rows={4}
         />
@@ -229,7 +233,7 @@ export function Logistic({
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }}>
+      <Stack spacing={{ xs: 3, md: 3 }}>
         {renderDetails}
 
         <div className="flex justify-end">

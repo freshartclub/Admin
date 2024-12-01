@@ -178,9 +178,8 @@ export function Media({
   const mainVi = formProps.watch('mainVideo');
 
   const media = (
-    <Card className="mb-6">
-      <CardHeader title="Media" sx={{ mb: 3 }} />
-
+    <Card sx={{ border: '1px solid #E0E0E0' }}>
+      <CardHeader title="Media" sx={{ mb: 2 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Box
@@ -243,13 +242,23 @@ export function Media({
           <div>
             <Typography>Main Video</Typography>
             {mainVi ? (
-              <div style={{ position: 'relative', display: 'inline-block', width: '100%', pointerEvents: `${isReadOnly ? 'none' : 'auto'}` }}>
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  width: '100%',
+                  pointerEvents: `${isReadOnly ? 'none' : 'auto'}`,
+                }}
+              >
                 <video controls width="100%" height="auto" style={{ borderRadius: '8px' }}>
-                  {
-                    typeof formProps.getValues('mainVideo') === 'string' ?
-                      <source src={`${formProps.getValues('mainVideo')}`} type="video/mp4" /> :
-                      <source src={URL.createObjectURL(formProps.getValues('mainVideo'))} type="video/mp4" />
-                  }
+                  {typeof formProps.getValues('mainVideo') === 'string' ? (
+                    <source src={`${formProps.getValues('mainVideo')}`} type="video/mp4" />
+                  ) : (
+                    <source
+                      src={URL.createObjectURL(formProps.getValues('mainVideo'))}
+                      type="video/mp4"
+                    />
+                  )}
                   Your browser does not support the video tag.
                 </video>
                 <span

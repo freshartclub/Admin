@@ -4,20 +4,18 @@ import { z as zod } from 'zod';
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
 import { useSearchParams } from 'src/routes/hooks';
 import { getYearDropDown } from 'src/utils/helper';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { Iconify } from 'src/components/iconify';
 import { Field, schemaHelper } from 'src/components/hook-form';
-import { ARTIST_CV_EVENTSCOPE, ARTIST_CV_EVENTTYPE } from 'src/_mock';
+import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
 
 export const NewProductSchema = zod.object({
   highlights: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
@@ -42,6 +40,15 @@ export function Highlights({
 }: AddArtistComponentProps) {
   const view = useSearchParams().get('view');
   const isReadOnly = view !== null;
+
+  const picklist = RenderAllPicklists(['Event Type', 'Event Scope']);
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const eventType = picklistMap['Event Type'];
+  const eventScope = picklistMap['Event Scope'];
 
   const handleSuccess = (data) => {
     setArtistFormData({ ...artistFormData, ...data });
@@ -85,42 +92,38 @@ export function Highlights({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
-
     data.count = 2;
-
     mutate({ body: data });
   });
 
   const renderDetails = (
-    <Card>
-      <CardHeader title="Add highlights" sx={{ mb: 3 }} />
+    <Card sx={{ border: '1px solid #E6E6E6' }}>
+      <CardHeader title="Add highlight" sx={{ mb: 2 }} />
       <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Highlights</Typography>
-          <Field.Editor
-            required
-            disabled={isReadOnly}
-            helperText="Add Highlights"
-            name="highlights"
-            sx={{ maxHeight: 480 }}
-          />
-        </Stack>
-      </Stack>
+      <Field.Editor
+        helperText={''}
+        required
+        disabled={isReadOnly}
+        name="highlights"
+        sx={{ maxHeight: 480 }}
+      />
     </Card>
   );
 
   const AddCv = (
-    <Card>
+    <Card sx={{ border: '1px solid #E6E6E6' }}>
+      <CardHeader title="Add CV" sx={{ mb: 2 }} />
+      <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
           {fields.map((item, index) => (
-            <Stack key={item.id} aligncvs={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
+            <Stack key={item.id} spacing={1.5}>
               <Box
                 columnGap={2}
                 rowGap={3}
+                alignItems={'center'}
                 display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(5, 1fr)' }}
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(6, 1fr)' }}
               >
                 <Field.SingelSelect
                   disabled={isReadOnly}
@@ -134,7 +137,7 @@ export function Highlights({
                   checkbox
                   name={`cvData[${index}].Type`}
                   label="Type"
-                  options={ARTIST_CV_EVENTTYPE}
+                  options={eventType ? eventType : []}
                 />
                 <Field.Text
                   disabled={isReadOnly}
@@ -151,20 +154,18 @@ export function Highlights({
                   checkbox
                   name={`cvData[${index}].Scope`}
                   label="Scope"
-                  options={ARTIST_CV_EVENTSCOPE}
+                  options={eventScope ? eventScope : []}
                 />
+                <Button
+                  size="small"
+                  color="error"
+                  disabled={isReadOnly}
+                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                  onClick={() => handleRemove(index)}
+                >
+                  Remove
+                </Button>
               </Box>
-
-              <Button
-                size="small"
-                color="error"
-                disabled={isReadOnly}
-                className="flex justify-end"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
             </Stack>
           ))}
           <Button

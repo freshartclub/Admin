@@ -155,7 +155,7 @@ export function RHFUploadMultiVideo({ name, multiple, helperText, ...other }) {
   );
 }
 
-export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
+export function RHFUploadDocument({ name, onChange, multiple, helperText, ...other }) {
   const { control, setValue } = useFormContext();
 
   return (
@@ -165,6 +165,11 @@ export function RHFUploadDocument({ name, multiple, helperText, ...other }) {
       render={({ field, fieldState: { error } }) => {
         const uploadProps = {
           multiple,
+          onChange: (event) => {
+            if (onChange) {
+              onChange(event);
+            }
+          },
           accept: { 'file/*': [] },
           error: !!error,
           helperText: error?.message ?? helperText,

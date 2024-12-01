@@ -30,21 +30,24 @@ const useAddArtistMutation = (handleOnSuccess) => {
           }
         });
 
-      body?.uploadDocs &&
-        body?.uploadDocs?.forEach((element) => {
-          if (typeof element === 'object') {
-            formData.append('uploadDocs', element);
-          }
-        });
-
       delete body?.additionalImage;
       delete body?.additionalVideo;
-      delete body?.uploadDocs;
 
       Object.keys(body).forEach((key) => {
         if (Array.isArray(body[key])) {
           body[key].forEach((item) => {
-            formData.append(key, item);
+            if (typeof item === 'object') {
+              Object.keys(item).forEach((field, i) => {
+                console.log(i);
+                formData.append(field, item[field]);
+                if (item[field] instanceof File) {
+                  console.log(i);
+                  formData.append(field, `${i}`);
+                }
+              });
+            } else {
+              formData.append(key, item);
+            }
           });
         } else {
           formData.append(key, body[key]);

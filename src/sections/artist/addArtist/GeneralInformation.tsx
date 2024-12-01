@@ -1,35 +1,32 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
-import { z as zod } from 'zod';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import { today } from 'src/utils/format-time';
-import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
-import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
+import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
+import { z as zod } from 'zod';
 
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  // accountId: zod.string().min(1, { message: 'Account Id is required!' }),
-  artistName: zod.string().min(1, { message: 'artistName is required!' }),
-  artistSurname1: zod.string().min(1, { message: 'ArtistSurname is required!' }),
+  artistName: zod.string().min(1, { message: 'Artist Name is required!' }),
+  artistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
   artistSurname2: zod.string(),
   nickName: zod.string(),
   country: schemaHelper.objectOrNull({
     message: { required_error: 'Country is required!' },
   }),
-  createDate: zod.string(),
-  language: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  language: zod.string().min(1, { message: 'Langage is required' }),
+  currency: zod.string().min(1, { message: 'Currency is required' }),
   zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
   city: zod.string().min(1, { message: 'City is required!' }),
   state: zod.string().min(1, { message: 'state is required!' }),
@@ -66,6 +63,17 @@ export function GeneralInformation({
     });
   };
 
+  const picklist = RenderAllPicklists(['Language', 'Currency', 'Gender']);
+
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const language = picklistMap['Language'];
+  const currency = picklistMap['Currency'];
+  const gender = picklistMap['Gender'];
+
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
   const defaultValues = useMemo(
@@ -81,9 +89,9 @@ export function GeneralInformation({
       residentialAddress: artistFormData?.residentialAddress || '',
       phone: artistFormData?.phone || '',
       email: artistFormData?.email || '',
-      language: artistFormData?.language || [],
+      language: artistFormData?.language || '',
+      currency: artistFormData?.currency || 'EUR',
       gender: artistFormData?.gender || '',
-      createDate: artistFormData?.createDate || today(),
       notes: artistFormData?.notes || '',
       count: 1,
     }),
@@ -95,11 +103,7 @@ export function GeneralInformation({
     defaultValues,
   });
 
-  const {
-    trigger,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = formProps;
+  const { trigger, handleSubmit } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -152,7 +156,7 @@ export function GeneralInformation({
         <Field.CountrySelect
           required
           fullWidth
-          setCode={setCode}
+          setCode={!formProps.getValues('country') && setCode}
           name="country"
           label="Country"
           placeholder="Choose a country"
@@ -187,7 +191,7 @@ export function GeneralInformation({
             disabled={isReadOnly}
             required
             name="phone"
-            fetchCode={code ? code : ''}
+            fetchCode={!formProps.getValues('country') ? null : code ? code : ''}
             label="Phone number"
           />
 
@@ -198,15 +202,22 @@ export function GeneralInformation({
           columnGap={2}
           rowGap={3}
           display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.MultiSelect
+          <Field.SingelSelect
             required
-            checkbox
             name="language"
             disabled={isReadOnly}
             label="Select language"
-            options={PRODUCT_LANGUAGE_OPTIONS}
+            options={language ? language : []}
+          />
+
+          <Field.SingelSelect
+            required
+            name="currency"
+            disabled={isReadOnly}
+            label="Select Currency"
+            options={currency ? currency : []}
           />
 
           <Field.SingelSelect
@@ -215,7 +226,7 @@ export function GeneralInformation({
             disabled={isReadOnly}
             name="gender"
             label="Gender"
-            options={PRODUCT_GENDER_OPTIONS}
+            options={gender ? gender : []}
           />
         </Box>
 

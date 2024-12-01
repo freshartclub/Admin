@@ -49,9 +49,11 @@ function AddArtistIndex() {
         obj.city = data.data.address?.city;
         obj.state = data.data.address?.state;
         obj.discipline = data.data.aboutArtist.discipline;
-        obj.uploadDocs = data.data?.document?.documents;
+        obj.documents = data.data?.documents;
         obj.link = data?.data?.links;
+
         delete data.data.address;
+        delete data.data.links;
 
         if (data.data.pageCount > 1) {
           obj.highlights = data.data.highlights.addHighlights;
@@ -88,6 +90,7 @@ function AddArtistIndex() {
           obj.taxPhone = data.data?.invoice?.taxPhone;
           obj.taxBankIBAN = data.data?.invoice?.taxBankIBAN;
           obj.taxBankName = data.data?.invoice?.taxBankName;
+          obj.vatAmount = data.data?.invoice?.vatAmount;
 
           obj.CustomOrder = data.data?.commercilization?.customOrder;
           obj.artProvider = data.data?.commercilization?.artProvider;
@@ -117,12 +120,13 @@ function AddArtistIndex() {
         }
 
         if (data.data.pageCount > 6) {
-          obj.documentName = data.data?.document?.documentName;
-          obj.uploadDocs = data.data?.document?.documents;
-          obj.managerArtistName = data.data?.managerDetails?.artistName;
-          obj.managerArtistSurnameOther1 = data.data?.managerDetails?.artistSurname1;
-          obj.managerArtistSurname2 = data.data?.managerDetails?.artistSurname2;
-          obj.managerArtistNickname = data.data?.managerDetails?.artistNickname;
+          obj.documents = data.data?.documents;
+          obj.intTags = data.data?.otherTags?.intTags;
+          obj.extTags = data.data?.otherTags?.extTags;
+          obj.profileStatus = data.data?.profileStatus;
+          obj.lastRevalidationDate = data.data?.lastRevalidationDate;
+          obj.nextRevalidationDate = data.data?.nextRevalidationDate;
+          obj.managerName = data.data?.managerDetails?.managerName;
           obj.managerArtistEmail = data.data?.managerDetails?.artistEmail;
           obj.managerArtistPhone = data.data?.managerDetails?.artistPhone;
           obj.managerArtistGender = data.data?.managerDetails?.artistGender;
@@ -132,10 +136,14 @@ function AddArtistIndex() {
           obj.managerState = data.data?.managerDetails?.address?.state;
           obj.managerZipCode = data.data?.managerDetails?.address?.zipCode;
           obj.managerCountry = data.data?.managerDetails?.address?.country;
-          obj.managerExtraInfo1 = data.data?.managerDetails?.address?.extraInfo1;
-          obj.managerExtraInfo2 = data.data?.managerDetails?.address?.extraInfo2;
-          obj.managerExtraInfo3 = data.data?.managerDetails?.address?.extraInfo3;
-
+          obj.extraInfo1 = data.data?.extraInfo?.extraInfo1;
+          obj.extraInfo2 = data.data?.extraInfo?.extraInfo2;
+          obj.extraInfo3 = data.data?.extraInfo?.extraInfo3;
+          obj.emergencyContactName = data.data?.emergencyInfo?.emergencyContactName;
+          obj.emergencyContactPhone = data.data?.emergencyInfo?.emergencyContactPhone;
+          obj.emergencyContactEmail = data.data?.emergencyInfo?.emergencyContactEmail;
+          obj.emergencyContactRelation = data.data?.emergencyInfo?.emergencyContactRelation;
+          obj.emergencyContactAddress = data.data?.emergencyInfo?.emergencyContactAddress;
           obj.managerArtistLanguage = data.data?.managerDetails?.language;
         }
 

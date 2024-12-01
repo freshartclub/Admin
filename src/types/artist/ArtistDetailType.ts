@@ -9,6 +9,7 @@ export interface ArtistDetailType {
   highlights: string;
   cvData: cvData[];
   insignia: [];
+  currency: string;
 
   nickName?: string;
   ArtistId: string;
@@ -39,6 +40,7 @@ export interface ArtistDetailType {
   taxEmail: string;
   taxPhone: string;
   taxBankIBAN: string;
+  vatAmount: string;
   taxBankName: string;
   CustomOrder: string;
   PublishingCatalog: string;
@@ -59,21 +61,24 @@ export interface ArtistDetailType {
   logCity: string;
   logProvince: string;
   logCountry?: object | null;
-  managerArtistName: string;
-  managerArtistSurnameOther1: string;
-  documentName: String;
-  uploadDocs: any[];
+  documents: any[];
   profileImage: any;
   additionalImage: any[];
   inProcessImage: any;
   mainVideo: any;
   additionalVideo: any[];
-  managerExtraInfo1: String;
-  managerExtraInfo2: String;
-  managerExtraInfo3: String;
-  managerArtistSurname1: string;
-  managerArtistSurname2?: string;
-  managerArtistNickname?: string;
+  extraInfo1: string;
+  extraInfo2: string;
+  extraInfo3: string;
+  profileStatus: string;
+  lastRevalidationDate: string;
+  nextRevalidationDate: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactEmail: string;
+  emergencyContactAddress: string;
+  emergencyContactRelation: string;
+  managerName: string;
   managerArtistContactTo?: string;
   managerArtistPhone: string;
   managerArtistEmail: string;
@@ -87,6 +92,8 @@ export interface ArtistDetailType {
   logEmail: string;
   logPhone: string;
   logNotes?: string;
+  intTags: string[];
+  extTags: string[];
   link: [];
 
   //-----artsistlist-----
@@ -122,6 +129,7 @@ export interface ArtistListType {
   artistName: string;
   artistSurname1: string;
   artistSurname2: string;
+  isArtistRequestStatus: string;
   uploadImage: any;
   profile: any;
   email: string;

@@ -1,6 +1,6 @@
 import type { IUserItem } from 'src/types/user';
 
-import { Card, Stack, Table, TableBody } from '@mui/material';
+import { Card, MenuItem, OutlinedInput, Select, Stack, Table, TableBody } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -22,46 +22,45 @@ import { Iconify } from 'src/components/iconify';
 import { InputAdornment } from '@mui/material';
 import { TextField } from '@mui/material';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { FormControl } from '@mui/material';
+import { InputLabel } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 140 },
   { id: 'phone', label: 'Contact', width: 140 },
   { id: 'city', label: 'City', width: 140 },
   { id: 'country', label: 'Country', width: 140 },
-  { id: 'createdAt', label: 'Created At', width: 140 },
-  { id: 'cv', label: 'CV', width: 100 },
-  { id: 'buttons', label: 'Button', width: 100 },
-  { id: 'action', label: 'Action', width: 80 },
+  // { id: 'createdAt', label: 'Created At', width: 140 },
+  { id: 'isArtistRequestStatus', label: 'Request Status', width: 180 },
+  { id: 'cv', label: 'CV', width: 60 },
+  { id: 'buttons', label: 'Button', width: 80 },
+  { id: 'action', label: 'Action', width: 40 },
 ];
 
 export function ArtistsRequest() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
+  const [sStatus, setStatus] = useState('All');
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 1000);
 
-  const { data, isLoading } = useGetAllArtistRequest(debounceSearch);
+  const { data, isLoading } = useGetAllArtistRequest(debounceSearch, sStatus);
 
   useEffect(() => {
-    if (data) {
-      setUserList(data);
-      setNotFound(data.length === 0);
+    if (data?.data) {
+      setUserList(data?.data);
+      setNotFound(data?.data.length === 0);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {
-    console.log(id);
-  };
-
-  const handleEditRow = (id: string) => {
-    console.log(id);
-  };
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return (
     <>
@@ -69,7 +68,7 @@ export function ArtistsRequest() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artist Name..."
+          placeholder="Search By Name/Email..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -78,6 +77,22 @@ export function ArtistsRequest() {
             ),
           }}
         />
+        <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 180 } }}>
+          <InputLabel htmlFor="Status">Status</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Status" />}
+            inputProps={{ id: 'Status' }}
+            onChange={(e) => setStatus(e.target.value)}
+            value={sStatus}
+          >
+            {['All', 'Pending', 'Ban', 'Rejected'].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
           <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
             <Iconify icon="mingcute:add-line" /> Create Artist
@@ -114,6 +129,7 @@ export function ArtistsRequest() {
                     <ArtistRequest
                       key={row._id}
                       row={row}
+                      url={data?.url}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

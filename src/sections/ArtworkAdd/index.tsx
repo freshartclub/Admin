@@ -3,6 +3,7 @@ import { useForm, useWatch } from 'react-hook-form';
 
 import {
   Avatar,
+  DialogContent,
   InputAdornment,
   ListItemText,
   TableCell,
@@ -36,7 +37,7 @@ import {
 } from 'src/_mock';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from '@mui/material';
+import { FormControl, FormControlLabel, FormLabel, Link, Radio, RadioGroup } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
@@ -50,14 +51,12 @@ import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnic
 import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
-import { FormControl } from '@mui/material';
-import { FormLabel } from '@mui/material';
-import { RadioGroup } from '@mui/material';
-import { FormControlLabel } from '@mui/material';
-import { Radio } from '@mui/material';
-// import { useGetPicklistMutation } from '../Picklists/http/useGetPicklistMutation';
+import { Dialog, DialogActions, DialogContentText, DialogTitle } from '@mui/material';
+import { toast } from 'sonner';
+import { Iconify } from 'src/components/iconify';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
-import { easeOut } from 'framer-motion';
+import useAddArtistSeries from './http/useAddArtistSeries';
+import { useGetSeriesList } from './http/useGetSeriesList';
 
 // ----------------------------------------------------------------------
 
@@ -135,6 +134,7 @@ export const NewProductSchema = zod.object({
 export function ArtworkAdd({ currentProduct }) {
   const [pArr, setPArr] = useState<{ value: string; label: string }[]>([]);
   const [year, setYear] = useState('');
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
@@ -207,7 +207,8 @@ export function ArtworkAdd({ currentProduct }) {
   const { data, isLoading } = useGetArtworkById(id);
 
   const [mongoDBId, setmongoDBId] = useState(null);
-  const [open, setOpen] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [series, setSeries] = useState('');
   const [percent, setPercent] = useState(0);
   const [selectedOption, setSelectedOption] = useState('');
 
@@ -229,7 +230,7 @@ export function ArtworkAdd({ currentProduct }) {
       artworkName: data?.data?.artworkName || '',
       artistID: data?.data?.owner?.artistId || '',
       artistName: data?.data?.owner?.artistName || '',
-      isArtProvider: data?.data?.isArtProvider || '',
+      isArtProvider: data?.data?.isArtProvider || 'No',
       provideArtistName: data?.data?.provideArtistName || '',
       artworkCreationYear: data?.data?.artworkCreationYear || '',
       artworkSeries: data?.data?.artworkSeries || '',
@@ -277,7 +278,6 @@ export function ArtworkAdd({ currentProduct }) {
       acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
       priceRequest: data?.data?.commercialization?.priceRequest || '',
       purchaseOption: data?.data?.commercialization?.purchaseOption || '',
-      artistbaseFees: data?.data?.commercialization?.artistbaseFees || '',
       activeTab: data?.data?.commercialization?.activeTab || '',
       basePrice: data?.data?.pricing?.basePrice || '',
       currency: data?.data?.pricing?.currency || '',
@@ -315,6 +315,8 @@ export function ArtworkAdd({ currentProduct }) {
 
   const debounceArtistId = useDebounce(search, 1000);
   const { data: artistData } = useGetArtistById(debounceArtistId);
+  const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();
+  const { data: seriesList, refetch } = useGetSeriesList(mongoDBId);
 
   useEffect(() => {
     if (currentProduct) {
@@ -413,8 +415,11 @@ export function ArtworkAdd({ currentProduct }) {
   const refillData = (artistData) => {
     setValue('artistID', artistData?.artistId);
     setValue('artistName', name(artistData));
+    setValue('isArtProvider', artistData?.artProvider);
+    setValue('provideArtistName', '');
     setmongoDBId(artistData?._id);
     setSearch('');
+    refetch();
   };
 
   const filterTechnicForDiscipline = (selectedDiscipline) => {
@@ -442,14 +447,10 @@ export function ArtworkAdd({ currentProduct }) {
     }
   }, [data?.data]);
 
-  const getValue = () => {
-    console.log(search);
-    return methods.getValues('artistID') ? methods.getValues('artistID') : search ? search : '';
-  };
-
   const removeText = () => {
     setValue('artistID', '');
     setValue('artistName', '');
+    setValue('isArtProvider', '');
     setSearch('');
   };
 
@@ -457,6 +458,50 @@ export function ArtworkAdd({ currentProduct }) {
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' },
   ];
+
+  const handleCreateSeries = () => {
+    if (!mongoDBId) return toast.error('Search For Artist First');
+    const data = {
+      id: mongoDBId,
+      seriesName: series,
+    };
+    mutateAsync(data).then(() => {
+      setDialogOpen(false);
+      setSeries('');
+    });
+  };
+
+  const banDialogBox = (
+    <Dialog
+      open={dialogOpen}
+      onClose={() => {
+        setDialogOpen(false);
+        setSeries('');
+      }}
+    >
+      <DialogTitle>Add New Series</DialogTitle>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <DialogContentText>
+          Add New Series to this artist. This series will be added to the artist.{' '}
+        </DialogContentText>
+        <Field.Text
+          name="seriesName"
+          label="Series Name"
+          placeholder="Series Name"
+          value={series}
+          onChange={(e) => setSeries(e.target.value)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={handleCreateSeries}
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          {isSeriesLoad ? 'Loading...' : 'Save'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
 
   const renderDetails = (
     <Card sx={{ mb: 3, position: 'relative' }}>
@@ -534,12 +579,14 @@ export function ArtworkAdd({ currentProduct }) {
             </div>
           )}
         </div>
-        <Field.Text disabled name="artistName" label=" Artist Name" />
-        <Field.Text name="artworkName" label="Artwork Name" />
-        <Field.SingelSelect options={options} name="isArtProvider" label="Is Art Provider" />
-        {methods.getValues('isArtProvider') === 'yes' && (
-          <Field.Text name="provideArtistName" label="Art Provider Name" />
+        {methods.getValues('isArtProvider') === 'No' && (
+          <Field.Text disabled name="artistName" label="Artist Name" />
         )}
+        {methods.getValues('isArtProvider') === 'Yes' && (
+          <Field.Text name="provideArtistName" label="Artist Name" />
+        )}
+
+        <Field.Text name="artworkName" label="Artwork Name" />
         <Box
           columnGap={2}
           rowGap={3}
@@ -560,12 +607,24 @@ export function ArtworkAdd({ currentProduct }) {
             }}
           />
 
-          <Field.SingelSelect
-            checkbox
-            name="artworkSeries"
-            label="Artwork Series"
-            options={PRODUCT_SERIES_OPTIONS}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+            <Field.SingelSelect
+              sx={{ width: '100%' }}
+              checkbox
+              name="artworkSeries"
+              label="Artwork Series"
+              options={
+                mongoDBId ? (seriesList ? seriesList.map((i) => ({ value: i, label: i })) : []) : []
+              }
+            />
+            {mongoDBId && (
+              <Iconify
+                onClick={() => setDialogOpen(true)}
+                className="cursor-pointer"
+                icon="mingcute:add-line"
+              />
+            )}
+          </Box>
         </Box>
 
         <Field.Text name="productDescription" label="Product Description" multiline rows={4} />
@@ -685,26 +744,30 @@ export function ArtworkAdd({ currentProduct }) {
             }
           />
         </Box>
-        <Field.SingelSelect
+        <Field.MultiSelect
           checkbox
-          name="artworkOrientation"
-          label="Artwork Orientation"
-          options={ARTWORK_ORIENTATION_OPTIONS}
+          name="artworkStyle"
+          label="Artwork Style"
+          options={ARTWORK_STYLE_OPTIONS}
         />
-
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.SingelSelect
+          <Field.MultiSelect
             checkbox
-            name="material"
-            label="Material"
-            options={ARTWORK_MATERIAL_OPTIONS}
+            name="emotions"
+            label="Emotions"
+            options={ARTWORK_EMOTIONS_OPTIONS}
           />
-
+          <Field.MultiSelect
+            checkbox
+            name="colors"
+            label="Colors"
+            options={ARTWORK_COLORS_OPTIONS}
+          />
           <Field.SingelSelect
             checkbox
             name="offensive"
@@ -712,6 +775,12 @@ export function ArtworkAdd({ currentProduct }) {
             options={ARTWORK_OFFENSIVE_OPTIONS}
           />
         </Box>
+        <Field.SingelSelect
+          checkbox
+          name="material"
+          label="Material"
+          options={ARTWORK_MATERIAL_OPTIONS}
+        />
         <Box
           columnGap={2}
           rowGap={3}
@@ -720,15 +789,9 @@ export function ArtworkAdd({ currentProduct }) {
         >
           <Field.Text name="weight" label="Weight (in kg)" />
           <Field.Text name="height" label="Height (in cm)" />
-          <Field.Text name="lenght" label="Lenght (in cm)" />
+          <Field.Text name="lenght" label="Depth (in cm)" />
           <Field.Text name="width" label="Width (in cm)" />
         </Box>
-        <Field.MultiSelect
-          checkbox
-          name="artworkTags"
-          label="Artwork Tags"
-          options={ARTWORK_TAGES_OPTIONS}
-        />
         <Field.SingelSelect
           checkbox
           name="hangingAvailable"
@@ -736,6 +799,20 @@ export function ArtworkAdd({ currentProduct }) {
           options={ARTWORK_HANGING_OPTIONS}
         />
         <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
+        <Field.SingelSelect
+          checkbox
+          name="artworkOrientation"
+          label="Artwork Orientation"
+          options={ARTWORK_ORIENTATION_OPTIONS}
+        />
+
+        <Field.MultiSelect
+          checkbox
+          name="artworkTags"
+          label="Artwork Tags"
+          options={ARTWORK_TAGES_OPTIONS}
+        />
+
         <Field.SingelSelect
           checkbox
           name="framed"
@@ -753,19 +830,6 @@ export function ArtworkAdd({ currentProduct }) {
           <Field.Text name="frameLenght" label="Lenght (in cm)" />
           <Field.Text name="frameWidth" label="Width (in cm)" />
         </Box>
-        <Field.MultiSelect
-          checkbox
-          name="artworkStyle"
-          label="Artwork Style"
-          options={ARTWORK_STYLE_OPTIONS}
-        />
-        <Field.MultiSelect
-          checkbox
-          name="emotions"
-          label="Emotions"
-          options={ARTWORK_EMOTIONS_OPTIONS}
-        />
-        <Field.MultiSelect checkbox name="colors" label="Colors" options={ARTWORK_COLORS_OPTIONS} />
       </Stack>
     </Card>
   );
@@ -824,7 +888,13 @@ export function ArtworkAdd({ currentProduct }) {
               label="Purchase Catalog"
               options={ARTWORK_PURCHASECATALOG_OPTIONS}
             />
-            <Field.Text name="artistbaseFees" label="Artist Fees" />
+
+            {/* <Field.SingelSelect 
+              checkbox
+              name="purchaseType"
+              label="Purchase Type"
+              options={["Upwork Offer", "Downward Offer","Price by request",]} */}
+            />
 
             <Field.SingelSelect
               checkbox
@@ -838,6 +908,7 @@ export function ArtworkAdd({ currentProduct }) {
               label="Downward Offer"
               options={ARTWORK_DOWNWARDOFFER_OPTIONS}
             />
+            
             <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
 
             <Field.SingelSelect
@@ -1012,6 +1083,7 @@ export function ArtworkAdd({ currentProduct }) {
           </button>
         </div>
       </Stack>
+      {banDialogBox}
     </Form>
   );
 }

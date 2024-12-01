@@ -1,7 +1,7 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TableCell, TableRow } from '@mui/material';
+import { DialogContentText, DialogTitle, TableCell, TableRow } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -18,11 +18,16 @@ import {
   PRODUCT_PICKLIST_OPTIONS,
   PRODUCT_PUBLISHINGCATALOG_OPTIONS,
 } from 'src/_mock';
-import { Field, schemaHelper } from 'src/components/hook-form';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { z as zod } from 'zod';
+import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { Dialog } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogActions } from '@mui/material';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
@@ -40,6 +45,7 @@ export const NewProductSchema = zod.object({
     .email({ message: 'Email must be a valid email address!' }),
   taxPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
   taxBankIBAN: zod.string(),
+  vatAmount: zod.string().min(1, { message: 'Vat Amount is required!' }),
   taxBankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
   PublishingCatalog: zod
@@ -72,8 +78,12 @@ export function Invoice({
   const [csvData, setCsvData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(null);
   const [filteredBanks, setFilteredBanks] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(false);
+  const [code, setCode] = useState('');
   const [selectedBank, setSelectedBank] = useState({ code: '', name: '' });
   const [arr, setArr] = useState<{ value: number; label: number }[]>([]);
+  const { data } = useGetAllCatalog();
 
   useEffect(() => {
     const loadCSV = async () => {
@@ -137,30 +147,31 @@ export function Invoice({
   const defaultValues = useMemo(
     () => ({
       taxNumber: artistFormData?.taxNumber || '',
-      taxLegalName: artistFormData?.taxLegalName || name(artistFormData),
-      taxAddress: artistFormData?.taxAddress || artistFormData?.residentialAddress,
-      taxZipCode: artistFormData?.taxZipCode || artistFormData?.zipCode,
-      taxCity: artistFormData?.taxCity || artistFormData?.city,
-      taxProvince: artistFormData?.taxProvince || artistFormData?.state,
-      taxCountry: artistFormData?.taxCountry || artistFormData?.country,
-      taxEmail: artistFormData?.email || artistFormData?.taxEmail,
-      taxPhone: artistFormData?.phone || artistFormData?.taxPhone,
+      taxLegalName: artistFormData?.taxLegalName || value ? name(artistFormData) : '',
+      taxAddress: artistFormData?.taxAddress || value ? artistFormData?.residentialAddress : '',
+      taxZipCode: artistFormData?.taxZipCode || value ? artistFormData?.zipCode : '',
+      taxCity: artistFormData?.taxCity || value ? artistFormData?.city : '',
+      taxProvince: artistFormData?.taxProvince || value ? artistFormData?.state : '',
+      taxCountry: artistFormData?.taxCountry || value ? artistFormData?.country : '',
+      taxEmail: artistFormData?.taxEmail || value ? artistFormData?.email : '',
+      taxPhone: artistFormData?.taxPhone || value ? artistFormData?.phone : '',
       taxBankIBAN: artistFormData?.taxBankIBAN || '',
+      vatAmount: artistFormData?.vatAmount || '',
       taxBankName: artistFormData?.taxBankName || '',
-      CustomOrder: artistFormData?.CustomOrder || '',
+      CustomOrder: artistFormData?.CustomOrder || 'No',
       artistLevel: artistFormData?.artistLevel || '',
-      artProvider: artistFormData?.artProvider || '',
+      artProvider: artistFormData?.artProvider || 'No',
       PublishingCatalog: artistFormData?.PublishingCatalog || [
         { PublishingCatalog: '', ArtistFees: '' },
       ],
       scoreProfessional: artistFormData?.scoreProfessional || '',
       scorePlatform: artistFormData?.scorePlatform || '',
-      ArtistPlus: artistFormData?.ArtistPlus || '',
+      ArtistPlus: artistFormData?.ArtistPlus || 'No',
       MinNumberOfArtwork: artistFormData?.MinNumberOfArtwork || '',
       MaxNumberOfArtwork: artistFormData?.MaxNumberOfArtwork || '',
       count: 5,
     }),
-    [artistFormData]
+    [artistFormData, value]
   );
 
   const formProps = useForm({
@@ -168,7 +179,20 @@ export function Invoice({
     defaultValues,
   });
 
-  const { trigger, handleSubmit } = formProps;
+  const { trigger, handleSubmit, reset } = formProps;
+
+  useEffect(() => {
+    reset({
+      taxLegalName: value ? name(artistFormData) : artistFormData?.taxLegalName,
+      taxAddress: value ? artistFormData?.residentialAddress : artistFormData?.taxAddress,
+      taxZipCode: value ? artistFormData?.zipCode : artistFormData?.taxZipCode,
+      taxCity: value ? artistFormData?.city : artistFormData?.taxCity,
+      taxProvince: value ? artistFormData?.state : artistFormData?.taxProvince,
+      taxCountry: value ? artistFormData?.country : artistFormData?.taxCountry,
+      taxEmail: value ? artistFormData?.email : artistFormData?.taxEmail,
+      taxPhone: value ? artistFormData?.phone : artistFormData?.taxPhone,
+    });
+  }, [value]);
 
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,
@@ -211,10 +235,60 @@ export function Invoice({
     setTabIndex(tabIndex + 1);
   };
 
+  const filterOptions = (index, fields, data) => {
+    const selectedValues = fields.map((field) => field.PublishingCatalog);
+
+    return data.filter(
+      (option) =>
+        !selectedValues.includes(option.value) || option.value === fields[index]?.PublishingCatalog
+    );
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!formProps.getValues('taxLegalName')) {
+        setOpen(true);
+      }
+    }, 1000);
+
+    // Cleanup the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const copyDialogBox = (
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false);
+      }}
+    >
+      <DialogTitle>Copy Data</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Would you like to copy data from General Information?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <span
+          onClick={() => {
+            setValue(true);
+            setOpen(false);
+          }}
+          className="cursor-pointer text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+        >
+          Copy Data
+        </span>
+        <span
+          onClick={() => setOpen(false)}
+          className="cursor-pointer text-white bg-red-600 rounded-lg px-5 py-2 hover:bg-red-700 font-medium"
+        >
+          Close
+        </span>
+      </DialogActions>
+    </Dialog>
+  );
+
   const renderDetails = (
     <Card>
-      <CardHeader title="Invoicing & Co" sx={{ mb: 3 }} />
-
+      <CardHeader title="Invoicing & Co" sx={{ mb: 2 }} />
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -238,12 +312,13 @@ export function Invoice({
           <Field.CountrySelect
             disabled={isReadOnly}
             required
+            setCode={setCode}
             fullWidth
             name="taxCountry"
             label="Tax Country"
             placeholder="Choose a country"
           />
-          <Field.Text disabled={isReadOnly} required name="taxCity" label="Tax City" />
+          <Field.Text disabled={isReadOnly} required name="taxZipCode" label="Tax Zip/code" />
         </Box>
         <Box
           columnGap={2}
@@ -251,18 +326,30 @@ export function Invoice({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} required name="taxZipCode" label="Tax Zip/code" />
+          <Field.Text disabled={isReadOnly} required name="taxCity" label="Tax City" />
           <Field.Text disabled={isReadOnly} required name="taxProvince" label="Tax Province" />
         </Box>
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
           <Field.Text disabled={isReadOnly} required name="taxEmail" label="Tax Email address" />
-
-          <Field.Phone disabled={isReadOnly} required name="taxPhone" label="Tax Phone number" />
+          <Field.Phone
+            fetchCode={formProps.getValues('taxPhone') ? null : code ? code : ''}
+            disabled={isReadOnly}
+            required
+            name="taxPhone"
+            label="Tax Phone number"
+          />
+          <Field.Text
+            disabled={isReadOnly}
+            required
+            name="vatAmount"
+            placeholder="0.00 %"
+            label="Tax VAT amount"
+          />
         </Box>
 
         <Box
@@ -316,7 +403,9 @@ export function Invoice({
 
   const Commercialization = (
     <Card>
-      <CardHeader title="Commercialization" sx={{ mb: 1 }} />
+      <CardHeader title="Commercialization" sx={{ mb: 2 }} />
+      <Divider />
+
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           disabled={isReadOnly}
@@ -328,32 +417,44 @@ export function Invoice({
         />
 
         <Stack>
-          <div className="flex justify-end">
-            <Button
-              disabled={isReadOnly}
-              size="small"
-              color="primary"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              onClick={addCatelog}
-            >
-              {fields.length === 0 ? 'Add Catalog' : 'Add More Catelog'}
-            </Button>
-          </div>
-          {fields.map((item, index) => (
-            <Stack key={index} spacing={1.5}>
+          {data && data.length !== fields.length && (
+            <div className="flex justify-end">
+              <Button
+                disabled={isReadOnly}
+                size="small"
+                color="primary"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={addCatelog}
+              >
+                {fields.length === 0 ? 'Add Catalog' : 'Add More Catelog'}
+              </Button>
+            </div>
+          )}
+          <Stack direction={'column'} spacing={2}>
+            {fields.map((item, index) => (
               <Box
+                key={index}
                 columnGap={2}
                 rowGap={3}
                 display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
+                alignItems={'center'}
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: '1fr 1fr 0.4fr' }}
               >
                 <Field.SingelSelect
                   disabled={isReadOnly}
                   required
                   checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
-                  label="Publishing catalogue"
-                  options={PRODUCT_PUBLISHINGCATALOG_OPTIONS}
+                  label={`Catalog ${index + 1}`}
+                  options={
+                    data
+                      ? filterOptions(
+                          index,
+                          fields,
+                          data.map((item) => ({ value: item._id, label: item.catalogName }))
+                        )
+                      : []
+                  }
                 />
                 <Field.Text
                   disabled={isReadOnly}
@@ -361,21 +462,20 @@ export function Invoice({
                   name={`PublishingCatalog[${index}].ArtistFees`}
                   label="Artist Fees"
                 />
+                {index > 0 && (
+                  <Button
+                    disabled={isReadOnly}
+                    size="small"
+                    color="error"
+                    startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                    onClick={() => handleRemove(index)}
+                  >
+                    Remove
+                  </Button>
+                )}
               </Box>
-
-              {index > 0 && (
-                <Button
-                  disabled={isReadOnly}
-                  size="small"
-                  color="error"
-                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                  onClick={() => handleRemove(index)}
-                >
-                  Remove
-                </Button>
-              )}
-            </Stack>
-          ))}
+            ))}
+          </Stack>
         </Stack>
 
         <Field.SingelSelect
@@ -426,29 +526,27 @@ export function Invoice({
   );
 
   return (
-    <FormProvider {...formProps}>
-      <form onSubmit={onSubmit}>
-        <Stack spacing={{ xs: 3, md: 5 }}>
-          {renderDetails}
+    <Form methods={formProps} onSubmit={onSubmit}>
+      <Stack spacing={{ xs: 3, md: 5 }}>
+        {renderDetails}
+        {Commercialization}
 
-          {Commercialization}
-
-          <div className="flex justify-end">
-            {!isReadOnly ? (
-              <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-                {isPending ? 'Loading...' : 'Save & Next'}
-              </button>
-            ) : (
-              <span
-                onClick={viewNext}
-                className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
-              >
-                View Next
-              </span>
-            )}
-          </div>
-        </Stack>
-      </form>
-    </FormProvider>
+        <div className="flex justify-end">
+          {!isReadOnly ? (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Loading...' : 'Save & Next'}
+            </button>
+          ) : (
+            <span
+              onClick={viewNext}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              View Next
+            </span>
+          )}
+        </div>
+      </Stack>
+      {copyDialogBox}
+    </Form>
   );
 }

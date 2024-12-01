@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllArtist}?s=${search}`);
-  return data.data;
+  return data;
 }
 
 export const useGetAllActiveArtist = (search) => {
