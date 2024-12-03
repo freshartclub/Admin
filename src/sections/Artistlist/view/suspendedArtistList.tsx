@@ -13,7 +13,6 @@ import {
   TablePaginationCustom,
   getComparator,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { SuspendedArtistList } from '../suspendedArtistLis-table-row';
 import { useGetSuspendedArtistList } from '../http/useGetSuspendedArtist';
 import { Stack } from '@mui/material';
@@ -65,7 +64,7 @@ export function SuspendedArtist() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artist Id/Name..."
+          placeholder="Search By Artist Id, Name or Email..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

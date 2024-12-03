@@ -127,9 +127,9 @@ function AddArtistIndex() {
           obj.lastRevalidationDate = data.data?.lastRevalidationDate;
           obj.nextRevalidationDate = data.data?.nextRevalidationDate;
           obj.managerName = data.data?.managerDetails?.managerName;
-          obj.managerArtistEmail = data.data?.managerDetails?.artistEmail;
-          obj.managerArtistPhone = data.data?.managerDetails?.artistPhone;
-          obj.managerArtistGender = data.data?.managerDetails?.artistGender;
+          obj.managerArtistEmail = data.data?.managerDetails?.managerEmail;
+          obj.managerArtistPhone = data.data?.managerDetails?.managerPhone;
+          obj.managerArtistGender = data.data?.managerDetails?.managerGender;
           obj.managerArtistContactTo = data.data?.managerDetails?.artistContactTo;
           obj.address = data.data?.managerDetails?.address?.address;
           obj.managerCity = data.data?.managerDetails?.address?.city;

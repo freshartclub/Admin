@@ -36,6 +36,14 @@ export const NewPostSchema = zod.object({
   artworkNames: zod.string().array(),
   catalogCollection: zod.string().array().min(1, { message: 'Must have at least 1 items!' }),
   collectionNames: zod.string().array(),
+  catalogCommercialization: zod
+    .string()
+    .min(1, { message: 'Catalog Commercialization is required!' }),
+  defaultArtistFee: zod
+    .number()
+    .min(1, { message: 'Default Artist Fee is required!' })
+    .max(100, { message: 'Default Artist Fee cannot exceed 100!' }),
+
   artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   subPlan: zod.string().array().min(1, { message: 'Plan is required!' }),
   exclusiveCatalog: zod.boolean(),
@@ -70,6 +78,8 @@ export function AddCatalogForm() {
       collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
       artProvider: data?.data?.artProvider || [],
       subPlan: data?.data?.subPlan || [],
+      catalogCommercialization: data?.data?.catalogCommercialization || '',
+      defaultArtistFee: data?.data?.defaultArtistFee || '',
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
       status: data?.data?.status || '',
       catalogImg: data?.data?.catalogImg || null,
@@ -95,6 +105,8 @@ export function AddCatalogForm() {
         collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
         artProvider: data?.data?.artProvider || [],
         subPlan: data?.data?.subPlan || [],
+        catalogCommercialization: data?.data?.catalogCommercialization || '',
+        defaultArtistFee: data?.data?.defaultArtistFee || 0,
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
         status: data?.data?.status || '',
         catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
@@ -397,6 +409,16 @@ export function AddCatalogForm() {
               ))
             }
           />
+          <Field.SingelSelect
+            required
+            name="catalogCommercialization"
+            label="Catalog Commercialization"
+            options={[
+              { value: 'Purchase', label: 'Purchase' },
+              { value: 'Subscription ', label: 'Subscription ' },
+            ]}
+          />
+          <Field.Text required name="defaultArtistFee" label="Default Artist Fee" type="number" />
           <Field.SingelSelect
             required
             name="status"

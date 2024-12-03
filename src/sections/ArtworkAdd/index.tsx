@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import {
+  Autocomplete,
   Avatar,
   DialogContent,
   InputAdornment,
   ListItemText,
   TableCell,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -21,7 +23,6 @@ import {
   ARTWORK_COLLECTIONLIST_OPTIONS,
   ARTWORK_COLORS_OPTIONS,
   ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
-  ARTWORK_DOWNWARDOFFER_OPTIONS,
   ARTWORK_EMOTIONS_OPTIONS,
   ARTWORK_FRAMED_OPTIONS,
   ARTWORK_HANGING_OPTIONS,
@@ -31,32 +32,42 @@ import {
   ARTWORK_PROMOTIONS_OPTIONS,
   ARTWORK_PURCHASECATALOG_OPTIONS,
   ARTWORK_STYLE_OPTIONS,
-  ARTWORK_TAGES_OPTIONS,
-  ARTWORK_UPWORKOFFER_OPTIONS,
-  PRODUCT_SERIES_OPTIONS,
 } from 'src/_mock';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormControl, FormControlLabel, FormLabel, Link, Radio, RadioGroup } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Link,
+  Radio,
+  RadioGroup,
+  Slider,
+} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import { toast } from 'sonner';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { z as zod } from 'zod';
 import { useGetArtworkById } from '../Artwork-details-view/http/useGetArtworkById';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
+import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnicMutation';
 import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
+import useAddArtistSeries from './http/useAddArtistSeries';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
-import { Dialog, DialogActions, DialogContentText, DialogTitle } from '@mui/material';
-import { toast } from 'sonner';
-import { Iconify } from 'src/components/iconify';
-import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
-import useAddArtistSeries from './http/useAddArtistSeries';
 import { useGetSeriesList } from './http/useGetSeriesList';
+import { Alert } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -96,52 +107,65 @@ export const NewProductSchema = zod.object({
   purchaseCatalog: zod.string().optional(),
   subscriptionCatalog: zod.string().optional(),
   artistFees: zod.string().optional(),
-  downwardOffer: zod.string().optional(),
-  upworkOffer: zod.string().optional(),
+  purchaseType: zod.string().optional(),
   acceptOfferPrice: zod.string().optional(),
-  priceRequest: zod.string().optional(),
   basePrice: zod.string().min(1, { message: 'Base price is required!' }),
   dpersentage: zod
-    .string()
+    .number()
     .min(1, { message: 'Discount should not be $0.00' })
-    .refine(
-      (value) => {
-        const parsed = parseFloat(value);
-        return !isNaN(parsed) && parsed <= 100;
-      },
-      { message: 'Discount percentage cannot exceed 100%' }
-    ),
-  vatAmount: zod.string().optional(),
+    .max(100, { message: 'Discount cannot exceed 100%!' }),
+  vatAmount: zod
+    .number()
+    .min(1, { message: 'Vat Amount is required!' })
+    .max(100, { message: 'Vat Amount cannot exceed 100%!' }),
   activeTab: zod.string().optional(),
   purchaseOption: zod.string().optional(),
   offensive: zod.string().optional(),
   pCode: zod.string().min(1, { message: 'Product Code is required!' }),
   location: zod.string().min(1, { message: 'location is required!' }),
   artworkDiscipline: zod.string(),
-  artworkTags: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  intTags: zod.string().array().min(1, { message: 'Add at least one Internal Tag!' }),
+  extTags: zod.string().array().min(1, { message: 'Add at least one External Tag!' }),
   promotion: zod.string().optional(),
-  promotionScore: zod.any(),
+  promotionScore: zod.number().optional(),
   availableTo: zod.string().optional(),
   discountAcceptation: zod.string().optional(),
   collectionList: zod.string().optional(),
   existingImages: zod.any().array().optional(),
   existingVideos: zod.any().array().optional(),
   currency: zod.string().min(1, { message: 'currency is required!' }),
+  commingSoon: zod.boolean().optional(),
+  packageHeight: zod.string().min(1, { message: 'Package Height is required!' }),
+  packageLength: zod.string().min(1, { message: 'Package Lenght is required!' }),
+  packageWidth: zod.string().min(1, { message: 'Package Width is required!' }),
+  packageWeight: zod.string().min(1, { message: 'Package Weight is required!' }),
+  packageMaterial: zod.string().min(1, { message: 'Package Material is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
-export function ArtworkAdd({ currentProduct }) {
-  const [pArr, setPArr] = useState<{ value: string; label: string }[]>([]);
+export function ArtworkAdd() {
   const [year, setYear] = useState('');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [intValue, setIntValue] = useState('');
+  const [extValue, setExtValue] = useState('');
+  const [slide, setSlide] = useState(0);
+
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
 
-  const picklist = RenderAllPicklist('Currency');
-  const plans = RenderAllPicklist('Plans');
+  const picklist = RenderAllPicklists(['Purchase Options', 'Currency', 'Package Material']);
+
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const purOption = picklistMap['Purchase Options'];
+  const currency = picklistMap['Currency'];
+  const packMaterial = picklistMap['Package Material'];
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -229,6 +253,8 @@ export function ArtworkAdd({ currentProduct }) {
     () => ({
       artworkName: data?.data?.artworkName || '',
       artistID: data?.data?.owner?.artistId || '',
+      intTags: data?.data?.tags?.intTags || [],
+      extTags: data?.data?.tags?.extTags || [],
       artistName: data?.data?.owner?.artistName || '',
       isArtProvider: data?.data?.isArtProvider || 'No',
       provideArtistName: data?.data?.provideArtistName || '',
@@ -252,7 +278,6 @@ export function ArtworkAdd({ currentProduct }) {
       otherVideo: videoArr || [],
       existingImages: data?.data?.media?.images || [],
       existingVideos: data?.data?.media?.otherVideo || [],
-
       artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
       artworkTheme: data?.data?.additionalInfo?.artworkTheme || '',
       artworkOrientation: data?.data?.additionalInfo?.artworkOrientation || '',
@@ -273,24 +298,27 @@ export function ArtworkAdd({ currentProduct }) {
       colors: data?.data?.additionalInfo?.colors || [],
       purchaseCatalog: data?.data?.commercialization?.purchaseCatalog || '',
       subscriptionCatalog: data?.data?.commercialization?.subscriptionCatalog || '',
-      downwardOffer: data?.data?.commercialization?.downwardOffer || '',
-      upworkOffer: data?.data?.commercialization?.upworkOffer || '',
-      acceptOfferPrice: data?.data?.commercialization?.acceptOfferPrice || '',
-      priceRequest: data?.data?.commercialization?.priceRequest || '',
+      purchaseType: data?.data?.commercialization?.purchaseType || '',
       purchaseOption: data?.data?.commercialization?.purchaseOption || '',
       activeTab: data?.data?.commercialization?.activeTab || '',
       basePrice: data?.data?.pricing?.basePrice || '',
-      currency: data?.data?.pricing?.currency || '',
-      dpersentage: data?.data?.pricing?.dpersentage || '',
-      vatAmount: data?.data?.pricing?.vatAmount || '',
+      currency: data?.data?.pricing?.currency || 'EUR',
+      dpersentage: data?.data?.pricing?.dpersentage || 0,
+      vatAmount: data?.data?.pricing?.vatAmount || 0,
+      acceptOfferPrice: data?.data?.pricing?.acceptOfferPrice || '',
       artistFees: data?.data?.pricing?.artistFees || '',
       offensive: data?.data?.additionalInfo?.offensive || '',
       pCode: data?.data?.inventoryShipping?.pCode || '',
       location: data?.data?.inventoryShipping?.location || '',
+      commingSoon: data?.data?.inventoryShipping?.commingSoon || false,
+      packageMaterial: data?.data?.inventoryShipping?.packageMaterial || '',
+      packageWeight: data?.data?.inventoryShipping?.packageWeight || '',
+      packageLength: data?.data?.inventoryShipping?.packageLength || '',
+      packageHeight: data?.data?.inventoryShipping?.packageHeight || '',
+      packageWidth: data?.data?.inventoryShipping?.packageWidth || '',
       artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
-      artworkTags: data?.data?.discipline?.artworkTags || [],
       promotion: data?.data?.promotions?.promotion || '',
-      promotionScore: data?.data?.promotions?.promotionScore || '',
+      promotionScore: Number(data?.data?.promotions?.promotionScore) || slide,
       availableTo: data?.data?.restriction?.availableTo || '',
       discountAcceptation: data?.data?.restriction?.discountAcceptation || '',
       collectionList: data?.data?.collectionList || '',
@@ -305,7 +333,13 @@ export function ArtworkAdd({ currentProduct }) {
     defaultValues,
   });
 
-  const { reset, watch, setValue, handleSubmit } = methods;
+  const {
+    reset,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
   const values = watch();
 
   const selectedDisciplines = useWatch({
@@ -316,13 +350,7 @@ export function ArtworkAdd({ currentProduct }) {
   const debounceArtistId = useDebounce(search, 1000);
   const { data: artistData } = useGetArtistById(debounceArtistId);
   const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();
-  const { data: seriesList, refetch } = useGetSeriesList(mongoDBId);
-
-  useEffect(() => {
-    if (currentProduct) {
-      reset(defaultValues);
-    }
-  }, [currentProduct, defaultValues, reset]);
+  const { data: artworkData, refetch } = useGetSeriesList(mongoDBId);
 
   useEffect(() => {
     if (data && !isLoading) {
@@ -339,6 +367,7 @@ export function ArtworkAdd({ currentProduct }) {
       data.activeTab = methods.getValues('activeTab');
       data.existingImages = methods.getValues('existingImages');
       data.existingVideos = methods.getValues('existingVideos');
+      data.promotionScore = slide;
 
       const newData = {
         data: data,
@@ -403,6 +432,42 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('existingVideos', [], { shouldValidate: true });
   }, [setValue]);
 
+  const handleIntSave = (item) => {
+    const intVal = methods.getValues('intTags') || [];
+    if (!intVal.includes(item)) {
+      setValue('intTags', [...intVal, item]);
+    }
+
+    setIntValue('');
+  };
+
+  const handleExtSave = (item) => {
+    const extVal = methods.getValues('extTags') || [];
+    if (!extVal.includes(item)) {
+      setValue('extTags', [...extVal, item]);
+    }
+
+    setExtValue('');
+  };
+
+  const handleRemoveIntTag = (index) => {
+    const intVal = methods.getValues('intTags') || [];
+
+    setValue(
+      'intTags',
+      intVal.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleRemoveExtTag = (index) => {
+    const extVal = methods.getValues('extTags') || [];
+
+    setValue(
+      'extTags',
+      extVal.filter((_, i) => i !== index)
+    );
+  };
+
   const name = (val) => {
     let fullName = val?.artistName || '';
 
@@ -433,19 +498,18 @@ export function ArtworkAdd({ currentProduct }) {
   const currentYear = dayjs();
 
   useEffect(() => {
-    const tempArr: { value: string; label: string }[] = [];
-    for (let i = 0; i <= 100; i++) {
-      tempArr.push({ value: `${i}`, label: `${i}` });
-    }
-    setPArr(tempArr);
-
     if (id) {
       setOpen(false);
       setmongoDBId(data?.data?.owner?._id);
       setSelectedOption(data?.data?.commercialization?.activeTab);
       setYear(data?.data?.artworkCreationYear);
+      setSlide(data?.data?.promotions?.promotionScore);
     }
   }, [data?.data]);
+
+  useEffect(() => {
+    setValue('vatAmount', artworkData?.vatAmount);
+  }, [artworkData]);
 
   const removeText = () => {
     setValue('artistID', '');
@@ -453,11 +517,6 @@ export function ArtworkAdd({ currentProduct }) {
     setValue('isArtProvider', '');
     setSearch('');
   };
-
-  const options = [
-    { value: 'yes', label: 'Yes' },
-    { value: 'no', label: 'No' },
-  ];
 
   const handleCreateSeries = () => {
     if (!mongoDBId) return toast.error('Search For Artist First');
@@ -471,7 +530,59 @@ export function ArtworkAdd({ currentProduct }) {
     });
   };
 
-  const banDialogBox = (
+  const handleChange = (e) => {
+    const textContent = e.target.textContent;
+    if (selectedOption === 'subscription') {
+      const artistFeesVal = artworkData.subscriptionCatalog.find(
+        (item) => item.catalogName === textContent
+      );
+
+      setValue('artistFees', artistFeesVal?.artistFees);
+    } else {
+      const artistFeesVal = artworkData.purchaseCatalog.find(
+        (item) => item.catalogName === textContent
+      );
+
+      setValue('artistFees', artistFeesVal?.artistFees);
+    }
+  };
+
+  const valuetext = (value: number) => {
+    if (value === 0) return `${data?.data?.promotions?.promotionScore}`;
+    setSlide(value);
+    return `${value}`;
+  };
+
+  const fixPrice = methods.watch('purchaseType');
+
+  const marks = [
+    {
+      value: 1,
+      label: '1',
+    },
+    {
+      value: 5,
+      label: '5',
+    },
+    {
+      value: 10,
+      label: '10',
+    },
+    {
+      value: 20,
+      label: '20',
+    },
+    {
+      value: 50,
+      label: '50',
+    },
+    {
+      value: 100,
+      label: '100',
+    },
+  ];
+
+  const addSeriesDialogBox = (
     <Dialog
       open={dialogOpen}
       onClose={() => {
@@ -614,7 +725,11 @@ export function ArtworkAdd({ currentProduct }) {
               name="artworkSeries"
               label="Artwork Series"
               options={
-                mongoDBId ? (seriesList ? seriesList.map((i) => ({ value: i, label: i })) : []) : []
+                mongoDBId
+                  ? artworkData?.seriesList
+                    ? artworkData?.seriesList.map((i) => ({ value: i, label: i }))
+                    : []
+                  : []
               }
             />
             {mongoDBId && (
@@ -775,6 +890,120 @@ export function ArtworkAdd({ currentProduct }) {
             options={ARTWORK_OFFENSIVE_OPTIONS}
           />
         </Box>
+        <Stack spacing={3}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Autocomplete
+              // disabled={isReadOnly}
+              freeSolo
+              fullWidth
+              options={[]}
+              value={intValue}
+              onChange={(event, newValue) => setIntValue(newValue || '')}
+              onInputChange={(event, newInputValue) => setIntValue(newInputValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Add Internal Tags"
+                  placeholder="Add Internal Tags"
+                  required
+                />
+              )}
+              openOnFocus
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleIntSave(intValue)}
+              disabled={!intValue.trim()}
+            >
+              Add
+            </Button>
+          </Box>
+          {errors.extTags && <Alert severity="error">{errors.intTags.message}</Alert>}
+          {methods.watch('intTags') && methods.getValues('intTags').length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-[-1rem]">
+              {methods.getValues('intTags').map((i, index) => (
+                <Stack
+                  direction={'row'}
+                  alignItems="center"
+                  sx={{
+                    display: 'flex',
+                    gap: 0.3,
+                    backgroundColor: 'rgb(214 244 249)',
+                    color: 'rgb(43 135 175)',
+                    fontSize: '14px',
+                    padding: '3px 7px',
+                    borderRadius: '9px',
+                  }}
+                  key={index}
+                >
+                  <span>{i}</span>
+                  <Iconify
+                    icon="material-symbols:close-rounded"
+                    sx={{ cursor: 'pointer', padding: '2px' }}
+                    onClick={() => handleRemoveIntTag(index)}
+                  />
+                </Stack>
+              ))}
+            </div>
+          )}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Autocomplete
+              // disabled={isReadOnly}
+              freeSolo
+              fullWidth
+              options={[]}
+              value={extValue}
+              onChange={(event, newValue) => setExtValue(newValue || '')}
+              onInputChange={(event, newInputValue) => setExtValue(newInputValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Add External Tags"
+                  placeholder="Add External Tags"
+                  required
+                />
+              )}
+              openOnFocus
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleExtSave(extValue)}
+              disabled={!extValue.trim()}
+            >
+              Add
+            </Button>
+          </Box>
+          {errors.extTags && <Alert severity="error">{errors.extTags.message}</Alert>}
+          {methods.watch('extTags') && methods.getValues('extTags').length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-[-1rem]">
+              {methods.getValues('extTags').map((i, index) => (
+                <Stack
+                  direction={'row'}
+                  alignItems="center"
+                  sx={{
+                    display: 'flex',
+                    gap: 0.3,
+                    backgroundColor: 'rgb(214 244 249)',
+                    color: 'rgb(43 135 175)',
+                    fontSize: '14px',
+                    padding: '3px 7px',
+                    borderRadius: '9px',
+                  }}
+                  key={index}
+                >
+                  <span>{i}</span>
+                  <Iconify
+                    icon="material-symbols:close-rounded"
+                    sx={{ cursor: 'pointer', padding: '2px' }}
+                    onClick={() => handleRemoveExtTag(index)}
+                  />
+                </Stack>
+              ))}
+            </div>
+          )}
+        </Stack>
         <Field.SingelSelect
           checkbox
           name="material"
@@ -787,10 +1016,10 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
         >
-          <Field.Text name="weight" label="Weight (in kg)" />
           <Field.Text name="height" label="Height (in cm)" />
-          <Field.Text name="lenght" label="Depth (in cm)" />
           <Field.Text name="width" label="Width (in cm)" />
+          <Field.Text name="lenght" label="Depth (in cm)" />
+          <Field.Text name="weight" label="Weight (in kg)" />
         </Box>
         <Field.SingelSelect
           checkbox
@@ -799,19 +1028,6 @@ export function ArtworkAdd({ currentProduct }) {
           options={ARTWORK_HANGING_OPTIONS}
         />
         <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
-        <Field.SingelSelect
-          checkbox
-          name="artworkOrientation"
-          label="Artwork Orientation"
-          options={ARTWORK_ORIENTATION_OPTIONS}
-        />
-
-        <Field.MultiSelect
-          checkbox
-          name="artworkTags"
-          label="Artwork Tags"
-          options={ARTWORK_TAGES_OPTIONS}
-        />
 
         <Field.SingelSelect
           checkbox
@@ -826,10 +1042,16 @@ export function ArtworkAdd({ currentProduct }) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="frameHeight" label="Height (in cm)" />
-          <Field.Text name="frameLenght" label="Lenght (in cm)" />
-          <Field.Text name="frameWidth" label="Width (in cm)" />
+          <Field.Text name="frameHeight" label="Frame Height (in cm)" />
+          <Field.Text name="frameWidth" label="Frame Width (in cm)" />
+          <Field.Text name="frameLenght" label="Frame Depth (in cm)" />
         </Box>
+        <Field.SingelSelect
+          checkbox
+          name="artworkOrientation"
+          label="Artwork Orientation"
+          options={ARTWORK_ORIENTATION_OPTIONS}
+        />
       </Stack>
     </Card>
   );
@@ -870,7 +1092,18 @@ export function ArtworkAdd({ currentProduct }) {
               checkbox
               name="subscriptionCatalog"
               label="Subscription Catalog"
-              options={plans}
+              onClick={(e: any) => handleChange(e)}
+              options={
+                mongoDBId
+                  ? artworkData?.subscriptionCatalog
+                    ? artworkData?.subscriptionCatalog.map((i) => ({
+                        value: i.catalogName,
+                        artistFees: i.artistFees,
+                        label: i.catalogName,
+                      }))
+                    : []
+                  : []
+              }
             />
             <Field.SingelSelect
               checkbox
@@ -885,54 +1118,82 @@ export function ArtworkAdd({ currentProduct }) {
             <Field.SingelSelect
               checkbox
               name="purchaseCatalog"
+              onClick={(e: any) => handleChange(e)}
               label="Purchase Catalog"
-              options={ARTWORK_PURCHASECATALOG_OPTIONS}
+              options={
+                mongoDBId
+                  ? artworkData?.purchaseCatalog
+                    ? artworkData?.purchaseCatalog.map((i) => ({
+                        value: i.catalogName,
+                        label: i.catalogName,
+                      }))
+                    : []
+                  : []
+              }
             />
-
-            {/* <Field.SingelSelect 
+            <Field.SingelSelect
               checkbox
               name="purchaseType"
               label="Purchase Type"
-              options={["Upwork Offer", "Downward Offer","Price by request",]} */}
-            />
-
-            <Field.SingelSelect
-              checkbox
-              name="upworkOffer"
-              label="Upwork Offer"
-              options={ARTWORK_UPWORKOFFER_OPTIONS}
-            />
-            <Field.SingelSelect
-              checkbox
-              name="downwardOffer"
-              label="Downward Offer"
-              options={ARTWORK_DOWNWARDOFFER_OPTIONS}
-            />
-            
-            <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
-
-            <Field.SingelSelect
-              checkbox
-              name="priceRequest"
-              label="Price by request"
-              options={ARTWORK_UPWORKOFFER_OPTIONS}
+              options={purOption ? purOption : []}
             />
           </>
         )}
       </Stack>
     </Card>
   );
+
   const pricing = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Pricing" sx={{ mb: 3 }} />
 
       <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+      {selectedOption === 'purchase' ? (
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <Field.SingelSelect
+            required
+            sx={{ minWidth: 150 }}
+            name="currency"
+            label="Currency"
+            options={currency ? currency : []}
+          />
+          {fixPrice === 'Price By Request' ||
+          fixPrice === 'Fixed Price' ||
+          fixPrice === 'Downward Offer' ? (
+            <>
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+                <Field.Text
+                  name="basePrice"
+                  label="Base Price"
+                  placeholder="Base Price"
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                          {methods.getValues('currency')}
+                        </Box>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Field.Text
+                  name="dpersentage"
+                  label="Discount Percentage"
+                  placeholder="0.00%"
+                  type="number"
+                />
+              </Stack>
+            </>
+          ) : null}
+          {fixPrice === 'Downward Offer' || fixPrice === 'Upward Offer' ? (
+            <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
+          ) : null}
+          <Field.Text type="number" name="vatAmount" label="VAT Amount (%)" />
           <Field.Text
-            name="basePrice"
-            label="Base Price"
-            placeholder="Base Price"
+            name="artistFees"
+            label="Artist Fees"
+            placeholder="Artist Fees"
             InputLabelProps={{ shrink: true }}
             InputProps={{
               startAdornment: (
@@ -944,40 +1205,61 @@ export function ArtworkAdd({ currentProduct }) {
               ),
             }}
           />
-          <Field.SingelSelect
-            required
-            sx={{ minWidth: 150 }}
-            name="currency"
-            label="Currency"
-            options={picklist ? picklist : []}
+        </Stack>
+      ) : (
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+            <Field.Text
+              name="basePrice"
+              label="Base Price"
+              placeholder="Base Price"
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                      {methods.getValues('currency')}
+                    </Box>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Field.SingelSelect
+              required
+              sx={{ minWidth: 150 }}
+              name="currency"
+              label="Currency"
+              options={currency ? currency : []}
+            />
+          </Stack>
+          <Field.Text
+            name="dpersentage"
+            label="Discount Percentage"
+            placeholder="0.00%"
+            type="number"
+          />
+
+          <Field.Text type="number" name="vatAmount" label="VAT Amount (%)" />
+          <Field.Text
+            name="artistFees"
+            label="Artist Fees"
+            placeholder="Artist Fees"
+            InputLabelProps={{ shrink: true }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                    {methods.getValues('currency')}
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
           />
         </Stack>
-        <Field.Text
-          name="dpersentage"
-          label="Discounted Percentage"
-          placeholder="0.00%"
-          // type="number"
-        />
-
-        <Field.Text name="vatAmount" label="VAT Amount (%)" />
-        <Field.Text
-          name="artistFees"
-          label="Artist Fees"
-          placeholder="Artist Fees"
-          InputLabelProps={{ shrink: true }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                  {methods.getValues('currency')}
-                </Box>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Stack>
+      )}
     </Card>
   );
+
   const InventoryandShiping = (
     <Card>
       <CardHeader title="Inventory and Shipping" sx={{ mb: 3 }} />
@@ -993,6 +1275,23 @@ export function ArtworkAdd({ currentProduct }) {
           <Field.Text name="pCode" label="Product code" />
           <Field.Text name="location" label="Location" />
         </Box>
+        <Field.SingelSelect
+          name="packageMaterial"
+          label="Package Material"
+          options={packMaterial ? packMaterial : []}
+        />
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
+          <Field.Text name="packageHeight" label="Package Height (in cm)" />
+          <Field.Text name="packageWidth" label="Package Width (in cm)" />
+          <Field.Text name="packageLength" label="Package Depth (in cm)" />
+        </Box>
+        <Field.Text name="packageWeight" label="Package Weight (in Kg)" />
+        <Field.Checkbox name="commingSoon" label="Comming Soon" />
       </Stack>
     </Card>
   );
@@ -1009,15 +1308,36 @@ export function ArtworkAdd({ currentProduct }) {
           label="Promotion"
           options={ARTWORK_PROMOTIONS_OPTIONS}
         />
-        <Field.SingelSelect
-          checkbox
-          name="promotionScore"
-          label="Promotion Score"
-          options={pArr ? pArr : []}
-        />
+        <Box>
+          <Typography gutterBottom>Promotion Score : {slide}</Typography>
+          {slide ? (
+            <Slider
+              name="promotionScore"
+              label="Promotion Score"
+              marks={marks}
+              defaultValue={slide}
+              size="medium"
+              getAriaValueText={(val) => valuetext(val)}
+              aria-label="Promotion Score"
+              valueLabelDisplay="auto"
+            />
+          ) : (
+            <Slider
+              name="promotionScore"
+              label="Promotion Score"
+              marks={marks}
+              defaultValue={slide}
+              size="medium"
+              getAriaValueText={(val) => valuetext(val)}
+              aria-label="Promotion Score"
+              valueLabelDisplay="auto"
+            />
+          )}
+        </Box>
       </Stack>
     </Card>
   );
+
   const Restrictions = (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Restrictions" sx={{ mb: 3 }} />
@@ -1083,7 +1403,7 @@ export function ArtworkAdd({ currentProduct }) {
           </button>
         </div>
       </Stack>
-      {banDialogBox}
+      {addSeriesDialogBox}
     </Form>
   );
 }

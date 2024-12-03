@@ -166,7 +166,6 @@ export function OtherDetails({
   };
 
   const handleRemove = (index) => {
-    console.log(index);
     remove(index);
   };
 
@@ -240,7 +239,6 @@ export function OtherDetails({
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    console.log(index);
     const file = event.target.files?.[0];
     if (file) {
       methods.setValue(`documents[${index}].uploadDocs`, file);
@@ -248,7 +246,6 @@ export function OtherDetails({
   };
 
   const handleRemoveDocument = (index) => {
-    console.log(index);
     methods.setValue(`documents[${index}].uploadDocs`, null);
   };
 

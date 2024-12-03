@@ -82,7 +82,6 @@ export function CollectionTableRow({
             />
           </Stack>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.createdBy}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{tags(row?.artworkTags)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.status}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>

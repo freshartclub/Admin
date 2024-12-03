@@ -1,7 +1,15 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogContentText, DialogTitle, TableCell, TableRow } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -10,24 +18,19 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Papa from 'papaparse';
 import { useEffect, useMemo, useState } from 'react';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import {
   PRODUCT_ARTISTPLUS_OPTIONS,
   PRODUCT_CUSTOMORDER_OPTIONS,
   PRODUCT_PICKLIST_OPTIONS,
-  PRODUCT_PUBLISHINGCATALOG_OPTIONS,
 } from 'src/_mock';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
+import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
 import { useSearchParams } from 'src/routes/hooks';
 import { z as zod } from 'zod';
-import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { Dialog } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogActions } from '@mui/material';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
@@ -45,7 +48,10 @@ export const NewProductSchema = zod.object({
     .email({ message: 'Email must be a valid email address!' }),
   taxPhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
   taxBankIBAN: zod.string(),
-  vatAmount: zod.string().min(1, { message: 'Vat Amount is required!' }),
+  vatAmount: zod
+    .number()
+    .min(1, { message: 'Vat Amount is required!' })
+    .max(100, { message: 'Vat Amount cannot exceed 100%!' }),
   taxBankName: zod.string().min(1, { message: 'Bank Name is required!' }),
   CustomOrder: zod.string().min(1, { message: 'Custom Order is required!' }),
   PublishingCatalog: zod
@@ -156,7 +162,7 @@ export function Invoice({
       taxEmail: artistFormData?.taxEmail || value ? artistFormData?.email : '',
       taxPhone: artistFormData?.taxPhone || value ? artistFormData?.phone : '',
       taxBankIBAN: artistFormData?.taxBankIBAN || '',
-      vatAmount: artistFormData?.vatAmount || '',
+      vatAmount: artistFormData?.vatAmount || 0,
       taxBankName: artistFormData?.taxBankName || '',
       CustomOrder: artistFormData?.CustomOrder || 'No',
       artistLevel: artistFormData?.artistLevel || '',
@@ -349,6 +355,7 @@ export function Invoice({
             name="vatAmount"
             placeholder="0.00 %"
             label="Tax VAT amount"
+            type="number"
           />
         </Box>
 

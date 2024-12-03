@@ -63,7 +63,7 @@ export function ListArtists() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artist Id/Name..."
+          placeholder="Search By Artist Id, Name or Email..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

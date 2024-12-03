@@ -212,9 +212,11 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
                 {name(row)}
               </Link>
-              <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.email}
-              </Box>
+              <a href={`mailto:${row.email}`}>
+                <Box component="span" sx={{ color: 'text.disabled' }}>
+                  {row?.email}
+                </Box>
+              </a>
             </Stack>
           </Stack>
         </TableCell>

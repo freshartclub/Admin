@@ -31,12 +31,11 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'collectionName', label: 'Colletion Name', width: 140 },
-  { id: 'createdBy', label: 'Created By', width: 140 },
-  { id: 'artworkTags', label: 'Artwork Tags', width: 200 },
-  { id: 'status', label: 'Status', width: 100 },
-  { id: 'createdAt', label: 'Created At', width: 140 },
-  { id: 'actions', label: 'Actions', wdith: 80 },
+  { id: 'collectionName', label: 'Colletion Name' },
+  { id: 'artworkTags', label: 'Artwork Tags' },
+  { id: 'status', label: 'Status' },
+  { id: 'createdAt', label: 'Created At' },
+  { id: 'actions', label: 'Actions' },
 ];
 
 // ----------------------------------------------------------------------
@@ -78,7 +77,7 @@ export function CollectionListView() {
           <TextField
             fullWidth
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search By Collection Name..."
+            placeholder="Search By Collection Name, Artwork Tags & Created By..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

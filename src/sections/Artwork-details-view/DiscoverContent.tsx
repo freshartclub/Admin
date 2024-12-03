@@ -89,13 +89,6 @@ const DiscoverContent = ({ data, preview }) => {
         </P>
       </div>
 
-      {/* <P
-        variant={{ size: 'base', theme: 'dark', weight: 'normal' }}
-        className="lg:mt-2 mt-1 text-[14px]"
-      >
-        Newyork, USA
-      </P> */}
-
       <P
         variant={{ size: 'base', theme: 'dark', weight: 'normal' }}
         className="lg:my-4 my-2 text-[14px] text-[#999999]"
@@ -186,7 +179,7 @@ const DiscoverContent = ({ data, preview }) => {
         <div className="flex flex-wrap w-full justify-between">
           <div className="flex gap-1">
             <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-              Code :
+              Product Code :
             </P>
             <P
               variant={{ size: 'small', weight: 'medium' }}
@@ -204,17 +197,6 @@ const DiscoverContent = ({ data, preview }) => {
               className="capitalize text-[#999999] text-[14px]"
             >
               {data?.discipline?.artworkDiscipline}
-            </P>
-          </div>
-          <div className="flex gap-1">
-            <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">
-              Tags :
-            </P>
-            <P
-              variant={{ size: 'small', weight: 'medium' }}
-              className="capitalize text-[#999999] text-[14px]"
-            >
-              {tags(data?.discipline?.artworkTags)}
             </P>
           </div>
         </div>

@@ -90,11 +90,10 @@ export function CatalogTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{viewArtworkList(row?.artworkList)}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.subPlan}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.subPlan ? row?.subPlan.join(', ') : 'N/A'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

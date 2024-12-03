@@ -20,23 +20,22 @@ const ProductInfo = ({ data, preview }) => {
           <Tab>Description</Tab>
           <Tab>Additional Information</Tab>
           <Tab>Commercialization</Tab>
-          <Tab>Pricing & Shipping</Tab>
+          <Tab>Pricing</Tab>
+          <Tab>Inventory & Shipping</Tab>
           <Tab>More Details</Tab>
         </TabList>
 
         <TabPanel>
           <div className="flex gap-8 justify-between my-5">
             <div className={`${!preview ? 'w-[75%]' : 'w-[100%]]'}`}>
-              <P variant={{ size: 'small', weight: 'semiBold' }} className="text-[#999999]">
+              {/* <P variant={{ size: 'small', weight: 'semiBold' }} className="text-[#999999]">
                 Product information
-              </P>
+              </P> */}
               <Header
                 variant={{ size: 'xl', theme: 'dark', weight: 'medium' }}
                 className="my-5 mt-3"
               >
-                This print from our famous painters and artists posters series, from the mind of
-                Seven Wall Art, with black, and with vertical layout. Animal prints let you show
-                your wild side through your wall decoration. A modern touch for your home.
+                Product information
               </Header>
               <P
                 variant={{ size: 'base', theme: 'dark', weight: 'medium' }}
@@ -108,10 +107,10 @@ const ProductInfo = ({ data, preview }) => {
                 />
                 <PreviewData head="Artwork Technic" val={data?.additionalInfo?.artworkTechnic} />
                 <PreviewData head="Artwork Theme" val={data?.additionalInfo?.artworkTheme} />
-                <PreviewData head="Artwork Length" val={data?.additionalInfo?.length} />
-                <PreviewData head="Artwork Width" val={data?.additionalInfo?.width} />
-                <PreviewData head="Artwork Height" val={data?.additionalInfo?.height} />
-                <PreviewData head="Artwork Weight" val={data?.additionalInfo?.weight} />
+                <PreviewData head="Artwork Depth" val={data?.additionalInfo?.length + ' cm'} />
+                <PreviewData head="Artwork Width" val={data?.additionalInfo?.width + ' cm'} />
+                <PreviewData head="Artwork Height" val={data?.additionalInfo?.height + ' cm'} />
+                <PreviewData head="Artwork Weight" val={data?.additionalInfo?.weight + ' kg'} />
                 <PreviewData
                   head="Hanging Available"
                   val={data?.additionalInfo?.hangingAvailable}
@@ -120,9 +119,9 @@ const ProductInfo = ({ data, preview }) => {
 
               <div>
                 <PreviewData head="Framed" val={data?.additionalInfo?.framed} />
-                <PreviewData head="Frame Length" val={data?.additionalInfo?.frameLength} />
-                <PreviewData head="Frame Width" val={data?.additionalInfo?.frameWidth} />
-                <PreviewData head="Frame Height" val={data?.additionalInfo?.frameHeight} />
+                <PreviewData head="Frame Depth" val={data?.additionalInfo?.frameLength + ' cm'} />
+                <PreviewData head="Frame Width" val={data?.additionalInfo?.frameWidth + ' cm'} />
+                <PreviewData head="Frame Height" val={data?.additionalInfo?.frameHeight + ' cm'} />
                 <PreviewData head="Artwork Material" val={data?.additionalInfo?.material} />
                 <PreviewData
                   head="Artwork Style"
@@ -156,18 +155,11 @@ const ProductInfo = ({ data, preview }) => {
             />
             {data?.commercialization?.activeTab === 'purchase' ? (
               <>
-                <PreviewData head="Offer Price" val={data?.commercialization?.acceptOfferPrice} />
-                <PreviewData
-                  head="Artist Base Fees"
-                  val={data?.commercialization?.artistbaseFees}
-                />
-                <PreviewData head="Downward Offer" val={data?.commercialization?.downwardOffer} />
-                <PreviewData head="Price Request" val={data?.commercialization?.priceRequest} />
                 <PreviewData
                   head="Purchase Catalog"
                   val={data?.commercialization?.purchaseCatalog}
                 />
-                <PreviewData head="Upwork Offer" val={data?.commercialization?.upworkOffer} />
+                <PreviewData head="Purchase Type" val={data?.commercialization?.purchaseType} />
               </>
             ) : (
               <>
@@ -182,12 +174,50 @@ const ProductInfo = ({ data, preview }) => {
         </TabPanel>
         <TabPanel>
           <div className="flex flex-col my-5">
+            {data?.pricing?.basePrice && (
+              <PreviewData
+                head="Base Price"
+                val={data?.pricing?.currency + ' ' + data?.pricing?.basePrice}
+              />
+            )}
+            {data?.pricing?.artistFees && (
+              <PreviewData
+                head="Artist Fees"
+                val={data?.pricing?.currency + ' ' + data?.pricing?.artistFees}
+              />
+            )}
+            {data?.pricing?.acceptOfferPrice && (
+              <PreviewData
+                head="Accept Offer Price"
+                val={data?.pricing?.currency + ' ' + data?.pricing?.acceptOfferPrice}
+              />
+            )}
+            <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
+            <PreviewData
+              head="Vat Amount"
+              val={data?.pricing?.currency + ' ' + data?.pricing?.vatAmount}
+            />
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <div className="flex flex-col my-5">
             <PreviewData head="Location" val={data?.inventoryShipping?.location} />
             <PreviewData head="Product Code" val={data?.inventoryShipping?.pCode} />
-            <PreviewData head="Artist Fees" val={'$ ' + data?.pricing?.artistFees} />
-            <PreviewData head="Base Price" val={'$ ' + data?.pricing?.basePrice} />
-            <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
-            <PreviewData head="Vat Amount" val={'$ ' + data?.pricing?.vatAmount} />
+            <PreviewData head="Package Material" val={data?.inventoryShipping?.packageMaterial} />
+            <PreviewData
+              head="Package Depth"
+              val={data?.inventoryShipping?.packageLength + ' cm'}
+            />
+            <PreviewData
+              head="Package Height"
+              val={data?.inventoryShipping?.packageHeight + ' cm'}
+            />
+            <PreviewData head="Package Width" val={data?.inventoryShipping?.packageWidth + ' cm'} />
+            <PreviewData
+              head="Package Weight"
+              val={data?.inventoryShipping?.packageWeight + ' kg'}
+            />
+            <PreviewData head="Comming Soon" val={String(data?.inventoryShipping?.commingSoon)} />
           </div>
         </TabPanel>
         <TabPanel>
@@ -197,6 +227,11 @@ const ProductInfo = ({ data, preview }) => {
             <PreviewData head="Promotion Score" val={data?.promotions?.promotionScore} />
             <PreviewData head="Available To" val={data?.restriction?.availableTo} />
             <PreviewData head="Discount Acceptance" val={data?.restriction?.discountAcceptation} />
+            <PreviewData
+              head="Externel Tags"
+              val={mapData(data?.tags?.extTags)}
+            />
+            <PreviewData head="Internal Tags" val={mapData(data?.tags?.intTags)} />
           </div>
         </TabPanel>
       </Tabs>

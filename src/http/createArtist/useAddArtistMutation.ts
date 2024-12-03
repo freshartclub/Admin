@@ -38,10 +38,8 @@ const useAddArtistMutation = (handleOnSuccess) => {
           body[key].forEach((item) => {
             if (typeof item === 'object') {
               Object.keys(item).forEach((field, i) => {
-                console.log(i);
                 formData.append(field, item[field]);
                 if (item[field] instanceof File) {
-                  console.log(i);
                   formData.append(field, `${i}`);
                 }
               });

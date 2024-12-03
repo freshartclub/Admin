@@ -78,15 +78,15 @@ export function AddCollectionForm() {
     () => ({
       collectionName: data?.data?.collectionName || '',
       collectionDesc: data?.data?.collectionDesc || '',
-      createdBy: data?.data?.createdBy || '',
       artworkList: data?.data?.artworkList || [
         { artwork: '', artworkDesc: '', pCode: '', artworkId: '' },
       ],
       expertDesc: data?.data?.expertDetails?.expertDesc || '',
       expertImg: data?.data?.expertDetails?.expertImg || null,
+      createdBy: data?.data?.expertDetails?.createdBy || '',
       collectionFile: data?.data?.collectionFile || null,
       artworkTags: data?.data?.artworkTags || [],
-      status: data?.data?.status || '',
+      status: data?.data?.status || 'Draft',
     }),
     [data?.data]
   );
@@ -113,7 +113,6 @@ export function AddCollectionForm() {
       reset({
         collectionName: data?.data?.collectionName || '',
         collectionDesc: data?.data?.collectionDesc || '',
-        createdBy: data?.data?.createdBy || '',
         artworkList:
           data?.data?.artworkList.map((item) => ({
             artwork: item?.artworkId?.artworkName,
@@ -123,9 +122,10 @@ export function AddCollectionForm() {
           })) || [],
         expertDesc: data?.data?.expertDetails?.expertDesc || '',
         expertImg: `${data?.url}/users/${data?.data?.expertDetails?.expertImg}` || null,
+        createdBy: data?.data?.expertDetails?.createdBy || '',
         collectionFile: data?.data?.collectionFile || null,
         artworkTags: data?.data?.artworkTags || [],
-        status: data?.data?.status || '',
+        status: data?.data?.status || 'Draft',
       });
     }
   }, [data?.data, reset]);
@@ -233,14 +233,6 @@ export function AddCollectionForm() {
           <Typography variant="subtitle2">Collection Description</Typography>
           <Field.Editor name="collectionDesc" sx={{ maxHeight: 480 }} />
         </Stack>
-
-        <Field.SingelSelect
-          checkbox
-          name="createdBy"
-          label="Created By"
-          options={COLLECTION_CREATED_OPTIONS}
-        />
-
         <Stack>
           <div className="flex justify-end">
             <Button
@@ -304,7 +296,7 @@ export function AddCollectionForm() {
                                   disableTypography
                                   primary={
                                     <Typography variant="body2" noWrap>
-                                      {i?.artworkName}
+                                      {i?.artworkName} - {i?.artworkId}
                                     </Typography>
                                   }
                                   secondary={
@@ -369,7 +361,7 @@ export function AddCollectionForm() {
             }
           />
         </div>
-
+        <Field.Text required name="createdBy" label="Created By" />
         <Field.Text name="expertDesc" label="Experts Description" multiline rows={4} />
       </Stack>
     </Card>
@@ -476,7 +468,7 @@ export function AddCollectionForm() {
 
   const exclusive = (
     <Card>
-      <CardHeader title="Status of Collections" sx={{ mb: 1 }} />
+      <CardHeader title="Status" sx={{ mb: 1 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
