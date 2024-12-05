@@ -42,7 +42,7 @@ export function AllArtist() {
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 1000);
 
   const { data, isLoading } = useGetArtistList(debounceSearch);
 
@@ -65,25 +65,20 @@ export function AllArtist() {
 
   return (
     <>
-      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
-        <TextField
-          fullWidth
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artist Id, Name or Email..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
-          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
-            <Iconify icon="mingcute:add-line" /> Create Artist
-          </span>
-        </RouterLink>
-      </Stack>
+      <TextField
+        fullWidth
+        sx={{ mb: 2 }}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By Artist Id, Name or Email..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+
       {isLoading ? (
         <LoadingScreen />
       ) : (
@@ -94,15 +89,7 @@ export function AllArtist() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
 
               <TableBody>

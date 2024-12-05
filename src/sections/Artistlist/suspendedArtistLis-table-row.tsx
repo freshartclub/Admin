@@ -1,7 +1,12 @@
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
@@ -54,11 +59,7 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Stack
@@ -75,7 +76,9 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.phone ? phoneNo(row?.phone) : 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.phone ? phoneNo(row?.phone) : 'N/A'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>

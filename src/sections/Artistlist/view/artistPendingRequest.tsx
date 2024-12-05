@@ -86,15 +86,7 @@ export function ArtistsPendingRequest() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered

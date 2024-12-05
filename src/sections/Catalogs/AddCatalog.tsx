@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
@@ -43,7 +43,6 @@ export const NewPostSchema = zod.object({
     .number()
     .min(1, { message: 'Default Artist Fee is required!' })
     .max(100, { message: 'Default Artist Fee cannot exceed 100!' }),
-
   artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   subPlan: zod.string().array().min(1, { message: 'Plan is required!' }),
   exclusiveCatalog: zod.boolean(),
@@ -147,9 +146,9 @@ export function AddCatalogForm() {
     }
   });
 
-  const handleRemoveImg = useCallback(() => {
+  const handleRemoveImg = () => {
     setValue('catalogImg', null);
-  }, [setValue]);
+  };
 
   const refillData = (item) => {
     const currentArtworkList = methods.getValues('artworkList') || [];

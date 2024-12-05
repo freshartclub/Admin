@@ -33,11 +33,11 @@ export function CredentialAreaList() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 800);
+  const debounceSearch = useDebounce(search, 1000);
   const [_list, setList] = useState([]);
   const [url, setUrl] = useState('');
 
-  const { data, isLoading, } = useGetInsigniaList(debounceSearch);
+  const { data, isLoading } = useGetInsigniaList(debounceSearch);
 
   useEffect(() => {
     if (data?.data) {
@@ -52,8 +52,8 @@ export function CredentialAreaList() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => { };
-  const handleEditRow = (id: string) => { };
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return (
     <div>
@@ -83,7 +83,7 @@ export function CredentialAreaList() {
         sx={{ mb: 2 }}
         fullWidth
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search By Insignia Name..."
+        placeholder="Search By Insignia Name/Group..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -102,15 +102,7 @@ export function CredentialAreaList() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered

@@ -56,19 +56,17 @@ export function ListAllPicklist() {
   const handleDeleteRow = (id: string) => {};
   const handleEditRow = (id: string) => {};
 
-  if (isLoading) return <LoadingScreen />;
-
   return (
-    <div>
+    <>
       <CustomBreadcrumbs
         heading="All Picklists"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Picklists' }]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
         action={
           <div className="flex gap-2">
             <RouterLink href={`${paths.dashboard.category.picklist.add}`}>
               <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Add Picklist
+                <Iconify icon="mingcute:add-line" /> Add Picklist Item
               </span>
             </RouterLink>
             <RouterLink href={`#`}>
@@ -79,6 +77,7 @@ export function ListAllPicklist() {
           </div>
         }
       />
+
       <FormControl sx={{ flexShrink: 0, width: 300, mb: 2 }}>
         <InputLabel htmlFor="Picklist">Select Picklist</InputLabel>
 
@@ -98,6 +97,7 @@ export function ListAllPicklist() {
             ))}
         </Select>
       </FormControl>
+
       {isLoading ? (
         <LoadingScreen />
       ) : (
@@ -108,15 +108,7 @@ export function ListAllPicklist() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered.map((row) => (
@@ -140,7 +132,7 @@ export function ListAllPicklist() {
           </Scrollbar>
         </Card>
       )}
-    </div>
+    </>
   );
 }
 

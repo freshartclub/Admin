@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -12,6 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import useDeletePicklist from './http/useDeletePicklist';
 
 // ----------------------------------------------------------------------
 
@@ -33,32 +33,28 @@ export function PicklistTableRow({
   onDeleteRow,
 }: Props) {
   const navigate = useNavigate();
+  console.log(row, _id);
+  const { mutateAsync, isPending } = useDeletePicklist(_id, row?.name);
 
   const confirm = useBoolean();
   const popover = usePopover();
 
   const deleteStyle = () => {
-    popover.onClose();
-    confirm.onFalse();
+    mutateAsync().then(() => {
+      popover.onClose();
+      confirm.onFalse();
+    });
   };
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.name}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <span
-            className={`w-fit flex items-center rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
-          >
-            {row?.isDeleted ? 'Inactive' : 'Active'}
+          <span className="w-fit flex items-center rounded-2xl px-2 py-1 bg-[#E7F4EE] text-[#0D894F]">
+            Active
           </span>
         </TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -73,18 +69,16 @@ export function PicklistTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {/* {row?.isDeleted ? null : (
-            <MenuItem
-              onClick={() => {
-                confirm.onTrue();
-                popover.onClose();
-              }}
-              sx={{ color: 'error.main' }}
-            >
-              <Iconify icon="solar:trash-bin-trash-bold" />
-              Delete
-            </MenuItem>
-          )} */}
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
 
           <MenuItem
             onClick={() =>
@@ -101,10 +95,10 @@ export function PicklistTableRow({
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content="Are you sure want to delete?"
+        content="Are you sure want to delete this picklist item?"
         action={
           <Button variant="contained" color="error" onClick={deleteStyle}>
-            Delete
+            {isPending ? 'Deleting...' : 'Delete'}
           </Button>
         }
       />

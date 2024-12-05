@@ -12,7 +12,7 @@ import {
   TableHeadCustom,
   TableNoData,
   TablePaginationCustom,
-  useTable
+  useTable,
 } from 'src/components/table';
 import { paths } from 'src/routes/paths';
 import { AllIncidentList } from './AllIncidentList';
@@ -47,17 +47,14 @@ export function AllIncidentView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => { };
-  const handleEditRow = (id: string) => { };
+  const handleDeleteRow = (id: string) => {};
+  const handleEditRow = (id: string) => {};
 
   return (
     <>
       <CustomBreadcrumbs
         heading="All Incident List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Incident List' },
-        ]}
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Incident List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
       {isLoading ? (
@@ -70,15 +67,7 @@ export function AllIncidentView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered
@@ -117,7 +106,7 @@ export function AllIncidentView() {
         </Card>
       )}
     </>
-  )
+  );
 }
 
 type ApplyFilterProps = {

@@ -1,7 +1,6 @@
 import { Dialog, DialogActions, IconButton, Link } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -10,19 +9,14 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 
+import { DialogContent, DialogContentText, DialogTitle, MenuItem, MenuList } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
-import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 import { phoneNo } from 'src/utils/change-case';
 import { fDate } from 'src/utils/format-time';
-import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 import { useChnagePassword } from './http/useChnagePassword';
-import { DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogContentText } from '@mui/material';
-import { MenuList } from '@mui/material';
-import { MenuItem } from '@mui/material';
+import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 
 // ----------------------------------------------------------------------
 
@@ -188,11 +182,7 @@ export function ListArtist({ row, url, selected, onEditRow, onSelectRow, onDelet
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />
@@ -218,12 +208,6 @@ export function ListArtist({ row, url, selected, onEditRow, onSelectRow, onDelet
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
-
-        {/* <TableCell>
-          <RouterLink href={`${paths.dashboard.artist.addArtist}?id=${row._id}&view=true`}>
-            <Iconify icon="mdi:eye-outline" />
-          </RouterLink>
-        </TableCell> */}
         <TableCell>
           <Stack direction="row" alignItems="center">
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

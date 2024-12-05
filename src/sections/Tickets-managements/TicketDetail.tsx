@@ -16,6 +16,7 @@ import { useGetTicketReply } from './http/useGetTicketReply';
 import { Iconify } from 'src/components/iconify';
 import { MenuItem } from '@mui/material';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { FileThumbnail } from 'src/components/file-thumbnail';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -35,12 +36,12 @@ export function TicketDetailView() {
   const popover = usePopover();
   const defaultValues = useMemo(
     () => ({
-      email: data?.user?.email || '',
-      ticketType: data?.ticketType || '',
-      status: data?.status || '',
+      email: data?.data?.user?.email || '',
+      ticketType: data?.data?.ticketType || '',
+      status: data?.data?.status || '',
       message: '',
     }),
-    [data]
+    [data?.data]
   );
 
   const methods = useForm<NewPostSchemaType>({
@@ -51,15 +52,15 @@ export function TicketDetailView() {
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
-    if (data) {
+    if (data?.data) {
       reset({
-        email: data?.user?.email || '',
-        ticketType: data?.ticketType || '',
-        status: data?.status || '',
+        email: data?.data?.user?.email || '',
+        ticketType: data?.data?.ticketType || '',
+        status: data?.data?.status || '',
         message: '',
       });
     }
-  }, [data, reset]);
+  }, [data?.data, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -118,7 +119,7 @@ export function TicketDetailView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ticket List', href: paths.dashboard.tickets.allList },
-          { name: 'Ticket' },
+          { name: `Ticket Detail - ${data?.data?.ticketId}` },
         ]}
         sx={{ mb: 3 }}
       />
@@ -126,9 +127,9 @@ export function TicketDetailView() {
         <Stack mb={3} direction="row" alignItems="center" justifyContent="space-between">
           <div className="flex gap-4">
             <span
-              className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.status === 'Created' ? 'bg-[#F8A534]' : data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
+              className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.data?.status === 'Created' ? 'bg-[#F8A534]' : data?.data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
             ></span>
-            <h2 className="text-[16px] text-black font-bold">{data?.ticketId}</h2>
+            <h2 className="text-[16px] text-black font-bold">{data?.data?.ticketId}</h2>
             <span
               onClick={popover.onOpen}
               className="bg-green-500 text-white rounded-sm px-1 pr-2 flex items-center cursor-pointer"
@@ -144,31 +145,53 @@ export function TicketDetailView() {
               <MenuList>
                 <MenuItem>
                   <Iconify icon="tabler:urgent" />
-                  Urgency - {data?.urgency}
+                  Urgency - {data?.data?.urgency}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="flat-color-icons:high-priority" />
-                  Priority - {data?.priority}
+                  Priority - {data?.data?.priority}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="game-icons:gooey-impact" />
-                  Impact - {data?.impact}
+                  Impact - {data?.data?.impact}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="gridicons:status" />
-                  Status - {data?.status}
+                  Status - {data?.data?.status}
                 </MenuItem>
               </MenuList>
             </CustomPopover>
           </div>
 
           <span className="text-[14px] flex items-center gap-3">
-            <span>{fDate(data?.createdAt)}</span> {fTime(data?.createdAt)}
+            <span>{fDate(data?.data?.createdAt)}</span> {fTime(data?.data?.createdAt)}
           </span>
         </Stack>
         <Stack spacing={1}>
-          <h2 className="text-black text-[18px] font-bold">{data?.subject}</h2>
-          <p className="text-[#84818A]">{data?.message}</p>
+          <h2 className="text-black text-[18px] font-bold">{data?.data?.subject}</h2>
+          <p className="text-[#84818A]">{data?.data?.message}</p>
+          {data?.data?.ticketImg && (
+            <span className="flex bg-slate-100 p-2 rounded-md items-center gap-2">
+              <p className="text-[#3d3d3d]">View Attached File</p> -
+              {data?.data?.ticketImg.includes('.pdf') || data?.data?.ticketImg.includes('.docx') ? (
+                <FileThumbnail
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    window.open(`${data?.url}/documents/${data?.data?.ticketImg}`, '_blank')
+                  }
+                  file={data?.data?.ticketImg}
+                />
+              ) : (
+                <FileThumbnail
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    window.open(`${data?.url}/users/${data?.data?.ticketImg}`, '_blank')
+                  }
+                  file={data?.data?.ticketImg}
+                />
+              )}
+            </span>
+          )}
         </Stack>
         <Box className="p-5">
           <div className="max-h-[50vh] overflow-y-scroll">
@@ -188,8 +211,8 @@ export function TicketDetailView() {
                       <span>
                         {reply?.userType === 'user' ? (
                           <>
-                            {`${name(data?.user)} wrote `}
-                            <span className="text-[#858585]">({data?.user?.email})</span> :
+                            {`${name(data?.data?.user)} wrote `}
+                            <span className="text-[#858585]">({data?.data?.user?.email})</span> :
                           </>
                         ) : (
                           <>

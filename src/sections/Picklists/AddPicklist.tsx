@@ -25,7 +25,6 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 export const NewProductSchema = zod.object({
   picklistName: zod.string().min(1, { message: 'Picklist Name is required!' }),
   name: zod.string().min(1, { message: 'Name is required!' }),
-  isDeleted: zod.boolean(),
 });
 
 // ----------------------------------------------------------------------
@@ -44,7 +43,6 @@ export function AddPicklist() {
     () => ({
       picklistName: picklistData?.picklistName || '',
       name: picklistData?.name || '',
-      isDeleted: picklistData?.isDeleted || false,
     }),
     [picklistData]
   );
@@ -67,7 +65,6 @@ export function AddPicklist() {
       reset({
         name: picklistData?.name || '',
         picklistName: picklistData?.picklistName || '',
-        isDeleted: picklistData?.isDeleted || false,
       });
     }
   }, [picklistData, reset]);
@@ -83,17 +80,6 @@ export function AddPicklist() {
       console.error(error);
     }
   });
-
-  const optionsIn = [
-    {
-      label: 'Active',
-      value: false,
-    },
-    {
-      label: 'Inactive',
-      value: true,
-    },
-  ];
 
   if (isLoading) return <LoadingScreen />;
 
@@ -139,16 +125,7 @@ export function AddPicklist() {
             required
             helperText="Name of the field which will go inside the Picklist"
             name="name"
-            label="Field Name"
-          />
-
-          <Field.SingelSelect
-            helperText="Select if this field should be active or not"
-            required
-            sx={{ width: 1 }}
-            options={optionsIn}
-            name="isDeleted"
-            label="Status"
+            label="Item List Name"
           />
         </Box>
       </Stack>
@@ -163,11 +140,11 @@ export function AddPicklist() {
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: `${id ? 'Edit' : 'Add'} Picklist` },
         ]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
       <Form methods={methods} onSubmit={onSubmit}>
         {renderDetails}
-        <Stack spacing={{ xs: 3, md: 5 }}>
+        <Stack spacing={{ xs: 3, md: 3 }}>
           <div className="flex justify-end gap-2">
             <span
               onClick={() => navigate(paths.dashboard.category.picklist.list)}

@@ -1,7 +1,7 @@
 import type { IPostItem } from 'src/types/blog';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Avatar, Link, ListItemText, TableCell, TableRow } from '@mui/material';
+import { Avatar, CardHeader, Link, ListItemText, TableCell, TableRow } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -16,13 +16,14 @@ import {
   TICKET_TYPE_OPTIONS,
 } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Field, Form } from 'src/components/hook-form';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
 import useAddTicketMutation from './http/useAddTicketMutation';
 import { useGetUesrByQueryInput } from './http/useGetUserMutation';
 import { useNavigate } from 'react-router';
+import { Divider } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export const NewPostSchema = zod.object({
   priority: zod.string().min(1, { message: 'Priority is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),
   impact: zod.string().min(1, { message: 'Impact is required!' }),
+  ticketImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
   id: zod.string().optional(),
 });
 
@@ -51,7 +53,7 @@ export function AddTicket({ currentPost }: Props) {
   const [open, setOpen] = useState(true);
   const [id, setId] = useState('');
   const { mutate, isPending } = useAddTicketMutation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const defaultValues = useMemo(
     () => ({
@@ -65,37 +67,21 @@ export function AddTicket({ currentPost }: Props) {
       priority: currentPost?.priority || '',
       status: currentPost?.status || '',
       id: currentPost?._id || '',
+      ticketImg: currentPost?.ticketImg || null,
     }),
     [currentPost]
   );
 
   const methods = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit
-  } = methods;
-
-  const debounceUserInput = useDebounce(methods.getValues('userId'), 500);
-
-  const {
-    refetch,
-    data: artistData,
-  } = useGetUesrByQueryInput(debounceUserInput);
-
+  const { watch, setValue, handleSubmit } = methods;
   const values = watch();
 
-  useEffect(() => {
-    if (currentPost) {
-      reset(defaultValues);
-    }
-  }, [currentPost, defaultValues, reset]);
+  const debounceUserInput = useDebounce(methods.getValues('userId'), 1000);
+  const { refetch, data: artistData } = useGetUesrByQueryInput(debounceUserInput);
 
   useEffect(() => {
     if (methods.getValues('userId') !== '') {
@@ -106,7 +92,20 @@ export function AddTicket({ currentPost }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       data.id = id;
-      await mutate(data);
+
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key].forEach((item) => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      await mutate(formData);
     } catch (error) {
       console.error(error);
     }
@@ -126,6 +125,10 @@ export function AddTicket({ currentPost }: Props) {
     setId(artistData?._id);
     setValue('artistName', name(artistData));
     setOpen(false);
+  };
+
+  const handleRemoveImg = () => {
+    setValue('ticketImg', null);
   };
 
   const renderDetails = (
@@ -163,11 +166,7 @@ export function AddTicket({ currentPost }: Props) {
                           </Typography>
                         }
                         secondary={
-                          <Link
-                            noWrap
-                            variant="body2"
-                            sx={{ color: 'text.disabled' }}
-                          >
+                          <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
                             {i?.email}
                           </Link>
                         }
@@ -209,12 +208,7 @@ export function AddTicket({ currentPost }: Props) {
             label="Urgency"
             options={INC_URGENCY_OPTIONS}
           />
-          <Field.SingelSelect
-            required
-            name="impact"
-            label="Impact"
-            options={INC_IMPACT_OPTIONS}
-          />
+          <Field.SingelSelect required name="impact" label="Impact" options={INC_IMPACT_OPTIONS} />
           <Field.SingelSelect
             required
             name="priority"
@@ -229,6 +223,21 @@ export function AddTicket({ currentPost }: Props) {
     </Card>
   );
 
+  const renderImage = (
+    <Card sx={{ mb: 2 }}>
+      <CardHeader title="Add File (Image/Document) *" sx={{ mb: 2 }} />
+      <Divider />
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Upload
+          accept="image/*"
+          name="ticketImg"
+          maxSize={3145728}
+          onDelete={handleRemoveImg}
+        />
+      </Stack>
+    </Card>
+  );
+
   return (
     <div>
       <CustomBreadcrumbs
@@ -239,14 +248,22 @@ export function AddTicket({ currentPost }: Props) {
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={3}>
-          {renderDetails}
-          <div className="flex flex-row justify-end gap-3 mt-8">
-            <span onClick={() => navigate(paths.dashboard.tickets.allList)} className="bg-white text-black border py-2 px-3 cursor-pointer rounded-md">
-              Cancel
-            </span>
-            <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-              {isPending ? 'Saving...' : 'Add Ticket'}
-            </button>
+          <div className="grid grid-cols-3  gap-3">
+            <div className="col-span-1">{renderImage}</div>
+            <div className="col-span-2">
+              {renderDetails}
+              <div className="flex flex-row justify-end gap-3 mt-8">
+                <span
+                  onClick={() => navigate(paths.dashboard.tickets.allList)}
+                  className="bg-white text-black border py-2 px-3 cursor-pointer rounded-md"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Saving...' : 'Add Ticket'}
+                </button>
+              </div>
+            </div>
           </div>
         </Stack>
       </Form>

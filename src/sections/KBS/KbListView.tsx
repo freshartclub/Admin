@@ -1,16 +1,21 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import { useEffect, useState } from 'react';
+import {
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { RouterLink } from 'src/routes/components';
-import { paths } from 'src/routes/paths';
-import { FAQ_GROUP_OPTIONS } from 'src/_mock';
-import { DashboardContent } from 'src/layouts/dashboard';
+import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   emptyRows,
@@ -19,11 +24,12 @@ import {
   TableHeadCustom,
   TableNoData,
   TablePaginationCustom,
-  useTable
+  useTable,
 } from 'src/components/table';
-import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import { LoadingScreen } from 'src/components/loading-screen';
+import { RouterLink } from 'src/routes/components';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { paths } from 'src/routes/paths';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import { KbTableRow } from './Kb-table-row';
 import { useGetAllKB } from './http/useGetAllKB';
 
@@ -32,7 +38,6 @@ import { useGetAllKB } from './http/useGetAllKB';
 const TABLE_HEAD = [
   { id: 'kbGrp', label: 'KB Group', width: 100 },
   { id: 'kbTitle', label: 'Title', width: 150 },
-  { id: 'kbDesc', label: 'Description', width: 200 },
   { id: 'tags', label: 'Tags', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 100 },
   { id: 'actions', label: 'Actions', width: 80 },
@@ -45,6 +50,7 @@ export function KbListView() {
   const [search, setSearch] = useState<string>('');
   const [grp, setGrp] = useState<string>('');
   const debounceSearch = useDebounce(search, 500);
+  const picklist = RenderAllPicklist('KB Group');
 
   const { data, isLoading } = useGetAllKB(debounceSearch, grp);
 
@@ -65,7 +71,7 @@ export function KbListView() {
   const handleViewRow = (id: string) => {};
 
   return (
-    <DashboardContent>
+    <>
       <CustomBreadcrumbs
         heading="KB List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'KB List' }]}
@@ -82,7 +88,7 @@ export function KbListView() {
         <TextField
           sx={{ width: '70%' }}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By KB Title..."
+          placeholder="Search By KB Title/Tags..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -103,11 +109,13 @@ export function KbListView() {
             <MenuItem key={'All'} value={'All'}>
               {'All'}
             </MenuItem>
-            {FAQ_GROUP_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
+            {picklist &&
+              picklist.length > 0 &&
+              picklist.map((option: any) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       </Stack>
@@ -122,15 +130,7 @@ export function KbListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row.id)
-                  )
-                }
               />
 
               <TableBody>
@@ -172,11 +172,9 @@ export function KbListView() {
           />
         </Card>
       )}
-    </DashboardContent>
+    </>
   );
 }
-
-// ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
   inputData: IInvoice[];

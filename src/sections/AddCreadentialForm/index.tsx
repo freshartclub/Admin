@@ -3,18 +3,19 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 import { fData } from 'src/utils/format-number';
 import { z as zod } from 'zod';
 import useAddInsigniaMutation from './http/useAddInsigniaMutation';
 import { useGetInsigniaById } from './http/useGetInsigniaById';
-import { useNavigate } from 'react-router';
-import { paths } from 'src/routes/paths';
-import { toast } from 'sonner';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ export function AddCreadentialForm() {
   const navigate = useNavigate();
 
   const { data, isLoading } = useGetInsigniaById(id);
+  const picklist = RenderAllPicklist('Insignia Group');
 
   const defaultValues = useMemo(
     () => ({
@@ -65,7 +67,7 @@ export function AddCreadentialForm() {
         credentialPriority: data?.data?.credentialPriority || '',
       });
     }
-  }, [data?.data, reset]);
+  }, [data?.data]);
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
@@ -102,9 +104,9 @@ export function AddCreadentialForm() {
     },
   ];
 
-  const handleRemoveFile = useCallback(() => {
+  const handleRemoveFile = () => {
     methods.setValue('insigniaImage', null);
-  }, [methods.setValue('insigniaImage')]);
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -129,7 +131,7 @@ export function AddCreadentialForm() {
                       color: 'text.disabled',
                     }}
                   >
-                    Allowed *.jpeg, *.jpg, *.png, *.gif
+                    Allowed *.jpeg, *.jpg, *.png
                     <br /> max size of {fData(3145728)}
                   </Typography>
                 }
@@ -147,7 +149,12 @@ export function AddCreadentialForm() {
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
             >
               <Field.Text required name="credentialName" label="Insignia Name" />
-              <Field.Text required name="credentialGroup" label="Insignia Group" />
+              <Field.SingelSelect
+                required
+                name="credentialGroup"
+                label="Insignia Group"
+                options={picklist ? picklist : []}
+              />
               <Field.Text required name="credentialPriority" label="Display Priority" />
               <Field.SingelSelect
                 helperText="Select if this credential should be active or not"

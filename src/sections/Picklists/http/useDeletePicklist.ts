@@ -1,24 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'src/components/snackbar';
-import { GENERAL_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { PICKLIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
-const useDeleteTechnicMutation = () => {
+const useDeletePicklist = (id, name) => {
   const queryClient = useQueryClient();
-
-  async function deleteTechnic(id) {
-    const response = await axiosInstance.patch(`${GENERAL_ENDPOINTS.deleteTechnic}/${id}`);
-    return response;
+  async function deletePicklist() {
+    return axiosInstance.patch(`${PICKLIST_ENDPOINTS.deletePicklist}/${id}?name=${name}`);
   }
 
   return useMutation({
-    mutationFn: deleteTechnic,
+    mutationFn: deletePicklist,
+
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [GENERAL_ENDPOINTS.getTechnic],
+        queryKey: [PICKLIST_ENDPOINTS.getPicklists],
         refetchType: 'all',
       });
-
       toast.success(res.data.message);
     },
 
@@ -28,4 +26,4 @@ const useDeleteTechnicMutation = () => {
   });
 };
 
-export default useDeleteTechnicMutation;
+export default useDeletePicklist;

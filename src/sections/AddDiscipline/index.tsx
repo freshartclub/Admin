@@ -24,7 +24,6 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 export const NewProductSchema = zod.object({
   disciplineImage: schemaHelper.file({ required: false }).optional(),
   name: zod.string().min(1, { message: 'Title is required!' }),
-  spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   description: zod.string().min(1, { message: 'Discription is required!' }),
   isDeleted: zod.boolean(),
 });
@@ -43,7 +42,6 @@ export function AddDisciline() {
       disciplineImage: data?.data?.disciplineImage || null,
       name: data?.data?.disciplineName || '',
       isDeleted: data?.data?.isDeleted || false,
-      spanishName: data?.data?.disciplineSpanishName || '',
       description: data?.data?.disciplineDescription || '',
     }),
     [data]
@@ -62,7 +60,6 @@ export function AddDisciline() {
         disciplineImage: `${data?.url}/users/${data?.data?.disciplineImage}` || null,
         name: data?.data?.disciplineName || '',
         isDeleted: data?.data?.isDeleted || false,
-        spanishName: data?.data?.disciplineSpanishName || '',
         description: data?.data?.disciplineDescription || '',
       });
     }
@@ -80,12 +77,12 @@ export function AddDisciline() {
       }
       const formData = new FormData();
 
-      if (typeof data.disciplineImage === 'string' && !data.disciplineImage.includes("https")) {
+      if (typeof data.disciplineImage === 'string' && !data.disciplineImage.includes('https')) {
         formData.append('disciplineImage', data.disciplineImage);
       } else if (data.disciplineImage instanceof File) {
         formData.append('disciplineImage', data.disciplineImage);
       }
-      
+
       formData.append('name', data.name);
       formData.append('spanishName', data.spanishName);
       formData.append('description', data.description);
@@ -125,7 +122,6 @@ export function AddDisciline() {
           />
           <div className="form flex gap-2 flex-col w-full">
             <Field.Text required name="name" label="Title" />
-            <Field.Text required name="spanishName" label="Spanish Title" />
             <Field.Text required name="description" label="Description" multiline rows={3} />
             <Field.SingelSelect
               helperText="Select if this discipline should be active or not"

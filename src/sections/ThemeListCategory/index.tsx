@@ -24,7 +24,6 @@ import { InputAdornment } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'themeName', label: 'Theme Name', width: 150 },
-  { id: 'spanishThemeName', label: 'Spanish Name', width: 150 },
   { id: 'discipline', label: 'Discipline Name', width: 220 },
   { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 100 },
@@ -99,15 +98,7 @@ export function ThemeListCategory() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered.map((row) => (

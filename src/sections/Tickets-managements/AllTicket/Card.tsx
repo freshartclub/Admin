@@ -1,16 +1,32 @@
 import { paths } from 'src/routes/paths';
 import { useNavigate } from 'react-router';
 import { fDate } from 'src/utils/format-time';
+import { Avatar } from '@mui/material';
+import { Stack } from '@mui/material';
+import { Box } from '@mui/material';
+import { Link } from '@mui/material';
+import { RouterLink } from 'src/routes/components';
+import { Iconify } from 'src/components/iconify';
 
-export function TicketCartd({ data }) {
+export function TicketCartd({ url, data }) {
   const navigate = useNavigate();
 
   const hendleTicketDetail = (data: any) => {
     navigate(`${paths.dashboard.tickets.singleList}?id=${data?._id}`, { state: { data } });
   };
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   return (
-    <div className="p-5 border rounded-md mb-4">
+    <div className="p-5 pb-2 border rounded-md mb-4">
       <div className="flex justify-between gap-4 pb-5">
         <div className="flex gap-4">
           <div
@@ -25,25 +41,28 @@ export function TicketCartd({ data }) {
         </div>
       </div>
       <h4 className="text-black text-[14px] font-semibold pb-2">{data.subject}</h4>
-      <p className="text-[#84818A] text-[14px] font-semibold whitespace-nowrap pb-3">
-        {data.message}
+      <p className="text-[#84818A] text-[14px] font-semibold pb-3">
+        {(data.message || '').slice(0, 250).concat('...')}
       </p>
       <hr />
-      <div className="flex gap-4 py-1 items-center justify-between">
-        <div className="flex gap-4 pt-3 items-center">
-          <img src={data?.image} alt="user Image" className="w-[2rem] h-[2rem] rounded-full" />
-          <span className="text-[#84818A] text-[14px] font-semibold">
-            {data.artistName} {data?.artistSurname1} {data?.artistSurname2}
-          </span>
+      <div className="flex gap-4 pt-2 items-center justify-between">
+        <div className="flex gap-2 items-center">
+          <Avatar alt={data?.artistName} src={`${url}/users/${data?.mainImage}`} />
+          <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Link color="inherit" sx={{ cursor: 'pointer' }}>
+              {name(data)}
+            </Link>
+            <Box component="span" sx={{ color: 'text.disabled' }}>
+              {data?.email}
+            </Box>
+          </Stack>
         </div>
 
         <span
-          className="text-[#84818A] text-[14px] font-semibold border-b pb-1 hover:cursor-pointer"
-          onClick={() => {
-            hendleTicketDetail(data);
-          }}
+          onClick={() => hendleTicketDetail(data)}
+          className="bg-black cursor-pointer text-white rounded-md flex items-center px-2.5 py-2 gap-2"
         >
-          Open Ticket
+          <Iconify icon="el:eye-open" /> Open Ticket
         </span>
       </div>
     </div>

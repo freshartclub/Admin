@@ -2,7 +2,6 @@ import type { IInvoice } from 'src/types/invoice';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,13 +10,13 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { fDate } from 'src/utils/format-time';
 import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
+import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -52,15 +51,7 @@ export function CollectionTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }} padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
-          />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Stack spacing={2} direction="row" alignItems="center">
             {row?.collectionFile.includes('.png') ||

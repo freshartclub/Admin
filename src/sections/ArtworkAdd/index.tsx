@@ -1368,6 +1368,7 @@ export function ArtworkAdd() {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
           checkbox
+          disabled
           name="collectionList"
           label="Collection List"
           options={ARTWORK_COLLECTIONLIST_OPTIONS}

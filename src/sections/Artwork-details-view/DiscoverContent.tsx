@@ -71,7 +71,14 @@ const DiscoverContent = ({ data, preview }) => {
           ) : null}
         </div>
       </section>
-
+      <div className="flex gap-1 lg:mt-2 mt-1">
+        <Header variant={{ size: 'base', theme: 'dark', weight: 'medium' }} className="text-[14px]">
+          Artwork ID :
+        </Header>
+        <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
+          {data?.artworkId}
+        </P>
+      </div>
       <div className="flex gap-1 lg:mt-2 mt-1">
         <Header variant={{ size: 'base', theme: 'dark', weight: 'medium' }} className="text-[14px]">
           Years of creation :
@@ -95,7 +102,7 @@ const DiscoverContent = ({ data, preview }) => {
       >
         {(data?.productDescription || '')
           .replace(/(<([^>]+)>)/gi, '')
-          .slice(0, 300)
+          .slice(0, 270)
           .concat('...')}
       </P>
 
@@ -113,69 +120,72 @@ const DiscoverContent = ({ data, preview }) => {
       </div>
 
       <Header variant={{ size: 'xl', theme: 'dark', weight: 'semiBold' }} className="lg:my-4 my-2">
-        ${data?.pricing?.basePrice}
+        {data?.pricing?.currency + ' ' + data?.pricing?.basePrice}
       </Header>
 
-      <div className="flex md:flex-row flex-col xl:gap-10 gap-2">
-        <Button
-          variant={{
-            theme: 'dark',
-            fontWeight: '600',
-            rounded: 'full',
-          }}
-          className={`text-base flex items-center justify-center w-full ${preview && 'pointer-events-none opacity-50'}`}
-        >
-          <img src={cart} alt="" className="md:mx-2 mx-1" />
-          <P variant={{ size: 'base', theme: 'light', weight: 'normal' }}>Add to cart</P>
-        </Button>
+      {preview ? null : (
+        <div className="flex md:flex-row flex-col xl:gap-10 gap-2">
+          <Button
+            variant={{
+              theme: 'dark',
+              fontWeight: '600',
+              rounded: 'full',
+            }}
+            className={`text-base flex items-center justify-center w-full ${preview && 'pointer-events-none opacity-50'}`}
+          >
+            <img src={cart} alt="" className="md:mx-2 mx-1" />
+            <P variant={{ size: 'base', theme: 'light', weight: 'normal' }}>Add to cart</P>
+          </Button>
 
-        <Button
-          variant={{
-            theme: '',
-            rounded: 'full',
-          }}
-          className={`text-base flex items-center justify-center border  w-full ${preview && 'pointer-events-none opacity-50'}`}
-        >
-          <img src={mark} alt="" className="md:mx-2 mx-1" />
-          <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>Make an offer</P>
-        </Button>
-      </div>
+          <Button
+            variant={{
+              theme: '',
+              rounded: 'full',
+            }}
+            className={`text-base flex items-center justify-center border  w-full ${preview && 'pointer-events-none opacity-50'}`}
+          >
+            <img src={mark} alt="" className="md:mx-2 mx-1" />
+            <P variant={{ size: 'base', theme: 'dark', weight: 'normal' }}>Make an offer</P>
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col justify-between gap-4 my-4">
-        <div
-          className={`flex w-full justify-between gap-1 flex-wrap ${preview && 'pointer-events-none opacity-50'}`}
-        >
-          <div className="flex items-center gap-2">
-            <img src={wishlist} alt="whishlist icon" />
-            <P
-              variant={{ size: 'small', weight: 'semiBold' }}
-              className="text-[#999999] uppercase text-[11px]"
-            >
-              Add to Wishlist
-            </P>
-          </div>
+        {preview ? null : (
+          <div
+            className={`flex w-full justify-between gap-1 flex-wrap ${preview && 'pointer-events-none opacity-50'}`}
+          >
+            <div className="flex items-center gap-2">
+              <img src={wishlist} alt="whishlist icon" />
+              <P
+                variant={{ size: 'small', weight: 'semiBold' }}
+                className="text-[#999999] uppercase text-[11px]"
+              >
+                Add to Wishlist
+              </P>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <img src={like} alt="like btn" />
-            <P
-              variant={{ size: 'small', weight: 'semiBold' }}
-              className="text-[#999999] uppercase  text-[11px]"
-            >
-              LIKE
-            </P>
-          </div>
+            <div className="flex items-center gap-2">
+              <img src={like} alt="like btn" />
+              <P
+                variant={{ size: 'small', weight: 'semiBold' }}
+                className="text-[#999999] uppercase  text-[11px]"
+              >
+                LIKE
+              </P>
+            </div>
 
-          <div className="flex gap-2 items-center">
-            <img src={question} alt="question" />
-            <P
-              variant={{ size: 'small', weight: 'semiBold' }}
-              className="text-[#999999] uppercase text-[11px]"
-            >
-              Ask Questions
-            </P>
+            <div className="flex gap-2 items-center">
+              <img src={question} alt="question" />
+              <P
+                variant={{ size: 'small', weight: 'semiBold' }}
+                className="text-[#999999] uppercase text-[11px]"
+              >
+                Ask Questions
+              </P>
+            </div>
           </div>
-        </div>
-
+        )}
         <div className="flex flex-wrap w-full justify-between">
           <div className="flex gap-1">
             <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">

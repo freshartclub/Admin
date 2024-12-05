@@ -1,25 +1,23 @@
 import type { IPostItem } from 'src/types/blog';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { z as zod } from 'zod';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { paths } from 'src/routes/paths';
-import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import {
-  INC_GROUP_OPTIONS,
   INC_SEVERITY_OPTIONS,
-  INC_STATUS_OPTIONS,
-  INC_TYPE_OPTIONS,
+  INC_STATUS_OPTIONS
 } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { paths } from 'src/routes/paths';
+import { z as zod } from 'zod';
+import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddIncidentMutation from './http/useAddIncidentMutation';
-import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +45,16 @@ export function AddIncidentForm({ currentPost }: Props) {
   const { mutateAsync, isPending } = useAddIncidentMutation();
   const navigate = useNavigate();
 
+  const picklists = RenderAllPicklists(['Inc Group', 'Inc Type']);
+
+  const picklistMap = picklists.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const grp = picklistMap['Inc Group'];
+  const type = picklistMap['Inc Type'];
+
   const defaultValues = useMemo(
     () => ({
       incGroup: currentPost?.incGroup || '',
@@ -63,17 +71,11 @@ export function AddIncidentForm({ currentPost }: Props) {
   );
 
   const methods = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    handleSubmit,
-  } = methods;
-
+  const { reset, watch, handleSubmit } = methods;
   const values = watch();
 
   useEffect(() => {
@@ -100,9 +102,15 @@ export function AddIncidentForm({ currentPost }: Props) {
           checkbox
           name="incGroup"
           label="Inc. Group"
-          options={INC_GROUP_OPTIONS}
+          options={grp ? grp : []}
         />
-        <Field.SingelSelect required checkbox name="incType" label="Inc. Type" options={INC_TYPE_OPTIONS} />
+        <Field.SingelSelect
+          required
+          checkbox
+          name="incType"
+          label="Inc. Type"
+          options={type ? type : []}
+        />
 
         <Field.Text required name="title" label="Title" />
 
@@ -117,7 +125,12 @@ export function AddIncidentForm({ currentPost }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.MobileDateTimePicker required name="initTime" label="Incident Initial Date" />
+          <Field.MobileDateTimePicker
+            required
+            name="initTime"
+            label="Incident Initial Date"
+            onChange={(e) => methods.setValue('endTime', e.$d)}
+          />
           <Field.MobileDateTimePicker required name="endTime" label="Incident End Date" />
         </Box>
         <Box
@@ -133,7 +146,13 @@ export function AddIncidentForm({ currentPost }: Props) {
             label="Severity"
             options={INC_SEVERITY_OPTIONS}
           />
-          <Field.SingelSelect required checkbox name="status" label="Status" options={INC_STATUS_OPTIONS} />
+          <Field.SingelSelect
+            required
+            checkbox
+            name="status"
+            label="Status"
+            options={INC_STATUS_OPTIONS}
+          />
         </Box>
 
         <Field.Text required name="note" label="Note" multiline rows={4} />
@@ -151,10 +170,12 @@ export function AddIncidentForm({ currentPost }: Props) {
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
-
           {renderDetails}
           <div className="flex flex-row justify-end gap-3 mt-8">
-            <span onClick={() => navigate(paths.dashboard.tickets.allIncident)} className="bg-white cursor-pointer text-black border py-2 px-3 rounded-md">
+            <span
+              onClick={() => navigate(paths.dashboard.tickets.allIncident)}
+              className="bg-white cursor-pointer text-black border py-2 px-3 rounded-md"
+            >
               Cancel
             </span>
             <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
@@ -163,6 +184,6 @@ export function AddIncidentForm({ currentPost }: Props) {
           </div>
         </Stack>
       </Form>
-    </div >
+    </div>
   );
 }

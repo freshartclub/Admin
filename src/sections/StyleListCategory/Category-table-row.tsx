@@ -1,12 +1,9 @@
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
@@ -41,15 +38,8 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.styleName}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishStyleName}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
         </TableCell>

@@ -1,7 +1,6 @@
 import type { IInvoice } from 'src/types/invoice';
 
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
@@ -47,14 +46,7 @@ export function KbTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
-          />
-        </TableCell>
+      <TableRow hover>
         <TableCell>
           <ListItemText
             disableTypography
@@ -67,7 +59,6 @@ export function KbTableRow({
         </TableCell>
 
         <TableCell>{row.kbTitle}</TableCell>
-        <TableCell>{row.kbDesc.replace(/(<([^>]+)>)/gi, '')}</TableCell>
         <TableCell>{list(row?.tags) === '' ? 'N/A' : list(row?.tags)}</TableCell>
         <TableCell>{fDate(row.createdAt)}</TableCell>
 

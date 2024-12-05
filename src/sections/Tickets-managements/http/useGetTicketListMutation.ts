@@ -6,7 +6,7 @@ async function fetchData(search, status, days) {
   const { data } = await axiosInstance.get(
     `${ARTIST_ENDPOINTS.getAllTickets}?search=${search}&status=${status}&days=${days}`
   );
-  return data.data;
+  return data;
 }
 
 export const useGetTicketListMutation = (search, status, days) => {

@@ -101,6 +101,11 @@ const ProductInfo = ({ data, preview }) => {
           <div className="flex flex-col my-5">
             <div className="grid grid-cols-1 md:grid-cols-2 place-content-between border-b pb-4">
               <div>
+                <PreviewData head="Art Provider" val={data?.isArtProvider} />
+                <PreviewData
+                  head="Art Provider Name"
+                  val={data?.provideArtistName ? data?.provideArtistName : 'N/A'}
+                />
                 <PreviewData
                   head="Artwork Orientation"
                   val={data?.additionalInfo?.artworkOrientation}
@@ -111,13 +116,13 @@ const ProductInfo = ({ data, preview }) => {
                 <PreviewData head="Artwork Width" val={data?.additionalInfo?.width + ' cm'} />
                 <PreviewData head="Artwork Height" val={data?.additionalInfo?.height + ' cm'} />
                 <PreviewData head="Artwork Weight" val={data?.additionalInfo?.weight + ' kg'} />
+              </div>
+
+              <div>
                 <PreviewData
                   head="Hanging Available"
                   val={data?.additionalInfo?.hangingAvailable}
                 />
-              </div>
-
-              <div>
                 <PreviewData head="Framed" val={data?.additionalInfo?.framed} />
                 <PreviewData head="Frame Depth" val={data?.additionalInfo?.frameLength + ' cm'} />
                 <PreviewData head="Frame Width" val={data?.additionalInfo?.frameWidth + ' cm'} />
@@ -222,15 +227,12 @@ const ProductInfo = ({ data, preview }) => {
         </TabPanel>
         <TabPanel>
           <div className="flex flex-col my-5">
-            <PreviewData head="Collection List" val={data?.collectionList} />
+            {/* <PreviewData head="Collection List" val={data?.collectionList} /> */}
             <PreviewData head="Promotion" val={data?.promotions?.promotion} />
             <PreviewData head="Promotion Score" val={data?.promotions?.promotionScore} />
             <PreviewData head="Available To" val={data?.restriction?.availableTo} />
             <PreviewData head="Discount Acceptance" val={data?.restriction?.discountAcceptation} />
-            <PreviewData
-              head="Externel Tags"
-              val={mapData(data?.tags?.extTags)}
-            />
+            <PreviewData head="Externel Tags" val={mapData(data?.tags?.extTags)} />
             <PreviewData head="Internal Tags" val={mapData(data?.tags?.intTags)} />
           </div>
         </TabPanel>

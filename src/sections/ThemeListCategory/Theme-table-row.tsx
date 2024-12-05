@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -39,13 +38,8 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.themeName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishThemeName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
         </TableCell>

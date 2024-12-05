@@ -22,7 +22,6 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Title is required!' }),
-  spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   discipline: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   isDeleted: zod.boolean(),
 });
@@ -42,7 +41,6 @@ export function AddStyleCategory({ styleFormData }: Props) {
   const defaultValues = useMemo(
     () => ({
       name: styleData?.styleName || '',
-      spanishName: styleData?.spanishStyleName || '',
       isDeleted: styleData?.isDeleted || false,
       discipline: (styleData?.discipline && styleData?.discipline.map((item) => item._id)) || [],
     }),
@@ -60,7 +58,6 @@ export function AddStyleCategory({ styleFormData }: Props) {
     if (id && styleData) {
       reset({
         name: styleData?.styleName || '',
-        spanishName: styleData?.spanishStyleName || '',
         isDeleted: styleData?.isDeleted || false,
         discipline: styleData?.discipline.map((item) => item._id) || [],
       });
@@ -98,8 +95,6 @@ export function AddStyleCategory({ styleFormData }: Props) {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
         >
           <Field.Text required name="name" label="Title" />
-          <Field.Text required name="spanishName" label="Spanish Title" />
-
           <Field.Autocomplete
             name="discipline"
             required

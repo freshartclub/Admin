@@ -1,30 +1,28 @@
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
-import { useBoolean } from 'src/hooks/use-boolean';
-import { Iconify } from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { useNavigate } from 'react-router';
-import { paths } from 'src/routes/paths';
-import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { DialogContentText } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 import { useForm } from 'react-hook-form';
-import { useChnagePassword } from './http/useChnagePassword';
-import { fDate } from 'src/utils/format-time';
-import { phoneNo } from 'src/utils/change-case';
+import { useNavigate } from 'react-router';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
 import { ArtistListType } from 'src/types/artist/ArtistDetailType';
+import { phoneNo } from 'src/utils/change-case';
+import { fDate } from 'src/utils/format-time';
+import { useChnagePassword } from './http/useChnagePassword';
+import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 
 // ----------------------------------------------------------------------
 
@@ -199,11 +197,7 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />

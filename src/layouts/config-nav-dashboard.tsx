@@ -111,10 +111,6 @@ export const navData = [
           { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
           { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
         ],
-        // children: [
-        //   { title: 'Add Artwork', path: paths.dashboard.artwork.addArtwork },
-        //   { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
-        // ],
       },
 
       {
@@ -124,87 +120,37 @@ export const navData = [
         children: [
           {
             title: 'Discipline',
-            path: paths.dashboard.category.discipline.root,
-            children: [
-              {
-                title: 'Add Discipline',
-                path: paths.dashboard.category.discipline.add,
-              },
-              {
-                title: 'Discipline List',
-                path: paths.dashboard.category.discipline.list,
-              },
-            ],
+            path: paths.dashboard.category.discipline.list,
+            // children: [
+            //   {
+            //     title: 'Add Discipline',
+            //     path: paths.dashboard.category.discipline.add,
+            //   },
+            //   {
+            //     title: 'Discipline List',
+            //     path: paths.dashboard.category.discipline.list,
+            //   },
+            // ],
           },
           {
             title: 'Style',
-            path: paths.dashboard.category.style.root,
-            children: [
-              {
-                title: 'Add Style',
-                path: paths.dashboard.category.style.add,
-              },
-              {
-                title: 'Style list',
-                path: paths.dashboard.category.style.list,
-              },
-            ],
+            path: paths.dashboard.category.style.list,
           },
           {
             title: 'Technic',
-            path: paths.dashboard.category.technic.root,
-            children: [
-              {
-                title: 'Add Technic',
-                path: paths.dashboard.category.technic.add,
-              },
-              {
-                title: 'Technic list',
-                path: paths.dashboard.category.technic.list,
-              },
-            ],
+            path: paths.dashboard.category.technic.list,
           },
           {
             title: 'Theme',
-            path: paths.dashboard.category.theme.root,
-            children: [
-              {
-                title: 'Add Theme',
-                path: paths.dashboard.category.theme.add,
-              },
-              {
-                title: 'Theme list',
-                path: paths.dashboard.category.theme.list,
-              },
-            ],
+            path: paths.dashboard.category.theme.list,
           },
           {
             title: 'Media Support',
-            path: paths.dashboard.category.mediasupport.root,
-            children: [
-              {
-                title: 'Add Media Support',
-                path: paths.dashboard.category.mediasupport.add,
-              },
-              {
-                title: 'Media Support list',
-                path: paths.dashboard.category.mediasupport.list,
-              },
-            ],
+            path: paths.dashboard.category.mediasupport.list,
           },
           {
             title: 'Picklist',
-            path: paths.dashboard.category.picklist.root,
-            children: [
-              {
-                title: 'Add Picklist',
-                path: paths.dashboard.category.picklist.add,
-              },
-              {
-                title: 'All Picklist',
-                path: paths.dashboard.category.picklist.list,
-              },
-            ],
+            path: paths.dashboard.category.picklist.list,
           },
         ],
       },

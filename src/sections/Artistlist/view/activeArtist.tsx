@@ -38,7 +38,7 @@ export function ListArtists() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);
 
-  const { data, isLoading, isError, error } = useGetAllActiveArtist(debounceSearch);
+  const { data, isLoading } = useGetAllActiveArtist(debounceSearch);
 
   useEffect(() => {
     if (data?.data) {
@@ -83,15 +83,7 @@ export function ListArtists() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered

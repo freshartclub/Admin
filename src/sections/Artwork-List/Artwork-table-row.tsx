@@ -31,6 +31,8 @@ import { DialogContent } from '@mui/material';
 import { DialogContentText } from '@mui/material';
 import { useState } from 'react';
 import { useValidateartWork } from './http/useValidateArtwork';
+import { useNavigate } from 'react-router';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +56,7 @@ export function ArtworkTableRow({
   onDeleteRow,
 }: Props) {
   const confirm = useBoolean();
+  const navigate = useNavigate();
   const [showPop, setShowPop] = useState(false);
   const [validate, setValidate] = useState(false);
 
@@ -130,15 +133,7 @@ export function ArtworkTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row?.id}`, 'aria-label': `Row checkbox` }}
-          />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
             <Avatar alt={row?.artworkName} src={`${url}/users/${row?.media?.mainImage}`} />
@@ -163,9 +158,11 @@ export function ArtworkTableRow({
             />
           </Stack>
         </TableCell>
+        <TableCell>{row?.artworkId ? (row?.artworkId).slice(4) : 'N/A'}</TableCell>
         <TableCell>{name(row)}</TableCell>
+        <TableCell>{row?.isArtProvider}</TableCell>
         <TableCell>{row?.discipline?.artworkDiscipline}</TableCell>
-        <TableCell>{row?.artworkSeries}</TableCell>
+        {/* <TableCell>{row?.artworkSeries}</TableCell> */}
 
         <TableCell>
           <ListItemText
@@ -209,6 +206,14 @@ export function ArtworkTableRow({
           <MenuItem>
             <Iconify icon="ph:key-return-fill" />
             Request Return
+          </MenuItem>
+          <MenuItem
+            onClick={() =>
+              navigate(`${paths.dashboard.artwork.artworkDetail}?id=${row?._id}&preview=true`)
+            }
+          >
+            <Iconify icon="hugeicons:view" />
+            View Artwork
           </MenuItem>
           {row?.status === 'published' ? (
             <MenuItem>

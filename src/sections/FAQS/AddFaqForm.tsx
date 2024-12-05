@@ -5,13 +5,14 @@ import Stack from '@mui/material/Stack';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { _tags, FAQ_GROUP_OPTIONS } from 'src/_mock';
+import { _tags } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddFAQMutation from './http/useAddFAQMutation';
 import { useGetFAQById } from './http/useGetFAQById';
 
@@ -31,6 +32,7 @@ export const NewPostSchema = zod.object({
 export function AddFaqForm() {
   const id = useSearchParams().get('id');
   const { data, isLoading } = useGetFAQById(id);
+  const picklist = RenderAllPicklist('FAQ Group');
   const navigate = useNavigate();
 
   const defaultValues = useMemo(
@@ -79,7 +81,7 @@ export function AddFaqForm() {
           required
           name="faqGrp"
           label="Select Group"
-          options={FAQ_GROUP_OPTIONS}
+          options={picklist ? picklist : []}
         />
         <Field.Text required name="faqQues" label="Faq Question" />
         <Field.Text name="faqAns" label="FAQ Answer (write min 250 word)" multiline rows={4} />

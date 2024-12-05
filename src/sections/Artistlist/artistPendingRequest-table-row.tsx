@@ -23,16 +23,6 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-const name = (val) => {
-  let fullName = val?.artistName || '';
-
-  if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
-  if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
-  if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
-
-  return fullName.trim();
-};
-
 export function ArtistPendingRequest({
   row,
   url,
@@ -41,16 +31,21 @@ export function ArtistPendingRequest({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  return (
-    <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-      <TableCell padding="checkbox">
-        <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-      </TableCell>
+  const name = (val) => {
+    let fullName = val?.artistName || '';
 
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
+  return (
+    <TableRow hover>
       <TableCell>
         <Stack spacing={1} direction="row" alignItems="center">
           <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />
-
           <Stack
             className=" cursor-pointer"
             sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}

@@ -1,19 +1,19 @@
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 import { z as zod } from 'zod';
+import { AddressAutoComplete, getCityStateFromZipCountry } from './AddressAutoComplete';
 
 // ----------------------------------------------------------------------
 
@@ -22,9 +22,7 @@ export const NewProductSchema = zod.object({
   artistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
   artistSurname2: zod.string(),
   nickName: zod.string(),
-  country: schemaHelper.objectOrNull({
-    message: { required_error: 'Country is required!' },
-  }),
+  country: zod.string().min(1, { message: 'Country is required!' }),
   language: zod.string().min(1, { message: 'Langage is required' }),
   currency: zod.string().min(1, { message: 'Currency is required' }),
   zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
@@ -52,6 +50,7 @@ export function GeneralInformation({
 }: AddArtistComponentProps) {
   const [code, setCode] = useState('');
   const view = useSearchParams().get('view');
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
   const isReadOnly = view !== null;
 
   const handleSuccess = (data) => {
@@ -64,7 +63,6 @@ export function GeneralInformation({
   };
 
   const picklist = RenderAllPicklists(['Language', 'Currency', 'Gender']);
-
   const picklistMap = picklist.reduce((acc, item: any) => {
     acc[item?.fieldName] = item?.picklist;
     return acc;
@@ -82,7 +80,7 @@ export function GeneralInformation({
       artistSurname1: artistFormData?.artistSurname1 || '',
       artistSurname2: artistFormData?.artistSurname2 || '',
       nickName: artistFormData?.nickName || '',
-      country: artistFormData?.country || 'Spain',
+      country: artistFormData?.country || '',
       zipCode: artistFormData?.zipCode || '',
       city: artistFormData?.city || '',
       state: artistFormData?.state || '',
@@ -103,13 +101,18 @@ export function GeneralInformation({
     defaultValues,
   });
 
-  const { trigger, handleSubmit } = formProps;
+  const { setValue, trigger, handleSubmit } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     data.count = 1;
     mutate({ body: data });
   });
+
+  const country = formProps.watch('country');
+  const zipCode = formProps.watch('zipCode');
+
+  const [searchResult, setSearchResult] = useState('');
 
   const viewNext = () => {
     setTabState((prev) => {
@@ -119,12 +122,27 @@ export function GeneralInformation({
     setTabIndex(tabIndex + 1);
   };
 
+  useEffect(() => {
+    if (zipCode && zipCode.length > 4 && country) {
+      getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
+        setValue('city', city || '');
+        setValue('state', state || '');
+      });
+    }
+  }, [zipCode, country, formProps]);
+
+  useEffect(() => {
+    setSearchResult(artistFormData?.residentialAddress || '');
+  }, [artistFormData?.residentialAddress]);
+
+  const placesSelected = (places: google.maps.places.PlaceResult) => {
+    setSearchResult(places.formatted_address);
+  };
+
   const renderDetails = (
     <Card>
-      <CardHeader title="General Informations" sx={{ mb: 3 }} />
-
+      <CardHeader title="General Informations" sx={{ mb: 2 }} />
       <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
         <Box
           columnGap={2}
@@ -174,11 +192,15 @@ export function GeneralInformation({
           <Field.Text disabled={isReadOnly} required name="state" label="State/Region" />
         </Box>
 
-        <Field.Text
-          disabled={isReadOnly}
-          required
+        <AddressAutoComplete
           name="residentialAddress"
-          label="residentialAddress"
+          disabled={isReadOnly}
+          label="Residential Address"
+          value={searchResult}
+          onChange={(e) => {
+            setSearchResult(e.target.value);
+          }}
+          onPlaceSelected={placesSelected}
         />
 
         <Box

@@ -1,7 +1,5 @@
 import 'src/global.css';
 
-// ----------------------------------------------------------------------
-
 import { Toaster } from 'sonner';
 import { Provider } from 'react-redux';
 import { useLoadScript } from '@react-google-maps/api';
@@ -17,7 +15,7 @@ import { AuthProvider } from 'src/auth/context/jwt';
 import { store } from './store/store';
 import { I18nProvider, LocalizationProvider } from './locales';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,8 +28,6 @@ export default function App() {
     version: 'beta',
     mapIds: ['DEMO_MAP_ID'],
   });
-
-  const { t, i18n } = useTranslation();
 
   return (
     <LocalizationProvider>

@@ -8,7 +8,11 @@ import { paths } from 'src/routes/paths';
 const useAddTicketMutation = () => {
   const navigate = useNavigate();
   async function AddTicket(data) {
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.addTicket}`, data);
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.addTicket}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 
   return useMutation({

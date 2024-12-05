@@ -1,18 +1,17 @@
 import type { IInvoice } from 'src/types/invoice';
 
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
 import { fDate } from 'src/utils/format-time';
 
@@ -46,18 +45,12 @@ export function FaqTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
-          />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqGrp}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.faqQues}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{list(row?.tags) === '' ? 'N/A' : list(row?.tags)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {list(row?.tags) === '' ? 'N/A' : list(row?.tags)}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

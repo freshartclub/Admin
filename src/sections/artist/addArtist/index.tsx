@@ -48,7 +48,7 @@ function AddArtistIndex() {
         obj.zipCode = data.data.address?.zipCode;
         obj.city = data.data.address?.city;
         obj.state = data.data.address?.state;
-        obj.discipline = data.data.aboutArtist.discipline;
+        obj.discipline = data.data?.aboutArtist?.discipline;
         obj.documents = data.data?.documents;
         obj.link = data?.data?.links;
 

@@ -1,6 +1,5 @@
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -20,13 +19,21 @@ import useDeleteDisciplineMutation from './http/useDeleteDisciplineMutation';
 
 type Props = {
   row: ArtistDisciplineType;
+  url: string;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function DisciplineTableRow({ row,url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function DisciplineTableRow({
+  row,
+  url,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteDisciplineMutation();
 
@@ -41,11 +48,7 @@ export function DisciplineTableRow({ row,url, selected, onEditRow, onSelectRow, 
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.disciplineImage} src={`${url}/users/${row?.disciplineImage}`} />
@@ -55,7 +58,6 @@ export function DisciplineTableRow({ row,url, selected, onEditRow, onSelectRow, 
             </Stack>
           </Stack>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.disciplineSpanishName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.disciplineDescription ? row?.disciplineDescription : 'N/A'}
         </TableCell>

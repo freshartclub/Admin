@@ -2,7 +2,6 @@ import type { IInvoice } from 'src/types/invoice';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import ListItemText from '@mui/material/ListItemText';
@@ -55,15 +54,7 @@ export function CatalogTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
-          />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={2} direction="row" sx={{ whiteSpace: 'nowrap' }}>
             <Avatar alt={row?.catalogName} src={`${url}/users/${row?.catalogImg}`} />

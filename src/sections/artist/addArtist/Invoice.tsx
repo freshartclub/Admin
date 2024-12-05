@@ -453,6 +453,14 @@ export function Invoice({
                   checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
                   label={`Catalog ${index + 1}`}
+                  onClick={(val) => {
+                    const defaulVal = val.target.textContent;
+                    const selectedOption = data.find((item) => item.catalogName === defaulVal);
+                    formProps.setValue(
+                      `PublishingCatalog[${index}].ArtistFees`,
+                      `${selectedOption?.defaultArtistFee}`
+                    );
+                  }}
                   options={
                     data
                       ? filterOptions(
@@ -467,7 +475,8 @@ export function Invoice({
                   disabled={isReadOnly}
                   required
                   name={`PublishingCatalog[${index}].ArtistFees`}
-                  label="Artist Fees"
+                  // label="Artist Fees"
+                  placeholder="Artist Fees"
                 />
                 {index > 0 && (
                   <Button

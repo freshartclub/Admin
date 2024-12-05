@@ -23,7 +23,6 @@ import { TextField } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'mediaName', label: 'Media Name', width: 150 },
-  { id: 'spanishMediaName', label: 'Spanish Name', width: 150 },
   { id: 'discipline', label: 'Discipline', width: 220 },
   { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 100 },
@@ -101,15 +100,7 @@ export function MediaSupportListCategory() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered.map((row) => (

@@ -1,13 +1,14 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import { useEffect, useState } from 'react';
+import { InputAdornment, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { paths } from 'src/routes/paths';
-import { DashboardContent } from 'src/layouts/dashboard';
+import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   emptyRows,
@@ -18,15 +19,11 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
+import { RouterLink } from 'src/routes/components';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { paths } from 'src/routes/paths';
 import { useGetAllCollectionList } from '../http/useGetAllCollection';
 import { CollectionTableRow } from './collection-table-row';
-import { Iconify } from 'src/components/iconify';
-import { RouterLink } from 'src/routes/components';
-import { InputAdornment } from '@mui/material';
-import { TextField } from '@mui/material';
-import { Stack } from '@mui/material';
-import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -67,135 +64,86 @@ export function CollectionListView() {
 
   return (
     <>
-      <DashboardContent>
-        <CustomBreadcrumbs
-          heading="Collection List"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Collection List' }]}
-          sx={{ mb: { xs: 3, md: 3 } }}
+      <CustomBreadcrumbs
+        heading="Collection List"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Collection List' }]}
+        sx={{ mb: { xs: 3, md: 3 } }}
+      />
+      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Collection Name, Artwork Tags & Created By..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
-        <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
-          <TextField
-            fullWidth
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search By Collection Name, Artwork Tags & Created By..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <RouterLink href={`${paths.dashboard.artwork.collection_management.add}`}>
-            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[11rem]">
-              <Iconify icon="mingcute:add-line" /> Add Collection
-            </span>
-          </RouterLink>
-        </Stack>
+        <RouterLink href={`${paths.dashboard.artwork.collection_management.add}`}>
+          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[11rem]">
+            <Iconify icon="mingcute:add-line" /> Add Collection
+          </span>
+        </RouterLink>
+      </Stack>
 
-        {isLoading ? (
-          <LoadingScreen />
-        ) : (
-          <Card>
-            <Box sx={{ position: 'relative' }}>
-              {/* <TableSelectedAction
-            dense={table.dense}
-            numSelected={table.selected.length}
-            rowCount={dataFiltered.length}
-            onSelectAllRows={(checked) => {
-              table.onSelectAllRows(
-                checked,
-                dataFiltered.map((row) => row.id)
-              );
-            }}
-            action={
-              <Stack direction="row">
-                <Tooltip title="Sent">
-                  <IconButton color="primary">
-                    <Iconify icon="iconamoon:send-fill" />
-                  </IconButton>
-                </Tooltip>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Box sx={{ position: 'relative' }}>
+            <Scrollbar sx={{ minHeight: 444 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  onSort={table.onSort}
+                />
 
-                <Tooltip title="Download">
-                  <IconButton color="primary">
-                    <Iconify icon="eva:download-outline" />
-                  </IconButton>
-                </Tooltip>
+                <TableBody>
+                  {dataFiltered
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row, i) => (
+                      <CollectionTableRow
+                        key={i}
+                        row={row}
+                        url={data?.url}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onViewRow={() => handleViewRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                      />
+                    ))}
 
-                <Tooltip title="Print">
-                  <IconButton color="primary">
-                    <Iconify icon="solar:printer-minimalistic-bold" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            }
-          /> */}
-
-              <Scrollbar sx={{ minHeight: 444 }}>
-                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    rowCount={dataFiltered.length}
-                    numSelected={table.selected.length}
-                    onSort={table.onSort}
-                    onSelectAllRows={(checked) =>
-                      table.onSelectAllRows(
-                        checked,
-                        dataFiltered.map((row) => row.id)
-                      )
-                    }
+                  <TableEmptyRows
+                    height={table.dense ? 56 : 56 + 20}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableBody>
-                    {dataFiltered
-                      .slice(
-                        table.page * table.rowsPerPage,
-                        table.page * table.rowsPerPage + table.rowsPerPage
-                      )
-                      .map((row, i) => (
-                        <CollectionTableRow
-                          key={i}
-                          row={row}
-                          url={data?.url}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onViewRow={() => handleViewRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                        />
-                      ))}
+                  <TableNoData notFound={notFound} />
+                </TableBody>
+              </Table>
+            </Scrollbar>
+          </Box>
 
-                    <TableEmptyRows
-                      height={table.dense ? 56 : 56 + 20}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                    />
-
-                    <TableNoData notFound={notFound} />
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            </Box>
-
-            <TablePaginationCustom
-              page={table.page}
-              dense={table.dense}
-              count={dataFiltered.length}
-              rowsPerPage={table.rowsPerPage}
-              onPageChange={table.onChangePage}
-              onChangeDense={table.onChangeDense}
-              onRowsPerPageChange={table.onChangeRowsPerPage}
-            />
-          </Card>
-        )}
-      </DashboardContent>
+          <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      )}
     </>
   );
 }

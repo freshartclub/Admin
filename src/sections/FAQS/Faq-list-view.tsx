@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { FAQ_GROUP_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -18,7 +17,6 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-import { DashboardContent } from 'src/layouts/dashboard';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 
@@ -34,6 +32,7 @@ import {
 } from '@mui/material';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import { FaqTableRow } from './faq-table-row';
 import { useGetAllFAQ } from './http/useGetAllFAQ';
 
@@ -56,6 +55,7 @@ export function FaqListView() {
   const [search, setSearch] = useState<string>('');
   const [grp, setGrp] = useState<string>('');
   const debounceSearch = useDebounce(search, 500);
+  const picklist = RenderAllPicklist('FAQ Group');
 
   const { data, isLoading } = useGetAllFAQ(debounceSearch, grp);
 
@@ -76,16 +76,23 @@ export function FaqListView() {
   const handleViewRow = (id: string) => {};
 
   return (
-    <DashboardContent>
+    <>
       <CustomBreadcrumbs
         heading="FAQ List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'FAQ List' }]}
         action={
-          <RouterLink href={`${paths.dashboard.faq.add}`}>
-            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2">
-              <Iconify icon="mingcute:add-line" /> Add FAQ
-            </span>
-          </RouterLink>
+          <div className="flex gap-2">
+            <RouterLink href={`${paths.dashboard.faq.add}`}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2">
+                <Iconify icon="mingcute:add-line" /> Add FAQ
+              </span>
+            </RouterLink>
+            <RouterLink href={`#`}>
+              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
+                <Iconify icon="mingcute:add-line" /> Export CSV
+              </span>
+            </RouterLink>
+          </div>
         }
         sx={{ mb: { xs: 3, md: 3 } }}
       />
@@ -93,7 +100,7 @@ export function FaqListView() {
         <TextField
           sx={{ width: '70%' }}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By FAQ Question..."
+          placeholder="Search By FAQ Question/Tags..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -114,11 +121,13 @@ export function FaqListView() {
             <MenuItem key={'All'} value={'All'}>
               {'All'}
             </MenuItem>
-            {FAQ_GROUP_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
+            {picklist &&
+              picklist.length > 0 &&
+              picklist.map((option: any) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       </Stack>
@@ -133,15 +142,7 @@ export function FaqListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row.id)
-                  )
-                }
               />
 
               <TableBody>
@@ -183,7 +184,7 @@ export function FaqListView() {
           />
         </Card>
       )}
-    </DashboardContent>
+    </>
   );
 }
 

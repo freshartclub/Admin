@@ -8,7 +8,6 @@ import {
   IconButton,
 } from '@mui/material';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -22,7 +21,6 @@ import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 import { phoneNo } from 'src/utils/change-case';
-import { fDate } from 'src/utils/format-time';
 import { useBanRequestMutation } from './http/useBanRequestMutation';
 import { useRejectRequestMutation } from './http/useRejectRequestMutation';
 import { useUnBanRequest } from './http/useUnBanRequest';
@@ -181,11 +179,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />

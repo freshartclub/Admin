@@ -40,13 +40,8 @@ export function TechnicTableRow({ row, selected, onEditRow, onSelectRow, onDelet
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.technicName}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.spanishTechnicName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
         </TableCell>

@@ -13,7 +13,6 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { ArtistRequest } from '../artistRequest-table-row';
 import { useGetAllArtistRequest } from '../http/useGetAllArtistRequset';
 import { paths } from 'src/routes/paths';
@@ -30,7 +29,6 @@ const TABLE_HEAD = [
   { id: 'phone', label: 'Contact', width: 140 },
   { id: 'city', label: 'City', width: 140 },
   { id: 'country', label: 'Country', width: 140 },
-  // { id: 'createdAt', label: 'Created At', width: 140 },
   { id: 'isArtistRequestStatus', label: 'Request Status', width: 180 },
   { id: 'cv', label: 'CV', width: 60 },
   { id: 'buttons', label: 'Button', width: 80 },
@@ -109,15 +107,7 @@ export function ArtistsRequest() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered

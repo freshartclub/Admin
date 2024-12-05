@@ -1,4 +1,4 @@
-import Checkbox from '@mui/material/Checkbox'
+import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -25,16 +25,16 @@ export function AllIncidentList({ row, selected, onEditRow, onSelectRow, onDelet
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.incGroup}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.incType}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.status}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.initTime)} {fTime(row?.initTime)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.endTime)} {fTime(row?.endTime)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {fDate(row?.initTime)} {fTime(row?.initTime)}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {fDate(row?.endTime)} {fTime(row?.endTime)}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {fDate(row?.createdAt)} {fTime(row?.createdAt)}
         </TableCell>

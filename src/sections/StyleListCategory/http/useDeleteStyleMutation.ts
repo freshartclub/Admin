@@ -15,7 +15,7 @@ const useDeleteStyleMutation = () => {
     mutationFn: deleteStyle,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [GENERAL_ENDPOINTS.getDiscipline],
+        queryKey: [GENERAL_ENDPOINTS.getStyle],
         refetchType: 'all',
       });
 

@@ -11,12 +11,11 @@ import Typography from '@mui/material/Typography';
 import { _tags } from 'src/_mock';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { paths } from 'src/routes/paths';
-
 import { useNavigate } from 'react-router';
-import { FAQ_GROUP_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddKBMutation from './http/useAddKBMutation';
 import { useGetKBById } from './http/useGetKBById';
 
@@ -36,6 +35,7 @@ export const NewPostSchema = zod.object({
 export function AddKbForm() {
   const id = useSearchParams().get('id');
   const { data, isLoading } = useGetKBById(id);
+  const picklist = RenderAllPicklist('KB Group');
   const navigate = useNavigate();
 
   const defaultValues = useMemo(
@@ -85,7 +85,7 @@ export function AddKbForm() {
           checkbox
           name="kbGrp"
           label="Select Group"
-          options={FAQ_GROUP_OPTIONS}
+          options={picklist ? picklist : []}
         />
 
         <Field.Text name="kbTitle" label="KB Title" />

@@ -24,7 +24,6 @@ import { useGetDisciplineSearchData } from './http/useGetDisciplineSearchData';
 
 const TABLE_HEAD = [
   { id: 'disciplineName', label: 'Discipline Name', width: 150 },
-  { id: 'disciplineSpanishName', label: 'Spanish Name', width: 150 },
   { id: 'disciplineDescription', label: 'Description', width: 200 },
   { id: 'status', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 150 },
@@ -37,7 +36,7 @@ export function DiscipleListCategory() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
-  const [url,setUrl] = useState('');
+  const [url, setUrl] = useState('');
 
   const { data, isLoading } = useGetDisciplineSearchData(debounceSearch);
 
@@ -102,15 +101,7 @@ export function DiscipleListCategory() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered.map((row, i) => (

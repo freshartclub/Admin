@@ -7,16 +7,15 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import addMediaMutation from './http/addMediaMutation';
-import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
-import { useSearchParams } from 'src/routes/hooks';
 import { useGetMediaById } from './http/useGetMediaById';
-import { useNavigate } from 'react-router';
-import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +23,6 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Title is required!' }),
-  spanishName: zod.string().min(1, { message: 'Spanish Title is required!' }),
   discipline: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   isDeleted: zod.boolean(),
 });
@@ -40,7 +38,6 @@ export function AddMediaSupportCategory() {
   const defaultValues = useMemo(
     () => ({
       name: styleData?.mediaName || '',
-      spanishName: styleData?.spanishMediaName || '',
       isDeleted: styleData?.isDeleted || false,
       discipline: (styleData?.discipline && styleData?.discipline.map((item) => item._id)) || [],
     }),
@@ -58,7 +55,6 @@ export function AddMediaSupportCategory() {
     if (id && styleData) {
       reset({
         name: styleData?.mediaName || '',
-        spanishName: styleData?.spanishMediaName || '',
         isDeleted: styleData?.isDeleted || false,
         discipline: styleData?.discipline.map((item) => item._id) || [],
       });
@@ -96,9 +92,6 @@ export function AddMediaSupportCategory() {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
         >
           <Field.Text required name="name" label="Title" />
-
-          <Field.Text required name="spanishName" label="Spanish Title" />
-
           <Field.Autocomplete
             name="discipline"
             required

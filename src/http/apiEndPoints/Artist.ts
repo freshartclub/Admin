@@ -95,6 +95,7 @@ export const PICKLIST_ENDPOINTS = {
   getPicklists: `${PICKLIST_BASE_URL}/get-picklist`,
   getPicklistById: `${PICKLIST_BASE_URL}/get-picklist-by-id`,
   updatePicklist: `${PICKLIST_BASE_URL}/update-picklist`,
+  deletePicklist: `${PICKLIST_BASE_URL}/delete-picklist`,
 };
 
 export const ORDER_ENDPOINTS = {

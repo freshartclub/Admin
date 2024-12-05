@@ -41,10 +41,10 @@ export function TicketsListView() {
   const [tableData, setTableData] = useState<IOrderItem[]>([]);
 
   useEffect(() => {
-    if (data) {
-      setTableData(data);
+    if (data?.data) {
+      setTableData(data?.data);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const dataFiltered = applyFilter({
     inputData:
@@ -58,10 +58,7 @@ export function TicketsListView() {
     <>
       <CustomBreadcrumbs
         heading="Ticket List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ticket List' },
-        ]}
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Ticket List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
       <TicketTableToolbar
@@ -75,12 +72,12 @@ export function TicketsListView() {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <Card>
+        <>
           <Tabs
             value={selectedTab}
             onChange={(event, newValue) => setSelectedTab(newValue)}
             sx={{
-              px: 2.5,
+              px: 0.5,
               boxShadow: (theme) =>
                 `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
             }}
@@ -129,7 +126,7 @@ export function TicketsListView() {
                   table.page * table.rowsPerPage + table.rowsPerPage
                 )
                 .map((row) => (
-                  <TicketCartd key={row._id} data={row} />
+                  <TicketCartd key={row._id} url={data?.url} data={row} />
                 ))}
             </Scrollbar>
           </Box>
@@ -142,7 +139,7 @@ export function TicketsListView() {
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
           />
-        </Card>
+        </>
       )}
     </>
   );

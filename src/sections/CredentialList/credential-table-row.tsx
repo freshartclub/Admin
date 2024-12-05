@@ -1,6 +1,6 @@
+import { Box } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import MenuItem from '@mui/material/MenuItem';
@@ -8,15 +8,14 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useNavigate } from 'react-router';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
-import useDeleteInsignia from './http/useDeleteInsignia';
-import { Box } from '@mui/material';
 import { ArtistDisciplineType } from 'src/types/artist/ArtistDetailType';
+import useDeleteInsignia from './http/useDeleteInsignia';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +28,14 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function CredentialTable({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function CredentialTable({
+  row,
+  url,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteInsignia();
 
@@ -44,11 +50,7 @@ export function CredentialTable({ row, url, selected, onEditRow, onSelectRow, on
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
+      <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.credentialName} src={`${url}/users/${row?.insigniaImage}`} />

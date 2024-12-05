@@ -57,12 +57,13 @@ export function ArtworkDetailView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: preview ? 'Artwork Preview' : 'Artwork Details' },
+          { name: '#' + data?.data?.artworkId },
         ]}
       />
       <div className="container mx-auto md:px-6 px-3">
-        <div className="flex lg:flex-row flex-col items-center gap-10 mt-5">
-          <div className="flex md:flex-row flex-col gap-4 lg:w-[50%] w-full items-center">
-            <div className="flex md:flex-col justify-center flex-row md:gap-0 gap-2 w-[15%] lg:ml-4">
+        <div className="flex lg:flex-row flex-col items-center gap-5 lg:gap-10 mt-5">
+          <div className="flex lg:flex-row flex-col gap-4 lg:w-[50%] w-full items-center mb-2">
+            <div className="flex justify-center flex-row lg:flex-col lg:max-h-[60vh] lg:h-[60vh] lg:overflow-y-auto gap-2 w-[15%] lg:ml-4">
               {images &&
                 images.length > 0 &&
                 images.map((img, i) => (
@@ -87,13 +88,17 @@ export function ArtworkDetailView() {
                     />
                   </div>
                 ) : (
-                  <Slider {...settings} ref={sliderRef} className="discover_more lg:h-[50vh]">
+                  <Slider
+                    {...settings}
+                    ref={sliderRef}
+                    className="discover_more max-h-[100%] lg:h-[55vh] w-full"
+                  >
                     {images.map((src, index) => (
                       <div key={index}>
                         <img
                           src={`${url}/${src}`}
                           alt={`Slide ${index + 1}`}
-                          className="mx-auto object-cover lg:h-[60vh]"
+                          className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
                         />
                       </div>
                     ))}
@@ -109,7 +114,7 @@ export function ArtworkDetailView() {
             <DiscoverContent data={data?.data} preview={preview} />
           </div>
         </div>
-        
+
         <ProductInfo data={data?.data} preview={preview} />
       </div>
       {!preview && <SelectedSection />}
