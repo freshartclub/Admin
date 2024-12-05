@@ -1,29 +1,25 @@
 import type { IOrderItem } from 'src/types/order';
 
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import MenuList from '@mui/material/MenuList';
-import Collapse from '@mui/material/Collapse';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
+import TableRow from '@mui/material/TableRow';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { Label } from 'src/components/label';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { fCurrency } from 'src/utils/format-number';
+import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -50,18 +46,8 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
     return fullName.trim();
   };
 
-  console.log(row);
-
   const renderPrimary = (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={selected}
-          onClick={onSelectRow}
-          inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `Row checkbox` }}
-        />
-      </TableCell>
-
       <TableCell>
         <Link color="inherit" onClick={onViewRow} underline="always" sx={{ cursor: 'pointer' }}>
           {row?.orderID}
@@ -83,7 +69,7 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell align='center'>{row?.items?.length}</TableCell>
+      <TableCell align="center">{row?.items?.length}</TableCell>
       <TableCell> {row?.subTotal} </TableCell>
 
       <TableCell>

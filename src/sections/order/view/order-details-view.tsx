@@ -4,12 +4,9 @@ import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
-
 import { paths } from 'src/routes/paths';
-
 import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-
 import { OrderDetailsInfo } from '../order-details-info';
 import { OrderDetailsItems } from '../order-details-item';
 import { OrderDetailsToolbar } from '../order-details-toolbar';

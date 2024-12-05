@@ -3,7 +3,6 @@ import type { IUserItem } from 'src/types/user';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,12 +10,10 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-
-import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
-import { Label } from 'src/components/label';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
@@ -46,10 +43,6 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
   return (
     <>
       <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row.id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
             <Avatar

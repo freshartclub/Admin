@@ -12,11 +12,13 @@ import { Form, Field } from 'src/components/hook-form';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
 import { CreateArtistFormSchema } from './createArtitstForm';
 import axios from 'axios';
+import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
 
 const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   const [value, setValue] = useState('new');
   const [isArtist, setIsArtist] = useState(false);
   const [code, setCode] = useState('');
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   const { isPending, mutate } = useCreateArtistMutation();
 
@@ -79,6 +81,18 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   }, [methods.getValues('country')]);
 
   const handleRemoveFile = () => methods.setValue('avatar', null);
+
+  const country = methods.watch('country');
+  const zipCode = methods.watch('zipCode');
+
+  useEffect(() => {
+    if (zipCode && zipCode.length > 4 && country) {
+      getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
+        methods.setValue('city', city || '');
+        methods.setValue('state', state || '');
+      });
+    }
+  }, [zipCode, country]);
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>

@@ -29,6 +29,7 @@ import { ListItemText } from '@mui/material';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useGetUserByIdMutation } from './http/userGetUserByIdMutation';
 import axios from 'axios';
+import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +82,7 @@ export function CreateArtistForm() {
   const [open, setOpen] = useState(true);
   const [_id, setId] = useState('');
   const [code, setCode] = useState('');
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   let id = useSearchParams().get('id');
   const existingUser = useSearchParams().get('extisting');
@@ -96,7 +98,6 @@ export function CreateArtistForm() {
   const { reset, watch, handleSubmit } = methods;
   const debounceUserId = useDebounce(methods.getValues('existingId'), 500);
   const { refetch, data: artistData } = useGetUserByIdMutation(debounceUserId);
-
   const values = watch();
 
   useEffect(() => {
@@ -197,6 +198,18 @@ export function CreateArtistForm() {
   };
 
   const handleRemoveFile = () => methods.setValue('existingAvatar', null);
+
+  const country = methods.watch('existingCountry');
+  const zipCode = methods.watch('existingZipCode');
+
+  useEffect(() => {
+    if (zipCode && zipCode.length > 4 && country) {
+      getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
+        methods.setValue('existingCity', city || '');
+        methods.setValue('existingState', state || '');
+      });
+    }
+  }, [zipCode, country, methods]);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -342,7 +355,6 @@ export function CreateArtistForm() {
                   />
 
                   <Field.Text name="existingZipCode" required label="Zip/code" />
-
                   <Field.Text name="existingState" required label="State/region" />
                 </Box>
                 <Field.Text sx={{ mt: 3 }} name="existingCity" required label="City" />

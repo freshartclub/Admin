@@ -1,6 +1,6 @@
 import type { IUserItem } from 'src/types/user';
 
-import { Button, Card, Stack, Table, TableBody } from '@mui/material';
+import { Card, InputAdornment, Stack, Table, TableBody, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
@@ -16,12 +16,10 @@ import {
   useTable,
 } from 'src/components/table';
 import { RouterLink } from 'src/routes/components';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { useGetAllUser } from '../http/useGetAllUser';
 import { UserTableRow } from '../user-table-row';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​' },
@@ -92,15 +90,7 @@ export function UserList() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row._id)
-                  )
-                }
               />
               <TableBody>
                 {dataFiltered

@@ -20,16 +20,13 @@ import Papa from 'papaparse';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
-import {
-  PRODUCT_ARTISTPLUS_OPTIONS,
-  PRODUCT_CUSTOMORDER_OPTIONS,
-  PRODUCT_PICKLIST_OPTIONS,
-} from 'src/_mock';
+import { PRODUCT_CUSTOMORDER_OPTIONS, PRODUCT_PICKLIST_OPTIONS } from 'src/_mock';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
 import { useSearchParams } from 'src/routes/hooks';
+import { RenderAllPicklist } from 'src/sections/Picklists/RenderAllPicklist';
 import { z as zod } from 'zod';
 
 export const NewProductSchema = zod.object({
@@ -90,6 +87,8 @@ export function Invoice({
   const [selectedBank, setSelectedBank] = useState({ code: '', name: '' });
   const [arr, setArr] = useState<{ value: number; label: number }[]>([]);
   const { data } = useGetAllCatalog();
+
+  const levelPicklist = RenderAllPicklist('Artist Level');
 
   useEffect(() => {
     const loadCSV = async () => {
@@ -162,7 +161,7 @@ export function Invoice({
       taxEmail: artistFormData?.taxEmail || value ? artistFormData?.email : '',
       taxPhone: artistFormData?.taxPhone || value ? artistFormData?.phone : '',
       taxBankIBAN: artistFormData?.taxBankIBAN || '',
-      vatAmount: artistFormData?.vatAmount || 0,
+      vatAmount: Number(artistFormData?.vatAmount) || 0,
       taxBankName: artistFormData?.taxBankName || '',
       CustomOrder: artistFormData?.CustomOrder || 'No',
       artistLevel: artistFormData?.artistLevel || '',
@@ -517,7 +516,7 @@ export function Invoice({
           checkbox
           name="ArtistPlus"
           label="Artist +++"
-          options={PRODUCT_ARTISTPLUS_OPTIONS}
+          options={levelPicklist ? levelPicklist : []}
         />
         <Field.Text disabled={isReadOnly} name="scoreProfessional" label="Score Professional" />
         <Field.Text disabled={isReadOnly} name="scorePlatform" label="Score Platform" />
