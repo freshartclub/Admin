@@ -204,10 +204,12 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
-            className={`w-fit h-fit flex items-center rounded-2xl px-2 py-1 ${row?.isArtistRequestStatus === 'pending' ? 'bg-[#E7F4EE] text-[#0D894F]' : row?.isArtistRequestStatus === 'ban' ? 'bg-[#FEEDEC] text-[#F04438]' : row?.isArtistRequestStatus === 'under-review' ? 'bg-[#b1b1b1] text-[#303030]' : 'bg-[#fdf3e5] text-[#f09a38]'}`}
+            className={`w-fit h-fit flex items-center rounded-2xl px-2 py-1 ${row?.isArtistRequestStatus === 'pending' ? 'bg-[#E7F4EE] text-[#0D894F]' : row?.isArtistRequestStatus === 'ban' ? 'bg-[#FEEDEC] text-[#F04438]' : row?.profileStatus === 'under-review' ? 'bg-[#b1b1b1] text-[#303030]' : 'bg-[#fdf3e5] text-[#f09a38]'}`}
           >
-            {row?.isArtistRequestStatus.charAt(0).toUpperCase() +
-              row?.isArtistRequestStatus.slice(1)}
+            {row?.profileStatus === 'under-review'
+              ? 'Under Review'
+              : row?.isArtistRequestStatus.charAt(0).toUpperCase() +
+                row?.isArtistRequestStatus.slice(1)}
           </span>
         </TableCell>
         <TableCell sx={{ alignContent: 'center' }}>

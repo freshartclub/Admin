@@ -45,6 +45,8 @@ export function ArtistsRequest() {
 
   const { data, isLoading } = useGetAllArtistRequest(debounceSearch, sStatus);
 
+  console.log(data);
+
   useEffect(() => {
     if (data?.data) {
       setUserList(data?.data);
