@@ -61,6 +61,9 @@ export const ARTIST_ENDPOINTS = {
   getSearchedCollection: `${ADMIN_BASE_URL}/get-search-collection`,
   addSeries: `${ADMIN_BASE_URL}/add-series-to-artist`,
   getSeriesList: `${ADMIN_BASE_URL}/get-series-list`,
+  getReviewArtist: `${ADMIN_BASE_URL}/get-review-artist-detail`,
+  approveArtistChanges: `${ADMIN_BASE_URL}/approve-changes`,
+  rejectChanges: `${ADMIN_BASE_URL}/reject-changes`,
 };
 
 export const USER_ENDPOINTS = {

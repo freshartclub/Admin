@@ -25,11 +25,11 @@ import { FormControl } from '@mui/material';
 import { InputLabel } from '@mui/material';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​', width: 140 },
+  { id: 'artistName', label: 'Artist Name​', width: 180 },
   { id: 'phone', label: 'Contact', width: 140 },
   { id: 'city', label: 'City', width: 140 },
-  { id: 'country', label: 'Country', width: 140 },
-  { id: 'isArtistRequestStatus', label: 'Request Status', width: 180 },
+  { id: 'country', label: 'Country', width: 80 },
+  { id: 'isArtistRequestStatus', label: 'Request Status', width: 140 },
   { id: 'cv', label: 'CV', width: 60 },
   { id: 'buttons', label: 'Button', width: 80 },
   { id: 'action', label: 'Action', width: 40 },
@@ -84,7 +84,7 @@ export function ArtistsRequest() {
             onChange={(e) => setStatus(e.target.value)}
             value={sStatus}
           >
-            {['All', 'Pending', 'Ban', 'Rejected'].map((option) => (
+            {['All', 'Pending', 'Ban', 'Rejected', 'Under-Review'].map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>

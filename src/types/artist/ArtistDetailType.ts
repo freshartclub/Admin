@@ -124,6 +124,7 @@ export interface ArtistListType {
   _id: string;
   avatar: string;
   isActivated: Boolean;
+  profileStatus: string;
   userId?: string;
   artistId: string;
   artistName: string;

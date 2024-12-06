@@ -149,6 +149,9 @@ export function CreateArtistForm() {
   });
 
   useEffect(() => {
+    if (id) {
+      setOpen(false);
+    }
     if (methods.getValues('existingId') !== '') {
       refetch();
     }
@@ -276,6 +279,7 @@ export function CreateArtistForm() {
                 <Field.Text
                   sx={{ pb: 3 }}
                   required
+                  disabled={isReadOnly}
                   onClick={() => setOpen(true)}
                   name="existingId"
                   placeholder="Search By UserId, Name or Email"

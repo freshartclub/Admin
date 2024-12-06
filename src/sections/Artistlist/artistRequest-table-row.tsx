@@ -25,6 +25,7 @@ import { useBanRequestMutation } from './http/useBanRequestMutation';
 import { useRejectRequestMutation } from './http/useRejectRequestMutation';
 import { useUnBanRequest } from './http/useUnBanRequest';
 import { useUnRejectRequest } from './http/useUnRejectRequest';
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ type Props = {
 
 export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const popover = usePopover();
+  const navigate = useNavigate();
 
   const [unBanPopUp, setUnBanPopUp] = useState(false);
   const [unRejectPopUp, setUnRejectPopUp] = useState(false);
@@ -202,14 +204,14 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
-            className={`w-fit h-fit flex items-center rounded-2xl px-2 py-1 ${row?.isArtistRequestStatus === 'pending' ? 'bg-[#E7F4EE] text-[#0D894F]' : row?.isArtistRequestStatus === 'ban' ? 'bg-[#FEEDEC] text-[#F04438]' : 'bg-[#fdf3e5] text-[#f09a38]'}`}
+            className={`w-fit h-fit flex items-center rounded-2xl px-2 py-1 ${row?.isArtistRequestStatus === 'pending' ? 'bg-[#E7F4EE] text-[#0D894F]' : row?.isArtistRequestStatus === 'ban' ? 'bg-[#FEEDEC] text-[#F04438]' : row?.isArtistRequestStatus === 'under-review' ? 'bg-[#b1b1b1] text-[#303030]' : 'bg-[#fdf3e5] text-[#f09a38]'}`}
           >
             {row?.isArtistRequestStatus.charAt(0).toUpperCase() +
               row?.isArtistRequestStatus.slice(1)}
           </span>
         </TableCell>
         <TableCell sx={{ alignContent: 'center' }}>
-          <span onClick={handleDocsPreview}>
+          <span onClick={handleDocsPreview} className="cursor-pointer">
             <Iconify icon="mdi:eye-outline" />
           </span>
         </TableCell>
@@ -240,51 +242,62 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
         onClose={popover.onClose}
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
-        <MenuList>
-          {row?.isArtistRequestStatus === 'rejected' ? (
+        {row?.profileStatus === 'under-review' ? (
+          <MenuList>
             <MenuItem
-              onClick={() => {
-                popover.onClose();
-                setUnRejectPopUp(true);
-              }}
+              onClick={() => navigate(`${paths.dashboard.artist.reviewArtist}?id=${row._id}`)}
             >
-              <Iconify icon="fluent-color:approvals-app-24" />
-              Un-Reject
+              <Iconify icon="line-md:circle-to-confirm-circle-transition" />
+              Review Details
             </MenuItem>
-          ) : (
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                setRejectPopUp(true);
-              }}
-            >
-              <Iconify icon="solar:trash-bin-trash-bold" />
-              Reject
-            </MenuItem>
-          )}
-          {row?.isArtistRequestStatus === 'ban' ? (
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                setUnRejectPopUp(true);
-              }}
-            >
-              <Iconify icon="jam:refresh-reverse" />
-              Un-Ban
-            </MenuItem>
-          ) : (
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                setBanPopUp(true);
-              }}
-              sx={{ color: 'error.main' }}
-            >
-              <Iconify icon="mdi:ban" />
-              Ban
-            </MenuItem>
-          )}
-        </MenuList>
+          </MenuList>
+        ) : (
+          <MenuList>
+            {row?.isArtistRequestStatus === 'rejected' ? (
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  setUnRejectPopUp(true);
+                }}
+              >
+                <Iconify icon="fluent-color:approvals-app-24" />
+                Un-Reject
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  setRejectPopUp(true);
+                }}
+              >
+                <Iconify icon="solar:trash-bin-trash-bold" />
+                Reject Request
+              </MenuItem>
+            )}
+            {row?.isArtistRequestStatus === 'ban' ? (
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  setUnRejectPopUp(true);
+                }}
+              >
+                <Iconify icon="jam:refresh-reverse" />
+                Un-Ban
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  popover.onClose();
+                  setBanPopUp(true);
+                }}
+                sx={{ color: 'error.main' }}
+              >
+                <Iconify icon="mdi:ban" />
+                Ban Request
+              </MenuItem>
+            )}
+          </MenuList>
+        )}
       </CustomPopover>
       {banDialogBox}
       {rejectDialogBox}

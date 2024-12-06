@@ -56,7 +56,7 @@ export const paths = {
       createArtist: `${ROOTS.DASHBOARD}/artist/create`,
       addArtist: `${ROOTS.DASHBOARD}/artist/add`,
       allArtist: `${ROOTS.DASHBOARD}/artist/all`,
-
+      reviewArtist:`${ROOTS.DASHBOARD}/artist/review`,
       artistList: `${ROOTS.DASHBOARD}/artist/list`,
       suspendList: `${ROOTS.DASHBOARD}/artist/suspended-list`,
 

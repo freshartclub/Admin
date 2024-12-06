@@ -70,7 +70,7 @@ export function DisciplineTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'end' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton
             sx={{ marginRight: '10px' }}
             color={popover.open ? 'inherit' : 'default'}

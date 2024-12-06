@@ -41,7 +41,15 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
       <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.themeName}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.discipline.map((discipline: any) => discipline.disciplineName).join(', ')}
+          <span
+            className="cursor-pointer hover:text-[#FF9E43] hover:underline"
+            onClick={() => navigate(`${paths.dashboard.category.mediasupport.add}?id=${row._id}`)}
+          >
+            {row.discipline
+              .map((discipline: any) => discipline.disciplineName)
+              .slice(0, 4)
+              .join(', ')}
+          </span>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
@@ -52,7 +60,7 @@ export function ThemeTableRow({ row, selected, onEditRow, onSelectRow, onDeleteR
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.createdAt}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'end' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton
             sx={{ marginRight: '10px' }}
             color={popover.open ? 'inherit' : 'default'}
