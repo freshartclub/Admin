@@ -315,16 +315,18 @@ export function OtherDetails({
                 </>
               )}
 
-              <Button
-                disabled={isReadOnly}
-                size="small"
-                color="error"
-                className="flex justify-end"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
+              {index === fields.length - 1 && (
+                <Button
+                  disabled={isReadOnly}
+                  size="small"
+                  color="error"
+                  className="flex justify-end"
+                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                  onClick={() => handleRemove(index)}
+                >
+                  Remove
+                </Button>
+              )}
             </Box>
           ))}
         </Stack>
