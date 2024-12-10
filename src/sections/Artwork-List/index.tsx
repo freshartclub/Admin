@@ -39,13 +39,12 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
   { id: 'artworkName', label: 'Artwork Name', width: 180 },
-  { id: 'artworkId', label: 'Artwork Id', width: 180 },
-  { id: 'artistName', label: 'Artist Name', width: 180 },
-  { id: 'isArtProvider', label: 'Art Provider', width: 150 },
+  { id: 'artistName', label: 'Artist Name', width: 150 },
   { id: 'discipline', label: 'Discipline', width: 100 },
+  { id: 'activeTab', label: 'Commercialization ', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 100 },
-  { id: 'status', label: 'Status' },
-  { id: 'action', label: 'Action' },
+  { id: 'status', label: 'Status', width: 100 },
+  { id: 'action', label: 'Action' , width: 100},
 ];
 
 // ----------------------------------------------------------------------
@@ -88,7 +87,7 @@ export function ArtworkListView() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artwork Id/Name..."
+          placeholder="Search By Artwork Id/Name or Artist Id/Name..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

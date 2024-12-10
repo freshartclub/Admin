@@ -33,7 +33,7 @@ export function PicklistTableRow({
   onDeleteRow,
 }: Props) {
   const navigate = useNavigate();
-  console.log(row, _id);
+
   const { mutateAsync, isPending } = useDeletePicklist(_id, row?.name);
 
   const confirm = useBoolean();

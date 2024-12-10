@@ -28,8 +28,8 @@ import { CollectionTableRow } from './collection-table-row';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'collectionName', label: 'Colletion Name' },
-  { id: 'artworkTags', label: 'Artwork Tags' },
+  { id: 'collectionName', label: 'Collection Name' },
+  { id: 'collectionTags', label: 'Collection Tags' },
   { id: 'status', label: 'Status' },
   { id: 'createdAt', label: 'Created At' },
   { id: 'actions', label: 'Actions' },
@@ -73,7 +73,7 @@ export function CollectionListView() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Collection Name, Artwork Tags & Created By..."
+          placeholder="Search By Collection Name, Collection Tags & Created By..."
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

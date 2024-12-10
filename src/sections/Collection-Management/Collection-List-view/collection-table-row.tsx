@@ -46,7 +46,12 @@ export function CollectionTableRow({
 
   const tags = (val) => {
     if (!val || val.length === 0) return '';
-    return val.slice(0, 3).join(' | ');
+
+    if (val.length > 3) {
+      return val.slice(0, 3).join(' | ') + '...';
+    } else {
+      return val.slice(0, 3).join(' | ');
+    }
   };
 
   return (
@@ -73,7 +78,7 @@ export function CollectionTableRow({
             />
           </Stack>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tags(row?.artworkTags)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tags(row?.collectionTags)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.status}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
 

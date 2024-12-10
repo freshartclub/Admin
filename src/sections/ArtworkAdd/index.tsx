@@ -21,9 +21,7 @@ import Stack from '@mui/material/Stack';
 import {
   ARTWORK_AVAILABLETO_OPTIONS,
   ARTWORK_COLLECTIONLIST_OPTIONS,
-  ARTWORK_COLORS_OPTIONS,
   ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
-  ARTWORK_EMOTIONS_OPTIONS,
   ARTWORK_FRAMED_OPTIONS,
   ARTWORK_HANGING_OPTIONS,
   ARTWORK_MATERIAL_OPTIONS,
@@ -31,11 +29,11 @@ import {
   ARTWORK_ORIENTATION_OPTIONS,
   ARTWORK_PROMOTIONS_OPTIONS,
   ARTWORK_PURCHASECATALOG_OPTIONS,
-  ARTWORK_STYLE_OPTIONS,
 } from 'src/_mock';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -61,13 +59,13 @@ import { z as zod } from 'zod';
 import { useGetArtworkById } from '../Artwork-details-view/http/useGetArtworkById';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
+import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
 import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnicMutation';
 import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
 import useAddArtistSeries from './http/useAddArtistSeries';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
 import { useGetSeriesList } from './http/useGetSeriesList';
-import { Alert } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -78,7 +76,7 @@ export const NewProductSchema = zod.object({
   isArtProvider: zod.string().min(1, { message: 'isArtProvider is required!' }),
   provideArtistName: zod.string().optional(),
   artworkCreationYear: zod.string().optional(),
-  artworkSeries: zod.string().min(1, { message: 'Artwork Series is required!' }),
+  artworkSeries: zod.string().optional(),
   productDescription: zod.string().optional(),
   mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
   backImage: schemaHelper.file({ required: false }).optional(),
@@ -110,10 +108,7 @@ export const NewProductSchema = zod.object({
   purchaseType: zod.string().optional(),
   acceptOfferPrice: zod.string().optional(),
   basePrice: zod.string().min(1, { message: 'Base price is required!' }),
-  dpersentage: zod
-    .number()
-    .min(1, { message: 'Discount should not be $0.00' })
-    .max(100, { message: 'Discount cannot exceed 100%!' }),
+  dpersentage: zod.number().max(100, { message: 'Discount cannot exceed 100%!' }).optional(),
   vatAmount: zod
     .number()
     .min(1, { message: 'Vat Amount is required!' })
@@ -121,11 +116,11 @@ export const NewProductSchema = zod.object({
   activeTab: zod.string().optional(),
   purchaseOption: zod.string().optional(),
   offensive: zod.string().optional(),
-  pCode: zod.string().min(1, { message: 'Product Code is required!' }),
-  location: zod.string().min(1, { message: 'location is required!' }),
+  pCode: zod.string().optional(),
+  location: zod.string().optional(),
   artworkDiscipline: zod.string(),
-  intTags: zod.string().array().min(1, { message: 'Add at least one Internal Tag!' }),
-  extTags: zod.string().array().min(1, { message: 'Add at least one External Tag!' }),
+  intTags: zod.string().array().optional(),
+  extTags: zod.string().array().optional(),
   promotion: zod.string().optional(),
   promotionScore: zod.number().optional(),
   availableTo: zod.string().optional(),
@@ -155,17 +150,26 @@ export function ArtworkAdd() {
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
+  const { data: styleData } = useGetStyleListMutation();
 
-  const picklist = RenderAllPicklists(['Purchase Options', 'Currency', 'Package Material']);
+  const picklist = RenderAllPicklists([
+    'Commercialization Options',
+    'Currency',
+    'Package Material',
+    'Emotions',
+    'Colors',
+  ]);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
     acc[item?.fieldName] = item?.picklist;
     return acc;
   }, {});
 
-  const purOption = picklistMap['Purchase Options'];
+  const purOption = picklistMap['Commercialization Options'];
   const currency = picklistMap['Currency'];
   const packMaterial = picklistMap['Package Material'];
+  const emotions = picklistMap['Emotions'];
+  const colors = picklistMap['Colors'];
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -224,6 +228,31 @@ export function ArtworkAdd() {
             ThemeArr.push(localObj);
 
             return ThemeArr;
+          })
+      : [];
+
+  let StyleArr: any = [];
+  const StyleOptions =
+    styleData && styleData.length > 0
+      ? styleData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.styleName;
+            localObj.label = item?.styleName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
+
+            StyleArr.push(localObj);
+
+            return StyleArr;
           })
       : [];
 
@@ -349,6 +378,7 @@ export function ArtworkAdd() {
 
   const debounceArtistId = useDebounce(search, 1000);
   const { data: artistData } = useGetArtistById(debounceArtistId);
+
   const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();
   const { data: artworkData, refetch } = useGetSeriesList(mongoDBId);
 
@@ -495,6 +525,10 @@ export function ArtworkAdd() {
     return ThemeArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
+  const filterStyleForDiscipline = (selectedDiscipline) => {
+    return StyleArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
+  };
+
   const currentYear = dayjs();
 
   useEffect(() => {
@@ -512,9 +546,16 @@ export function ArtworkAdd() {
   }, [artworkData]);
 
   const removeText = () => {
-    setValue('artistID', '');
-    setValue('artistName', '');
-    setValue('isArtProvider', '');
+    reset({
+      artistName: '',
+      artistID: '',
+      isArtProvider: '',
+      provideArtistName: '',
+      artworkSeries: '',
+      vatAmount: null,
+      artistFees: null,
+    });
+    setmongoDBId(null);
     setSearch('');
   };
 
@@ -652,8 +693,8 @@ export function ArtworkAdd() {
           {search !== '' && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {artistData && artistData.length > 0 ? (
-                  artistData.map((i, j) => (
+                {artistData?.data && artistData?.data?.length > 0 ? (
+                  artistData?.data.map((i, j) => (
                     <TableCell
                       onClick={() => refillData(i)}
                       key={j}
@@ -665,7 +706,10 @@ export function ArtworkAdd() {
                       }}
                     >
                       <Stack spacing={2} direction="row" alignItems="center">
-                        <Avatar alt={i?.artistName} src={i?.profile?.mainImage} />
+                        <Avatar
+                          alt={i?.artistName}
+                          src={`${artistData?.url}/users/${i?.mainImage}`}
+                        />
 
                         <ListItemText
                           disableTypography
@@ -721,7 +765,6 @@ export function ArtworkAdd() {
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
             <Field.SingelSelect
               sx={{ width: '100%' }}
-              checkbox
               name="artworkSeries"
               label="Artwork Series"
               options={
@@ -729,7 +772,12 @@ export function ArtworkAdd() {
                   ? artworkData?.seriesList
                     ? artworkData?.seriesList.map((i) => ({ value: i, label: i }))
                     : []
-                  : []
+                  : [
+                      {
+                        value: '',
+                        label: 'Search For Artist First',
+                      },
+                    ]
               }
             />
             {mongoDBId && (
@@ -860,10 +908,19 @@ export function ArtworkAdd() {
           />
         </Box>
         <Field.MultiSelect
-          checkbox
+          checkbox={selectedDisciplines && selectedDisciplines.length > 0}
           name="artworkStyle"
           label="Artwork Style"
-          options={ARTWORK_STYLE_OPTIONS}
+          options={
+            selectedDisciplines && selectedDisciplines
+              ? filterStyleForDiscipline(selectedDisciplines)
+              : [
+                  {
+                    value: '',
+                    label: 'Please select discipline first',
+                  },
+                ]
+          }
         />
         <Box
           columnGap={2}
@@ -875,14 +932,9 @@ export function ArtworkAdd() {
             checkbox
             name="emotions"
             label="Emotions"
-            options={ARTWORK_EMOTIONS_OPTIONS}
+            options={emotions ? emotions : []}
           />
-          <Field.MultiSelect
-            checkbox
-            name="colors"
-            label="Colors"
-            options={ARTWORK_COLORS_OPTIONS}
-          />
+          <Field.MultiSelect checkbox name="colors" label="Colors" options={colors ? colors : []} />
           <Field.SingelSelect
             checkbox
             name="offensive"
@@ -1063,12 +1115,17 @@ export function ArtworkAdd() {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <FormControl fullWidth component="fieldset">
-          <FormLabel component="legend">Purchase Options</FormLabel>
+          <FormLabel component="legend">Commercialization Options</FormLabel>
           <RadioGroup
             name="activeTab"
             sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
             value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
+            onChange={(e) => {
+              setSelectedOption(e.target.value);
+              methods.setValue('artistFees', '');
+              methods.setValue('subscriptionCatalog', '');
+              methods.setValue('purchaseCatalog', '');
+            }}
           >
             <FormControlLabel
               value="subscription"
@@ -1089,7 +1146,6 @@ export function ArtworkAdd() {
         {selectedOption === 'subscription' && (
           <>
             <Field.SingelSelect
-              checkbox
               name="subscriptionCatalog"
               label="Subscription Catalog"
               onClick={(e: any) => handleChange(e)}
@@ -1101,8 +1157,18 @@ export function ArtworkAdd() {
                         artistFees: i.artistFees,
                         label: i.catalogName,
                       }))
-                    : []
-                  : []
+                    : [
+                        {
+                          value: '',
+                          label: 'No Catalog Found',
+                        },
+                      ]
+                  : [
+                      {
+                        value: '',
+                        label: 'Search For Artist First',
+                      },
+                    ]
               }
             />
             <Field.SingelSelect
@@ -1116,7 +1182,6 @@ export function ArtworkAdd() {
         {selectedOption === 'purchase' && (
           <>
             <Field.SingelSelect
-              checkbox
               name="purchaseCatalog"
               onClick={(e: any) => handleChange(e)}
               label="Purchase Catalog"
@@ -1127,8 +1192,18 @@ export function ArtworkAdd() {
                         value: i.catalogName,
                         label: i.catalogName,
                       }))
-                    : []
-                  : []
+                    : [
+                        {
+                          value: '',
+                          label: 'No Catalog Found',
+                        },
+                      ]
+                  : [
+                      {
+                        value: '',
+                        label: 'Search For Artist First',
+                      },
+                    ]
               }
             />
             <Field.SingelSelect
@@ -1189,7 +1264,12 @@ export function ArtworkAdd() {
           {fixPrice === 'Downward Offer' || fixPrice === 'Upward Offer' ? (
             <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
           ) : null}
-          <Field.Text type="number" name="vatAmount" label="VAT Amount (%)" />
+          <Field.Text
+            type="number"
+            value={methods.getValues('vatAmount')}
+            name="vatAmount"
+            label="VAT Amount (%)"
+          />
           <Field.Text
             name="artistFees"
             label="Artist Fees"
@@ -1239,7 +1319,12 @@ export function ArtworkAdd() {
             type="number"
           />
 
-          <Field.Text type="number" name="vatAmount" label="VAT Amount (%)" />
+          <Field.Text
+            type="number"
+            value={methods.getValues('vatAmount')}
+            name="vatAmount"
+            label="VAT Amount (%)"
+          />
           <Field.Text
             name="artistFees"
             label="Artist Fees"

@@ -26,6 +26,8 @@ import { Iconify } from 'src/components/iconify';
 import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMutation';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
+import { useNavigate } from 'react-router';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -76,6 +78,7 @@ export function OtherDetails({
   tabIndex,
   tabState,
 }: AddArtistComponentProps) {
+  const navigate = useNavigate();
   const view = useSearchParams().get('view');
   const id = useSearchParams().get('id');
   const [intValue, setIntValue] = useState('');
@@ -117,8 +120,10 @@ export function OtherDetails({
       profileStatus: artistFormData?.profileStatus || '',
       intTags: artistFormData?.intTags || [],
       extTags: artistFormData?.extTags || [],
-      lastRevalidationDate: artistFormData?.lastRevalidationDate || '',
-      nextRevalidationDate: artistFormData?.nextRevalidationDate || '',
+      lastRevalidationDate: artistFormData?.lastRevalidationDate || new Date().toString(),
+      nextRevalidationDate:
+        artistFormData?.nextRevalidationDate ||
+        new Date(new Date().setDate(new Date().getDate() + 30)).toString(),
       managerName: artistFormData?.managerName || '',
       managerArtistPhone: artistFormData?.managerArtistPhone || '',
       managerArtistEmail: artistFormData?.managerArtistEmail || '',
@@ -186,6 +191,7 @@ export function OtherDetails({
     data.count = 7;
     data.isContainsImage = true;
     data.isManagerDetails = false;
+
     if (isOn) {
       data.isManagerDetails = true;
     }
@@ -361,8 +367,8 @@ export function OtherDetails({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Select or Type New Tag Name"
-                placeholder="Select or Type New Tag Name"
+                label="Internal Tag Name"
+                placeholder="Internal Tag Name"
                 required
               />
             )}
@@ -416,8 +422,8 @@ export function OtherDetails({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Select or Type New Tag Name"
-                placeholder="Select or Type New Tag Name"
+                label="External Tag Name"
+                placeholder="External Tag Name"
                 required
               />
             )}
@@ -655,6 +661,12 @@ export function OtherDetails({
                 className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
               >
                 Activate Artist
+              </span>
+              <span
+                onClick={() => navigate(paths.dashboard.artist.allArtist)}
+                className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"
+              >
+                Cancel
               </span>
               <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
                 {isPending ? 'Loading...' : 'Save'}

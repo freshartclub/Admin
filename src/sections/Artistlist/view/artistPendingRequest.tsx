@@ -28,7 +28,7 @@ const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 180 },
   { id: 'userId', label: 'User Id', width: 130 },
   { id: 'phone', label: 'Contact', width: 180 },
-  { id: 'status', label: 'Country', width: 130 },
+  { id: 'country', label: 'Country', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
 ];
@@ -39,7 +39,7 @@ export function ArtistsPendingRequest() {
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 1000);
 
   const { data, isLoading } = useGetPendingArtist(debounceSearch);
 

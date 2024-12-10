@@ -13,7 +13,6 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
 import { paths } from 'src/routes/paths';

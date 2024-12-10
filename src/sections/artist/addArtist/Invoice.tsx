@@ -28,6 +28,7 @@ import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
 import { useSearchParams } from 'src/routes/hooks';
 import { RenderAllPicklist } from 'src/sections/Picklists/RenderAllPicklist';
 import { z as zod } from 'zod';
+import { toast } from 'sonner';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
@@ -184,7 +185,8 @@ export function Invoice({
     defaultValues,
   });
 
-  const { trigger, handleSubmit, reset } = formProps;
+  const { trigger, handleSubmit, reset, watch } = formProps;
+  const val = watch();
 
   useEffect(() => {
     reset({
@@ -219,6 +221,13 @@ export function Invoice({
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    const val1 = formProps.getValues('MaxNumberOfArtwork');
+    const val2 = formProps.getValues('MinNumberOfArtwork');
+
+    if (val1 < val2) {
+      return toast.error('Max Number of Artwork should be greater than Min Number of Artwork');
+    }
+
     await trigger(undefined, { shouldFocus: true });
     data.count = 5;
     mutate({ body: data });
@@ -473,8 +482,9 @@ export function Invoice({
                 <Field.Text
                   disabled={isReadOnly}
                   required
+                  value={val.PublishingCatalog[index]?.ArtistFees}
                   name={`PublishingCatalog[${index}].ArtistFees`}
-                  // label="Artist Fees"
+                  label="Artist Fees"
                   placeholder="Artist Fees"
                 />
                 {index > 0 && (

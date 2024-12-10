@@ -330,7 +330,13 @@ export function AboutArtist({
                 options={filterSocialLinks(index)}
               />
 
-              <Field.Text disabled={isReadOnly} required name={`link[${index}].link`} label="Url" />
+              <Field.Text
+                disabled={isReadOnly}
+                required
+                placeholder="https://www.example.com or http://www.example.com"
+                name={`link[${index}].link`}
+                label="Url (must start with http:// or https://)"
+              />
 
               <Box>
                 {selectedLinks[index]?.link ? (

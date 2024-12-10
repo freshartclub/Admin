@@ -10,12 +10,12 @@ export const useSuspendArtistMutation = () => {
     const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
     return response;
   }
-  
+
   return useMutation({
     mutationFn: CreateArtist,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase],
+        queryKey: [ARTIST_ENDPOINTS.getAllPendingArtist],
         refetchType: 'all',
       });
 

@@ -29,10 +29,10 @@ type Props = {
 
 export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const [showPop, setShowPop] = useState(false);
-  const { mutate, isPending } = useUnsuspendArtistMutation(row._id);
+  const { mutateAsync, isPending } = useUnsuspendArtistMutation(row._id);
 
   const handleUnsuspend = (id) => {
-    mutate();
+    mutateAsync().then(() => setShowPop(false));
   };
 
   const dialogBox = (

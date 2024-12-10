@@ -201,6 +201,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.state}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span

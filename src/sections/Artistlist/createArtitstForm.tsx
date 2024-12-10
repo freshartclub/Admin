@@ -359,9 +359,9 @@ export function CreateArtistForm() {
                   />
 
                   <Field.Text name="existingZipCode" required label="Zip/code" />
-                  <Field.Text name="existingState" required label="State/region" />
+                  <Field.Text sx={{ mt: 3 }} name="existingCity" required label="City" />
                 </Box>
-                <Field.Text sx={{ mt: 3 }} name="existingCity" required label="City" />
+                <Field.Text name="existingState" required label="State/region" />
 
                 <Stack alignItems="flex-end" sx={{ mt: 3 }}>
                   <Button type="submit" variant="contained">

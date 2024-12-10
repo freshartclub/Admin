@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { fData } from 'src/utils/format-number';
-import { Form, Field } from 'src/components/hook-form';
-import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
-import { CreateArtistFormSchema } from './createArtitstForm';
+import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Field, Form } from 'src/components/hook-form';
+import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import { fData } from 'src/utils/format-number';
 import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
+import { CreateArtistFormSchema } from './createArtitstForm';
 
 const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   const [value, setValue] = useState('new');
@@ -92,6 +92,8 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
         methods.setValue('state', state || '');
       });
     }
+
+    console.log(zipCode, country);
   }, [zipCode, country]);
 
   return (
@@ -152,9 +154,9 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
               />
 
               <Field.Text required name="zipCode" label="Zip/code" />
-              <Field.Text required name="state" label="State/region" />
+              <Field.Text required name="city" label="City" />
             </Box>
-            <Field.Text sx={{ mt: 3 }} required name="city" label="City" />
+            <Field.Text sx={{ mt: 3 }} required name="state" label="State/region" />
 
             <Stack
               alignItems="flex-end"

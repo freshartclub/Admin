@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Chip,
   InputAdornment,
   Link,
   ListItemText,
@@ -18,9 +19,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import {
-  COLLECTION_CREATED_OPTIONS,
-  COLLECTION_STATUS_OPTIONS,
-  COLLECTION_TAGS_OPTIONS,
+  COLLECTION_STATUS_OPTIONS
 } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
@@ -59,7 +58,7 @@ export const NewPostSchema = zod.object({
   expertDesc: zod.string().min(1, { message: ' Description is required!' }),
   expertImg: schemaHelper.file({ required: false }).optional(),
   collectionFile: schemaHelper.file({ required: false }).optional(),
-  artworkTags: zod.string().array().min(1, { message: 'Artwork Tags is required!' }),
+  collectionTags: zod.string().array().min(1, { message: 'Artwork Tags is required!' }),
   status: zod.string().min(1, { message: 'status is required!' }),
 });
 
@@ -85,7 +84,7 @@ export function AddCollectionForm() {
       expertImg: data?.data?.expertDetails?.expertImg || null,
       createdBy: data?.data?.expertDetails?.createdBy || '',
       collectionFile: data?.data?.collectionFile || null,
-      artworkTags: data?.data?.artworkTags || [],
+      collectionTags: data?.data?.collectionTags || [],
       status: data?.data?.status || 'Draft',
     }),
     [data?.data]
@@ -124,7 +123,7 @@ export function AddCollectionForm() {
         expertImg: `${data?.url}/users/${data?.data?.expertDetails?.expertImg}` || null,
         createdBy: data?.data?.expertDetails?.createdBy || '',
         collectionFile: data?.data?.collectionFile || null,
-        artworkTags: data?.data?.artworkTags || [],
+        collectionTags: data?.data?.collectionTags || [],
         status: data?.data?.status || 'Draft',
       });
     }
@@ -455,12 +454,33 @@ export function AddCollectionForm() {
       <CardHeader title="Artwork Tags" sx={{ mb: 1 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.MultiSelect
+        <Field.Autocomplete
+          required
+          name="collectionTags"
+          label="Collection Tags"
+          placeholder="+ Collection Tags"
           multiple
-          checkbox
-          name="artworkTags"
-          label="Artwork Tags"
-          options={COLLECTION_TAGS_OPTIONS}
+          freeSolo
+          disableCloseOnSelect
+          options={[]}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option) => (
+            <li {...props} key={option}>
+              {option}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option}
+                label={option}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
         />
       </Stack>
     </Card>

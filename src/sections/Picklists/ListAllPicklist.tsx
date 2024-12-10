@@ -18,6 +18,7 @@ import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 import { PicklistTableRow } from './Picklist-table-row';
 import { useGetPicklistMutation } from './http/useGetPicklistMutation';
+import { Stack } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Field Name', width: 150 },
@@ -78,26 +79,33 @@ export function ListAllPicklist() {
         }
       />
 
-      <FormControl sx={{ flexShrink: 0, width: 300, mb: 2 }}>
-        <InputLabel htmlFor="Picklist">Select Picklist</InputLabel>
+      <Stack direction={'row'} spacing={2} alignItems={'center'} sx={{ mb: 2 }}>
+        <FormControl sx={{ flexShrink: 0, width: 300 }}>
+          <InputLabel htmlFor="Picklist">Select Picklist</InputLabel>
 
-        <Select
-          label="Select Picklist"
-          inputProps={{ id: 'Picklist' }}
-          onChange={(e) => setPicklist(e.target.value)}
-          value={picklist}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {data &&
-            data.length > 0 &&
-            data.map((option) => (
-              <MenuItem key={option.picklistName} value={option.picklistName}>
-                {option.picklistName}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
+          <Select
+            label="Select Picklist"
+            inputProps={{ id: 'Picklist' }}
+            onChange={(e) => setPicklist(e.target.value)}
+            value={picklist}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {data &&
+              data.length > 0 &&
+              data.map((option) => (
+                <MenuItem key={option.picklistName} value={option.picklistName}>
+                  {option.picklistName}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
 
+        <RouterLink href={`${paths.dashboard.category.picklist.add}?id=${id}`}>
+          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1">
+            <Iconify icon="solar:pen-bold" /> Edit Picklist Name
+          </span>
+        </RouterLink>
+      </Stack>
       {isLoading ? (
         <LoadingScreen />
       ) : (

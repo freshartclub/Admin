@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetSuspendedArtistList = (search) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.suspendedArtist}?s=${search}`],
+    queryKey: [ARTIST_ENDPOINTS.suspendedArtist, search],
     queryFn: () => fetchData(search),
   });
 };

@@ -8,8 +8,8 @@ import { useSearchParams } from 'src/routes/hooks';
 
 const useActivateArtistMutation = (handleSuccess) => {
   const navigate = useNavigate();
-
   const id = useSearchParams().get('id');
+
   async function activateArtist({ body }: { body: any }) {
     let headers;
     if (body?.isContainsImage) {
@@ -18,7 +18,16 @@ const useActivateArtistMutation = (handleSuccess) => {
       Object.keys(body).forEach((key) => {
         if (Array.isArray(body[key])) {
           body[key].forEach((item) => {
-            formData.append(key, item);
+            if (typeof item === 'object') {
+              Object.keys(item).forEach((field, i) => {
+                formData.append(field, item[field]);
+                if (item[field] instanceof File) {
+                  formData.append(field, `${i}`);
+                }
+              });
+            } else {
+              formData.append(key, item);
+            }
           });
         } else {
           formData.append(key, body[key]);
@@ -40,6 +49,7 @@ const useActivateArtistMutation = (handleSuccess) => {
       return response;
     }
   }
+  
   return useMutation({
     mutationFn: activateArtist,
     onSuccess: async (res, body) => {

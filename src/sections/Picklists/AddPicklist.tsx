@@ -71,7 +71,7 @@ export function AddPicklist() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      if (id) {
+      if (id && name) {
         updateMutate(data);
       } else {
         mutate(data);

@@ -152,18 +152,34 @@ export function ArtworkTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row?.artworkTechnic}
+                  {row?.artworkId ? row?.artworkId : 'N/A'}
                 </Link>
               }
             />
           </Stack>
         </TableCell>
-        <TableCell>{row?.artworkId ? (row?.artworkId).slice(4) : 'N/A'}</TableCell>
-        <TableCell>{name(row)}</TableCell>
-        <TableCell>{row?.isArtProvider}</TableCell>
+        <TableCell>
+          <ListItemText
+            disableTypography
+            primary={
+              <Typography variant="body2" noWrap>
+                {name(row)}
+              </Typography>
+            }
+            secondary={
+              <Link
+                noWrap
+                variant="body2"
+                onClick={onViewRow}
+                sx={{ color: 'text.disabled', cursor: 'pointer' }}
+              >
+                {row?.artistId ? row?.artistId : 'N/A'}
+              </Link>
+            }
+          />
+        </TableCell>
         <TableCell>{row?.discipline?.artworkDiscipline}</TableCell>
-        {/* <TableCell>{row?.artworkSeries}</TableCell> */}
-
+        <TableCell>{row?.activeTab}</TableCell>
         <TableCell>
           <ListItemText
             primary={fDate(row?.createdAt)}
