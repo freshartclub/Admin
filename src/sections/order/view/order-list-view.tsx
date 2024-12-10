@@ -102,7 +102,7 @@ export function OrderListView() {
                       )
                       .map((row) => (
                         <OrderTableRow
-                          key={row.id}
+                          key={row._id}
                           row={row}
                           url={url}
                           selected={table.selected.includes(row.id)}

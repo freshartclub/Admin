@@ -2,22 +2,19 @@ import type { IOrderItem } from 'src/types/order';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { useNavigate } from 'react-router';
 import { Iconify } from 'src/components/iconify';
 import { Label } from 'src/components/label';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { paths } from 'src/routes/paths';
 import { fCurrency } from 'src/utils/format-number';
 import { fDate } from 'src/utils/format-time';
 
@@ -33,9 +30,8 @@ type Props = {
 };
 
 export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDeleteRow }: Props) {
-  const confirm = useBoolean();
   const collapse = useBoolean();
-  const popover = usePopover();
+  const navigate = useNavigate();
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -55,18 +51,11 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
       </TableCell>
 
       <TableCell>
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar
-            alt={row?.user?.artistName}
-            src={`${url}/users/${row?.user?.profile?.mainImage}`}
-          />
-
-          <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-            <Box component="span">{name(row?.user)}</Box>
-            <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row?.user?.email}
-            </Box>
-          </Stack>
+        <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+          <Box component="span">{name(row?.user)}</Box>
+          <Box component="span" sx={{ color: 'text.disabled' }}>
+            {row?.user?.email}
+          </Box>
         </Stack>
       </TableCell>
       <TableCell align="center">{row?.items?.length}</TableCell>
@@ -87,17 +76,21 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
       </TableCell>
       <TableCell>{fDate(row?.createdAt)}</TableCell>
 
-      <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <IconButton
+          color="inherit"
+          onClick={() =>
+            navigate(`${paths.dashboard.order.details}/${row._id}?orderType=${row?.orderType}`)
+          }
+        >
+          <Iconify icon="solar:eye-bold" />
+        </IconButton>
         <IconButton
           color={collapse.value ? 'inherit' : 'default'}
           onClick={collapse.onToggle}
           sx={{ ...(collapse.value && { bgcolor: 'action.hover' }) }}
         >
           <Iconify icon="eva:arrow-ios-downward-fill" />
-        </IconButton>
-
-        <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-          <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       </TableCell>
     </TableRow>
@@ -126,7 +119,7 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
                 }}
               >
                 <Avatar
-                  src={`${url}/users/${item?.artWork?.media?.mainImage}`}
+                  src={`${url}/users/${item?.artWork?.media}`}
                   variant="rounded"
                   sx={{ width: 48, height: 48, mr: 2 }}
                 />
@@ -155,48 +148,6 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
     <>
       {renderPrimary}
       {renderSecondary}
-
-      <CustomPopover
-        open={popover.open}
-        anchorEl={popover.anchorEl}
-        onClose={popover.onClose}
-        slotProps={{ arrow: { placement: 'right-top' } }}
-      >
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              onViewRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:eye-bold" />
-            View
-          </MenuItem>
-        </MenuList>
-      </CustomPopover>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }

@@ -56,7 +56,7 @@ export const paths = {
       createArtist: `${ROOTS.DASHBOARD}/artist/create`,
       addArtist: `${ROOTS.DASHBOARD}/artist/add`,
       allArtist: `${ROOTS.DASHBOARD}/artist/all`,
-      reviewArtist:`${ROOTS.DASHBOARD}/artist/review`,
+      reviewArtist: `${ROOTS.DASHBOARD}/artist/review`,
       artistList: `${ROOTS.DASHBOARD}/artist/list`,
       suspendList: `${ROOTS.DASHBOARD}/artist/suspended-list`,
 
@@ -125,11 +125,11 @@ export const paths = {
       Root: `${ROOTS.DASHBOARD}/order`,
       subscribe: `${ROOTS.DASHBOARD}/order/subscribe`,
       purchese: `${ROOTS.DASHBOARD}/order/purchese`,
-      // details: `${ROOTS.DASHBOARD}/order/details`,
-      details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
-      demo: {
-        details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
-      },
+      details: `${ROOTS.DASHBOARD}/order/details`,
+      // details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
+      // demo: {
+      //   details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
+      // },
     },
     invoice: {
       Root: `${ROOTS.DASHBOARD}/invoice`,

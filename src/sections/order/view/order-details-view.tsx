@@ -11,53 +11,55 @@ import { OrderDetailsInfo } from '../order-details-info';
 import { OrderDetailsItems } from '../order-details-item';
 import { OrderDetailsToolbar } from '../order-details-toolbar';
 import { OrderDetailsHistory } from '../order-details-history';
+import { useGetOrderDetail } from '../http/useGetOrderDetail';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  order?: IOrderItem;
-};
-
-export function OrderDetailsView({ order }: Props) {
+export function OrderDetailsView() {
+  const { data: order, isLoading } = useGetOrderDetail();
   const [status, setStatus] = useState(order?.status);
+  console.log(order);
 
-  const handleChangeStatus = useCallback((newValue: string) => {
-    setStatus(newValue);
-  }, []);
-
+  const handleChangeStatus = (value: string) => {};
   return (
     <DashboardContent>
       <OrderDetailsToolbar
-        backLink={paths.dashboard.order.root}
-        orderNumber={order?.orderNumber}
-        createdAt={order?.createdAt}
-        status={status}
+        backLink={
+          order?.data?.orderType === 'subscription'
+            ? paths.dashboard.order.subscribe
+            : paths.dashboard.order.purchese
+        }
+        orderNumber={order?.data?.orderID}
+        createdAt={order?.data?.createdAt}
+        status={order?.data?.status}
         onChangeStatus={handleChangeStatus}
         statusOptions={ORDER_STATUS_OPTIONS}
       />
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} border={'1px solid #F0F1F3'} borderRadius={'15px'}>
         <Grid xs={12} md={8}>
           <Stack spacing={3} direction={{ xs: 'column-reverse', md: 'column' }}>
             <OrderDetailsItems
-              items={order?.items}
-              taxes={order?.taxes}
-              shipping={order?.shipping}
-              discount={order?.discount}
-              subtotal={order?.subtotal}
-              totalAmount={order?.totalAmount}
+              items={order?.data?.items}
+              url={order?.url}
+              taxes={order?.data?.tax}
+              shipping={order?.data?.shipping}
+              discount={order?.data?.discount}
+              subtotal={order?.data?.subTotal}
+              totalAmount={order?.data?.subTotal}
             />
 
-            <OrderDetailsHistory history={order?.history} />
+            <OrderDetailsHistory history={order?.data} />
           </Stack>
         </Grid>
 
         <Grid xs={12} md={4}>
           <OrderDetailsInfo
-            customer={order?.customer}
-            delivery={order?.delivery}
-            payment={order?.payment}
-            shippingAddress={order?.shippingAddress}
+            url={order?.url}
+            customer={order?.data?.user}
+            delivery={order?.data?.delivery}
+            payment={order?.data?.payment}
+            shippingAddress={order?.data?.shippingAddress}
           />
         </Grid>
       </Grid>

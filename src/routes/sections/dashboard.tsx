@@ -207,7 +207,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'subscribe', element: <OrderList /> },
           { path: 'purchese', element: <OrderPurcheseList /> },
-          { path: ':id', element: <OrderDetailsPage /> },
+          { path: 'details/:id', element: <OrderDetailsPage /> },
         ],
       },
       {

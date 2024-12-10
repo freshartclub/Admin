@@ -104,4 +104,5 @@ export const PICKLIST_ENDPOINTS = {
 export const ORDER_ENDPOINTS = {
   getSubscriptionOrder: `${ORDER_BASE_URL}/get-subscription-order`,
   getPurchaseOrder: `${ORDER_BASE_URL}/get-purchase-order`,
+  getOrderDetail: `${ORDER_BASE_URL}/get-admin-order-detail`,
 };

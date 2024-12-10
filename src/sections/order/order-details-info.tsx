@@ -1,19 +1,18 @@
 import type {
-  IOrderPayment,
   IOrderCustomer,
   IOrderDelivery,
+  IOrderPayment,
   IOrderShippingAddress,
 } from 'src/types/order';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import CardHeader from '@mui/material/CardHeader';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { Iconify } from 'src/components/iconify';
@@ -21,50 +20,43 @@ import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 type Props = {
+  url: string;
   payment?: IOrderPayment;
   customer?: IOrderCustomer;
   delivery?: IOrderDelivery;
   shippingAddress?: IOrderShippingAddress;
 };
 
-export function OrderDetailsInfo({ customer, delivery, payment, shippingAddress }: Props) {
+export function OrderDetailsInfo({ url, customer, delivery, payment, shippingAddress }: Props) {
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const renderCustomer = (
     <>
       <CardHeader
         title="Customer info"
-        action={
-          <IconButton>
-            <Iconify icon="solar:pen-bold" />
-          </IconButton>
-        }
+        // action={
+        //   <IconButton>
+        //     <Iconify icon="solar:pen-bold" />
+        //   </IconButton>
+        // }
       />
       <Stack direction="row" sx={{ p: 3 }}>
         <Avatar
-          alt={customer?.name}
-          src={customer?.avatarUrl}
+          alt={customer?.artistName}
+          src={`${url}/users/${customer?.profile?.mainImage}`}
           sx={{ width: 48, height: 48, mr: 2 }}
         />
 
         <Stack spacing={0.5} alignItems="flex-start" sx={{ typography: 'body2' }}>
-          <Typography variant="subtitle2">{customer?.name}</Typography>
-
+          <Typography variant="subtitle2">{name(customer)}</Typography>
           <Box sx={{ color: 'text.secondary' }}>{customer?.email}</Box>
-
-          <div>
-            IP address:
-            <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-              {customer?.ipAddress}
-            </Box>
-          </div>
-
-          <Button
-            size="small"
-            color="error"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            sx={{ mt: 1 }}
-          >
-            Add to Blacklist
-          </Button>
         </Stack>
       </Stack>
     </>
