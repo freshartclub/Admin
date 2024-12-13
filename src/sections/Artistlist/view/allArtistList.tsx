@@ -1,7 +1,21 @@
 import type { IUserItem } from 'src/types/user';
 
-import { Card, Table, TableBody } from '@mui/material';
+import {
+  Card,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+  Table,
+  TableBody,
+  TextField,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
@@ -13,16 +27,10 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { paths } from 'src/routes/paths';
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { Iconify } from 'src/components/iconify';
-import { InputAdornment } from '@mui/material';
-import { TextField } from '@mui/material';
-import { Stack } from '@mui/material';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { useNavigate } from 'react-router';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 200 },
@@ -30,6 +38,7 @@ const TABLE_HEAD = [
   { id: 'city', label: 'City', width: 130 },
   { id: 'state', label: 'Province', width: 130 },
   { id: 'country', label: 'Country', width: 130 },
+  { id: 'nextRevalidationDate', label: 'Next Revalidation Date', minWidth: 210 },
   { id: 'isActivated', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },
@@ -38,12 +47,14 @@ const TABLE_HEAD = [
 export function AllArtist() {
   const table = useTable();
   const navigate = useNavigate();
+  const [date, setDate] = useState('All');
   const [notFound, setNotFound] = useState(false);
+
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);
 
-  const { data, isLoading } = useGetArtistList(debounceSearch);
+  const { data, isLoading } = useGetArtistList(debounceSearch, date);
 
   useEffect(() => {
     if (data?.data) {
@@ -62,21 +73,61 @@ export function AllArtist() {
     navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
   };
 
+  const dropDown = [
+    {
+      value: 'All',
+      label: 'All',
+    },
+    {
+      value: 1,
+      label: '1 Week',
+    },
+    {
+      value: 2,
+      label: '2 Week',
+    },
+    {
+      value: 3,
+      label: '3 Week',
+    },
+    {
+      value: 4,
+      label: '4 Week',
+    },
+  ];
+
   return (
     <>
-      <TextField
-        fullWidth
-        sx={{ mb: 2 }}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search By Artist Id, Name or Email..."
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <Stack sx={{ mb: 2 }} direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Artist Id, Name or Email..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 280 } }}>
+          <InputLabel htmlFor="Outdated Revalidation Date">Outdated Revalidation Date</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Outdated Revalidation Date" />}
+            inputProps={{ id: 'Outdated Revalidation Date' }}
+            onChange={(e) => setDate(e.target.value)}
+            value={date}
+          >
+            {dropDown.map((option, i) => (
+              <MenuItem key={i} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
 
       {isLoading ? (
         <LoadingScreen />

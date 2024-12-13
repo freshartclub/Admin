@@ -5,10 +5,14 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
 
-const useAddIncidentMutation = () => {
+const useAddIncidentMutation = (id) => {
   const navigate = useNavigate();
   async function AddIncident(data) {
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.addIncident}`, data);
+    if (!id) {
+      return axiosInstance.post(`${ARTIST_ENDPOINTS.addIncident}`, data);
+    } else {
+      return axiosInstance.post(`${ARTIST_ENDPOINTS.addIncident}/${id}`, data);
+    }
   }
 
   return useMutation({

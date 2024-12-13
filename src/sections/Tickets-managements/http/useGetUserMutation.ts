@@ -4,13 +4,13 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(input) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getUserByQueryInput}?s=${input}`);
-  return data.data;
+  return data;
 }
 
 export const useGetUesrByQueryInput = (input) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.getUserByQueryInput}?s=${input}`],
+    queryKey: [ARTIST_ENDPOINTS.getUserByQueryInput, input],
     queryFn: () => fetchData(input),
-    enabled: false,
+    enabled: true,
   });
 };

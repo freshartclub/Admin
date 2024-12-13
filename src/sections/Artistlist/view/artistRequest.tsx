@@ -85,7 +85,7 @@ export function ArtistsRequest() {
             onChange={(e) => setStatus(e.target.value)}
             value={sStatus}
           >
-            {['All', 'Pending', 'Ban', 'Rejected', 'Under-Review'].map((option) => (
+            {['All', 'Pending', 'Ban', 'Rejected'].map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>

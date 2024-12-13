@@ -484,6 +484,7 @@ export function Invoice({
                   required
                   value={val.PublishingCatalog[index]?.ArtistFees}
                   name={`PublishingCatalog[${index}].ArtistFees`}
+                  InputLabelProps={{ shrink: true }}
                   label="Artist Fees"
                   placeholder="Artist Fees"
                 />

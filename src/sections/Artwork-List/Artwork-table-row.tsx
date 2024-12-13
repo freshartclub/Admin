@@ -1,61 +1,34 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import ListItemText from '@mui/material/ListItemText';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { fCurrency } from 'src/utils/format-number';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { fDate, fTime } from 'src/utils/format-time';
-
-import { Label } from 'src/components/label';
-import { Iconify } from 'src/components/iconify';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { DialogActions, Tooltip } from '@mui/material';
-import { useRemoveArtWorkList } from './http/useRemoveArtWorkList';
-import { Dialog } from '@mui/material';
-import { DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogContentText } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { useValidateartWork } from './http/useValidateArtwork';
 import { useNavigate } from 'react-router';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Iconify } from 'src/components/iconify';
+import { Label } from 'src/components/label';
 import { paths } from 'src/routes/paths';
+import { useRemoveArtWorkList } from './http/useRemoveArtWorkList';
+import { useValidateartWork } from './http/useValidateArtwork';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IInvoice;
   url: string;
-  selected: boolean;
-  onSelectRow: () => void;
-  onViewRow: () => void;
-  onEditRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function ArtworkTableRow({
-  row,
-  url,
-  selected,
-  onSelectRow,
-  onViewRow,
-  onEditRow,
-  onDeleteRow,
-}: Props) {
-  const confirm = useBoolean();
+export function ArtworkTableRow({ row, url }: Props) {
   const navigate = useNavigate();
   const [showPop, setShowPop] = useState(false);
   const [validate, setValidate] = useState(false);
@@ -146,12 +119,7 @@ export function ArtworkTableRow({
                 </Typography>
               }
               secondary={
-                <Link
-                  noWrap
-                  variant="body2"
-                  onClick={onViewRow}
-                  sx={{ color: 'text.disabled', cursor: 'pointer' }}
-                >
+                <Link noWrap variant="body2" sx={{ color: 'text.disabled', cursor: 'pointer' }}>
                   {row?.artworkId ? row?.artworkId : 'N/A'}
                 </Link>
               }
@@ -167,12 +135,7 @@ export function ArtworkTableRow({
               </Typography>
             }
             secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
+              <Link noWrap variant="body2" sx={{ color: 'text.disabled', cursor: 'pointer' }}>
                 {row?.artistId ? row?.artistId : 'N/A'}
               </Link>
             }

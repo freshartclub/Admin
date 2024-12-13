@@ -1,29 +1,30 @@
-import type { IPostItem } from 'src/types/blog';
-
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Avatar, CardHeader, Link, ListItemText, TableCell, TableRow } from '@mui/material';
+import {
+  Avatar,
+  CardHeader,
+  CircularProgress,
+  Divider,
+  InputAdornment,
+  Link,
+  ListItemText,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  INC_IMPACT_OPTIONS,
-  INC_PRIORITY_OPTIONS,
-  INC_URGENCY_OPTIONS,
-  TICKET_STATUS_OPTIONS,
-  TICKET_TYPE_OPTIONS,
-} from 'src/_mock';
+import { useNavigate } from 'react-router';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
+import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddTicketMutation from './http/useAddTicketMutation';
 import { useGetUesrByQueryInput } from './http/useGetUserMutation';
-import { useNavigate } from 'react-router';
-import { Divider } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -45,31 +46,47 @@ export const NewPostSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
-
-export function AddTicket({ currentPost }: Props) {
-  const [open, setOpen] = useState(true);
+export function AddTicket() {
+  const [search, setSearch] = useState('');
   const [id, setId] = useState('');
   const { mutate, isPending } = useAddTicketMutation();
+
+  const picklist = RenderAllPicklists([
+    'Ticket Status',
+    'Ticket Urgency',
+    'Ticket Priority',
+    'Ticket Impact',
+    'Ticket Type',
+  ]);
+
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const status = picklistMap['Ticket Status'];
+  const urgency = picklistMap['Ticket Urgency'];
+  const priority = picklistMap['Ticket Priority'];
+  const impact = picklistMap['Ticket Impact'];
+  const ticketType = picklistMap['Ticket Type'];
+
   const navigate = useNavigate();
 
   const defaultValues = useMemo(
     () => ({
-      userId: currentPost?.userId || '',
-      artistName: currentPost?.artistName || '',
-      ticketType: currentPost?.ticketType || '',
-      subject: currentPost?.subject || '',
-      message: currentPost?.message || '',
-      urgency: currentPost?.urgency || '',
-      impact: currentPost?.impact || '',
-      priority: currentPost?.priority || '',
-      status: currentPost?.status || '',
-      id: currentPost?._id || '',
-      ticketImg: currentPost?.ticketImg || null,
+      userId: '',
+      artistName: '',
+      ticketType: '',
+      subject: '',
+      message: '',
+      urgency: '',
+      impact: '',
+      priority: '',
+      status: '',
+      id: '',
+      ticketImg: null,
     }),
-    [currentPost]
+    []
   );
 
   const methods = useForm<NewPostSchemaType>({
@@ -77,17 +94,11 @@ export function AddTicket({ currentPost }: Props) {
     defaultValues,
   });
 
-  const { watch, setValue, handleSubmit } = methods;
+  const { watch, setValue, handleSubmit, reset } = methods;
   const values = watch();
 
-  const debounceUserInput = useDebounce(methods.getValues('userId'), 1000);
-  const { refetch, data: artistData } = useGetUesrByQueryInput(debounceUserInput);
-
-  useEffect(() => {
-    if (methods.getValues('userId') !== '') {
-      refetch();
-    }
-  }, [debounceUserInput]);
+  const debounceUserInput = useDebounce(search, 800);
+  const { data: artistData, isLoading: artistLoading } = useGetUesrByQueryInput(debounceUserInput);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -124,11 +135,19 @@ export function AddTicket({ currentPost }: Props) {
     setValue('userId', artistData?.userId);
     setId(artistData?._id);
     setValue('artistName', name(artistData));
-    setOpen(false);
+    setSearch('');
   };
 
   const handleRemoveImg = () => {
     setValue('ticketImg', null);
+  };
+
+  const removeText = () => {
+    reset({
+      userId: '',
+      artistName: '',
+    });
+    setSearch('');
   };
 
   const renderDetails = (
@@ -139,12 +158,35 @@ export function AddTicket({ currentPost }: Props) {
           required
           label="Requested By"
           placeholder="Search User By Name, Email or UserId"
+          InputLabelProps={{ shrink: true }}
+          value={search ? search : methods.getValues('userId') ? methods.getValues('userId') : ''}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            if (methods.getValues('userId')) methods.setValue('userId', '');
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Box
+                  onClick={removeText}
+                  component="span"
+                  sx={{ color: 'text.disabled', fontSize: '0.85rem', cursor: 'pointer' }}
+                >
+                  X
+                </Box>
+              </InputAdornment>
+            ),
+          }}
         />
-        {methods.getValues('userId') && open && (
+        {search !== '' && (
           <div className="absolute top-20 w-[95.5%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
             <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {artistData && artistData.length > 0 ? (
-                artistData.map((i, j) => (
+              {artistLoading ? (
+                <TableCell>
+                  <CircularProgress size={30} />
+                </TableCell>
+              ) : artistData?.data && artistData?.data?.length > 0 ? (
+                artistData?.data.map((i, j) => (
                   <TableCell
                     onClick={() => refillData(i)}
                     key={j}
@@ -156,7 +198,7 @@ export function AddTicket({ currentPost }: Props) {
                     }}
                   >
                     <Stack spacing={2} direction="row" alignItems="center">
-                      <Avatar alt={i?.artistName}>{i?.avatar}</Avatar>
+                      <Avatar alt={i?.artistName} src={`${artistData.url}/users/${i?.mainImage}`} />
 
                       <ListItemText
                         disableTypography
@@ -180,21 +222,14 @@ export function AddTicket({ currentPost }: Props) {
             </TableRow>
           </div>
         )}
-        <Field.Text required name="artistName" label="Name" />
+        <Field.Text disabled required name="artistName" label="Name" />
         <Field.SingelSelect
-          checkbox
           required
           name="ticketType"
           label="Ticket Type"
-          options={TICKET_TYPE_OPTIONS}
+          options={ticketType ? ticketType : []}
         />
-        <Field.SingelSelect
-          required
-          checkbox
-          name="status"
-          label="Status"
-          options={TICKET_STATUS_OPTIONS}
-        />
+        <Field.SingelSelect required name="status" label="Status" options={status ? status : []} />
 
         <Box
           columnGap={2}
@@ -206,14 +241,19 @@ export function AddTicket({ currentPost }: Props) {
             required
             name="urgency"
             label="Urgency"
-            options={INC_URGENCY_OPTIONS}
+            options={urgency ? urgency : []}
           />
-          <Field.SingelSelect required name="impact" label="Impact" options={INC_IMPACT_OPTIONS} />
+          <Field.SingelSelect
+            options={impact ? impact : []}
+            required
+            name="impact"
+            label="Impact"
+          />
           <Field.SingelSelect
             required
             name="priority"
             label="Priority"
-            options={INC_PRIORITY_OPTIONS}
+            options={priority ? priority : []}
           />
         </Box>
 

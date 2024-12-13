@@ -1,9 +1,6 @@
 import { paths } from 'src/routes/paths';
-
 import { CONFIG } from 'src/config-global';
-
 import { SvgColor } from 'src/components/svg-color';
-import { title } from 'process';
 
 // ----------------------------------------------------------------------
 
@@ -157,18 +154,18 @@ export const navData = [
 
       {
         title: 'Credentials and Insignias',
-        path: paths.dashboard.creadentialsAndInsigniasArea.root,
+        path: paths.dashboard.creadentialsAndInsigniasArea.list,
         icon: ICONS.course,
-        children: [
-          {
-            title: 'Add Credentials and Insignias',
-            path: paths.dashboard.creadentialsAndInsigniasArea.add,
-          },
-          {
-            title: 'Credentials and Insignias List',
-            path: paths.dashboard.creadentialsAndInsigniasArea.list,
-          },
-        ],
+        // children: [
+        //   // {
+        //   //   title: 'Add Credentials and Insignias',
+        //   //   path: paths.dashboard.creadentialsAndInsigniasArea.add,
+        //   // },
+        //   {
+        //     title: 'Credentials and Insignias List',
+        //     path: paths.dashboard.creadentialsAndInsigniasArea.list,
+        //   },
+        // ],
       },
 
       // try start

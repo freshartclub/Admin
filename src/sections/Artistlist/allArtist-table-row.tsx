@@ -9,7 +9,13 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -107,6 +113,16 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
       icon: 'charm:circle-tick',
       name: 'Activate Artist',
       handelEdit: () => {},
+    });
+  }
+
+  if (row?.profileStatus === 'under-review') {
+    actionButtons.push({
+      icon: 'grommet-icons:validate',
+      name: 'Pending Validation',
+      handelEdit: (id: any) => {
+        navigate(`${paths.dashboard.artist.reviewArtist}?id=${id}`);
+      },
     });
   }
 
@@ -223,12 +239,27 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(row?.nextRevalidationDate) || 'N/A'}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <span
-            className={`w-fit h-fit flex items-center ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
-          >
-            {row?.isActivated ? 'Active' : 'Inactive'}
-          </span>
+          {row?.profileStatus === 'under-review' ? (
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', gap: 1 }}>
+              <span
+                className={`w-fit h-fit text-[12px] px-2 rounded-2xl ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+              >
+                {row?.isActivated ? 'Active' : 'Inactive'}
+              </span>
+              <span className="w-fit h-fit bg-[#FEEDEC] text-[#f09438] rounded-2xl text-[12px] px-2">
+                Pending Validation
+              </span>
+            </Stack>
+          ) : (
+            <span
+              className={`w-fit h-fit ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+            >
+              {row?.isActivated ? 'Active' : 'Inactive'}
+            </span>
+          )}
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>

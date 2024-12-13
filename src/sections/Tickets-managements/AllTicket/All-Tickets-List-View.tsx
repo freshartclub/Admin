@@ -1,7 +1,6 @@
 import type { IOrderItem } from 'src/types/order';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -26,14 +25,25 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
 import { TicketCartd } from './Card';
 import { TicketTableToolbar } from './Tecket-table-toolbar';
+import { RouterLink } from 'src/routes/components';
 
 export function TicketsListView() {
   const [search, setSearch] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [days, setDays] = useState<string>('');
+  const [status, setStatus] = useState<string>('All');
+  const [filter, setFilter] = useState<string>('All');
+  const [filterOption, setFilterOption] = useState<string>('');
+  const [days, setDays] = useState<string>('All');
+
+  const ongoingStatuses = ['Dispatched', 'Technical Finish', 'In progress'];
 
   const debounceSearch = useDebounce(search, 500);
-  const { data, isLoading } = useGetTicketListMutation(debounceSearch, status, days);
+  const { data, isLoading } = useGetTicketListMutation(
+    debounceSearch,
+    status,
+    days,
+    filter,
+    filterOption
+  );
 
   const [selectedTab, setSelectedTab] = useState('allTickets');
   const table = useTable();
@@ -50,7 +60,9 @@ export function TicketsListView() {
     inputData:
       selectedTab === 'Finalise'
         ? tableData.filter((item) => item.status === 'Finalise')
-        : tableData,
+        : selectedTab === 'ongoing'
+          ? tableData.filter((item) => ongoingStatuses.includes(item.status))
+          : tableData,
     comparator: getComparator(table.order, table.orderBy),
   });
 
@@ -60,10 +72,28 @@ export function TicketsListView() {
         heading="Ticket List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Ticket List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
+        action={
+          <div className="flex justify-end gap-2">
+            <RouterLink href={`${paths.dashboard.tickets.addIncident}`}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+                <Iconify icon="mingcute:add-line" /> Add Incident
+              </span>
+            </RouterLink>
+            <RouterLink href={`${paths.dashboard.tickets.addTicket}`}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[8rem]">
+                <Iconify icon="mingcute:add-line" /> Add Ticket
+              </span>
+            </RouterLink>
+          </div>
+        }
       />
       <TicketTableToolbar
         setSearch={setSearch}
         setStatus={setStatus}
+        setFilter={setFilter}
+        setFilterOption={setFilterOption}
+        filterOption={filterOption}
+        filter={filter}
         sStatus={status}
         setDays={setDays}
         days={days}
@@ -92,7 +122,9 @@ export function TicketsListView() {
                   <Label variant={(tab.value === selectedTab && 'filled') || 'soft'}>
                     {tab.value === 'Finalise'
                       ? tableData.filter((item) => item.status === 'Finalise').length
-                      : tableData.length}
+                      : tab.value === 'ongoing'
+                        ? tableData.filter((item) => ongoingStatuses.includes(item.status)).length
+                        : tableData.length}
                   </Label>
                 }
               />

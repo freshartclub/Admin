@@ -1,11 +1,10 @@
 import { paths } from 'src/routes/paths';
 import { useNavigate } from 'react-router';
-import { fDate } from 'src/utils/format-time';
+import { fDate, fTime } from 'src/utils/format-time';
 import { Avatar } from '@mui/material';
 import { Stack } from '@mui/material';
 import { Box } from '@mui/material';
 import { Link } from '@mui/material';
-import { RouterLink } from 'src/routes/components';
 import { Iconify } from 'src/components/iconify';
 
 export function TicketCartd({ url, data }) {
@@ -36,7 +35,7 @@ export function TicketCartd({ url, data }) {
         </div>
         <div>
           <p className="text-[#84818A] text-[14px] font-semibold">
-            Posted at - {fDate(data.createdAt)}
+            Posted At - {fDate(data.createdAt)} {fTime(data.createdAt)}
           </p>
         </div>
       </div>

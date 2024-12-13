@@ -13,9 +13,14 @@ const useAddReplyMutation = () => {
       ticketType: data.data.ticketType,
       status: data.data.status,
       message: data.data.message,
+      ticketImg: data.data.ticketImg,
       userType: 'admin',
     };
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData);
+    return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 
   return useMutation({

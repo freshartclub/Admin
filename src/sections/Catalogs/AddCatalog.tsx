@@ -32,19 +32,16 @@ export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 export const NewPostSchema = zod.object({
   catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
-  artworkList: zod.string().array().min(1, { message: 'Must have at least 1 items!' }),
+  artworkList: zod.string().optional(),
   artworkNames: zod.string().array(),
-  catalogCollection: zod.string().array().min(1, { message: 'Must have at least 1 items!' }),
+  catalogCollection: zod.string().array().optional(),
   collectionNames: zod.string().array(),
   catalogCommercialization: zod
     .string()
     .min(1, { message: 'Catalog Commercialization is required!' }),
-  defaultArtistFee: zod
-    .number()
-    .min(1, { message: 'Default Artist Fee is required!' })
-    .max(100, { message: 'Default Artist Fee cannot exceed 100!' }),
-  artProvider: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  subPlan: zod.string().array().min(1, { message: 'Plan is required!' }),
+  defaultArtistFee: zod.number().min(1, { message: 'Default Artist Fee is required!' }),
+  artProvider: zod.string().array().optional(),
+  subPlan: zod.string().array().optional(),
   exclusiveCatalog: zod.boolean(),
   status: zod.any(),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
@@ -56,15 +53,15 @@ export function AddCatalogForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
   const { data, isLoading } = useGetCatalogById(id);
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [searchColl, setSearchColl] = useState('');
 
   const picklist = RenderAllPicklist('Catalog Status');
 
-  const searchDebounce = useDebounce(search, 1000);
-  const { data: artworkData } = useGetSearchedArtworks(searchDebounce);
+  // const searchDebounce = useDebounce(search, 1000);
+  // const { data: artworkData } = useGetSearchedArtworks(searchDebounce);
 
-  const searchCollDebounce = useDebounce(searchColl, 1000);
+  const searchCollDebounce = useDebounce(searchColl, 800);
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
 
   const defaultValues = useMemo(
@@ -150,20 +147,20 @@ export function AddCatalogForm() {
     setValue('catalogImg', null);
   };
 
-  const refillData = (item) => {
-    const currentArtworkList = methods.getValues('artworkList') || [];
-    const currentArtworkNames = methods.getValues('artworkNames') || [];
+  // const refillData = (item) => {
+  //   const currentArtworkList = methods.getValues('artworkList') || [];
+  //   const currentArtworkNames = methods.getValues('artworkNames') || [];
 
-    if (!currentArtworkList.includes(item?._id)) {
-      setValue('artworkList', [...currentArtworkList, item?._id]);
-    }
+  //   if (!currentArtworkList.includes(item?._id)) {
+  //     setValue('artworkList', [...currentArtworkList, item?._id]);
+  //   }
 
-    if (!currentArtworkNames.includes(item?.artworkName)) {
-      setValue('artworkNames', [...currentArtworkNames, item?.artworkName]);
-    }
+  //   if (!currentArtworkNames.includes(item?.artworkName)) {
+  //     setValue('artworkNames', [...currentArtworkNames, item?.artworkName]);
+  //   }
 
-    setSearch('');
-  };
+  //   setSearch('');
+  // };
 
   const refillCollData = (item) => {
     const catalogCollection = methods.getValues('catalogCollection') || [];
@@ -180,19 +177,19 @@ export function AddCatalogForm() {
     setSearchColl('');
   };
 
-  const handleRemoveArtwokrk = (index) => {
-    const currentArtworkList = methods.getValues('artworkList') || [];
-    const currentArtworkNames = methods.getValues('artworkNames') || [];
+  // const handleRemoveArtwokrk = (index) => {
+  //   const currentArtworkList = methods.getValues('artworkList') || [];
+  //   const currentArtworkNames = methods.getValues('artworkNames') || [];
 
-    setValue(
-      'artworkList',
-      currentArtworkList.filter((_, i) => i !== index)
-    );
-    setValue(
-      'artworkNames',
-      currentArtworkNames.filter((_, i) => i !== index)
-    );
-  };
+  //   setValue(
+  //     'artworkList',
+  //     currentArtworkList.filter((_, i) => i !== index)
+  //   );
+  //   setValue(
+  //     'artworkNames',
+  //     currentArtworkNames.filter((_, i) => i !== index)
+  //   );
+  // };
 
   const handleRemoveCollection = (index) => {
     const catalogCollection = methods.getValues('catalogCollection') || [];
@@ -305,13 +302,14 @@ export function AddCatalogForm() {
 
           <div className="relative">
             <Field.Text
+              disabled
               name="artworkSearch"
               label="Add Artwork To List"
               placeholder="Search by Artwork Id/Name"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              // value={search}
+              // onChange={(e) => setSearch(e.target.value)}
             />
-            {search && (
+            {/* {search && (
               <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
                 <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {artworkData && artworkData.length > 0 ? (
@@ -350,9 +348,9 @@ export function AddCatalogForm() {
                   )}
                 </TableRow>
               </div>
-            )}
+            )} */}
           </div>
-          {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
+          {/* {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
             <div className="flex flex-wrap gap-2 mt-[-1rem]">
               {methods.getValues('artworkNames').map((i, index) => (
                 <Stack
@@ -378,9 +376,9 @@ export function AddCatalogForm() {
                 </Stack>
               ))}
             </div>
-          )}
+          )} */}
 
-          <Field.Autocomplete
+          {/* <Field.Autocomplete
             required
             name="artProvider"
             label="Art Provider"
@@ -407,6 +405,12 @@ export function AddCatalogForm() {
                 />
               ))
             }
+          /> */}
+          <Field.MultiSelect
+            name="artProvider"
+            label="Art Provider"
+            disabled
+            options={Art_provider}
           />
           <Field.SingelSelect
             required

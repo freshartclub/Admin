@@ -28,6 +28,9 @@ import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import { useRevalidateArtist } from 'src/http/createArtist/useRevalidateArtist';
+import { FileThumbnail } from 'src/components/file-thumbnail';
+import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +41,6 @@ export const NewProductSchema = zod.object({
       uploadDocs: schemaHelper.file({ message: { required_error: 'Document is required!' } }),
     })
   ),
-  profileStatus: zod.string().min(1, { message: 'Profile Status is required!' }),
   intTags: zod.string().array().min(1, { message: 'Add at least one tag!' }),
   extTags: zod.string().array().min(1, { message: 'Add at least one tag!' }),
   managerName: zod.string().optional(),
@@ -81,8 +83,21 @@ export function OtherDetails({
   const navigate = useNavigate();
   const view = useSearchParams().get('view');
   const id = useSearchParams().get('id');
+  const [reValidate, setReValidate] = useState(false);
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
+
+  const picklist = RenderAllPicklists(['Artist Internal Tags', 'Artist External Tags']);
+
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const extarnal = picklistMap['Artist External Tags'];
+  const internal = picklistMap['Artist Internal Tags'];
+
+  console.log('artistFormData', extarnal);
 
   const isReadOnly = view !== null;
   const url = 'https://dev.freshartclub.com/images';
@@ -100,6 +115,7 @@ export function OtherDetails({
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
   const { isPending: isActivePending, mutate: activeMutate } =
     useActivateArtistMutation(handleSuccess);
+  const { mutate: validateMutate, isPending: validatePending } = useRevalidateArtist();
 
   let documentArr: any = [];
 
@@ -117,7 +133,6 @@ export function OtherDetails({
   const defaultValues = useMemo(
     () => ({
       documents: documentArr || [],
-      profileStatus: artistFormData?.profileStatus || '',
       intTags: artistFormData?.intTags || [],
       extTags: artistFormData?.extTags || [],
       lastRevalidationDate: artistFormData?.lastRevalidationDate || new Date().toString(),
@@ -200,6 +215,10 @@ export function OtherDetails({
     activeMutate({ body: data });
   });
 
+  const onReValidateSubmit = () => {
+    validateMutate(id);
+  };
+
   const handleIntSave = (item) => {
     const intVal = methods.getValues('intTags') || [];
     if (!intVal.includes(item)) {
@@ -280,42 +299,41 @@ export function OtherDetails({
               {methods.watch(`documents[${index}].uploadDocs`) &&
               methods.getValues(`documents[${index}].uploadDocs`) ? (
                 <Box
-                  sx={{ position: 'relative', width: { xs: '80vw', md: '30vw' }, height: '40vh' }}
+                  sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                 >
-                  <embed
-                    title="Document Preview"
-                    style={{ width: '100%', height: '100%' }}
-                    src={setUrl(index)}
-                    type="application/pdf"
-                  />
+                  {typeof methods.getValues(`documents[${index}].uploadDocs`) === 'object' ? (
+                    <FileThumbnail
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => window.open(`${setUrl(index)}`, '_blank')}
+                      file={methods.getValues(`documents[${index}].uploadDocs`)?.name}
+                    />
+                  ) : (
+                    <FileThumbnail
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => window.open(`${setUrl(index)}`, '_blank')}
+                      file={methods.getValues(`documents[${index}].uploadDocs`)}
+                    />
+                  )}
+
                   <span
                     onClick={() => handleRemoveDocument(index)}
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      background: '#c4cdd5',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '30px',
-                      height: '31px',
-                      cursor: 'pointer',
-                      paddingLeft: '4px',
-                      paddingTop: '3px',
-                    }}
-                    title="Delete Video"
+                    className="ml-[3rem] text-[14px] absolute bg-red-100 text-red-500 rounded-md px-2 py-1 cursor-pointer"
                   >
-                    ✖
+                    Remove Document
                   </span>
                 </Box>
               ) : (
                 <>
                   <input
+                    className="border border-gray-200 rounded-md px-2 py-3 hover:border-gray-600"
                     required
                     disabled={isReadOnly}
                     type="file"
-                    accept="application/pdf"
+                    accept="file/*"
                     onChange={(e) => handleFileChange(e, index)}
                   />
                 </>
@@ -345,7 +363,6 @@ export function OtherDetails({
         >
           {fields.length > 0 ? 'Add More Documents' : 'Add Document'}
         </Button>
-        <Field.Text disabled={isReadOnly} name="profileStatus" label="Profile Status" />
       </Stack>
     </Card>
   );
@@ -360,7 +377,7 @@ export function OtherDetails({
             disabled={isReadOnly}
             freeSolo
             fullWidth
-            options={[]}
+            options={internal ? internal.map((item) => item.value) : []}
             value={intValue}
             onChange={(event, newValue) => setIntValue(newValue || '')}
             onInputChange={(event, newInputValue) => setIntValue(newInputValue)}
@@ -415,7 +432,7 @@ export function OtherDetails({
             disabled={isReadOnly}
             freeSolo
             fullWidth
-            options={[]}
+            options={extarnal ? extarnal.map((i: any) => i.value) : []}
             value={extValue}
             onChange={(event, newValue) => setExtValue(newValue || '')}
             onInputChange={(event, newInputValue) => setExtValue(newInputValue)}
@@ -640,6 +657,36 @@ export function OtherDetails({
     </Dialog>
   );
 
+  const revalidateDialogBox = (
+    <Dialog
+      open={reValidate}
+      onClose={() => {
+        setReValidate(false);
+      }}
+    >
+      <DialogTitle>Re-Validate Artist</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Are you sure you want to re-validate this artist?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <div className="flex gap-5">
+          <span
+            onClick={onReValidateSubmit}
+            className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
+          >
+            {validatePending ? 'Loading...' : 'ReValidate Artist'}
+          </span>
+          <span
+            onClick={() => setReValidate(false)}
+            className="text-white bg-red-500 rounded-md px-2 py-2 cursor-pointer"
+          >
+            Cancel
+          </span>
+        </div>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }}>
@@ -653,9 +700,14 @@ export function OtherDetails({
         <div className="flex justify-end gap-5">
           {!isReadOnly ? (
             <>
-              <span className="text-white bg-orange-600 rounded-md px-3 py-2 cursor-pointer">
-                ReValidate Artist
-              </span>
+              {artistFormData && artistFormData?.isActivated ? (
+                <span
+                  onClick={() => setReValidate(true)}
+                  className="text-white bg-orange-600 rounded-md px-3 py-2 cursor-pointer"
+                >
+                  ReValidate Artist
+                </span>
+              ) : null}
               <span
                 onClick={handleOnActivataion}
                 className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
@@ -682,6 +734,7 @@ export function OtherDetails({
           )}
         </div>
         {dialogBox}
+        {revalidateDialogBox}
       </Stack>
     </Form>
   );

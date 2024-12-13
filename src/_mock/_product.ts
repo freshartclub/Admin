@@ -515,9 +515,8 @@ export const INC_IMPACT_OPTIONS = [
   { value: 'High-System Wide', label: 'High-System Wide' },
 ];
 export const INC_STATUS_OPTIONS = [
-  { value: 'Draft', label: 'Draft' },
-  { value: 'Available', label: 'Available' },
-  { value: 'Not Available', label: 'Not Available' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
 ];
 export const INC_PRIORITY_OPTIONS = [
   { value: 'Priority A', label: 'Priority A' },

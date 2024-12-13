@@ -4,6 +4,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import {
   Autocomplete,
   Avatar,
+  CircularProgress,
   DialogContent,
   InputAdornment,
   ListItemText,
@@ -158,6 +159,8 @@ export function ArtworkAdd() {
     'Package Material',
     'Emotions',
     'Colors',
+    'Artwork Available To',
+    'Artwork Discount Options',
   ]);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
@@ -170,6 +173,8 @@ export function ArtworkAdd() {
   const packMaterial = picklistMap['Package Material'];
   const emotions = picklistMap['Emotions'];
   const colors = picklistMap['Colors'];
+  const availableTo = picklistMap['Artwork Available To'];
+  const discountAcceptation = picklistMap['Artwork Discount Options'];
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -348,8 +353,11 @@ export function ArtworkAdd() {
       artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
       promotion: data?.data?.promotions?.promotion || '',
       promotionScore: Number(data?.data?.promotions?.promotionScore) || slide,
-      availableTo: data?.data?.restriction?.availableTo || '',
-      discountAcceptation: data?.data?.restriction?.discountAcceptation || '',
+      availableTo: data?.data?.restriction?.availableTo || availableTo ? availableTo[0]?.value : '',
+      discountAcceptation:
+        data?.data?.restriction?.discountAcceptation || discountAcceptation
+          ? discountAcceptation[0]?.value
+          : '',
       collectionList: data?.data?.collectionList || '',
     }),
     [data?.data]
@@ -377,7 +385,7 @@ export function ArtworkAdd() {
   });
 
   const debounceArtistId = useDebounce(search, 1000);
-  const { data: artistData } = useGetArtistById(debounceArtistId);
+  const { data: artistData, isLoading: artistLoading } = useGetArtistById(debounceArtistId);
 
   const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();
   const { data: artworkData, refetch } = useGetSeriesList(mongoDBId);
@@ -501,6 +509,7 @@ export function ArtworkAdd() {
   const name = (val) => {
     let fullName = val?.artistName || '';
 
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
     if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
     if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
 
@@ -569,6 +578,7 @@ export function ArtworkAdd() {
       setDialogOpen(false);
       setSeries('');
     });
+    refetch();
   };
 
   const handleChange = (e) => {
@@ -693,7 +703,11 @@ export function ArtworkAdd() {
           {search !== '' && (
             <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
               <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {artistData?.data && artistData?.data?.length > 0 ? (
+                {artistLoading ? (
+                  <TableCell>
+                    <CircularProgress size={30} />
+                  </TableCell>
+                ) : artistData?.data && artistData?.data?.length > 0 ? (
                   artistData?.data.map((i, j) => (
                     <TableCell
                       onClick={() => refillData(i)}
@@ -715,7 +729,7 @@ export function ArtworkAdd() {
                           disableTypography
                           primary={
                             <Typography variant="body2" noWrap>
-                              {i?.artistName} {i?.artistSurname1} {i?.artistSurname2} - {i?.userId}
+                              {name(i)} - {i?.artistId}
                             </Typography>
                           }
                           secondary={
@@ -771,7 +785,7 @@ export function ArtworkAdd() {
                 mongoDBId
                   ? artworkData?.seriesList
                     ? artworkData?.seriesList.map((i) => ({ value: i, label: i }))
-                    : []
+                    : [{ value: '', label: 'No Series Found' }]
                   : [
                       {
                         value: '',
@@ -1269,6 +1283,7 @@ export function ArtworkAdd() {
             value={methods.getValues('vatAmount')}
             name="vatAmount"
             label="VAT Amount (%)"
+            InputLabelProps={{ shrink: true }}
           />
           <Field.Text
             name="artistFees"
@@ -1322,6 +1337,7 @@ export function ArtworkAdd() {
           <Field.Text
             type="number"
             value={methods.getValues('vatAmount')}
+            InputLabelProps={{ shrink: true }}
             name="vatAmount"
             label="VAT Amount (%)"
           />
@@ -1430,16 +1446,14 @@ export function ArtworkAdd() {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
-          checkbox
           name="availableTo"
           label="Available To"
-          options={ARTWORK_AVAILABLETO_OPTIONS}
+          options={availableTo ? availableTo : []}
         />
         <Field.SingelSelect
-          checkbox
           name="discountAcceptation"
           label="Discount Acceptation"
-          options={ARTWORK_DISCOUNTACCEPTATION_OPTIONS}
+          options={discountAcceptation ? discountAcceptation : []}
         />
       </Stack>
     </Card>

@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   InputAdornment,
   Link,
   ListItemText,
@@ -18,9 +19,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import {
-  COLLECTION_STATUS_OPTIONS
-} from 'src/_mock';
+import { COLLECTION_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
@@ -96,7 +95,11 @@ export function AddCollectionForm() {
   });
 
   const searchDebounce = useDebounce(search.search, 1000);
-  const { data: artworkData, refetch } = useGetSearchedArtworks(searchDebounce);
+  const {
+    data: artworkData,
+    refetch,
+    isLoading: isLoadingArtwork,
+  } = useGetSearchedArtworks(searchDebounce);
 
   useEffect(() => {
     if (methods.getValues(`artworkList[${search.index}].artwork`) !== '') {
@@ -116,7 +119,7 @@ export function AddCollectionForm() {
           data?.data?.artworkList.map((item) => ({
             artwork: item?.artworkId?.artworkName,
             artworkDesc: item.artworkDesc,
-            pCode: item.artworkId?.inventoryShipping?.pCode,
+            pCode: item.artworkId?.artworkId,
             artworkId: item.artworkId?._id,
           })) || [],
         expertDesc: data?.data?.expertDetails?.expertDesc || '',
@@ -198,7 +201,7 @@ export function AddCollectionForm() {
   const refillData = (i, index) => {
     setValue(`artworkList[${index}].artworkId`, i?._id);
     setValue(`artworkList[${index}].artwork`, i?.artworkName);
-    setValue(`artworkList[${index}].pCode`, i?.inventoryShipping?.pCode);
+    setValue(`artworkList[${index}].pCode`, i?.artworkId);
     setSearch({ search: '', index: null });
   };
 
@@ -207,8 +210,7 @@ export function AddCollectionForm() {
   const getValue = (index) => {
     return methods.getValues(`artworkList[${index}].artwork`)
       ? methods.getValues(`artworkList[${index}].artwork`) +
-          ' -  ' +
-          methods.getValues(`artworkList[${index}].pCode`)
+          ` (${methods.getValues(`artworkList[${index}].pCode`)})`
       : search.index === index
         ? search.search
         : '';
@@ -218,6 +220,16 @@ export function AddCollectionForm() {
     setValue(`artworkList[${index}].artwork`, '');
     setValue(`artworkList[${index}].pCode`, '');
     setSearch({ search: '', index: null });
+  };
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
   };
 
   const renderDetails = (
@@ -255,7 +267,7 @@ export function AddCollectionForm() {
                   <Field.Text
                     name={`artworkList[${index}].artwork`}
                     label="Artwork Name"
-                    placeholder="Search by artwork Id/Name"
+                    placeholder="Search by ArtworkId, Title or Artist Name"
                     value={getValue(index)}
                     onChange={(e) => setSearch({ search: e.target.value, index: index, code: '' })}
                     InputLabelProps={{ shrink: true }}
@@ -276,8 +288,12 @@ export function AddCollectionForm() {
                   {search.index === index && search.search && (
                     <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
                       <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {artworkData && artworkData.length > 0 ? (
-                          artworkData.map((i, j) => (
+                        {isLoadingArtwork ? (
+                          <TableCell>
+                            <CircularProgress size={30} />
+                          </TableCell>
+                        ) : artworkData?.data && artworkData?.data?.length > 0 ? (
+                          artworkData?.data.map((i, j) => (
                             <TableCell
                               onClick={() => refillData(i, index)}
                               key={j}
@@ -289,18 +305,21 @@ export function AddCollectionForm() {
                               }}
                             >
                               <Stack spacing={2} direction="row" alignItems="center">
-                                <Avatar alt={i?.artworkName} src={i?.media?.mainImage} />
+                                <Avatar
+                                  alt={i?.artworkName}
+                                  src={`${artworkData?.url}/users/${i?.media}`}
+                                />
 
                                 <ListItemText
                                   disableTypography
                                   primary={
                                     <Typography variant="body2" noWrap>
-                                      {i?.artworkName} - {i?.artworkId}
+                                      {i?.artworkName} {`(${i?.artworkId})`}
                                     </Typography>
                                   }
                                   secondary={
                                     <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
-                                      {i?.inventoryShipping?.pCode}
+                                      {name(i)}
                                     </Link>
                                   }
                                 />

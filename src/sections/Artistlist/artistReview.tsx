@@ -1,29 +1,24 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { useEffect, useMemo, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
-import { Field, Form, schemaHelper } from 'src/components/hook-form';
-import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-import { useSearchParams } from 'src/routes/hooks';
-import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
-import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
-import { useGetReviewArtist } from './http/useGetReviewArtist';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { Field, Form } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { Typography } from '@mui/material';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
-import { Iconify } from 'src/components/iconify';
-import { Button } from '@mui/material';
+import { useSearchParams } from 'src/routes/hooks';
 import { useApproveArtistChanges } from './http/useApproveArtistChanges';
-import { useRejectChanges } from './http/useRejectChanges';
+import { useGetReviewArtist } from './http/useGetReviewArtist';
 
 // ----------------------------------------------------------------------
 
 export function ArtistReview({}) {
+  const [validateChange, setValidateChange] = useState(false);
+  const [isApproveLoading, setIsApproveLoading] = useState(false);
+  const [isRejectLoading, setIsRejectLoading] = useState(false);
   const id = useSearchParams().get('id');
   const isReadOnly = true;
 
@@ -76,6 +71,7 @@ export function ArtistReview({}) {
       updatedInProcessImage: data?.data?.reviewDetails?.profile?.inProcessImage || null,
       updatedMainVideo: data?.data?.reviewDetails?.profile?.mainVideo || null,
       updatedAdditionalVideo: updatedVideoArr || [],
+      note: '',
     }),
     [data?.data]
   );
@@ -85,15 +81,29 @@ export function ArtistReview({}) {
   });
 
   const { reset } = formProps;
-  const { mutate, isPending } = useApproveArtistChanges(data?.data?.reviewDetails, id);
-  const { mutate: rejectMutate, isPending: rejectPending } = useRejectChanges(id);
+  const { mutate } = useApproveArtistChanges();
 
-  const handleApprove = () => {
-    mutate();
-  };
+  const handleApprove = (isApproved) => {
+    const note = formProps.getValues('note');
+    if (!note) return toast.error('Note is required');
 
-  const handleReject = () => {
-    rejectMutate();
+    let bodyData = data?.data?.reviewDetails;
+    bodyData.isApproved = isApproved;
+    bodyData.note = note;
+    bodyData.id = id;
+
+    if (isApproved) {
+      setIsApproveLoading(true);
+    } else {
+      setIsRejectLoading(true);
+    }
+
+    mutate(bodyData, {
+      onSettled: () => {
+        setIsApproveLoading(false);
+        setIsRejectLoading(false);
+      },
+    });
   };
 
   useEffect(() => {
@@ -128,6 +138,47 @@ export function ArtistReview({}) {
       });
     }
   }, [data?.data]);
+
+  const validateChangeDialogBox = (
+    <Dialog
+      sx={{ width: '100vw' }}
+      open={validateChange}
+      onClose={() => {
+        setValidateChange(false);
+      }}
+    >
+      <DialogTitle>
+        Validate Artist Changes - ({data?.data?.artistName} {data?.data?.artistId})
+      </DialogTitle>
+      <form>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Field.Text
+            required
+            multiline
+            rows={4}
+            name="note"
+            placeholder="Some Note/Reason"
+            label="Note"
+          />
+        </DialogContent>
+        <DialogActions sx={{ display: 'flex', gap: 2 }}>
+          <span
+            onClick={() => handleApprove(true)}
+            className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+          >
+            {isApproveLoading ? 'Approving...' : 'Approve Changes'}
+          </span>
+
+          <span
+            onClick={() => handleApprove(false)}
+            className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"
+          >
+            {isRejectLoading ? 'Rejecting...' : 'Reject Changes'}
+          </span>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
 
   const rendergeneralDetails = (
     <Card>
@@ -177,12 +228,12 @@ export function ArtistReview({}) {
           />
           <Field.Text disabled={isReadOnly} value={data?.data?.phone} name="phone" label="Phone" />
 
-          <Field.Text
+          {/* <Field.Text
             disabled={isReadOnly}
             value={data?.data?.dob}
             name="dob"
             label="Date of Birth"
-          />
+          /> */}
           <Field.Text
             disabled={isReadOnly}
             value={data?.data?.address?.country}
@@ -265,12 +316,12 @@ export function ArtistReview({}) {
             name="phone"
             label="Updated Phone"
           />
-          <Field.Text
+          {/* <Field.Text
             disabled={isReadOnly}
             value={data?.data?.reviewDetails?.dob}
             name="dob"
             label="Updated Date of Birth"
-          />
+          /> */}
           <Field.Text
             disabled={isReadOnly}
             value={data?.data?.reviewDetails?.address?.country}
@@ -695,7 +746,7 @@ export function ArtistReview({}) {
 
   return (
     <Form methods={formProps}>
-      <Stack spacing={{ xs: 3, md: 3 }}>
+      <Stack spacing={3}>
         {rendergeneralDetails}
         {aboutArtist}
         {renderProfile}
@@ -705,18 +756,22 @@ export function ArtistReview({}) {
         {mangerDetails}
 
         <div className="flex gap-2 justify-end">
-          <span onClick={handleApprove} className="text-white bg-black rounded-md px-3 py-2">
-            {isPending ? 'Approving...' : 'Approve Changes'}
+          <span
+            onClick={() => setValidateChange(true)}
+            className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+          >
+            Approve Changes
           </span>
 
-          <span
+          {/* <span
             onClick={handleReject}
             className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"
           >
-            {rejectPending ? 'Rejecting...' : 'Reject Changes'}
-          </span>
+            Reject Changes
+          </span> */}
         </div>
       </Stack>
+      {validateChangeDialogBox}
     </Form>
   );
 }

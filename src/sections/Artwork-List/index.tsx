@@ -1,19 +1,11 @@
-import type { IUserItem } from 'src/types/user';
+import type { IInvoice } from 'src/types/user';
 
-import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import Tooltip from '@mui/material/Tooltip';
-
-import { RouterLink } from 'src/routes/components';
-import { paths } from 'src/routes/paths';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { DashboardContent } from 'src/layouts/dashboard';
+import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -24,16 +16,23 @@ import {
   TableHeadCustom,
   TableNoData,
   TablePaginationCustom,
-  TableSelectedAction,
   useTable,
 } from 'src/components/table';
-
+import { RouterLink } from 'src/routes/components';
+import { paths } from 'src/routes/paths';
+import {
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  TextField,
+} from '@mui/material';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { ArtworkTableRow } from './Artwork-table-row';
 import { useGetArtworkList } from './http/useGetArtworkList';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 // ----------------------------------------------------------------------
 
@@ -44,20 +43,29 @@ const TABLE_HEAD = [
   { id: 'activeTab', label: 'Commercialization ', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 100 },
   { id: 'status', label: 'Status', width: 100 },
-  { id: 'action', label: 'Action' , width: 100},
+  { id: 'action', label: 'Action', width: 100 },
 ];
 
 // ----------------------------------------------------------------------
 
 export function ArtworkListView() {
   const table = useTable();
+  const [sStatus, setStatus] = useState<string>('All');
+  const [days, setDays] = useState<string>('All');
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);
   const [notFound, setNotFound] = useState(false);
   const [url, setUrl] = useState('');
-  const [_artworkList, setArtworkList] = useState<IUserItem[]>([]);
+  const [_artworkList, setArtworkList] = useState<IInvoice[]>([]);
 
-  const { data, isLoading } = useGetArtworkList(debounceSearch);
+  const { data, isLoading } = useGetArtworkList(debounceSearch, sStatus, days);
+
+  const weeks = ['All', '1 Day', '1 Week', '1 Month', '1 Quarter', '1 Year'];
+  const statusOptions = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'published', label: 'Published' },
+    { value: 'rejected', label: 'Rejected' },
+  ];
 
   useEffect(() => {
     if (data?.data) {
@@ -72,18 +80,67 @@ export function ArtworkListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
-
   return (
     <>
       <CustomBreadcrumbs
         heading="Artwork List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Artwork List' }]}
         sx={{ mb: 3 }}
+        action={
+          <div className="flex justify-end gap-2">
+            <RouterLink href={paths.dashboard.artwork.addArtwork}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+                <Iconify icon="mingcute:add-line" /> Add Artwork
+              </span>
+            </RouterLink>
+            <RouterLink href={`#`}>
+              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
+                <Iconify icon="mingcute:add-line" /> Export CSV
+              </span>
+            </RouterLink>
+          </div>
+        }
       />
       <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+          <InputLabel htmlFor="Status">Status</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Status" />}
+            inputProps={{ id: 'Status' }}
+            onChange={(e) => setStatus(e.target.value)}
+            value={sStatus}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            <MenuItem value="All">All</MenuItem>
+            {statusOptions && statusOptions.length > 0 ? (
+              statusOptions.map((option, i) => (
+                <MenuItem key={i} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="All">No Data</MenuItem>
+            )}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+          <InputLabel htmlFor="Creation Time Frame">Creation Time Frame</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Creation Time Frame" />}
+            inputProps={{ id: 'Creation Time Frame' }}
+            sx={{ textTransform: 'capitalize' }}
+            value={days}
+            onChange={(e) => setDays(e.target.value)}
+          >
+            {weeks.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -96,11 +153,6 @@ export function ArtworkListView() {
             ),
           }}
         />
-        <RouterLink href={paths.dashboard.artwork.addArtwork}>
-          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
-            <Iconify icon="mingcute:add-line" /> Add Artwork
-          </span>
-        </RouterLink>
       </Stack>
       {isLoading ? (
         <LoadingScreen />
@@ -123,16 +175,7 @@ export function ArtworkListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row, i) => (
-                      <ArtworkTableRow
-                        key={i}
-                        row={row}
-                        url={url}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
+                      <ArtworkTableRow key={i} row={row} url={url} />
                     ))}
 
                   <TableEmptyRows

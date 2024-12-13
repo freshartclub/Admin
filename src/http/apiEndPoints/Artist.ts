@@ -63,7 +63,8 @@ export const ARTIST_ENDPOINTS = {
   getSeriesList: `${ADMIN_BASE_URL}/get-series-list`,
   getReviewArtist: `${ADMIN_BASE_URL}/get-review-artist-detail`,
   approveArtistChanges: `${ADMIN_BASE_URL}/approve-changes`,
-  rejectChanges: `${ADMIN_BASE_URL}/reject-changes`,
+  revalidateArtist: `${ADMIN_BASE_URL}/revalidate-artist`,
+  getIncidentById: `${ADMIN_BASE_URL}/get-incident-by-id`,
 };
 
 export const USER_ENDPOINTS = {
@@ -99,6 +100,7 @@ export const PICKLIST_ENDPOINTS = {
   getPicklistById: `${PICKLIST_BASE_URL}/get-picklist-by-id`,
   updatePicklist: `${PICKLIST_BASE_URL}/update-picklist`,
   deletePicklist: `${PICKLIST_BASE_URL}/delete-picklist`,
+  updatePicklistName: `${PICKLIST_BASE_URL}/update-picklist-name`,
 };
 
 export const ORDER_ENDPOINTS = {

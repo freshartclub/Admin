@@ -8,16 +8,16 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import {
-  INC_SEVERITY_OPTIONS,
-  INC_STATUS_OPTIONS
-} from 'src/_mock';
+import { INC_SEVERITY_OPTIONS, INC_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddIncidentMutation from './http/useAddIncidentMutation';
+import { useSearchParams } from 'src/routes/hooks';
+import { useGetIncidentById } from './http/useGetIncidentById';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -42,8 +42,11 @@ type Props = {
 };
 
 export function AddIncidentForm({ currentPost }: Props) {
-  const { mutateAsync, isPending } = useAddIncidentMutation();
+  const id = useSearchParams().get('id');
   const navigate = useNavigate();
+
+  const { mutateAsync, isPending } = useAddIncidentMutation(id);
+  const { data, isLoading } = useGetIncidentById(id);
 
   const picklists = RenderAllPicklists(['Inc Group', 'Inc Type']);
 
@@ -79,10 +82,20 @@ export function AddIncidentForm({ currentPost }: Props) {
   const values = watch();
 
   useEffect(() => {
-    if (currentPost) {
-      reset(defaultValues);
+    if (data) {
+      reset({
+        incGroup: data.incGroup,
+        incType: data.incType,
+        title: data.title,
+        description: data.description,
+        initTime: data.initTime,
+        endTime: data.endTime,
+        severity: data.severity,
+        status: data.status,
+        note: data.note,
+      });
     }
-  }, [currentPost, defaultValues, reset]);
+  }, [data]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -129,7 +142,10 @@ export function AddIncidentForm({ currentPost }: Props) {
             required
             name="initTime"
             label="Incident Initial Date"
-            onChange={(e) => methods.setValue('endTime', e.$d)}
+            onChange={(e) => {
+              methods.setValue('endTime', e.$d);
+              methods.setValue('initTime', e.$d);
+            }}
           />
           <Field.MobileDateTimePicker required name="endTime" label="Incident End Date" />
         </Box>
@@ -155,22 +171,28 @@ export function AddIncidentForm({ currentPost }: Props) {
           />
         </Box>
 
-        <Field.Text required name="note" label="Note" multiline rows={4} />
+        <Field.Text name="note" label="Internal Note" multiline rows={4} />
       </Stack>
     </Card>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
     <div>
       <CustomBreadcrumbs
-        heading="Add Incident"
-        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Incident' }]}
+        heading={`${id ? 'Edit' : 'Add'} Incident`}
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: id ? 'Edit Incident' : 'Add Incident' },
+        ]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
           {renderDetails}
+
           <div className="flex flex-row justify-end gap-3 mt-8">
             <span
               onClick={() => navigate(paths.dashboard.tickets.allIncident)}

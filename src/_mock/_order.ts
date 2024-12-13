@@ -10,6 +10,7 @@ export const ORDER_STATUS_OPTIONS = [
 ];
 export const TICKET_OPTIONS = [
   { value: 'allTickets', label: 'All Tickets' },
+  { value: 'ongoing', label: 'On Going' },
   { value: 'Finalise', label: 'Historic' },
 ];
 

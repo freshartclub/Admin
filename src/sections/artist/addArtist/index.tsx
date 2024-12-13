@@ -51,6 +51,7 @@ function AddArtistIndex() {
         obj.discipline = data.data?.aboutArtist?.discipline;
         obj.documents = data.data?.documents;
         obj.link = data?.data?.links;
+        obj.profileStatus = data.data.profileStatus;
 
         delete data.data.address;
         delete data.data.links;
@@ -123,7 +124,6 @@ function AddArtistIndex() {
           obj.documents = data.data?.documents;
           obj.intTags = data.data?.otherTags?.intTags;
           obj.extTags = data.data?.otherTags?.extTags;
-          obj.profileStatus = data.data?.profileStatus;
           obj.lastRevalidationDate = data.data?.lastRevalidationDate;
           obj.nextRevalidationDate = data.data?.nextRevalidationDate;
           obj.managerName = data.data?.managerDetails?.managerName;
@@ -159,7 +159,16 @@ function AddArtistIndex() {
   if (id && !artistFormData) return <LoadingScreen />;
 
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ p: 1, position: 'relative' }}>
+      <span
+        className={`w-fit right-[1rem] z-10 fixed h-fit rounded-2xl text-[12px] px-2 py-1 ${artistFormData?.profileStatus === 'active' ? 'bg-[#E7F4EE] text-[#0D894F]' : artistFormData?.profileStatus === 'pending' ? 'bg-[#FFF2E7] text-[#f07b38]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+      >
+        {artistFormData?.profileStatus === 'active'
+          ? 'Active'
+          : artistFormData?.profileStatus === 'inactive'
+            ? 'InActive'
+            : 'Validation Pending'}
+      </span>
       <CustomTabs className="custom12" variant="standard" sx={{ bgcolor: 'white' }}>
         {tabState.map((tab, i) => (
           <Tab

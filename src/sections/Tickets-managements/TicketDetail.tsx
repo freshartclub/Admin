@@ -1,22 +1,21 @@
-import { Box, Card, CardHeader, MenuList, Stack } from '@mui/material';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { paths } from 'src/routes/paths';
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
-import { Field, Form } from 'src/components/hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TICKET_TYPE_OPTIONS, TICKET_STATUS_OPTIONS } from 'src/_mock';
-import { fDate, fTime } from 'src/utils/format-time';
-import useAddReplyMutation from './http/useAddReplyMutation';
-import { useGetTicketDetailMutation } from './http/useGetTicketDetailMutation';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { useSearchParams } from 'src/routes/hooks';
-import { useGetTicketReply } from './http/useGetTicketReply';
-import { Iconify } from 'src/components/iconify';
-import { MenuItem } from '@mui/material';
+import { Box, Card, CardHeader, MenuItem, MenuList, Stack } from '@mui/material';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { FileThumbnail } from 'src/components/file-thumbnail';
+import { Field, Form } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import { fDate, fTime } from 'src/utils/format-time';
+import { z as zod } from 'zod';
+import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
+import useAddReplyMutation from './http/useAddReplyMutation';
+import { useGetTicketDetailMutation } from './http/useGetTicketDetailMutation';
+import { useGetTicketReply } from './http/useGetTicketReply';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -25,6 +24,7 @@ export const NewTicketSchema = zod.object({
   ticketType: zod.string().min(1, { message: 'Type is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),
   message: zod.string().min(1, { message: 'Message is required!' }),
+  ticketImg: zod.any().optional(),
 });
 
 export function TicketDetailView() {
@@ -33,12 +33,23 @@ export function TicketDetailView() {
   const { data: reply, isLoading: replyLoading } = useGetTicketReply(id);
   const { mutateAsync, isPending } = useAddReplyMutation();
 
+  const picklist = RenderAllPicklists(['Ticket Status', 'Ticket Type']);
+
+  const picklistMap = picklist.reduce((acc, item: any) => {
+    acc[item?.fieldName] = item?.picklist;
+    return acc;
+  }, {});
+
+  const status = picklistMap['Ticket Status'];
+  const ticketType = picklistMap['Ticket Type'];
+
   const popover = usePopover();
   const defaultValues = useMemo(
     () => ({
       email: data?.data?.user?.email || '',
       ticketType: data?.data?.ticketType || '',
       status: data?.data?.status || '',
+      ticketImg: null,
       message: '',
     }),
     [data?.data]
@@ -57,6 +68,7 @@ export function TicketDetailView() {
         email: data?.data?.user?.email || '',
         ticketType: data?.data?.ticketType || '',
         status: data?.data?.status || '',
+        ticketImg: null,
         message: '',
       });
     }
@@ -81,6 +93,17 @@ export function TicketDetailView() {
     return fullName.trim();
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      methods.setValue('ticketImg', file);
+    }
+  };
+
+  const handleRemoveDocument = () => {
+    methods.setValue(`ticketImg`, null);
+  };
+
   if (isLoading) return <LoadingScreen />;
 
   const detailForm = (
@@ -91,21 +114,55 @@ export function TicketDetailView() {
           columnGap={2}
           rowGap={3}
           display="grid"
+          alignItems={'center'}
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="email" label="Customer Email" disabled />
+          <Field.Text required name="email" label="Customer Email" disabled />
           <Field.SingelSelect
-            checkbox
             name="ticketType"
             label="Ticket Type"
-            options={TICKET_TYPE_OPTIONS}
+            options={ticketType ? ticketType : []}
           />
           <Field.SingelSelect
-            checkbox
+            required
             name="status"
             label="Status"
-            options={TICKET_STATUS_OPTIONS}
+            options={status ? status : []}
           />
+          {methods.watch('ticketImg') && methods.getValues('ticketImg') ? (
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <FileThumbnail
+                sx={{ cursor: 'pointer' }}
+                onClick={() =>
+                  window.open(URL.createObjectURL(methods.getValues('ticketImg')), '_blank')
+                }
+                file={methods.getValues('ticketImg')?.name}
+              />
+
+              <span
+                onClick={handleRemoveDocument}
+                className="ml-[3rem] text-[14px] absolute bg-red-100 text-red-500 rounded-md px-2 py-1 cursor-pointer"
+              >
+                Remove Document
+              </span>
+            </Box>
+          ) : (
+            <>
+              <input
+                className="border border-gray-200 rounded-md px-2 py-3 hover:border-gray-600"
+                required
+                type="file"
+                accept="file/*"
+                onChange={(e) => handleFileChange(e)}
+              />
+            </>
+          )}
         </Box>
         <Field.Text name="message" required label="Reply about Ticket" multiline rows={4} />
       </Stack>
@@ -132,7 +189,7 @@ export function TicketDetailView() {
             <h2 className="text-[16px] text-black font-bold">{data?.data?.ticketId}</h2>
             <span
               onClick={popover.onOpen}
-              className="bg-green-500 text-white rounded-sm px-1 pr-2 flex items-center cursor-pointer"
+              className="bg-green-600 text-white rounded-sm px-1 pr-2 flex items-center cursor-pointer"
             >
               <Iconify icon="si:unfold-more-duotone" /> See More
             </span>
@@ -172,7 +229,7 @@ export function TicketDetailView() {
           <p className="text-[#84818A]">{data?.data?.message}</p>
           {data?.data?.ticketImg && (
             <span className="flex bg-slate-100 p-2 rounded-md items-center gap-2">
-              <p className="text-[#3d3d3d]">View Attached File</p> -
+              <p className="text-[#3d3d3d]">View Attachment</p> -
               {data?.data?.ticketImg.includes('.pdf') || data?.data?.ticketImg.includes('.docx') ? (
                 <FileThumbnail
                   sx={{ cursor: 'pointer' }}
@@ -194,7 +251,7 @@ export function TicketDetailView() {
           )}
         </Stack>
         <Box className="p-5">
-          <div className="max-h-[50vh] overflow-y-scroll">
+          <div className="max-h-[60vh] overflow-y-scroll">
             {replyLoading ? (
               <LoadingScreen />
             ) : (
@@ -203,7 +260,7 @@ export function TicketDetailView() {
               reply.map((reply, index) => (
                 <div
                   key={index}
-                  className={`px-4 py-2 mt-2 rounded-sm cursor-pointer ${reply?.userType !== 'user' ? 'bg-zinc-100' : null} hover:bg-zinc-100`}
+                  className={`px-4 py-2 mt-2 border border-gray-200 rounded-md cursor-pointer ${reply?.userType !== 'user' ? 'bg-zinc-100' : null} hover:bg-zinc-100`}
                 >
                   <Stack direction={'row'} justifyContent={'space-between'}>
                     <Box display={'flex'} alignItems={'center'} gap={0.5}>
@@ -230,6 +287,28 @@ export function TicketDetailView() {
                     </Box>
                   </Stack>
                   <Box className="ml-7 py-2">{reply?.message}</Box>
+                  {reply.ticketImg && (
+                    <span className="flex bg-slate-100 ml-7 py-2 rounded-md items-center gap-2">
+                      <p className="text-[#3d3d3d]">View Attachment</p> -
+                      {reply.ticketImg.includes('.pdf') || reply.ticketImg.includes('.docx') ? (
+                        <FileThumbnail
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() =>
+                            window.open(`${data?.url}/documents/${reply.ticketImg}`, '_blank')
+                          }
+                          file={reply.ticketImg}
+                        />
+                      ) : (
+                        <FileThumbnail
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() =>
+                            window.open(`${data?.url}/users/${reply.ticketImg}`, '_blank')
+                          }
+                          file={reply.ticketImg}
+                        />
+                      )}
+                    </span>
+                  )}
                 </div>
               ))
             )}
