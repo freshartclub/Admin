@@ -12,6 +12,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useApproveArtistChanges } from './http/useApproveArtistChanges';
 import { useGetReviewArtist } from './http/useGetReviewArtist';
+import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,28 @@ export function ArtistReview({}) {
   const [isRejectLoading, setIsRejectLoading] = useState(false);
   const id = useSearchParams().get('id');
   const isReadOnly = true;
+  const { data: styleData, isLoading: isStyleLoading } = useGetStyleListMutation();
+
+  let StyleArr: any = [];
+  const StyleOptions =
+    styleData && styleData.length > 0
+      ? styleData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.styleName;
+            localObj.label = item?.styleName;
+
+            StyleArr.push(localObj);
+
+            return StyleArr;
+          })
+      : [];
 
   const { data, isLoading } = useGetReviewArtist(id);
 
@@ -58,6 +81,8 @@ export function ArtistReview({}) {
   const defaultValues = useMemo(
     () => ({
       about: data?.data?.aboutArtist?.about || '',
+      discipline: data?.data?.aboutArtist?.discipline || [],
+      changedDiscipline: data?.data?.reviewDetails?.aboutArtist?.discipline || [],
       chnagedAbout: data?.data?.reviewDetails?.aboutArtist?.about || '',
       addHighlights: data?.data?.highlights?.addHighlights || '',
       chnagedAddHighlights: data?.data?.reviewDetails?.highlights?.addHighlights || '',
@@ -111,6 +136,8 @@ export function ArtistReview({}) {
       reset({
         about: data?.data?.aboutArtist?.about || '',
         chnagedAbout: data?.data?.reviewDetails?.aboutArtist?.about || '',
+        discipline: data?.data?.aboutArtist?.discipline || [],
+        changedDiscipline: data?.data?.reviewDetails?.aboutArtist?.discipline || [],
         addHighlights: data?.data?.highlights?.addHighlights || '',
         chnagedAddHighlights: data?.data?.reviewDetails?.highlights?.addHighlights || '',
         mainImage: data?.data?.profile?.mainImage
@@ -397,6 +424,71 @@ export function ArtistReview({}) {
             name="chnagedAddHighlights"
             sx={{ maxHeight: 480 }}
           />
+        </Box>
+      </Stack>
+    </Card>
+  );
+
+  const discipline = (
+    <Card>
+      <CardHeader title="Discipline" sx={{ mb: 2 }} />
+      <Divider />
+      <Stack spacing={3} p={2} direction={'row'}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
+          {data?.data?.aboutArtist?.discipline &&
+            data?.data?.aboutArtist?.discipline.length > 0 &&
+            data?.data?.aboutArtist?.discipline.map((item, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+                gap={2}
+              >
+                <Typography sx={{ fontWeight: 'bold' }}>Discipline - {index + 1}</Typography>
+                <Field.Text
+                  label="Discipline"
+                  disabled={isReadOnly}
+                  name={`discipline[${index}].discipline`}
+                />
+                {formProps.getValues(`discipline[${index}].style`) &&
+                  formProps.getValues(`discipline[${index}].style`).length > 0 && (
+                    <Field.MultiSelect
+                      disabled={isReadOnly}
+                      label="Style"
+                      name={`discipline[${index}].style`}
+                      options={StyleArr ? StyleArr : [{ value: '', label: '' }]}
+                    />
+                  )}
+              </Box>
+            ))}
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
+          {data?.data?.reviewDetails?.aboutArtist?.discipline &&
+            data?.data?.reviewDetails?.aboutArtist?.discipline.length > 0 &&
+            data?.data?.reviewDetails?.aboutArtist?.discipline.map((item, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+                gap={2}
+              >
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  Updated Discipline - {index + 1}
+                </Typography>
+                <Field.Text
+                  label="Updated Discipline"
+                  disabled={isReadOnly}
+                  name={`changedDiscipline[${index}].discipline`}
+                />
+                {formProps.getValues(`changedDiscipline[${index}].style`) &&
+                  formProps.getValues(`changedDiscipline[${index}].style`).length > 0 && (
+                    <Field.MultiSelect
+                      disabled={isReadOnly}
+                      label="Updated Style"
+                      name={`changedDiscipline[${index}].style`}
+                      options={StyleArr ? StyleArr : [{ value: '', label: '' }]}
+                    />
+                  )}
+              </Box>
+            ))}
         </Box>
       </Stack>
     </Card>
@@ -749,8 +841,9 @@ export function ArtistReview({}) {
       <Stack spacing={3}>
         {rendergeneralDetails}
         {aboutArtist}
-        {renderProfile}
+        {discipline}
         {highLight}
+        {renderProfile}
         {cvDetails}
         {links}
         {mangerDetails}
@@ -762,13 +855,6 @@ export function ArtistReview({}) {
           >
             Approve Changes
           </span>
-
-          {/* <span
-            onClick={handleReject}
-            className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"
-          >
-            Reject Changes
-          </span> */}
         </div>
       </Stack>
       {validateChangeDialogBox}

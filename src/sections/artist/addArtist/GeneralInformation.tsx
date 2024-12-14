@@ -105,6 +105,8 @@ export function GeneralInformation({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
+    data.residentialAddress = searchResult;
+
     data.count = 1;
     mutate({ body: data });
   });

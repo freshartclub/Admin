@@ -18,11 +18,8 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-
 import {
-  ARTWORK_AVAILABLETO_OPTIONS,
   ARTWORK_COLLECTIONLIST_OPTIONS,
-  ARTWORK_DISCOUNTACCEPTATION_OPTIONS,
   ARTWORK_FRAMED_OPTIONS,
   ARTWORK_HANGING_OPTIONS,
   ARTWORK_MATERIAL_OPTIONS,
@@ -401,7 +398,24 @@ export function ArtworkAdd() {
       methods.setValue('artworkCreationYear', year);
       methods.setValue('activeTab', selectedOption);
 
+      if (selectedOption === 'subscription') {
+        const val1 = methods.getValues('subscriptionCatalog');
+        const val2 = methods.getValues('purchaseOption');
+        data.purchaseCatalog = '';
+        data.purchaseType = '';
+        if (!val1 || !val2) return toast.error('Please select subscription catalog');
+      }
+
+      if (selectedOption === 'purchase') {
+        const val1 = methods.getValues('purchaseCatalog');
+        const val2 = methods.getValues('purchaseType');
+        data.subscriptionCatalog = '';
+        data.purchaseOption = '';
+        if (!val1 || !val2) return toast.error('Please select purchase catalog');
+      }
+
       data.artworkCreationYear = methods.getValues('artworkCreationYear');
+      data.artistFees = methods.getValues('artistFees');
       data.activeTab = methods.getValues('activeTab');
       data.existingImages = methods.getValues('existingImages');
       data.existingVideos = methods.getValues('existingVideos');
@@ -582,18 +596,12 @@ export function ArtworkAdd() {
   };
 
   const handleChange = (e) => {
-    const textContent = e.target.textContent;
+    const _id = e.target.dataset.value;
     if (selectedOption === 'subscription') {
-      const artistFeesVal = artworkData.subscriptionCatalog.find(
-        (item) => item.catalogName === textContent
-      );
-
+      const artistFeesVal = artworkData.subscriptionCatalog.find((item) => item._id === _id);
       setValue('artistFees', artistFeesVal?.artistFees);
     } else {
-      const artistFeesVal = artworkData.purchaseCatalog.find(
-        (item) => item.catalogName === textContent
-      );
-
+      const artistFeesVal = artworkData.purchaseCatalog.find((item) => item._id === _id);
       setValue('artistFees', artistFeesVal?.artistFees);
     }
   };
@@ -1167,7 +1175,7 @@ export function ArtworkAdd() {
                 mongoDBId
                   ? artworkData?.subscriptionCatalog
                     ? artworkData?.subscriptionCatalog.map((i) => ({
-                        value: i.catalogName,
+                        value: i._id,
                         artistFees: i.artistFees,
                         label: i.catalogName,
                       }))
@@ -1203,7 +1211,8 @@ export function ArtworkAdd() {
                 mongoDBId
                   ? artworkData?.purchaseCatalog
                     ? artworkData?.purchaseCatalog.map((i) => ({
-                        value: i.catalogName,
+                        value: i._id,
+                        artistFees: i.artistFees,
                         label: i.catalogName,
                       }))
                     : [

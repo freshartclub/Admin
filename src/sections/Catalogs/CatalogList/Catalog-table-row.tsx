@@ -82,7 +82,7 @@ export function CatalogTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{viewArtworkList(row?.artworkList)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.subPlan ? row?.subPlan.join(', ') : 'N/A'}
+          {row?.subPlan.length ? row?.subPlan.join(', ') : 'N/A'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

@@ -24,6 +24,8 @@ const AddressAutoComplete = ({
   helperText,
   error,
 }: AutoCompleteProps) => {
+  const [city, setCity] = React.useState('');
+
   return (
     <TextField
       fullWidth
@@ -31,7 +33,7 @@ const AddressAutoComplete = ({
       label={label}
       value={value}
       disabled={disabled}
-      onChange={onChange}
+      onChange={(event) => setCity(event.target.value)}
       error={error}
       helperText={helperText}
       InputProps={{
