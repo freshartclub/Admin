@@ -101,7 +101,13 @@ export function GeneralInformation({
     defaultValues,
   });
 
-  const { setValue, trigger, handleSubmit } = formProps;
+  const {
+    setValue,
+    trigger,
+    handleSubmit,
+    formState: { errors },
+  } = formProps;
+  console.log(errors);
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -138,6 +144,7 @@ export function GeneralInformation({
   }, [artistFormData?.residentialAddress]);
 
   const placesSelected = (places: google.maps.places.PlaceResult) => {
+    setValue('residentialAddress', places.formatted_address);
     setSearchResult(places.formatted_address);
   };
 

@@ -41,6 +41,8 @@ export const CreateArtistFormSchema = zod.object({
     message: { required_error: 'Avatar is required!', required: false },
   }),
   name: zod.string().min(1, { message: 'Name is required!' }),
+  artistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
+  artistSurname2: zod.string(),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -82,6 +84,7 @@ export function CreateArtistForm() {
   const [open, setOpen] = useState(true);
   const [_id, setId] = useState('');
   const [code, setCode] = useState('');
+  const [UserData, setUserData] = useState<any>(null);
   const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   let id = useSearchParams().get('id');
@@ -102,6 +105,7 @@ export function CreateArtistForm() {
 
   useEffect(() => {
     if (!data) return;
+    console.log(data);
     if (data) {
       reset({
         existingAvatar: data?.profile?.mainImage
@@ -120,7 +124,7 @@ export function CreateArtistForm() {
       });
     }
     setValue(existingUser === 'true' ? 'existing' : 'new');
-  }, [data, value, reset]);
+  }, [data, value]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -159,7 +163,7 @@ export function CreateArtistForm() {
 
   const refillData = (data) => {
     setId(data?._id);
-    methods.setValue('existingAvatar', data?.avatar);
+    methods.setValue('existingAvatar', data?.profile?.mainImage);
     methods.setValue('existingId', data?.userId);
     methods.setValue('existingName', data?.artistName);
     methods.setValue('existingArtistSurname1', data?.artistSurname1);
@@ -170,8 +174,29 @@ export function CreateArtistForm() {
     methods.setValue('existingState', data?.address?.state);
     methods.setValue('existingCity', data?.address?.city);
     methods.setValue('existingZipCode', data?.address?.zipCode);
+    setUserData(data);
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (UserData) {
+      reset({
+        existingAvatar: UserData?.profile?.mainImage
+          ? `https://dev.freshartclub.com/images/users/${UserData?.profile?.mainImage}`
+          : null,
+        existingId: UserData?.userId || '',
+        existingName: UserData?.artistName || '',
+        existingArtistSurname1: UserData?.artistSurname1 || '',
+        existingArtistSurname2: UserData?.artistSurname2 || '',
+        existingEmail: UserData?.email || '',
+        existingPhoneNumber: UserData?.phone || '',
+        existingCountry: UserData?.address.country || '',
+        existingState: UserData?.address.state || '',
+        existingCity: UserData?.address.city || '',
+        existingZipCode: UserData?.address.zipCode || '',
+      });
+    }
+  }, [UserData, reset]);
 
   useEffect(() => {
     const getLocation = () => {
@@ -213,6 +238,12 @@ export function CreateArtistForm() {
       });
     }
   }, [zipCode, country, methods]);
+
+  // const handleReset = () => {
+  //   reset({
+  //     existingCountry:country
+  //   })
+  // };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -333,35 +364,72 @@ export function CreateArtistForm() {
                   display="grid"
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
                 >
-                  <Field.Text name="existingName" required label="First Name" />
-                  <Field.Text name="existingArtistSurname1" required label="Surname 1" />
-                  <Field.Text name="existingArtistSurname2" label="Surname 2" />
+                  <Field.Text
+                    InputLabelProps={{ shrink: true }}
+                    name="existingName"
+                    required
+                    label="First Name"
+                  />
+                  <Field.Text
+                    InputLabelProps={{ shrink: true }}
+                    name="existingArtistSurname1"
+                    required
+                    label="Surname 1"
+                  />
+                  <Field.Text
+                    InputLabelProps={{ shrink: true }}
+                    name="existingArtistSurname2"
+                    label="Surname 2"
+                  />
                   <Field.Text
                     disabled={isReadOnly}
+                    InputLabelProps={{ shrink: true }}
                     required
                     name="existingEmail"
                     label="Email address"
                   />
 
-                  <Field.CountrySelect
-                    fullWidth
-                    required
-                    setCode={setCode}
-                    name="existingCountry"
-                    label="Country"
-                    placeholder="Choose a country"
-                  />
+                  {/* <Box> */}
+                    <Field.CountrySelect
+                      fullWidth
+                      name="existingCountry"
+                      required
+                      disabled={isReadOnly}
+                      setCode={setCode}
+                      label="Country"
+                      placeholder="Choose a country"
+                    />
+
+                    {/* <Button onClick={handleReset}>Reset</Button> */}
+                  {/* </Box> */}
                   <Field.Phone
+                    disabled={isReadOnly}
                     fetchCode={code ? code : ''}
                     name="existingPhoneNumber"
                     required
                     label="Phone number"
                   />
 
-                  <Field.Text name="existingZipCode" required label="Zip/code" />
-                  <Field.Text sx={{ mt: 3 }} name="existingCity" required label="City" />
+                  <Field.Text
+                    InputLabelProps={{ shrink: true }}
+                    name="existingZipCode"
+                    required
+                    label="Zip/code"
+                  />
+                  <Field.Text
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ mt: 3 }}
+                    name="existingCity"
+                    required
+                    label="City"
+                  />
                 </Box>
-                <Field.Text name="existingState" required label="State/region" />
+                <Field.Text
+                  InputLabelProps={{ shrink: true }}
+                  name="existingState"
+                  required
+                  label="State/region"
+                />
 
                 <Stack alignItems="flex-end" sx={{ mt: 3 }}>
                   <Button type="submit" variant="contained">

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-import { Avatar, Link, ListItemText, TableCell, TableRow, Typography } from '@mui/material';
+import { Avatar, Box, Link, ListItemText, TableCell, TableRow, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
@@ -11,7 +11,6 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { Art_provider, CATAGORY_PLAN_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
@@ -45,6 +44,11 @@ export const NewPostSchema = zod.object({
   exclusiveCatalog: zod.boolean(),
   status: zod.any(),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
+  maxPrice: zod.number().min(1, { message: 'Max Price is required!' }),
+  maxHeight: zod.number().min(1, { message: 'Max Height is required!' }),
+  maxWidth: zod.number().min(1, { message: 'Max Width is required!' }),
+  maxDepth: zod.number().min(1, { message: 'Max Depth is required!' }),
+  maxWeight: zod.number().min(1, { message: 'Max Weight is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -78,7 +82,12 @@ export function AddCatalogForm() {
       defaultArtistFee: data?.data?.defaultArtistFee || '',
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
       status: data?.data?.status || '',
-      catalogImg: data?.data?.catalogImg || null,
+      catalogImg: data?.data?.catalogImg || 0,
+      maxPrice: data?.data?.maxPrice || 0,
+      maxHeight: data?.data?.maxHeight || 0,
+      maxWidth: data?.data?.maxWidth || 0,
+      maxDepth: data?.data?.maxDepth || 0,
+      maxWeight: data?.data?.maxWeight || 0,
     }),
     [data?.data]
   );
@@ -94,6 +103,7 @@ export function AddCatalogForm() {
     handleSubmit,
     formState: { errors },
   } = methods;
+
   console.log(errors);
 
   useEffect(() => {
@@ -112,6 +122,11 @@ export function AddCatalogForm() {
         exclusiveCatalog: data?.data?.exclusiveCatalog || false,
         status: data?.data?.status || '',
         catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
+        maxPrice: data?.data?.details?.maxPrice || 0,
+        maxHeight: data?.data?.details?.maxHeight || 0,
+        maxWidth: data?.data?.details?.maxWidth || 0,
+        maxDepth: data?.data?.details?.maxDepth || 0,
+        maxWeight: data?.data?.details?.maxWeight || 0,
       });
     }
   }, [data?.data, reset]);
@@ -223,215 +238,247 @@ export function AddCatalogForm() {
   ];
 
   const renderDetails = (
+    <Card sx={{ mb: 2 }}>
+      <Divider />
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Text required name="catalogName" label="Catalog Name" />
+        <Field.Text required name="catalogDesc" label="Catalog Description" multiline rows={4} />
+        <div className="relative">
+          <Field.Text
+            name="CollectionSearch"
+            label="Add Collection To List"
+            placeholder="Search by Collection Name"
+            value={searchColl}
+            onChange={(e) => setSearchColl(e.target.value)}
+          />
+          {searchColl && (
+            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {collData && collData.length > 0 ? (
+                  collData.map((i, j) => (
+                    <TableCell
+                      onClick={() => refillCollData(i)}
+                      key={j}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      <Stack spacing={2} direction="row" alignItems="center">
+                        <Avatar alt={i?.collectionName} src={i?.collectionFile} />
+
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography variant="body2" noWrap>
+                              {i?.collectionName}
+                            </Typography>
+                          }
+                          secondary={
+                            <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                              {i?.createdBy}
+                            </Link>
+                          }
+                        />
+                      </Stack>
+                    </TableCell>
+                  ))
+                ) : (
+                  <TableCell>No Data Available</TableCell>
+                )}
+              </TableRow>
+            </div>
+          )}
+        </div>
+        {methods.watch('collectionNames') && methods.getValues('collectionNames').length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-[-1rem]">
+            {methods.getValues('collectionNames').map((i, index) => (
+              <Stack
+                direction={'row'}
+                alignItems="center"
+                sx={{
+                  display: 'flex',
+                  gap: 0.3,
+                  backgroundColor: 'rgb(214 244 249)',
+                  color: 'rgb(43 135 175)',
+                  fontSize: '14px',
+                  padding: '3px 7px',
+                  borderRadius: '9px',
+                }}
+                key={index}
+              >
+                <span>{i}</span>
+                <Iconify
+                  icon="material-symbols:close-rounded"
+                  sx={{ cursor: 'pointer', padding: '2px' }}
+                  onClick={() => handleRemoveCollection(index)}
+                />
+              </Stack>
+            ))}
+          </div>
+        )}
+
+        <div className="relative">
+          <Field.Text
+            disabled
+            name="artworkSearch"
+            label="Add Artwork To List"
+            placeholder="Search by Artwork Id/Name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {artworkData && artworkData.length > 0 ? (
+                  artworkData.map((i, j) => (
+                    <TableCell
+                      onClick={() => refillData(i)}
+                      key={j}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      <Stack spacing={2} direction="row" alignItems="center">
+                        <Avatar alt={i?.artworkName} src={i?.media?.mainImage} />
+
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography variant="body2" noWrap>
+                              {i?.artworkName}
+                            </Typography>
+                          }
+                          secondary={
+                            <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                              {i?.inventoryShipping?.pCode}
+                            </Link>
+                          }
+                        />
+                      </Stack>
+                    </TableCell>
+                  ))
+                ) : (
+                  <TableCell>No Data Available</TableCell>
+                )}
+              </TableRow>
+            </div>
+          )}
+        </div>
+        {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-[-1rem]">
+            {methods.getValues('artworkNames').map((i, index) => (
+              <Stack
+                direction={'row'}
+                alignItems="center"
+                sx={{
+                  display: 'flex',
+                  gap: 0.3,
+                  backgroundColor: 'rgb(214 244 249)',
+                  color: 'rgb(43 135 175)',
+                  fontSize: '14px',
+                  padding: '3px 7px',
+                  borderRadius: '9px',
+                }}
+                key={index}
+              >
+                <span>{i}</span>
+                <Iconify
+                  icon="material-symbols:close-rounded"
+                  sx={{ cursor: 'pointer', padding: '2px' }}
+                  onClick={() => handleRemoveArtwokrk(index)}
+                />
+              </Stack>
+            ))}
+          </div>
+        )}
+
+        <Field.Autocomplete
+          disabled
+          name="artProvider"
+          label="Art Provider"
+          placeholder="+ Art"
+          multiple
+          freeSolo
+          disableCloseOnSelect
+          options={[]}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option) => (
+            <li {...props} key={option}>
+              {option}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option}
+                label={option}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
+        />
+
+        <Field.SingelSelect
+          required
+          name="catalogCommercialization"
+          label="Catalog Commercialization"
+          options={[
+            { value: 'Purchase', label: 'Purchase' },
+            { value: 'Subscription ', label: 'Subscription ' },
+          ]}
+        />
+        <Field.Text required name="defaultArtistFee" label="Default Artist Fee" type="number" />
+        <Field.SingelSelect
+          required
+          name="status"
+          label="Status"
+          options={picklist ? picklist : []}
+        />
+      </Stack>
+    </Card>
+  );
+
+  const AdditinalInfo = (
+    <Card sx={{ mb: 2 }}>
+      <CardHeader title="Additinal Info" sx={{ mb: 1 }} />
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Text name="maxPrice" type="number" label="Max Price" />
+        <Box
+          columnGap={2}
+          rowGap={3}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
+          <Field.Text name="maxHeight" type="number" label="Max Height (in cm)" />
+          <Field.Text name="maxWidth" type="number" label="Max Width (in cm)" />
+          <Field.Text name="maxDepth" type="number" label="Max Depth (in cm)" />
+        </Box>
+        <Field.Text name="maxWeight" type="number" label="Max Weight (in kg)" />
+      </Stack>
+    </Card>
+  );
+
+  const renderProperties = (
     <>
       <Card sx={{ mb: 2 }}>
+        <CardHeader title="Add Image *" sx={{ mb: 2 }} />
         <Divider />
         <Stack spacing={3} sx={{ p: 3 }}>
-          <Field.Text required name="catalogName" label="Catalog Name" />
-          <Field.Text required name="catalogDesc" label="Catalog Description" multiline rows={4} />
-          <div className="relative">
-            <Field.Text
-              name="CollectionSearch"
-              label="Add Collection To List"
-              placeholder="Search by Collection Name"
-              value={searchColl}
-              onChange={(e) => setSearchColl(e.target.value)}
-            />
-            {searchColl && (
-              <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
-                <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {collData && collData.length > 0 ? (
-                    collData.map((i, j) => (
-                      <TableCell
-                        onClick={() => refillCollData(i)}
-                        key={j}
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                          },
-                        }}
-                      >
-                        <Stack spacing={2} direction="row" alignItems="center">
-                          <Avatar alt={i?.collectionName} src={i?.collectionFile} />
-
-                          <ListItemText
-                            disableTypography
-                            primary={
-                              <Typography variant="body2" noWrap>
-                                {i?.collectionName}
-                              </Typography>
-                            }
-                            secondary={
-                              <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
-                                {i?.createdBy}
-                              </Link>
-                            }
-                          />
-                        </Stack>
-                      </TableCell>
-                    ))
-                  ) : (
-                    <TableCell>No Data Available</TableCell>
-                  )}
-                </TableRow>
-              </div>
-            )}
-          </div>
-          {methods.watch('collectionNames') && methods.getValues('collectionNames').length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-[-1rem]">
-              {methods.getValues('collectionNames').map((i, index) => (
-                <Stack
-                  direction={'row'}
-                  alignItems="center"
-                  sx={{
-                    display: 'flex',
-                    gap: 0.3,
-                    backgroundColor: 'rgb(214 244 249)',
-                    color: 'rgb(43 135 175)',
-                    fontSize: '14px',
-                    padding: '3px 7px',
-                    borderRadius: '9px',
-                  }}
-                  key={index}
-                >
-                  <span>{i}</span>
-                  <Iconify
-                    icon="material-symbols:close-rounded"
-                    sx={{ cursor: 'pointer', padding: '2px' }}
-                    onClick={() => handleRemoveCollection(index)}
-                  />
-                </Stack>
-              ))}
-            </div>
-          )}
-
-          <div className="relative">
-            <Field.Text
-              disabled
-              name="artworkSearch"
-              label="Add Artwork To List"
-              placeholder="Search by Artwork Id/Name"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
-              <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
-                <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {artworkData && artworkData.length > 0 ? (
-                    artworkData.map((i, j) => (
-                      <TableCell
-                        onClick={() => refillData(i)}
-                        key={j}
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                          },
-                        }}
-                      >
-                        <Stack spacing={2} direction="row" alignItems="center">
-                          <Avatar alt={i?.artworkName} src={i?.media?.mainImage} />
-
-                          <ListItemText
-                            disableTypography
-                            primary={
-                              <Typography variant="body2" noWrap>
-                                {i?.artworkName}
-                              </Typography>
-                            }
-                            secondary={
-                              <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
-                                {i?.inventoryShipping?.pCode}
-                              </Link>
-                            }
-                          />
-                        </Stack>
-                      </TableCell>
-                    ))
-                  ) : (
-                    <TableCell>No Data Available</TableCell>
-                  )}
-                </TableRow>
-              </div>
-            )}
-          </div>
-          {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-[-1rem]">
-              {methods.getValues('artworkNames').map((i, index) => (
-                <Stack
-                  direction={'row'}
-                  alignItems="center"
-                  sx={{
-                    display: 'flex',
-                    gap: 0.3,
-                    backgroundColor: 'rgb(214 244 249)',
-                    color: 'rgb(43 135 175)',
-                    fontSize: '14px',
-                    padding: '3px 7px',
-                    borderRadius: '9px',
-                  }}
-                  key={index}
-                >
-                  <span>{i}</span>
-                  <Iconify
-                    icon="material-symbols:close-rounded"
-                    sx={{ cursor: 'pointer', padding: '2px' }}
-                    onClick={() => handleRemoveArtwokrk(index)}
-                  />
-                </Stack>
-              ))}
-            </div>
-          )}
-
-          <Field.Autocomplete
-            disabled
-            name="artProvider"
-            label="Art Provider"
-            placeholder="+ Art"
-            multiple
-            freeSolo
-            disableCloseOnSelect
-            options={[]}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
-            )}
-            renderTags={(selected, getTagProps) =>
-              selected.map((option, index) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  key={option}
-                  label={option}
-                  size="small"
-                  color="info"
-                  variant="soft"
-                />
-              ))
-            }
-          />
-
-          <Field.SingelSelect
-            required
-            name="catalogCommercialization"
-            label="Catalog Commercialization"
-            options={[
-              { value: 'Purchase', label: 'Purchase' },
-              { value: 'Subscription ', label: 'Subscription ' },
-            ]}
-          />
-          <Field.Text required name="defaultArtistFee" label="Default Artist Fee" type="number" />
-          <Field.SingelSelect
-            required
-            name="status"
-            label="Status"
-            options={picklist ? picklist : []}
-          />
+          <Field.Upload name="catalogImg" maxSize={3145728} onDelete={handleRemoveImg} />
         </Stack>
       </Card>
-      <Card>
+      <Card sx={{ mb: 2 }}>
         <CardHeader title="Exclusive Catalog" sx={{ mb: 1 }} />
         <Divider />
         <Stack spacing={3} sx={{ p: 3 }}>
@@ -446,16 +493,6 @@ export function AddCatalogForm() {
     </>
   );
 
-  const renderProperties = (
-    <Card sx={{ mb: 2 }}>
-      <CardHeader title="Add Image *" sx={{ mb: 2 }} />
-      <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Upload name="catalogImg" maxSize={3145728} onDelete={handleRemoveImg} />
-      </Stack>
-    </Card>
-  );
-
   const subscription = (
     <Card sx={{ mb: 2 }}>
       <CardHeader title="Subscription Plan" sx={{ mb: 1 }} />
@@ -464,7 +501,7 @@ export function AddCatalogForm() {
         <Field.Autocomplete
           disabled
           name="subPlan"
-          label="Subscription Plan *"
+          label="Subscription Plan"
           placeholder="+ Subscription Plan"
           multiple
           freeSolo
@@ -512,6 +549,7 @@ export function AddCatalogForm() {
             </div>
             <div className="col-span-2">
               {renderDetails}
+              {AdditinalInfo}
               <div className="flex flex-row justify-end gap-3 mt-8">
                 <span
                   onClick={() => navigate(paths.dashboard.artwork.catalog.list)}

@@ -116,7 +116,7 @@ export const NewProductSchema = zod.object({
   offensive: zod.string().optional(),
   pCode: zod.string().optional(),
   location: zod.string().optional(),
-  artworkDiscipline: zod.string(),
+  artworkDiscipline: zod.string().min(1, { message: 'Artwork Discipline is required!' }),
   intTags: zod.string().array().optional(),
   extTags: zod.string().array().optional(),
   promotion: zod.string().optional(),

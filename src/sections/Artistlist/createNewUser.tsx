@@ -54,6 +54,8 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
         value: value,
       };
 
+      // return;
+
       mutate(newData);
     } catch (error) {
       console.error(error);
@@ -92,8 +94,6 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
         methods.setValue('state', state || '');
       });
     }
-
-    console.log(zipCode, country);
   }, [zipCode, country]);
 
   return (
