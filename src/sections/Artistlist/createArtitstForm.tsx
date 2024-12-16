@@ -84,7 +84,6 @@ export function CreateArtistForm() {
   const [open, setOpen] = useState(true);
   const [_id, setId] = useState('');
   const [code, setCode] = useState('');
-  const [UserData, setUserData] = useState<any>(null);
   const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   let id = useSearchParams().get('id');
@@ -93,6 +92,19 @@ export function CreateArtistForm() {
 
   const methods = useForm({
     resolver: zodResolver(CreateExistingArtistFormSchema),
+    defaultValues: {
+      existingAvatar: null,
+      existingId: '',
+      existingName: '',
+      existingArtistSurname1: '',
+      existingArtistSurname2: '',
+      existingEmail: '',
+      existingPhoneNumber: '',
+      existingCountry: '',
+      existingState: '',
+      existingCity: '',
+      existingZipCode: '',
+    },
   });
 
   const { data, isLoading } = useGetExistingUserDetails(id);
@@ -105,7 +117,6 @@ export function CreateArtistForm() {
 
   useEffect(() => {
     if (!data) return;
-    console.log(data);
     if (data) {
       reset({
         existingAvatar: data?.profile?.mainImage
@@ -174,29 +185,8 @@ export function CreateArtistForm() {
     methods.setValue('existingState', data?.address?.state);
     methods.setValue('existingCity', data?.address?.city);
     methods.setValue('existingZipCode', data?.address?.zipCode);
-    setUserData(data);
     setOpen(false);
   };
-
-  useEffect(() => {
-    if (UserData) {
-      reset({
-        existingAvatar: UserData?.profile?.mainImage
-          ? `https://dev.freshartclub.com/images/users/${UserData?.profile?.mainImage}`
-          : null,
-        existingId: UserData?.userId || '',
-        existingName: UserData?.artistName || '',
-        existingArtistSurname1: UserData?.artistSurname1 || '',
-        existingArtistSurname2: UserData?.artistSurname2 || '',
-        existingEmail: UserData?.email || '',
-        existingPhoneNumber: UserData?.phone || '',
-        existingCountry: UserData?.address.country || '',
-        existingState: UserData?.address.state || '',
-        existingCity: UserData?.address.city || '',
-        existingZipCode: UserData?.address.zipCode || '',
-      });
-    }
-  }, [UserData, reset]);
 
   useEffect(() => {
     const getLocation = () => {
@@ -206,8 +196,10 @@ export function CreateArtistForm() {
     const fetchCountryByIP = async () => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
-        methods.setValue('country', response.data.country_name);
-        methods.setValue('phoneNumber', response.data.country_code);
+        if (response.status === 200) {
+          methods.setValue('country', response.data.country_name);
+          methods.setValue('phoneNumber', response.data.country_code);
+        }
       } catch (err) {
         console.log('Failed to fetch country data by IP');
       }
@@ -237,7 +229,7 @@ export function CreateArtistForm() {
         methods.setValue('existingState', state || '');
       });
     }
-  }, [zipCode, country, methods]);
+  }, [zipCode, country]);
 
   // const handleReset = () => {
   //   reset({
@@ -334,7 +326,8 @@ export function CreateArtistForm() {
                             <Stack spacing={2} direction="row" alignItems="center">
                               <Avatar
                                 alt={i?.artistName}
-                              >{`${i?.url}/users/${i?.profile?.mainImage}`}</Avatar>
+                                src={`${i?.url}/users/${i?.profile?.mainImage}`}
+                              />
 
                               <ListItemText
                                 disableTypography
@@ -386,28 +379,36 @@ export function CreateArtistForm() {
                     InputLabelProps={{ shrink: true }}
                     required
                     name="existingEmail"
-                    label="Email address"
+                    label="Email Address"
                   />
 
-                  {/* <Box> */}
+                  {id ? (
                     <Field.CountrySelect
                       fullWidth
                       name="existingCountry"
-                      required
                       disabled={isReadOnly}
                       setCode={setCode}
-                      label="Country"
+                      label="Country *"
                       placeholder="Choose a country"
                     />
+                  ) : (
+                    <Field.CountrySelect
+                      fullWidth
+                      name="existingCountry"
+                      disabled={isReadOnly}
+                      setCode={setCode}
+                      value={country}
+                      label="Country *"
+                      placeholder="Choose a country"
+                    />
+                  )}
 
-                    {/* <Button onClick={handleReset}>Reset</Button> */}
-                  {/* </Box> */}
                   <Field.Phone
                     disabled={isReadOnly}
                     fetchCode={code ? code : ''}
                     name="existingPhoneNumber"
                     required
-                    label="Phone number"
+                    label="Phone Number"
                   />
 
                   <Field.Text
@@ -418,13 +419,14 @@ export function CreateArtistForm() {
                   />
                   <Field.Text
                     InputLabelProps={{ shrink: true }}
-                    sx={{ mt: 3 }}
                     name="existingCity"
                     required
                     label="City"
                   />
                 </Box>
+
                 <Field.Text
+                  sx={{ mt: 3 }}
                   InputLabelProps={{ shrink: true }}
                   name="existingState"
                   required

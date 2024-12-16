@@ -97,8 +97,6 @@ export function OtherDetails({
   const extarnal = picklistMap['Artist External Tags'];
   const internal = picklistMap['Artist Internal Tags'];
 
-  console.log('artistFormData', extarnal);
-
   const isReadOnly = view !== null;
   const url = 'https://dev.freshartclub.com/images';
 

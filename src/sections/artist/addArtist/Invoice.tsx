@@ -29,6 +29,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { RenderAllPicklist } from 'src/sections/Picklists/RenderAllPicklist';
 import { z as zod } from 'zod';
 import { toast } from 'sonner';
+import { getCityStateFromZipCountry } from './AddressAutoComplete';
 
 export const NewProductSchema = zod.object({
   taxNumber: zod.string().min(1, { message: 'taxNumber/NIF Id is required!' }),
@@ -88,6 +89,7 @@ export function Invoice({
   const [selectedBank, setSelectedBank] = useState({ code: '', name: '' });
   const [arr, setArr] = useState<{ value: number; label: number }[]>([]);
   const { data } = useGetAllCatalog();
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 
   const levelPicklist = RenderAllPicklist('Artist Level');
 
@@ -188,6 +190,9 @@ export function Invoice({
   const { trigger, handleSubmit, reset, watch } = formProps;
   const val = watch();
 
+  const country = formProps.watch('taxCountry');
+  const zipCode = formProps.watch('taxZipCode');
+
   useEffect(() => {
     reset({
       taxLegalName: value ? name(artistFormData) : artistFormData?.taxLegalName,
@@ -257,6 +262,15 @@ export function Invoice({
         !selectedValues.includes(option.value) || option.value === fields[index]?.PublishingCatalog
     );
   };
+
+  useEffect(() => {
+    if (zipCode && zipCode.length > 4 && country) {
+      getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
+        formProps.setValue('taxCity', city || '');
+        formProps.setValue('taxProvince', state || '');
+      });
+    }
+  }, [zipCode, country, formProps]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {

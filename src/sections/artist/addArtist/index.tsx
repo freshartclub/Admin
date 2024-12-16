@@ -53,15 +53,15 @@ function AddArtistIndex() {
         obj.link = data?.data?.links;
         obj.profileStatus = data.data.profileStatus;
 
-        delete data.data.address;
-        delete data.data.links;
+        // delete data.data.address;
+        // delete data.data.links;
 
         if (data.data.pageCount > 1) {
           obj.highlights = data.data.highlights.addHighlights;
           obj.cvData = data.data.highlights.cv;
           delete data.data.highlights;
         }
-
+        
         if (data.data.pageCount > 2) {
           obj.about = data.data.aboutArtist.about;
           obj.insignia = data.data.insignia;

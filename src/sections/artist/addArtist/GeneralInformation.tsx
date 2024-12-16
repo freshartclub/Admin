@@ -74,6 +74,8 @@ export function GeneralInformation({
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
+  console.log(artistFormData);
+
   const defaultValues = useMemo(
     () => ({
       artistName: artistFormData?.artistName || '',
@@ -101,24 +103,21 @@ export function GeneralInformation({
     defaultValues,
   });
 
-  const {
-    setValue,
-    trigger,
-    handleSubmit,
-    formState: { errors },
-  } = formProps;
-  console.log(errors);
+  console.log(defaultValues);
+
+  const { setValue, trigger, handleSubmit, reset } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
     data.residentialAddress = searchResult;
-
     data.count = 1;
     mutate({ body: data });
   });
 
   const country = formProps.watch('country');
   const zipCode = formProps.watch('zipCode');
+
+  console.log(country, zipCode);
 
   const [searchResult, setSearchResult] = useState('');
 
@@ -131,13 +130,13 @@ export function GeneralInformation({
   };
 
   useEffect(() => {
-    if (zipCode && zipCode.length > 4 && country) {
+    if (zipCode && country && zipCode.length > 4) {
       getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
-        setValue('city', city || '');
-        setValue('state', state || '');
+        formProps.setValue('city', city || '');
+        formProps.setValue('state', state || '');
       });
     }
-  }, [zipCode, country, formProps]);
+  }, [zipCode, country]);
 
   useEffect(() => {
     setSearchResult(artistFormData?.residentialAddress || '');
