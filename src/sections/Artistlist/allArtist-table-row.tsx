@@ -211,6 +211,19 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
     </Dialog>
   );
 
+  const calculateDays = (val) => {
+    if (!val?.nextRevalidationDate) return;
+    const today = new Date();
+    const createdAt = new Date(val?.nextRevalidationDate);
+
+    const diffTime = today.getTime() - createdAt.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return 0;
+
+    return diffDays;
+  };
+
   return (
     <>
       <TableRow hover>
@@ -239,7 +252,26 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{fDate(row?.nextRevalidationDate) || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+          {row?.nextRevalidationDate ? (
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', gap: 1 }}>
+              <span
+                className={`w-fit h-fit text-[12px] px-2 rounded-2xl ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+              >
+                {fDate(row?.nextRevalidationDate)}
+              </span>
+              <span className="w-fit h-fit bg-[#FEEDEC] text-[#f09438] rounded-2xl text-[12px] px-2">
+                {calculateDays(row) === 0
+                  ? null
+                  : calculateDays(row) === 1
+                    ? '1 day left'
+                    : `${calculateDays(row)} days left`}
+              </span>
+            </Stack>
+          ) : (
+            'N/A'
+          )}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.profileStatus === 'under-review' ? (

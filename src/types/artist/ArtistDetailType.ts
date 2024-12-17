@@ -10,6 +10,7 @@ export interface ArtistDetailType {
   cvData: cvData[];
   insignia: [];
   currency: string;
+  previousRevalidationDate: [];
 
   nickName?: string;
   ArtistId: string;
@@ -123,6 +124,9 @@ interface ArtistCategory {
 export interface ArtistListType {
   _id: string;
   avatar: string;
+  discipline: any[];
+  links: any[];
+  documents: any[];
   isActivated: Boolean;
   profileStatus: string;
   userId?: string;

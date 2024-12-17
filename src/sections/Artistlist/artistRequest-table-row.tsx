@@ -1,11 +1,17 @@
 import {
   Avatar,
+  Card,
+  CardHeader,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   IconButton,
+  Modal,
+  TextField,
+  Typography,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -15,6 +21,7 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
@@ -25,7 +32,7 @@ import { useBanRequestMutation } from './http/useBanRequestMutation';
 import { useRejectRequestMutation } from './http/useRejectRequestMutation';
 import { useUnBanRequest } from './http/useUnBanRequest';
 import { useUnRejectRequest } from './http/useUnRejectRequest';
-import { useNavigate } from 'react-router';
+import { FileThumbnail } from 'src/components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 
@@ -38,12 +45,27 @@ type Props = {
   onDeleteRow: () => void;
 };
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 2,
+  maxHeight: '90vh',
+  overflow: 'auto',
+};
+
 export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const popover = usePopover();
   const navigate = useNavigate();
 
   const [unBanPopUp, setUnBanPopUp] = useState(false);
   const [unRejectPopUp, setUnRejectPopUp] = useState(false);
+  const [viewDetails, setViewDetails] = useState(false);
 
   const [banPopUp, setBanPopUp] = useState(false);
   const [rejectPopUp, setRejectPopUp] = useState(false);
@@ -84,6 +106,175 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
 
     return fullName.trim();
   };
+
+  const viewDetailsModal = (
+    <Modal
+      open={viewDetails}
+      onClose={() => setViewDetails(false)}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Card sx={{ mb: 2 }}>
+          <CardHeader title="Artist Request Details" sx={{ mb: 1 }} />
+          <Divider />
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <TextField
+              id="outlined-basic"
+              label="First Name"
+              disabled
+              value={row?.artistName}
+              variant="outlined"
+              InputLabelProps={{ shrink: true }}
+            />
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+            >
+              <TextField
+                id="outlined-basic"
+                disabled
+                value={row?.artistSurname1}
+                label="Surname 1"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                id="outlined-basic"
+                disabled
+                value={row?.artistSurname2}
+                label="Surname 2"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+            >
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.email}
+                label="Email"
+                variant="outlined"
+              />
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.phone}
+                label="Phone Number"
+                variant="outlined"
+              />
+            </Box>
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+            >
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.discipline[0]?.discipline}
+                label="Discipline"
+                variant="outlined"
+              />
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.discipline[0]?.style.map((style) => style).join(', ')}
+                label="Style"
+                variant="outlined"
+              />
+            </Box>
+            <TextField
+              id="outlined-basic"
+              InputLabelProps={{ shrink: true }}
+              disabled
+              value={row?.country}
+              label="Country"
+              variant="outlined"
+            />
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+            >
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.zipCode}
+                label="Zip Code"
+                variant="outlined"
+              />
+              <TextField
+                id="outlined-basic"
+                InputLabelProps={{ shrink: true }}
+                disabled
+                value={row?.city}
+                label="City"
+                variant="outlined"
+              />
+            </Box>
+            <TextField
+              id="outlined-basic"
+              InputLabelProps={{ shrink: true }}
+              disabled
+              value={row?.state}
+              label="State/Province"
+              variant="outlined"
+            />
+            <TextField
+              id="outlined-basic"
+              InputLabelProps={{ shrink: true }}
+              disabled
+              value={row?.links[0]?.name}
+              label="Social Media Name"
+              variant="outlined"
+            />
+            <TextField
+              id="outlined-basic"
+              InputLabelProps={{ shrink: true }}
+              disabled
+              value={row?.links[0]?.link}
+              label="Social Media URL"
+              variant="outlined"
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1,
+                border: '1px solid #E0E0E0',
+                padding: 1,
+                borderRadius: 1,
+              }}
+            >
+              <Typography>Attached Document -</Typography>
+              <FileThumbnail
+                sx={{ cursor: 'pointer' }}
+                onClick={handleDocsPreview}
+                file={row?.documents[0]?.uploadDocs}
+              />
+            </Box>
+          </Stack>
+        </Card>
+      </Box>
+    </Modal>
+  );
 
   const banDialogBox = (
     <Dialog
@@ -245,6 +436,14 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
         onClose={popover.onClose}
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            setViewDetails(true);
+          }}
+        >
+          <Iconify icon="mdi:eye-outline" /> View Details
+        </MenuItem>
         {row?.profileStatus === 'under-review' ? (
           <MenuList>
             <MenuItem
@@ -306,6 +505,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
       {rejectDialogBox}
       {unBanDialogBox}
       {unRejectDialogBox}
+      {viewDetailsModal}
     </>
   );
 }

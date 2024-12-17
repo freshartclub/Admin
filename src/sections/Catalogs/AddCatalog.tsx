@@ -97,14 +97,7 @@ export function AddCatalogForm() {
     defaultValues,
   });
 
-  const {
-    reset,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = methods;
-
-  console.log(errors);
+  const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && data?.data) {
@@ -371,7 +364,7 @@ export function AddCatalogForm() {
           )}
         </div>
         {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-[-1rem]">
+          <div className="flex flex-wrap gap-2 mt-[-1rem] pointer-events-none">
             {methods.getValues('artworkNames').map((i, index) => (
               <Stack
                 direction={'row'}

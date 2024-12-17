@@ -14,6 +14,7 @@ import {
   DialogTitle,
   Switch,
   TextField,
+  Typography,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -31,6 +32,7 @@ import { paths } from 'src/routes/paths';
 import { useRevalidateArtist } from 'src/http/createArtist/useRevalidateArtist';
 import { FileThumbnail } from 'src/components/file-thumbnail';
 import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
+import { fDate, fDateTime } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +64,14 @@ export const NewProductSchema = zod.object({
   emergencyContactName: zod.string().min(1, { message: 'Emergency Contact Name is required!' }),
   emergencyContactPhone: zod.string().min(1, { message: 'Emergency Contact Phone is required!' }),
   emergencyContactEmail: zod.string().min(1, { message: 'Emergency Contact Email is required!' }),
+  pRevalidation: zod
+    .array(
+      zod.object({
+        revalidateFixedDate: zod.string().optional(),
+        revalidateOn: zod.string().optional(),
+      })
+    )
+    .optional(),
   emergencyContactAddress: zod
     .string()
     .min(1, { message: 'Emergency Contact Addres is required!' }),
@@ -128,6 +138,11 @@ export function OtherDetails({
       );
   }
 
+  const isValid =
+    artistFormData?.previousRevalidationDate && artistFormData?.previousRevalidationDate.length > 0
+      ? true
+      : false;
+
   const defaultValues = useMemo(
     () => ({
       documents: documentArr || [],
@@ -156,11 +171,19 @@ export function OtherDetails({
       emergencyContactEmail: artistFormData?.emergencyContactEmail || '',
       emergencyContactAddress: artistFormData?.emergencyContactAddress || '',
       emergencyContactRelation: artistFormData?.emergencyContactRelation || '',
+      pRevalidation: isValid
+        ? artistFormData?.previousRevalidationDate
+            ?.map((item: any) => ({
+              revalidateFixedDate: item?.revalidateFixedDate,
+              revalidateOn: item?.revalidatedOn,
+            }))
+            .reverse()
+        : [] || '',
       count: 7,
       isContainsImage: true,
       isManagerDetails: false,
     }),
-    [artistFormData]
+    [artistFormData, isValid]
   );
 
   const [isOn, setIsOn] = useState(artistFormData?.managerName ? true : false);
@@ -489,16 +512,43 @@ export function OtherDetails({
       <CardHeader title="Revaliadtion Information" sx={{ mb: 1 }} />
       <Divider />
       <Stack spacing={3} mb={2} padding={2}>
-        <Field.DatePicker
-          disabled={isReadOnly}
-          name="lastRevalidationDate"
-          label="Last Revaliadtion Date"
-        />
+        <Field.DatePicker disabled name="lastRevalidationDate" label="Last Revaliadtion Date" />
         <Field.DatePicker
           disabled={isReadOnly}
           name="nextRevalidationDate"
           label="Next Revaliadtion Date"
         />
+      </Stack>
+    </Card>
+  );
+
+  const previousRevaliadtionInfo = (
+    <Card>
+      <CardHeader title="Previous Revaliadtion Information" sx={{ mb: 1 }} />
+      <Divider />
+      <Stack ml={1} spacing={3} direction={'column'} mb={2} padding={2}>
+        {methods.getValues('pRevalidation').length > 0 &&
+          methods.getValues('pRevalidation').map((i: any, index) => (
+            <Box
+              key={index}
+              sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+              gap={2}
+            >
+              <Typography sx={{ fontWeight: 'bold' }}>
+                Revalidation - {methods.getValues('pRevalidation').length - (index + 1) + 1}
+              </Typography>
+              <Field.MobileDateTimePicker
+                name={`pRevalidation[${index}].revalidateFixedDate`}
+                disabled
+                label="Revalidation Initial Date"
+              />
+              <Field.MobileDateTimePicker
+                name={`pRevalidation[${index}].revalidateOn`}
+                disabled
+                label="Revalidated On Date"
+              />
+            </Box>
+          ))}
       </Stack>
     </Card>
   );
@@ -690,6 +740,9 @@ export function OtherDetails({
       <Stack spacing={{ xs: 3, md: 5 }}>
         {document}
         {revaliadtionInfo}
+        {methods.getValues('pRevalidation') &&
+          methods.getValues('pRevalidation')?.length > 0 &&
+          previousRevaliadtionInfo}
         {tags}
         {extraInfo}
         {emergencyInfo}
@@ -698,7 +751,9 @@ export function OtherDetails({
         <div className="flex justify-end gap-5">
           {!isReadOnly ? (
             <>
-              {artistFormData && artistFormData?.isActivated ? (
+              {artistFormData &&
+              artistFormData.isActivated &&
+              new Date(artistFormData.nextRevalidationDate) <= new Date() ? (
                 <span
                   onClick={() => setReValidate(true)}
                   className="text-white bg-orange-600 rounded-md px-3 py-2 cursor-pointer"

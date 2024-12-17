@@ -14,6 +14,7 @@ import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 import { z as zod } from 'zod';
 import { AddressAutoComplete, getCityStateFromZipCountry } from './AddressAutoComplete';
+import { FormHelperText } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -74,8 +75,6 @@ export function GeneralInformation({
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
-  console.log(artistFormData);
-
   const defaultValues = useMemo(
     () => ({
       artistName: artistFormData?.artistName || '',
@@ -103,9 +102,12 @@ export function GeneralInformation({
     defaultValues,
   });
 
-  console.log(defaultValues);
-
-  const { setValue, trigger, handleSubmit, reset } = formProps;
+  const {
+    setValue,
+    trigger,
+    handleSubmit,
+    formState: { errors },
+  } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
@@ -116,8 +118,6 @@ export function GeneralInformation({
 
   const country = formProps.watch('country');
   const zipCode = formProps.watch('zipCode');
-
-  console.log(country, zipCode);
 
   const [searchResult, setSearchResult] = useState('');
 
@@ -203,13 +203,16 @@ export function GeneralInformation({
         <AddressAutoComplete
           name="residentialAddress"
           disabled={isReadOnly}
-          label="Residential Address"
+          label="Residential Address *"
           value={searchResult}
           onChange={(e) => {
             setSearchResult(e.target.value);
           }}
           onPlaceSelected={placesSelected}
         />
+        {errors.residentialAddress && (
+          <FormHelperText error>{errors.residentialAddress.message}</FormHelperText>
+        )}
 
         <Box
           columnGap={2}

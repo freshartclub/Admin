@@ -44,6 +44,7 @@ function AddArtistIndex() {
 
         setTabState(newTabState);
         obj.residentialAddress = data.data.address?.residentialAddress;
+        obj.previousRevalidationDate = data?.data?.previousRevalidationDate;
         obj.country = data.data.address?.country;
         obj.zipCode = data.data.address?.zipCode;
         obj.city = data.data.address?.city;
@@ -61,7 +62,7 @@ function AddArtistIndex() {
           obj.cvData = data.data.highlights.cv;
           delete data.data.highlights;
         }
-        
+
         if (data.data.pageCount > 2) {
           obj.about = data.data.aboutArtist.about;
           obj.insignia = data.data.insignia;
@@ -122,6 +123,7 @@ function AddArtistIndex() {
 
         if (data.data.pageCount > 6) {
           obj.documents = data.data?.documents;
+
           obj.intTags = data.data?.otherTags?.intTags;
           obj.extTags = data.data?.otherTags?.extTags;
           obj.lastRevalidationDate = data.data?.lastRevalidationDate;
