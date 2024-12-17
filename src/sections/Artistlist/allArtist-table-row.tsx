@@ -255,11 +255,7 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
         <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
           {row?.nextRevalidationDate ? (
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', gap: 1 }}>
-              <span
-                className={`w-fit h-fit text-[12px] px-2 rounded-2xl ${row?.isActivated ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
-              >
-                {fDate(row?.nextRevalidationDate)}
-              </span>
+              <span>{fDate(row?.nextRevalidationDate)}</span>
               <span className="w-fit h-fit bg-[#FEEDEC] text-[#f09438] rounded-2xl text-[12px] px-2">
                 {calculateDays(row) === 0
                   ? null

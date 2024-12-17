@@ -174,7 +174,10 @@ export function CreateArtistForm() {
 
   const refillData = (data) => {
     setId(data?._id);
-    methods.setValue('existingAvatar', data?.profile?.mainImage);
+    methods.setValue(
+      'existingAvatar',
+      `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
+    );
     methods.setValue('existingId', data?.userId);
     methods.setValue('existingName', data?.artistName);
     methods.setValue('existingArtistSurname1', data?.artistSurname1);
