@@ -32,14 +32,14 @@ export const NewPostSchema = zod.object({
   catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
   artworkList: zod.string().array().optional(),
-  artworkNames: zod.string().array(),
+  artworkNames: zod.string().array().optional(),
   catalogCollection: zod.string().array().optional(),
-  collectionNames: zod.string().array(),
+  collectionNames: zod.string().array().optional(),
+  artProvider: zod.string().array().optional(),
   catalogCommercialization: zod
     .string()
     .min(1, { message: 'Catalog Commercialization is required!' }),
   defaultArtistFee: zod.number().min(1, { message: 'Default Artist Fee is required!' }),
-  artProvider: zod.string().array().optional(),
   subPlan: zod.string().array().optional(),
   exclusiveCatalog: zod.boolean(),
   status: zod.any(),
@@ -68,6 +68,15 @@ export function AddCatalogForm() {
   const searchCollDebounce = useDebounce(searchColl, 800);
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const defaultValues = useMemo(
     () => ({
       catalogName: data?.data?.catalogName || '',
@@ -76,7 +85,14 @@ export function AddCatalogForm() {
       artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
       catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
       collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
-      artProvider: data?.data?.artProvider || [],
+      artProvider:
+        data?.data?.artProvider?.map((item) => {
+          return {
+            label: item?._id,
+            value: name(item),
+            img: `${data?.url}/users/${item?.mainImage}`,
+          };
+        }) || [],
       subPlan: data?.data?.subPlan || [],
       catalogCommercialization: data?.data?.catalogCommercialization || '',
       defaultArtistFee: data?.data?.defaultArtistFee || '',
@@ -108,7 +124,14 @@ export function AddCatalogForm() {
         artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
         catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
         collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
-        artProvider: data?.data?.artProvider || [],
+        artProvider:
+          data?.data?.artProvider?.map((item) => {
+            return {
+              label: item?._id,
+              value: name(item),
+              img: `${data?.url}/users/${item?.mainImage}`,
+            };
+          }) || [],
         subPlan: data?.data?.subPlan || [],
         catalogCommercialization: data?.data?.catalogCommercialization || '',
         defaultArtistFee: data?.data?.defaultArtistFee || 0,
@@ -161,21 +184,6 @@ export function AddCatalogForm() {
     setValue('catalogImg', null);
   };
 
-  const refillData = (item) => {
-    const currentArtworkList = methods.getValues('artworkList') || [];
-    const currentArtworkNames = methods.getValues('artworkNames') || [];
-
-    if (!currentArtworkList.includes(item?._id)) {
-      setValue('artworkList', [...currentArtworkList, item?._id]);
-    }
-
-    if (!currentArtworkNames.includes(item?.artworkName)) {
-      setValue('artworkNames', [...currentArtworkNames, item?.artworkName]);
-    }
-
-    setSearch('');
-  };
-
   const refillCollData = (item) => {
     const catalogCollection = methods.getValues('catalogCollection') || [];
     const collectionNames = methods.getValues('collectionNames') || [];
@@ -191,19 +199,19 @@ export function AddCatalogForm() {
     setSearchColl('');
   };
 
-  const handleRemoveArtwokrk = (index) => {
-    const currentArtworkList = methods.getValues('artworkList') || [];
-    const currentArtworkNames = methods.getValues('artworkNames') || [];
+  // const handleRemoveArtwokrk = (index) => {
+  //   const currentArtworkList = methods.getValues('artworkList') || [];
+  //   const currentArtworkNames = methods.getValues('artworkNames') || [];
 
-    setValue(
-      'artworkList',
-      currentArtworkList.filter((_, i) => i !== index)
-    );
-    setValue(
-      'artworkNames',
-      currentArtworkNames.filter((_, i) => i !== index)
-    );
-  };
+  //   setValue(
+  //     'artworkList',
+  //     currentArtworkList.filter((_, i) => i !== index)
+  //   );
+  //   setValue(
+  //     'artworkNames',
+  //     currentArtworkNames.filter((_, i) => i !== index)
+  //   );
+  // };
 
   const handleRemoveCollection = (index) => {
     const catalogCollection = methods.getValues('catalogCollection') || [];
@@ -239,7 +247,7 @@ export function AddCatalogForm() {
         <div className="relative">
           <Field.Text
             name="CollectionSearch"
-            label="Add Collection To List"
+            label="Add Collection To Catalog"
             placeholder="Search by Collection Name"
             value={searchColl}
             onChange={(e) => setSearchColl(e.target.value)}
@@ -313,56 +321,15 @@ export function AddCatalogForm() {
           </div>
         )}
 
-        <div className="relative">
-          <Field.Text
-            disabled
-            name="artworkSearch"
-            label="Add Artwork To List"
-            placeholder="Search by Artwork Id/Name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {search && (
-            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
-              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {artworkData && artworkData.length > 0 ? (
-                  artworkData.map((i, j) => (
-                    <TableCell
-                      onClick={() => refillData(i)}
-                      key={j}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                        },
-                      }}
-                    >
-                      <Stack spacing={2} direction="row" alignItems="center">
-                        <Avatar alt={i?.artworkName} src={i?.media?.mainImage} />
+        <Field.Text
+          disabled
+          name="artworkSearch"
+          label="Add Artwork To Catalog"
+          // placeholder="Search by Artwork Id/Name"
+          // value={search}
+          // onChange={(e) => setSearch(e.target.value)}
+        />
 
-                        <ListItemText
-                          disableTypography
-                          primary={
-                            <Typography variant="body2" noWrap>
-                              {i?.artworkName}
-                            </Typography>
-                          }
-                          secondary={
-                            <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
-                              {i?.inventoryShipping?.pCode}
-                            </Link>
-                          }
-                        />
-                      </Stack>
-                    </TableCell>
-                  ))
-                ) : (
-                  <TableCell>No Data Available</TableCell>
-                )}
-              </TableRow>
-            </div>
-          )}
-        </div>
         {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
           <div className="flex flex-wrap gap-2 mt-[-1rem] pointer-events-none">
             {methods.getValues('artworkNames').map((i, index) => (
@@ -384,7 +351,7 @@ export function AddCatalogForm() {
                 <Iconify
                   icon="material-symbols:close-rounded"
                   sx={{ cursor: 'pointer', padding: '2px' }}
-                  onClick={() => handleRemoveArtwokrk(index)}
+                  // onClick={() => handleRemoveArtwokrk(index)}
                 />
               </Stack>
             ))}
@@ -395,27 +362,26 @@ export function AddCatalogForm() {
           disabled
           name="artProvider"
           label="Art Provider"
-          placeholder="+ Art"
+          placeholder="+ Art Provider"
           multiple
           freeSolo
           disableCloseOnSelect
-          options={[]}
+          options={methods.getValues('artProvider') ? methods.getValues('artProvider') : []}
           getOptionLabel={(option) => option}
           renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
+            <li {...props} key={option.value}>
+              {option.value}
             </li>
           )}
           renderTags={(selected, getTagProps) =>
             selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
+              <div
+                className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
+                key={option.value}
+              >
+                <Avatar sx={{ width: 24, height: 24 }} alt={option?.value} src={option?.img} />
+                <span className="text-[13px]">{option.value}</span>
+              </div>
             ))
           }
         />

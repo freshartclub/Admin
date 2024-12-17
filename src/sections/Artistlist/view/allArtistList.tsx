@@ -48,13 +48,14 @@ export function AllArtist() {
   const table = useTable();
   const navigate = useNavigate();
   const [date, setDate] = useState('All');
+  const [profile, setProfile] = useState('All');
   const [notFound, setNotFound] = useState(false);
 
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);
 
-  const { data, isLoading } = useGetArtistList(debounceSearch, date);
+  const { data, isLoading } = useGetArtistList(debounceSearch, date, profile);
 
   useEffect(() => {
     if (data?.data) {
@@ -72,6 +73,17 @@ export function AllArtist() {
   const handleEditRow = (id: string) => {
     navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
   };
+
+  const profileStatus = [
+    {
+      value: 'All',
+      label: 'All',
+    },
+    {
+      value: 'under-review',
+      label: 'Under Review',
+    },
+  ];
 
   const dropDown = [
     {
@@ -111,6 +123,22 @@ export function AllArtist() {
             ),
           }}
         />
+        <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 280 } }}>
+          <InputLabel htmlFor="Profile Status">Profile Status</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Profile Status" />}
+            inputProps={{ id: 'Profile Status' }}
+            onChange={(e) => setProfile(e.target.value)}
+            value={profile}
+          >
+            {profileStatus.map((option, i) => (
+              <MenuItem key={i} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 280 } }}>
           <InputLabel htmlFor="Outdated Revalidation Date">Outdated Revalidation Date</InputLabel>
 

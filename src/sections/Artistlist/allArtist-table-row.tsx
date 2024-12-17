@@ -219,8 +219,6 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
     const diffTime = today.getTime() - createdAt.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return 0;
-
     return diffDays;
   };
 
@@ -254,15 +252,14 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
 
         <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
           {row?.nextRevalidationDate ? (
-            <Stack sx={{ typography: 'body2', flex: '1 1 auto', gap: 1 }}>
+            <Stack alignItems="center" sx={{ typography: 'body2', flex: '1 1 auto', gap: 1 }}>
               <span>{fDate(row?.nextRevalidationDate)}</span>
-              <span className="w-fit h-fit bg-[#FEEDEC] text-[#f09438] rounded-2xl text-[12px] px-2">
-                {calculateDays(row) === 0
-                  ? null
-                  : calculateDays(row) === 1
-                    ? '1 day left'
-                    : `${calculateDays(row)} days left`}
-              </span>
+
+              {calculateDays(row) === 0 ? null : calculateDays(row) > 0 ? (
+                <span className="w-fit h-fit bg-[#FEEDEC] text-[#f05438] rounded-2xl text-[12px] px-2">{`${Math.abs(calculateDays(row))} Oudated Days`}</span>
+              ) : (
+                <span className="w-fit h-fit bg-[#f2feec] text-[#0D894F] rounded-2xl text-[12px] px-2">{`${Math.abs(calculateDays(row))} Days Left`}</span>
+              )}
             </Stack>
           ) : (
             'N/A'
@@ -278,7 +275,7 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
                 {row?.isActivated ? 'Active' : 'Inactive'}
               </span>
               <span className="w-fit h-fit bg-[#FEEDEC] text-[#f09438] rounded-2xl text-[12px] px-2">
-                Pending Validation
+                Pending Approval
               </span>
             </Stack>
           ) : (
