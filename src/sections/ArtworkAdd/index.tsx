@@ -414,12 +414,21 @@ export function ArtworkAdd() {
         if (!val1 || !val2) return toast.error('Please select purchase catalog');
       }
 
+      let hasMainImg = methods.getValues('mainImage') ? true : false;
+      let hasMainVideo = methods.getValues('mainVideo') ? true : false;
+      let hasBackImg = methods.getValues('backImage') ? true : false;
+      let hasInProcessImg = methods.getValues('inProcessImage') ? true : false;
+
       data.artworkCreationYear = methods.getValues('artworkCreationYear');
       data.artistFees = methods.getValues('artistFees');
       data.activeTab = methods.getValues('activeTab');
       data.existingImages = methods.getValues('existingImages');
       data.existingVideos = methods.getValues('existingVideos');
       data.promotionScore = slide;
+      data.hasMainImg = hasMainImg;
+      data.hasMainVideo = hasMainVideo;
+      data.hasBackImg = hasBackImg;
+      data.hasInProcessImg = hasInProcessImg;
 
       const newData = {
         data: data,

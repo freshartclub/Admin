@@ -104,10 +104,17 @@ export function Media({
       return toast.error('Main Photo is required!');
     }
 
+    let hasMainImg = formProps.getValues('profileImage') ? true : false;
+    let hasMainVideo = formProps.getValues('mainVideo') ? true : false;
+    let hasInProcessImg = formProps.getValues('inProcessImage') ? true : false;
+
     data.count = 4;
     data.isContainsImage = true;
     data.existingImages = formProps.getValues('existingImages');
     data.existingVideos = formProps.getValues('existingVideos');
+    data.hasMainImg = hasMainImg;
+    data.hasMainVideo = hasMainVideo;
+    data.hasInProcessImg = hasInProcessImg;
 
     mutate({
       body: data,
