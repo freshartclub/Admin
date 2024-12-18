@@ -448,6 +448,7 @@ export function ArtistReview({}) {
                   label="Discipline"
                   disabled={isReadOnly}
                   name={`discipline[${index}].discipline`}
+                  InputLabelProps={{ shrink: true }}
                 />
                 {formProps.getValues(`discipline[${index}].style`) &&
                   formProps.getValues(`discipline[${index}].style`).length > 0 && (
@@ -477,6 +478,7 @@ export function ArtistReview({}) {
                   label="Updated Discipline"
                   disabled={isReadOnly}
                   name={`changedDiscipline[${index}].discipline`}
+                  InputLabelProps={{ shrink: true }}
                 />
                 {formProps.getValues(`changedDiscipline[${index}].style`) &&
                   formProps.getValues(`changedDiscipline[${index}].style`).length > 0 && (

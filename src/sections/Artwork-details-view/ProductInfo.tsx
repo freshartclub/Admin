@@ -156,7 +156,7 @@ const ProductInfo = ({ data, preview }) => {
           <div className="flex flex-col my-5">
             <PreviewData
               head="Selected Method"
-              val={(data?.commercialization?.activeTab).toUpperCase()}
+              val={data?.commercialization?.activeTab}
             />
             {data?.commercialization?.activeTab === 'purchase' ? (
               <>
