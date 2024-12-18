@@ -133,7 +133,7 @@ function AddArtistIndex() {
           obj.managerArtistPhone = data.data?.managerDetails?.managerPhone;
           obj.managerArtistGender = data.data?.managerDetails?.managerGender;
           obj.managerArtistContactTo = data.data?.managerDetails?.artistContactTo;
-          obj.address = data.data?.managerDetails?.address?.address;
+          obj.managerAddress = data.data?.managerDetails?.address?.address;
           obj.managerCity = data.data?.managerDetails?.address?.city;
           obj.managerState = data.data?.managerDetails?.address?.state;
           obj.managerZipCode = data.data?.managerDetails?.address?.zipCode;
@@ -163,13 +163,14 @@ function AddArtistIndex() {
   return (
     <Box sx={{ p: 1, position: 'relative' }}>
       <span
-        className={`w-fit right-[1rem] z-10 fixed h-fit rounded-2xl text-[12px] px-2 py-1 ${artistFormData?.profileStatus === 'active' ? 'bg-[#E7F4EE] text-[#0D894F]' : artistFormData?.profileStatus === 'pending' ? 'bg-[#FFF2E7] text-[#f07b38]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+        className={`w-fit right-[1rem] z-10 fixed h-fit rounded-2xl text-[12px] px-2 py-1 ${artistFormData?.isActivated === true ? 'bg-[#E7F4EE] text-[#0D894F]' : artistFormData?.profileStatus === 'inactive' ? 'bg-[#FFF2E7] text-[#f07b38]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
       >
-        {artistFormData?.profileStatus === 'active'
-          ? 'Active'
-          : artistFormData?.profileStatus === 'inactive'
-            ? 'InActive'
-            : 'Validation Pending'}
+        {artistFormData?.isActivated === false
+          ? 'Inactive'
+          : artistFormData?.profileStatus === 'inactive' ||
+              artistFormData?.profileStatus === 'under-review'
+            ? 'Pending Approval'
+            : 'Active'}
       </span>
       <CustomTabs className="custom12" variant="standard" sx={{ bgcolor: 'white' }}>
         {tabState.map((tab, i) => (

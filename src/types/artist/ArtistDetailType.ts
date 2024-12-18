@@ -11,6 +11,7 @@ export interface ArtistDetailType {
   insignia: [];
   currency: string;
   previousRevalidationDate: [];
+  managerAddress: string;
 
   nickName?: string;
   ArtistId: string;

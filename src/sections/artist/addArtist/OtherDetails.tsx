@@ -1,9 +1,6 @@
 import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { z as zod } from 'zod';
 import {
   Autocomplete,
   Button,
@@ -21,18 +18,20 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import { PRODUCT_GENDER_OPTIONS, PRODUCT_LANGUAGE_OPTIONS } from 'src/_mock';
+import { useMemo, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
+import { FileThumbnail } from 'src/components/file-thumbnail';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import useActivateArtistMutation from 'src/http/createArtist/useActivateArtistMutation';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
-import { useSearchParams } from 'src/routes/hooks';
-import { useNavigate } from 'react-router';
-import { paths } from 'src/routes/paths';
 import { useRevalidateArtist } from 'src/http/createArtist/useRevalidateArtist';
-import { FileThumbnail } from 'src/components/file-thumbnail';
+import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
-import { fDate, fDateTime } from 'src/utils/format-time';
+import { z as zod } from 'zod';
 
 // ----------------------------------------------------------------------
 
@@ -97,7 +96,12 @@ export function OtherDetails({
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
 
-  const picklist = RenderAllPicklists(['Artist Internal Tags', 'Artist External Tags']);
+  const picklist = RenderAllPicklists([
+    'Artist Internal Tags',
+    'Artist External Tags',
+    'Gender',
+    'Language',
+  ]);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
     acc[item?.fieldName] = item?.picklist;
@@ -106,6 +110,8 @@ export function OtherDetails({
 
   const extarnal = picklistMap['Artist External Tags'];
   const internal = picklistMap['Artist Internal Tags'];
+  const gender = picklistMap['Gender'];
+  const language = picklistMap['Language'];
 
   const isReadOnly = view !== null;
   const url = 'https://dev.freshartclub.com/images';
@@ -155,7 +161,7 @@ export function OtherDetails({
       managerName: artistFormData?.managerName || '',
       managerArtistPhone: artistFormData?.managerArtistPhone || '',
       managerArtistEmail: artistFormData?.managerArtistEmail || '',
-      address: artistFormData?.address || '',
+      address: artistFormData?.managerAddress || '',
       managerArtistContactTo: artistFormData?.managerArtistContactTo || '',
       managerZipCode: artistFormData?.managerZipCode || '',
       managerCity: artistFormData?.managerCity || '',
@@ -192,7 +198,12 @@ export function OtherDetails({
     defaultValues,
   });
 
-  const { setValue, trigger, handleSubmit } = methods;
+  const {
+    setValue,
+    trigger,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   const { fields, append, remove } = useFieldArray({
     control: methods.control,
@@ -215,8 +226,19 @@ export function OtherDetails({
     data.isContainsImage = true;
     data.isManagerDetails = false;
 
+    const intTags = methods.getValues('intTags');
+    const extTags = methods.getValues('extTags');
+
+    if (!intTags?.length || !extTags?.length) {
+      return toast.error('Please add internal and external tags');
+    }
+
     if (isOn) {
       data.isManagerDetails = true;
+    }
+
+    if (artistFormData?.isActivated === true) {
+      data.isActivated = true;
     }
 
     await trigger(undefined, { shouldFocus: true });
@@ -227,6 +249,13 @@ export function OtherDetails({
     data.count = 7;
     data.isContainsImage = true;
     data.isManagerDetails = false;
+
+    const intTags = methods.getValues('intTags');
+    const extTags = methods.getValues('extTags');
+
+    if (!intTags?.length || !extTags?.length) {
+      return toast.error('Please add internal and external tags');
+    }
 
     if (isOn) {
       data.isManagerDetails = true;
@@ -421,6 +450,11 @@ export function OtherDetails({
             Save
           </Button>
         </Box>
+        {errors?.intTags && (
+          <Typography variant="body2" color="error">
+            {errors?.intTags?.message}
+          </Typography>
+        )}
         {methods.watch('intTags') && methods.getValues('intTags').length > 0 && (
           <div className="flex flex-wrap gap-2 mt-[-1rem]">
             {methods.getValues('intTags').map((i, index) => (
@@ -476,6 +510,11 @@ export function OtherDetails({
             Save
           </Button>
         </Box>
+        {errors?.extTags && (
+          <Typography variant="body2" color="error">
+            {errors?.extTags?.message}
+          </Typography>
+        )}
         {methods.watch('extTags') && methods.getValues('extTags').length > 0 && (
           <div className="flex flex-wrap gap-2 mt-[-1rem]">
             {methods.getValues('extTags').map((i, index) => (
@@ -625,7 +664,7 @@ export function OtherDetails({
               checkbox
               name="managerArtistLanguage"
               label="Manager Language"
-              options={PRODUCT_LANGUAGE_OPTIONS}
+              options={language ? language : []}
             />
 
             <Field.SingelSelect
@@ -633,7 +672,7 @@ export function OtherDetails({
               checkbox
               name="managerArtistGender"
               label="Manager Gender"
-              options={PRODUCT_GENDER_OPTIONS}
+              options={gender ? gender : []}
             />
           </Box>
         </Stack>

@@ -71,7 +71,9 @@ const useAddArtistMutation = (handleOnSuccess) => {
     onSuccess: async (res, body) => {
       setSearchParam({ id: res.data.id });
       handleOnSuccess(body.body);
-      if (body.body.count === 7) {
+      if (body.body?.isActivated && body.body?.isActivated === true) {
+        navigate(paths.dashboard.artist.allArtist);
+      } else if (body.body.count === 7) {
         navigate(paths.dashboard.artist.artistPendingRequest);
       }
     },
