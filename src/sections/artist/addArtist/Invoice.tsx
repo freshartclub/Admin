@@ -523,7 +523,7 @@ export function Invoice({
           checkbox
           name="artistLevel"
           label="Artist Level"
-          options={PRODUCT_PICKLIST_OPTIONS}
+          options={levelPicklist ? levelPicklist : []}
         />
 
         <Field.SingelSelect
@@ -540,7 +540,10 @@ export function Invoice({
           checkbox
           name="ArtistPlus"
           label="Artist +++"
-          options={levelPicklist ? levelPicklist : []}
+          options={[
+            { value: 'Yes', label: 'Yes' },
+            { value: 'No', label: 'No' },
+          ]}
         />
         <Field.Text disabled={isReadOnly} name="scoreProfessional" label="Score Professional" />
         <Field.Text disabled={isReadOnly} name="scorePlatform" label="Score Platform" />

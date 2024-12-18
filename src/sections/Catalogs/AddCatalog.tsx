@@ -42,7 +42,7 @@ export const NewPostSchema = zod.object({
   defaultArtistFee: zod.number().min(1, { message: 'Default Artist Fee is required!' }),
   subPlan: zod.string().array().optional(),
   exclusiveCatalog: zod.boolean(),
-  status: zod.any(),
+  status: zod.string().min(1, { message: 'Status is required!' }),
   catalogImg: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
   maxPrice: zod.number().min(1, { message: 'Max Price is required!' }),
   maxHeight: zod.number().min(1, { message: 'Max Height is required!' }),
@@ -59,6 +59,8 @@ export function AddCatalogForm() {
   const { data, isLoading } = useGetCatalogById(id);
   const [search, setSearch] = useState('');
   const [searchColl, setSearchColl] = useState('');
+
+  console.log(data?.data);
 
   const picklist = RenderAllPicklist('Catalog Status');
 
@@ -95,7 +97,7 @@ export function AddCatalogForm() {
         }) || [],
       subPlan: data?.data?.subPlan || [],
       catalogCommercialization: data?.data?.catalogCommercialization || '',
-      defaultArtistFee: data?.data?.defaultArtistFee || '',
+      defaultArtistFee: data?.data?.defaultArtistFee || 0,
       exclusiveCatalog: data?.data?.exclusiveCatalog || false,
       status: data?.data?.status || '',
       catalogImg: data?.data?.catalogImg || 0,
@@ -412,18 +414,18 @@ export function AddCatalogForm() {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="maxPrice" type="number" label="Max Price" />
+        <Field.Text required name="maxPrice" type="number" label="Max Price" />
         <Box
           columnGap={2}
           rowGap={3}
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="maxHeight" type="number" label="Max Height (in cm)" />
-          <Field.Text name="maxWidth" type="number" label="Max Width (in cm)" />
-          <Field.Text name="maxDepth" type="number" label="Max Depth (in cm)" />
+          <Field.Text required name="maxHeight" type="number" label="Max Height (in cm)" />
+          <Field.Text required name="maxWidth" type="number" label="Max Width (in cm)" />
+          <Field.Text required name="maxDepth" type="number" label="Max Depth (in cm)" />
         </Box>
-        <Field.Text name="maxWeight" type="number" label="Max Weight (in kg)" />
+        <Field.Text required name="maxWeight" type="number" label="Max Weight (in kg)" />
       </Stack>
     </Card>
   );
