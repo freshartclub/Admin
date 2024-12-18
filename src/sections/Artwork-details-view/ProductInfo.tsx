@@ -162,7 +162,7 @@ const ProductInfo = ({ data, preview }) => {
               <>
                 <PreviewData
                   head="Purchase Catalog"
-                  val={data?.commercialization?.purchaseCatalog}
+                  val={data?.commercialization?.publishingCatalog?.catalogName}
                 />
                 <PreviewData head="Purchase Type" val={data?.commercialization?.purchaseType} />
               </>
@@ -170,7 +170,7 @@ const ProductInfo = ({ data, preview }) => {
               <>
                 <PreviewData
                   head="Subscription Catalog"
-                  val={data?.commercialization?.subscriptionCatalog}
+                  val={data?.commercialization?.publishingCatalog?.catalogName}
                 />
                 <PreviewData head="Purchase Option" val={data?.commercialization?.purchaseOption} />
               </>

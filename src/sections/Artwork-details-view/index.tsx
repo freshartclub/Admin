@@ -19,6 +19,8 @@ export function ArtworkDetailView() {
 
   const { data, isPending } = useGetArtworkById(id);
 
+  console.log(data?.data);
+
   useEffect(() => {
     const arr = [
       data?.data?.media?.mainImage,
