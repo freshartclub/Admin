@@ -42,8 +42,8 @@ export const NewProductSchema = zod.object({
       uploadDocs: schemaHelper.file({ message: { required_error: 'Document is required!' } }),
     })
   ),
-  intTags: zod.string().array().min(1, { message: 'Add at least one tag!' }),
-  extTags: zod.string().array().min(1, { message: 'Add at least one tag!' }),
+  intTags: zod.string().array().optional(),
+  extTags: zod.string().array().optional(),
   managerName: zod.string().optional(),
   managerArtistPhone: zod.string().optional(),
   managerArtistEmail: zod.string().optional(),
@@ -226,13 +226,6 @@ export function OtherDetails({
     data.isContainsImage = true;
     data.isManagerDetails = false;
 
-    const intTags = methods.getValues('intTags');
-    const extTags = methods.getValues('extTags');
-
-    if (!intTags?.length || !extTags?.length) {
-      return toast.error('Please add internal and external tags');
-    }
-
     if (isOn) {
       data.isManagerDetails = true;
     }
@@ -249,13 +242,6 @@ export function OtherDetails({
     data.count = 7;
     data.isContainsImage = true;
     data.isManagerDetails = false;
-
-    const intTags = methods.getValues('intTags');
-    const extTags = methods.getValues('extTags');
-
-    if (!intTags?.length || !extTags?.length) {
-      return toast.error('Please add internal and external tags');
-    }
 
     if (isOn) {
       data.isManagerDetails = true;
@@ -432,12 +418,7 @@ export function OtherDetails({
             onChange={(event, newValue) => setIntValue(newValue || '')}
             onInputChange={(event, newInputValue) => setIntValue(newInputValue)}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Internal Tag Name"
-                placeholder="Internal Tag Name"
-                required
-              />
+              <TextField {...params} label="Internal Tag Name" placeholder="Internal Tag Name" />
             )}
             openOnFocus
           />
@@ -492,12 +473,7 @@ export function OtherDetails({
             onChange={(event, newValue) => setExtValue(newValue || '')}
             onInputChange={(event, newInputValue) => setExtValue(newInputValue)}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="External Tag Name"
-                placeholder="External Tag Name"
-                required
-              />
+              <TextField {...params} label="External Tag Name" placeholder="External Tag Name" />
             )}
             openOnFocus
           />
