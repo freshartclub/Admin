@@ -70,6 +70,7 @@ export function ArtistPendingRequest({
       </DialogContent>
       <DialogActions>
         <button
+          disabled={isPending}
           onClick={() => handleSuspend(row._id)}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >

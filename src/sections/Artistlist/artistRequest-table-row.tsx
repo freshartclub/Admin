@@ -291,6 +291,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
       </DialogContent>
       <DialogActions>
         <button
+          disabled={banPending}
           onClick={() => handleBan(row._id)}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
@@ -313,6 +314,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
       </DialogContent>
       <DialogActions>
         <button
+          disabled={unBanPending}
           onClick={() => handleUnBan(row._id)}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
@@ -337,6 +339,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
       </DialogContent>
       <DialogActions>
         <button
+          disabled={isPending}
           onClick={() => handleReject(row._id)}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
@@ -361,6 +364,7 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
       </DialogContent>
       <DialogActions>
         <button
+          disabled={unRejectPending}
           onClick={() => handleUnReject(row._id)}
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >

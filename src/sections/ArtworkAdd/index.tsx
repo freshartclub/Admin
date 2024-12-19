@@ -988,7 +988,6 @@ export function ArtworkAdd() {
                   {...params}
                   label="Add Internal Tags"
                   placeholder="Add Internal Tags"
-                  required
                 />
               )}
               openOnFocus
@@ -1044,7 +1043,6 @@ export function ArtworkAdd() {
                   {...params}
                   label="Add External Tags"
                   placeholder="Add External Tags"
-                  required
                 />
               )}
               openOnFocus

@@ -200,8 +200,8 @@ export function CreateArtistForm() {
       try {
         const response = await axios.get('https://ipapi.co/json/');
         if (response.status === 200) {
-          methods.setValue('country', response.data.country_name);
-          methods.setValue('phoneNumber', response.data.country_code);
+          methods.setValue('existingCountry', response.data.country_name);
+          methods.setValue('existingPhoneNumber', response.data.country_code);
         }
       } catch (err) {
         console.log('Failed to fetch country data by IP');
@@ -233,12 +233,6 @@ export function CreateArtistForm() {
       });
     }
   }, [zipCode, country]);
-
-  // const handleReset = () => {
-  //   reset({
-  //     existingCountry:country
-  //   })
-  // };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -437,7 +431,7 @@ export function CreateArtistForm() {
                 />
 
                 <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                  <Button type="submit" variant="contained">
+                  <Button disabled={isPending} type="submit" variant="contained">
                     {isPending ? 'Creating...' : 'Create Artist Account'}
                   </Button>
                 </Stack>

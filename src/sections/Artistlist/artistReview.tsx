@@ -191,14 +191,14 @@ export function ArtistReview({}) {
         <DialogActions sx={{ display: 'flex', gap: 2 }}>
           <span
             onClick={() => handleApprove(true)}
-            className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            className={`${isApproveLoading ? 'pointer-events-none' : ''}text-white bg-black rounded-md px-3 py-2 cursor-pointer`}
           >
             {isApproveLoading ? 'Approving...' : 'Approve Changes'}
           </span>
 
           <span
             onClick={() => handleApprove(false)}
-            className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"
+            className={`${isRejectLoading ? 'pointer-events-none' : ''} text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer`}
           >
             {isRejectLoading ? 'Rejecting...' : 'Reject Changes'}
           </span>
