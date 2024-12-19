@@ -32,6 +32,7 @@ const TABLE_HEAD = [
   { id: 'catalogName', label: 'Catalog Name', width: 150 },
   { id: 'artworkList', label: 'Artwork List', width: 220 },
   { id: 'subPlan', label: 'Subscription Plan', width: 150 },
+  { id: 'isDeleted', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 120 },
   { id: 'actions', label: 'Actions', width: 80 },
 ];
@@ -43,7 +44,7 @@ export function CatalogListView() {
   const [notFound, setNotFound] = useState(false);
   const [_catalogList, setCatalogList] = useState<IInvoice[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllCatalogList(debounceSearch);
 

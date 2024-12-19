@@ -9,7 +9,7 @@ async function fetchData(search) {
 
 export const useGetAllCatalogList = (search) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.getAllCatalog}?s=${search}`],
+    queryKey: [ARTIST_ENDPOINTS.getAllCatalog, search],
     queryFn: () => fetchData(search),
   });
 };

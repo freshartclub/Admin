@@ -21,7 +21,6 @@ import Stack from '@mui/material/Stack';
 import { useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
 import { FileThumbnail } from 'src/components/file-thumbnail';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
@@ -679,7 +678,7 @@ export function OtherDetails({
         <Field.Text
           disabled={isReadOnly}
           name="emergencyContactAddress"
-          label="Emergency Contact Addres"
+          label="Emergency Contact Address"
         />
         <Field.Text
           disabled={isReadOnly}
@@ -763,7 +762,7 @@ export function OtherDetails({
         {emergencyInfo}
         {renderDetails}
 
-        <div className="flex justify-end gap-5">
+        <div id="activate" className="flex justify-end gap-5">
           {!isReadOnly ? (
             <>
               {artistFormData &&
@@ -776,12 +775,14 @@ export function OtherDetails({
                   ReValidate Artist
                 </span>
               ) : null}
-              <span
-                onClick={handleOnActivataion}
-                className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
-              >
-                Activate Artist
-              </span>
+              {artistFormData && artistFormData.isActivated ? null : (
+                <span
+                  onClick={handleOnActivataion}
+                  className="text-white bg-green-600 rounded-md px-3 py-2 cursor-pointer"
+                >
+                  Activate Artist
+                </span>
+              )}
               <span
                 onClick={() => navigate(paths.dashboard.artist.allArtist)}
                 className="text-white bg-red-500 rounded-md px-3 py-2 cursor-pointer"

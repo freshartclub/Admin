@@ -45,6 +45,7 @@ export const ARTIST_ENDPOINTS = {
   addCatalog: `${ADMIN_BASE_URL}/add-catalog`,
   getAllCatalog: `${ADMIN_BASE_URL}/get-all-catalog`,
   getCatalogById: `${ADMIN_BASE_URL}/get-catalog-by-id`,
+  deleteCatalog: `${ADMIN_BASE_URL}/delete-catalog`,
   addCollection: `${ADMIN_BASE_URL}/add-collection`,
   getAllCollection: `${ADMIN_BASE_URL}/get-all-collection`,
   getCatalogList: `${ADMIN_BASE_URL}/get-catalog-list`,

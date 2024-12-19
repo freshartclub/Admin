@@ -112,7 +112,9 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
     actionButtons.push({
       icon: 'charm:circle-tick',
       name: 'Activate Artist',
-      handelEdit: () => {},
+      handelEdit: (id: any) => {
+        navigate(`${paths.dashboard.artist.addArtist}?id=${id}#activate`);
+      },
     });
   }
 

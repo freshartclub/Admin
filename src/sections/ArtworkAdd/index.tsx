@@ -265,7 +265,7 @@ export function ArtworkAdd() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [series, setSeries] = useState('');
   const [percent, setPercent] = useState(0);
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('subscription');
 
   let arr: any = [];
   let videoArr: any = [];

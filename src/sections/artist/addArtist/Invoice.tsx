@@ -20,7 +20,7 @@ import Papa from 'papaparse';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
-import { PRODUCT_CUSTOMORDER_OPTIONS, PRODUCT_PICKLIST_OPTIONS } from 'src/_mock';
+import { PRODUCT_CUSTOMORDER_OPTIONS } from 'src/_mock';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';

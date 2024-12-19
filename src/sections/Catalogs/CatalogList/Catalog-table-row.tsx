@@ -18,6 +18,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
 import { fDate } from 'src/utils/format-time';
+import useDeleteCatalog from '../http/useDeleteCatalog';
 
 // ----------------------------------------------------------------------
 
@@ -52,6 +53,15 @@ export function CatalogTableRow({
       .join(', ');
   };
 
+  const { mutateAsync, isPending } = useDeleteCatalog(row._id);
+
+  const handleDelete = () => {
+    mutateAsync().then(() => {
+      confirm.onFalse();
+      popover.onClose();
+    });
+  };
+
   return (
     <>
       <TableRow hover>
@@ -84,6 +94,14 @@ export function CatalogTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.subPlan.length ? row?.subPlan.join(', ') : 'N/A'}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          <span
+            className={`w-fit flex items-center rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+          >
+            {row?.isDeleted ? 'Inactive' : 'Active'}
+          </span>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -99,7 +117,7 @@ export function CatalogTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem sx={{ color: 'error.main' }}>
+          <MenuItem onClick={confirm.onTrue} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>
@@ -116,11 +134,11 @@ export function CatalogTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="Delete Catalog"
+        content="Are you sure want to delete/deactivate this catalog?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+          <Button variant="contained" color="error" onClick={handleDelete}>
+            {isPending ? 'Deleting...' : 'Delete'}
           </Button>
         }
       />

@@ -35,7 +35,7 @@ export const NewPostSchema = zod.object({
   artworkNames: zod.string().array().optional(),
   catalogCollection: zod.string().array().optional(),
   collectionNames: zod.string().array().optional(),
-  artProvider: zod.string().array().optional(),
+  artProvider: zod.any(),
   catalogCommercialization: zod
     .string()
     .min(1, { message: 'Catalog Commercialization is required!' }),
@@ -59,8 +59,6 @@ export function AddCatalogForm() {
   const { data, isLoading } = useGetCatalogById(id);
   const [search, setSearch] = useState('');
   const [searchColl, setSearchColl] = useState('');
-
-  console.log(data?.data);
 
   const picklist = RenderAllPicklist('Catalog Status');
 
@@ -115,7 +113,14 @@ export function AddCatalogForm() {
     defaultValues,
   });
 
-  const { reset, setValue, handleSubmit } = methods;
+  const {
+    reset,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
+
+  console.log(errors);
 
   useEffect(() => {
     if (id && data?.data) {
