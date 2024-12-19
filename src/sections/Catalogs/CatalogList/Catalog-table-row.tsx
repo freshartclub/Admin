@@ -117,10 +117,18 @@ export function CatalogTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem onClick={confirm.onTrue} sx={{ color: 'error.main' }}>
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          {row?.isDeleted ? // <MenuItem
+          // onClick={() => navigate(`${paths.dashboard.artwork.catalog.add}?id=${row._id}`)}
+          // >
+          //   <Iconify icon="carbon:face-activated" />
+          //   Activate
+          // </MenuItem>
+          null : (
+            <MenuItem onClick={confirm.onTrue} sx={{ color: 'error.main' }}>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          )}
 
           <MenuItem
             onClick={() => navigate(`${paths.dashboard.artwork.catalog.add}?id=${row._id}`)}
