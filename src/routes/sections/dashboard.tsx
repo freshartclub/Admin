@@ -30,7 +30,6 @@ const CreadentialsAreaList = lazy(() => import('src/pages/dashboard/Creadentials
 const AddArtwork = lazy(() => import('src/pages/dashboard/AddArtwok'));
 const UserAccount = lazy(() => import('src/pages/dashboard/user/account'));
 const UserList = lazy(() => import('src/pages/dashboard/user/list'));
-const CreaetUser = lazy(() => import('src/pages/dashboard/user/new'));
 const UserProfile = lazy(() => import('src/pages/dashboard/user/profile'));
 const InvoiceList = lazy(() => import('src/pages/dashboard/invoice/list'));
 const InvoiceDetails = lazy(() => import('src/pages/dashboard/invoice/details'));
@@ -223,10 +222,10 @@ export const dashboardRoutes = [
         path: 'user',
         children: [
           { path: 'Profile', element: <UserProfile /> },
-          { path: 'cards', element: <div>user cards page</div> },
+          // { path: 'cards', element: <div>user cards page</div> },
           { path: 'list', element: <UserList /> },
-          { path: 'create', element: <CreaetUser /> },
-          { path: 'edit', element: <div>edit page</div> },
+          // { path: 'create', element: <CreaetUser /> },
+          // { path: 'edit', element: <div>edit page</div> },
           { path: 'account', element: <UserAccount /> },
         ],
       },

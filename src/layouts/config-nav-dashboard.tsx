@@ -118,16 +118,6 @@ export const navData = [
           {
             title: 'Discipline',
             path: paths.dashboard.category.discipline.list,
-            // children: [
-            //   {
-            //     title: 'Add Discipline',
-            //     path: paths.dashboard.category.discipline.add,
-            //   },
-            //   {
-            //     title: 'Discipline List',
-            //     path: paths.dashboard.category.discipline.list,
-            //   },
-            // ],
           },
           {
             title: 'Style',
@@ -156,19 +146,8 @@ export const navData = [
         title: 'Credentials and Insignias',
         path: paths.dashboard.creadentialsAndInsigniasArea.list,
         icon: ICONS.course,
-        // children: [
-        //   // {
-        //   //   title: 'Add Credentials and Insignias',
-        //   //   path: paths.dashboard.creadentialsAndInsigniasArea.add,
-        //   // },
-        //   {
-        //     title: 'Credentials and Insignias List',
-        //     path: paths.dashboard.creadentialsAndInsigniasArea.list,
-        //   },
-        // ],
       },
 
-      // try start
       {
         title: 'Order',
         path: paths.dashboard.order.Root,
@@ -195,10 +174,10 @@ export const navData = [
         icon: ICONS.user,
         children: [
           { title: 'Profile', path: paths.dashboard.user.profile },
-          { title: 'Cards', path: paths.dashboard.user.cards },
+          // { title: 'Cards', path: paths.dashboard.user.cards },
           { title: 'List', path: paths.dashboard.user.list },
-          { title: 'Create', path: paths.dashboard.user.create },
-          { title: 'Edit', path: paths.dashboard.user.edit },
+          // { title: 'Create', path: paths.dashboard.user.create },
+          // { title: 'Edit', path: paths.dashboard.user.edit },
           { title: 'Account', path: paths.dashboard.user.account },
         ],
       },

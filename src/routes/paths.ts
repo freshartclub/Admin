@@ -126,10 +126,6 @@ export const paths = {
       subscribe: `${ROOTS.DASHBOARD}/order/subscribe`,
       purchese: `${ROOTS.DASHBOARD}/order/purchese`,
       details: `${ROOTS.DASHBOARD}/order/details`,
-      // details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
-      // demo: {
-      //   details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
-      // },
     },
     invoice: {
       Root: `${ROOTS.DASHBOARD}/invoice`,
@@ -141,10 +137,10 @@ export const paths = {
     user: {
       Root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
-      cards: `${ROOTS.DASHBOARD}/user/cards`,
+      // cards: `${ROOTS.DASHBOARD}/user/cards`,
       list: `${ROOTS.DASHBOARD}/user/list`,
-      create: `${ROOTS.DASHBOARD}/user/create`,
-      edit: `${ROOTS.DASHBOARD}/user/edit`,
+      // create: `${ROOTS.DASHBOARD}/user/create`,
+      // edit: `${ROOTS.DASHBOARD}/user/edit`,
       account: `${ROOTS.DASHBOARD}/user/account`,
     },
     //  circle: {
