@@ -16,7 +16,9 @@ const useAddPicklist = () => {
     mutationFn: addPicklist,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.category.picklist.list);
+      if (body?.isAddMore == false) {
+        navigate(`${paths.dashboard.category.picklist.list}?selectedType=${body.picklistName}`);
+      }
     },
 
     onError: (res: any) => {

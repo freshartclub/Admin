@@ -19,13 +19,9 @@ import useDeleteTechnicMutation from './http/useDeleteTechnicMutation';
 
 type Props = {
   row: ArtistDisciplineType;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function TechnicTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function TechnicTableRow({ row }: Props) {
   const navigate = useNavigate();
 
   const { mutate, isPending } = useDeleteTechnicMutation();
@@ -45,7 +41,7 @@ export function TechnicTableRow({ row, selected, onEditRow, onSelectRow, onDelet
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
             className="cursor-pointer hover:text-[#FF9E43] hover:underline"
-            onClick={() => navigate(`${paths.dashboard.category.mediasupport.add}?id=${row._id}`)}
+            onClick={() => navigate(`${paths.dashboard.category.technic.add}?id=${row._id}`)}
           >
             {row.discipline
               .map((discipline: any) => discipline.disciplineName)

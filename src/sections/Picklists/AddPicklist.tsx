@@ -1,13 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-import { Autocomplete, Button, TextField } from '@mui/material';
+import { Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -37,8 +38,6 @@ export function AddPicklist() {
   const { data, isLoading } = useGetPicklistMutation();
   const { data: picklistData } = useGetPicklistById(id, name);
 
-  const [value, setValue] = useState('');
-
   const defaultValues = useMemo(
     () => ({
       picklistName: picklistData?.picklistName || '',
@@ -46,10 +45,6 @@ export function AddPicklist() {
     }),
     [picklistData]
   );
-
-  const handleSave = () => {
-    methods.setValue('picklistName', value);
-  };
 
   const methods = useForm<NewProductSchemaType>({
     resolver: zodResolver(NewProductSchema),
@@ -74,8 +69,23 @@ export function AddPicklist() {
       if (id && name) {
         updateMutate(data);
       } else {
+        const pickName = methods.getValues('picklistName');
+        if (!pickName) return toast.error('Picklist Name is required!');
+        data.isAddMore = false;
         mutate(data);
       }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  const onAddMoreSubmit = handleSubmit(async (data) => {
+    try {
+      const pickName = methods.getValues('picklistName');
+      if (!pickName) return toast.error('Picklist Name is required!');
+      data.isAddMore = true;
+      mutate(data);
+      methods.setValue('name', '');
     } catch (error) {
       console.error(error);
     }
@@ -92,35 +102,35 @@ export function AddPicklist() {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
         >
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <Autocomplete
-              disabled={id ? true : false}
-              freeSolo
-              fullWidth
-              options={data.map((item) => item.picklistName) || []}
-              value={value}
-              onChange={(event, newValue) => setValue(newValue || '')}
-              onInputChange={(event, newInputValue) => setValue(newInputValue)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select or Type New Picklist Name"
-                  placeholder="Select or Type New Picklist Name"
-                  required
+          <Field.Autocomplete
+            disabled={id ? true : false}
+            freeSolo
+            fullWidth
+            label="Type or Select Picklist Name & Press Enter"
+            helperText="When creating a new Picklist, please press 'ENTER' button unless it will give error"
+            name="picklistName"
+            options={data.map((item) => item.picklistName) || []}
+            disableCloseOnSelect={false}
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                {option}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option}
+                  label={option}
+                  size="small"
+                  color="info"
+                  variant="soft"
                 />
-              )}
-              openOnFocus
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              disabled={!value.trim()}
-            >
-              Select
-            </Button>
-          </div>
-          <Field.Text disabled required name="picklistName" label="Picklist Name" />
+              ))
+            }
+            openOnFocus
+          />
+
           <Field.Text
             required
             helperText="Name of the field which will go inside the Picklist"
@@ -142,19 +152,30 @@ export function AddPicklist() {
         ]}
         sx={{ mb: 3 }}
       />
-      <Form methods={methods} onSubmit={onSubmit}>
+      <Form methods={methods}>
         {renderDetails}
         <Stack spacing={{ xs: 3, md: 3 }}>
           <div className="flex justify-end gap-2">
             <span
               onClick={() => navigate(paths.dashboard.category.picklist.list)}
-              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+              className="px-3 py-2 text-white bg-red-500 rounded-md cursor-pointer"
             >
               Cancel
             </span>
-            <button type="submit" className="px-3 py-2 text-white bg-black rounded-md">
+            {!id && !name ? (
+              <span
+                onClick={onAddMoreSubmit}
+                className="px-3 py-2 text-white bg-green-700 rounded-md cursor-pointer"
+              >
+                {isPending || updatePending ? 'Saving...' : 'Save & Add more'}
+              </span>
+            ) : null}
+            <span
+              onClick={onSubmit}
+              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+            >
               {isPending || updatePending ? 'Saving...' : 'Save'}
-            </button>
+            </span>
           </div>
         </Stack>
       </Form>

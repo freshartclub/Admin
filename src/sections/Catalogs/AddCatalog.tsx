@@ -113,14 +113,7 @@ export function AddCatalogForm() {
     defaultValues,
   });
 
-  const {
-    reset,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = methods;
-
-  console.log(errors);
+  const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && data?.data) {

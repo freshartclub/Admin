@@ -29,12 +29,12 @@ export const NewProductSchema = zod.object({
   zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
   city: zod.string().min(1, { message: 'City is required!' }),
   state: zod.string().min(1, { message: 'state is required!' }),
-  residentialAddress: zod.string().min(1, { message: 'residentialAddress is required!' }),
+  residentialAddress: zod.string().min(1, { message: 'Residential Address is required!' }),
   phone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email residentialAddress!' }),
+    .email({ message: 'Email must be a valid email!' }),
   gender: zod.string().min(1, { message: 'Gender is required!' }),
   notes: zod.string(),
 });
@@ -143,8 +143,16 @@ export function GeneralInformation({
   }, [artistFormData?.residentialAddress]);
 
   const placesSelected = (places: google.maps.places.PlaceResult) => {
-    setValue('residentialAddress', places.formatted_address);
-    setSearchResult(places.formatted_address);
+    const address_comp = ['street_number', 'route', 'locality', 'administrative_area_level_2'];
+
+    const comp = address_comp
+      .map((type) => places.address_components?.find((c) => c.types.includes(type))?.long_name)
+      .filter(Boolean);
+
+    const fullAddress = comp.filter(Boolean).join(', ');
+
+    setValue('residentialAddress', fullAddress);
+    setSearchResult(fullAddress);
   };
 
   const renderDetails = (

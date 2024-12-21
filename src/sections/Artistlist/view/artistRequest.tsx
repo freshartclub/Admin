@@ -39,7 +39,7 @@ const TABLE_HEAD = [
 export function ArtistsRequest() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
-  const [sStatus, setStatus] = useState('All');
+  const [sStatus, setStatus] = useState('Pending');
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);

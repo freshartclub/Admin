@@ -10,7 +10,7 @@ async function fetchData(id) {
 
 export const useGetCollectionById = (id) => {
   return useQuery({
-    queryKey: ['collection'],
+    queryKey: [ARTIST_ENDPOINTS.getCollectionById, id],
     queryFn: () => fetchData(id),
   });
 };

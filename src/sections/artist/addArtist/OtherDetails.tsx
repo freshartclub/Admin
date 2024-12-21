@@ -18,7 +18,7 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { FileThumbnail } from 'src/components/file-thumbnail';
@@ -31,6 +31,8 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
 import { z as zod } from 'zod';
+import { FormHelperText } from '@mui/material';
+import { AddressAutoComplete } from './AddressAutoComplete';
 
 // ----------------------------------------------------------------------
 
@@ -91,6 +93,8 @@ export function OtherDetails({
   const navigate = useNavigate();
   const view = useSearchParams().get('view');
   const id = useSearchParams().get('id');
+
+  const [searchResult, setSearchResult] = useState('');
   const [reValidate, setReValidate] = useState(false);
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
@@ -315,6 +319,15 @@ export function OtherDetails({
     } else {
       return methods.getValues(`documents[${index}].uploadDocs`);
     }
+  };
+
+  useEffect(() => {
+    setSearchResult(artistFormData?.emergencyContactAddress || '');
+  }, [artistFormData?.emergencyContactAddress]);
+
+  const placesSelected = (places: google.maps.places.PlaceResult) => {
+    setValue('emergencyContactAddress', places.formatted_address);
+    setSearchResult(places.formatted_address);
   };
 
   const document = (
@@ -675,11 +688,19 @@ export function OtherDetails({
           name="emergencyContactEmail"
           label="Emergency Contact Email"
         />
-        <Field.Text
-          disabled={isReadOnly}
+        <AddressAutoComplete
           name="emergencyContactAddress"
-          label="Emergency Contact Address"
+          disabled={isReadOnly}
+          label="Emergency Contact Address *"
+          value={searchResult}
+          onChange={(e) => {
+            setSearchResult(e.target.value);
+          }}
+          onPlaceSelected={placesSelected}
         />
+        {errors.emergencyContactAddress && (
+          <FormHelperText error>{errors.emergencyContactAddress.message}</FormHelperText>
+        )}
         <Field.Text
           disabled={isReadOnly}
           name="emergencyContactRelation"

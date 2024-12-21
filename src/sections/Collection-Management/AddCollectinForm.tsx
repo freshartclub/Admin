@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Avatar,
   Box,
   Button,
   Chip,
   CircularProgress,
+  DialogActions,
   InputAdornment,
   Link,
   ListItemText,
@@ -33,6 +35,14 @@ import { z as zod } from 'zod';
 import useAddCollectionMutation from './http/useAddCollectionMutation';
 import { useGetCollectionById } from './http/useGetCollectionById';
 import { useGetSearchedArtworks } from './http/useGetSearchedArtworks';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { usePopover } from 'src/components/custom-popover';
+import useDeleteArtworkColl from './http/useDeleteArtworkColl';
+import { Dialog } from '@mui/material';
+import { DialogTitle } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogContentText } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -51,9 +61,12 @@ export const NewPostSchema = zod.object({
         artwork: zod.string().min(1, { message: 'Artwork Name is required!' }),
         artworkDesc: zod.string().min(1, { message: 'Artwork Description is required!' }),
         pCode: zod.string().optional(),
+        artistName: zod.string().optional(),
+        artworkImg: schemaHelper.file({ required: false }).optional(),
+        isBackend: zod.boolean().optional(),
       })
     )
-    .min(1, { message: 'Artwork is required!' }),
+    .min(1, { message: 'At least one Artwork is required!' }),
   expertDesc: zod.string().min(1, { message: ' Description is required!' }),
   expertImg: schemaHelper.file({ required: false }).optional(),
   collectionFile: schemaHelper.file({ required: false }).optional(),
@@ -68,6 +81,8 @@ export function AddCollectionForm() {
     search: '',
     index: null,
   });
+  const [open, setOpen] = useState(false);
+  const [selectedArtwork, setSelectedArtwork] = useState(null);
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
   const { data, isLoading } = useGetCollectionById(id);
@@ -77,7 +92,15 @@ export function AddCollectionForm() {
       collectionName: data?.data?.collectionName || '',
       collectionDesc: data?.data?.collectionDesc || '',
       artworkList: data?.data?.artworkList || [
-        { artwork: '', artworkDesc: '', pCode: '', artworkId: '' },
+        {
+          artwork: '',
+          artworkDesc: '',
+          pCode: '',
+          artworkId: '',
+          artistName: '',
+          artworkImg: null,
+          isBackend: false,
+        },
       ],
       expertDesc: data?.data?.expertDetails?.expertDesc || '',
       expertImg: data?.data?.expertDetails?.expertImg || null,
@@ -88,6 +111,16 @@ export function AddCollectionForm() {
     }),
     [data?.data]
   );
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
 
   const methods = useForm<NewPostSchemaType>({
     resolver: zodResolver(NewPostSchema),
@@ -107,7 +140,13 @@ export function AddCollectionForm() {
     }
   }, [search.search]);
 
-  const { reset, watch, setValue, handleSubmit } = methods;
+  const {
+    reset,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
   const values = watch();
 
   useEffect(() => {
@@ -121,6 +160,9 @@ export function AddCollectionForm() {
             artworkDesc: item.artworkDesc,
             pCode: item.artworkId?.artworkId,
             artworkId: item.artworkId?._id,
+            artistName: name(item.artworkId?.owner),
+            artworkImg: `${data?.url}/users/${item.artworkId?.media?.mainImage}` || null,
+            isBackend: true,
           })) || [],
         expertDesc: data?.data?.expertDetails?.expertDesc || '',
         expertImg: `${data?.url}/users/${data?.data?.expertDetails?.expertImg}` || null,
@@ -133,6 +175,7 @@ export function AddCollectionForm() {
   }, [data?.data, reset]);
 
   const { mutate, isPending } = useAddCollectionMutation(id);
+  const { mutate: deleteArtwork, isPending: isPendingDelete } = useDeleteArtworkColl(id);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -195,13 +238,22 @@ export function AddCollectionForm() {
     remove(index);
   };
   const addArtworkList = () => {
-    append({ artwork: '', artworkDesc: '', pCode: '', artworkId: '' });
+    append({
+      artwork: '',
+      artworkDesc: '',
+      pCode: '',
+      artworkId: '',
+      artistName: '',
+      artworkImg: null,
+    });
   };
 
   const refillData = (i, index) => {
     setValue(`artworkList[${index}].artworkId`, i?._id);
     setValue(`artworkList[${index}].artwork`, i?.artworkName);
     setValue(`artworkList[${index}].pCode`, i?.artworkId);
+    setValue(`artworkList[${index}].artistName`, name(i));
+    setValue(`artworkList[${index}].artworkImg`, `${data?.url}/users/${i?.media}`);
     setSearch({ search: '', index: null });
   };
 
@@ -218,19 +270,42 @@ export function AddCollectionForm() {
 
   const removeText = (index) => {
     setValue(`artworkList[${index}].artwork`, '');
+    setValue(`artworkList[${index}].artworkId`, '');
     setValue(`artworkList[${index}].pCode`, '');
+    setValue(`artworkList[${index}].artistName`, '');
+    setValue(`artworkList[${index}].artworkImg`, '');
     setSearch({ search: '', index: null });
   };
 
-  const name = (val) => {
-    let fullName = val?.artistName || '';
-
-    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
-    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
-    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
-
-    return fullName.trim();
+  const handleDeleteArtwork = (item) => {
+    const data = {
+      artworkId: item.artworkId,
+    };
+    deleteArtwork(data);
+    setOpen(false);
   };
+
+  const handleDeleteOption = (
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false);
+      }}
+    >
+      <DialogTitle>{`Delete Artwork - ${selectedArtwork?.artwork}`}</DialogTitle>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <DialogContentText>{`Are you sure want to delete this artwork from collection - "${data?.data?.collectionName}" ?`}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleDeleteArtwork(selectedArtwork)}
+          className="text-white bg-red-600 rounded-lg px-5 py-2 hover:bg-red-700 font-medium"
+        >
+          {isPendingDelete ? 'Deleting...' : 'Delete'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
 
   const renderDetails = (
     <Card>
@@ -264,27 +339,86 @@ export function AddCollectionForm() {
                 gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
               >
                 <div className="relative">
-                  <Field.Text
-                    name={`artworkList[${index}].artwork`}
-                    label="Artwork Name"
-                    placeholder="Search by ArtworkId, Title or Artist Name"
-                    value={getValue(index)}
-                    onChange={(e) => setSearch({ search: e.target.value, index: index, code: '' })}
-                    InputLabelProps={{ shrink: true }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Box
-                            onClick={() => removeText(index)}
-                            component="span"
-                            sx={{ color: 'text.disabled', fontSize: '0.85rem', cursor: 'pointer' }}
-                          >
-                            X
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Field.Text
+                      name={`artworkList[${index}].artwork`}
+                      disabled={item?.isBackend}
+                      label="Artwork Name"
+                      placeholder="Search by ArtworkId, Title or Artist Name"
+                      value={getValue(index)}
+                      onChange={(e) =>
+                        setSearch({ search: e.target.value, index: index, code: '' })
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        ...(methods.watch(`artworkList[${index}].artworkId`) && {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Avatar
+                                sx={{ width: 30, height: 30 }}
+                                alt={methods.getValues(`artworkList[${index}].artwork`)}
+                                src={methods.getValues(`artworkList[${index}].artworkImg`)}
+                              />
+                            </InputAdornment>
+                          ),
+                        }),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {item.isBackend ? null : (
+                              <Box
+                                onClick={() => removeText(index)}
+                                component="span"
+                                sx={{
+                                  color: 'text.disabled',
+                                  fontSize: '0.85rem',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                X
+                              </Box>
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    {item.isBackend ? (
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<Iconify icon="mdi:delete" />}
+                        onClick={() => {
+                          setSelectedArtwork(item);
+                          setOpen(true);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<Iconify icon="mdi:delete" />}
+                        onClick={() => handleRemove(index)}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                    <ConfirmDialog
+                      open={confirm.value}
+                      onClose={confirm.onFalse}
+                      title={`Delete Artwork - ${item.artwork}`}
+                      content={`Are you sure want to delete this artwork from collection - "${data?.data?.collectionName}"`}
+                      action={
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleDeleteArtwork(item)}
+                        >
+                          {isPendingDelete ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      }
+                    />
+                  </Box>
                   {search.index === index && search.search && (
                     <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
                       <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -334,6 +468,12 @@ export function AddCollectionForm() {
                   )}
                 </div>
                 <Field.Text
+                  name={`artworkList[${index}].artistName`}
+                  label="Artist Name"
+                  InputLabelProps={{ shrink: true }}
+                  disabled
+                />
+                <Field.Text
                   sx={{ mb: fields.length > 1 ? 2 : 0 }}
                   required
                   name={`artworkList[${index}].artworkDesc`}
@@ -342,19 +482,9 @@ export function AddCollectionForm() {
                   rows={4}
                 />
               </Box>
-
-              {index > 0 && (
-                <Button
-                  size="small"
-                  color="error"
-                  startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                  onClick={() => handleRemove(index)}
-                >
-                  Remove
-                </Button>
-              )}
             </Stack>
           ))}
+          {errors.artworkList && <Alert severity="error">{errors.artworkList.message}</Alert>}
         </Stack>
 
         <Typography variant="subtitle2">Experts Details</Typography>
@@ -557,6 +687,7 @@ export function AddCollectionForm() {
           </div>
         </Stack>
       </Form>
+      {handleDeleteOption}
     </div>
   );
 }

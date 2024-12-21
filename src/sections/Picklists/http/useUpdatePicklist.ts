@@ -16,7 +16,7 @@ const useUpdatePicklist = (id, name) => {
     mutationFn: updatePicklist,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.category.picklist.list);
+      navigate(`${paths.dashboard.category.picklist.list}?selectedType=${body.picklistName}`);
     },
 
     onError: (res: any) => {

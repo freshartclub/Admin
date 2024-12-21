@@ -20,20 +20,9 @@ import useDeleteDisciplineMutation from './http/useDeleteDisciplineMutation';
 type Props = {
   row: ArtistDisciplineType;
   url: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function DisciplineTableRow({
-  row,
-  url,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export function DisciplineTableRow({ row, url }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteDisciplineMutation();
 

@@ -124,9 +124,30 @@ const ProductInfo = ({ data, preview }) => {
                   val={data?.additionalInfo?.hangingAvailable}
                 />
                 <PreviewData head="Framed" val={data?.additionalInfo?.framed} />
-                <PreviewData head="Frame Depth" val={data?.additionalInfo?.frameLength + ' cm'} />
-                <PreviewData head="Frame Width" val={data?.additionalInfo?.frameWidth + ' cm'} />
-                <PreviewData head="Frame Height" val={data?.additionalInfo?.frameHeight + ' cm'} />
+                <PreviewData
+                  head="Frame Depth"
+                  val={
+                    data?.additionalInfo?.frameLength
+                      ? data?.additionalInfo?.frameLength + ' cm'
+                      : 'N/A'
+                  }
+                />
+                <PreviewData
+                  head="Frame Width"
+                  val={
+                    data?.additionalInfo?.frameWidth
+                      ? data?.additionalInfo?.frameWidth + ' cm'
+                      : 'N/A'
+                  }
+                />
+                <PreviewData
+                  head="Frame Height"
+                  val={
+                    data?.additionalInfo?.frameHeight
+                      ? data?.additionalInfo?.frameHeight + ' cm'
+                      : 'N/A'
+                  }
+                />
                 <PreviewData head="Artwork Material" val={data?.additionalInfo?.material} />
                 <PreviewData
                   head="Artwork Style"
@@ -154,10 +175,7 @@ const ProductInfo = ({ data, preview }) => {
 
         <TabPanel>
           <div className="flex flex-col my-5">
-            <PreviewData
-              head="Selected Method"
-              val={data?.commercialization?.activeTab}
-            />
+            <PreviewData head="Selected Method" val={data?.commercialization?.activeTab} />
             {data?.commercialization?.activeTab === 'purchase' ? (
               <>
                 <PreviewData

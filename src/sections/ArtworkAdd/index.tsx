@@ -64,6 +64,8 @@ import useAddArtistSeries from './http/useAddArtistSeries';
 import useCreateArtworkMutation from './http/useCreateArtworkMutation';
 import { useGetArtistById } from './http/useGetArtistById';
 import { useGetSeriesList } from './http/useGetSeriesList';
+import { Chip } from '@mui/material';
+import useDeleteSeries from './http/useDeleteSeries';
 
 // ----------------------------------------------------------------------
 
@@ -143,6 +145,7 @@ export function ArtworkAdd() {
   const [search, setSearch] = useState('');
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
+  const [dSerise, setDSerise] = useState('');
   const [slide, setSlide] = useState(0);
 
   const { data: disciplineData } = useGetDisciplineMutation();
@@ -263,9 +266,11 @@ export function ArtworkAdd() {
 
   const [mongoDBId, setmongoDBId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteSeriesOpen, setDeleteSeriesOpen] = useState(false);
   const [series, setSeries] = useState('');
   const [percent, setPercent] = useState(0);
   const [selectedOption, setSelectedOption] = useState('subscription');
+  const [catalogDetails, setCatalogDetails] = useState({});
 
   let arr: any = [];
   let videoArr: any = [];
@@ -385,6 +390,7 @@ export function ArtworkAdd() {
   const { data: artistData, isLoading: artistLoading } = useGetArtistById(debounceArtistId);
 
   const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();
+  const { mutateAsync: deleteSeries, isPending: deletePending } = useDeleteSeries();
   const { data: artworkData, refetch } = useGetSeriesList(mongoDBId);
 
   useEffect(() => {
@@ -604,14 +610,27 @@ export function ArtworkAdd() {
     refetch();
   };
 
+  const handleDelete = (seriesName) => {
+    if (!mongoDBId) return toast.error('Search For Artist First');
+    const data = {
+      id: mongoDBId,
+      name: seriesName,
+    };
+
+    deleteSeries(data).then(() => setDeleteSeriesOpen(false));
+    refetch();
+  };
+
   const handleChange = (e) => {
     const _id = e.target.dataset.value;
     if (selectedOption === 'subscription') {
       const artistFeesVal = artworkData.subscriptionCatalog.find((item) => item._id === _id);
       setValue('artistFees', artistFeesVal?.artistFees);
+      setCatalogDetails(artistFeesVal?.details);
     } else {
       const artistFeesVal = artworkData.purchaseCatalog.find((item) => item._id === _id);
       setValue('artistFees', artistFeesVal?.artistFees);
+      setCatalogDetails(artistFeesVal?.details);
     }
   };
 
@@ -677,6 +696,35 @@ export function ArtworkAdd() {
           className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
           {isSeriesLoad ? 'Loading...' : 'Save'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const handleDeleteOption = (
+    <Dialog
+      open={deleteSeriesOpen}
+      onClose={() => {
+        setDeleteSeriesOpen(false);
+      }}
+    >
+      <DialogTitle>Delete Series</DialogTitle>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <DialogContentText>Are you sure you want to delete this series?</DialogContentText>
+        <Field.Text
+          name="seriesName"
+          label="Series Name"
+          placeholder="Series Name"
+          value={dSerise}
+          disabled
+        />
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={() => handleDelete(dSerise)}
+          className="text-white bg-red-600 rounded-lg px-5 py-2 hover:bg-red-700 font-medium"
+        >
+          {deletePending ? 'Deleting...' : 'Delete'}
         </button>
       </DialogActions>
     </Dialog>
@@ -794,23 +842,52 @@ export function ArtworkAdd() {
           />
 
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
-            <Field.SingelSelect
-              sx={{ width: '100%' }}
+            <Field.Autocomplete
+              required
+              disabled={mongoDBId ? false : true}
               name="artworkSeries"
               label="Artwork Series"
+              placeholder={`${mongoDBId ? 'Search For Series' : 'Search For Artist First'}`}
+              fullWidth
+              disableCloseOnSelect={false}
+              freeSolo={false}
               options={
-                mongoDBId
-                  ? artworkData?.seriesList
-                    ? artworkData?.seriesList.map((i) => ({ value: i, label: i }))
-                    : [{ value: '', label: 'No Series Found' }]
-                  : [
-                      {
-                        value: '',
-                        label: 'Search For Artist First',
-                      },
-                    ]
+                mongoDBId ? (artworkData?.seriesList ? artworkData?.seriesList : ['']) : ['']
+              }
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li
+                  {...props}
+                  key={option}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <span>{option}</span>
+                  <Iconify
+                    icon="mdi:delete"
+                    sx={{ cursor: 'pointer', marginLeft: 1, ':hover': { color: 'red' } }}
+                    onClick={(e) => {
+                      console.log('option', option);
+                      e.stopPropagation();
+                      setDSerise(option);
+                      setDeleteSeriesOpen(true);
+                    }}
+                  />
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                    color="info"
+                    variant="soft"
+                  />
+                ))
               }
             />
+
             {mongoDBId && (
               <Iconify
                 onClick={() => setDialogOpen(true)}
@@ -984,11 +1061,7 @@ export function ArtworkAdd() {
               onChange={(event, newValue) => setIntValue(newValue || '')}
               onInputChange={(event, newInputValue) => setIntValue(newInputValue)}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Add Internal Tags"
-                  placeholder="Add Internal Tags"
-                />
+                <TextField {...params} label="Add Internal Tags" placeholder="Add Internal Tags" />
               )}
               openOnFocus
             />
@@ -1039,11 +1112,7 @@ export function ArtworkAdd() {
               onChange={(event, newValue) => setExtValue(newValue || '')}
               onInputChange={(event, newInputValue) => setExtValue(newInputValue)}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Add External Tags"
-                  placeholder="Add External Tags"
-                />
+                <TextField {...params} label="Add External Tags" placeholder="Add External Tags" />
               )}
               openOnFocus
             />
@@ -1123,9 +1192,9 @@ export function ArtworkAdd() {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="frameHeight" label="Frame Height (in cm)" />
-          <Field.Text name="frameWidth" label="Frame Width (in cm)" />
-          <Field.Text name="frameLenght" label="Frame Depth (in cm)" />
+          <Field.Text name="frameHeight" label="Framed Height (in cm)" />
+          <Field.Text name="frameWidth" label="Framed Width (in cm)" />
+          <Field.Text name="frameLenght" label="Framed Depth (in cm)" />
         </Box>
         <Field.SingelSelect
           checkbox
@@ -1154,6 +1223,7 @@ export function ArtworkAdd() {
               methods.setValue('artistFees', '');
               methods.setValue('subscriptionCatalog', '');
               methods.setValue('purchaseCatalog', '');
+              setCatalogDetails({});
             }}
           >
             <FormControlLabel
@@ -1184,6 +1254,7 @@ export function ArtworkAdd() {
                     ? artworkData?.subscriptionCatalog.map((i) => ({
                         value: i._id,
                         artistFees: i.artistFees,
+                        details: i.details,
                         label: i.catalogName,
                       }))
                     : [
@@ -1220,6 +1291,7 @@ export function ArtworkAdd() {
                     ? artworkData?.purchaseCatalog.map((i) => ({
                         value: i._id,
                         artistFees: i.artistFees,
+                        details: i.details,
                         label: i.catalogName,
                       }))
                     : [
@@ -1253,8 +1325,19 @@ export function ArtworkAdd() {
       <CardHeader title="Pricing" sx={{ mb: 3 }} />
 
       <Divider />
+
       {selectedOption === 'purchase' ? (
         <Stack spacing={3} sx={{ p: 3 }}>
+          {catalogDetails?.maxPrice && (
+            <Alert severity="warning">
+              <Box>
+                <span>Max Base Price should not be more than the selected Catalog Max Price.</span>
+                <span className="flex gap-2 items-center list-none">
+                  <li> Catalog Max Price: {catalogDetails?.maxPrice}</li>
+                </span>
+              </Box>
+            </Alert>
+          )}
           <Field.SingelSelect
             required
             sx={{ minWidth: 150 }}
@@ -1319,6 +1402,16 @@ export function ArtworkAdd() {
         </Stack>
       ) : (
         <Stack spacing={3} sx={{ p: 3 }}>
+          {catalogDetails?.maxPrice && (
+            <Alert severity="warning">
+              <Box>
+                <span>Max Base Price should not be more than the selected Catalog Max Price.</span>
+                <span className="flex gap-2 items-center list-none">
+                  <li> Catalog Max Price: {catalogDetails?.maxPrice}</li>
+                </span>
+              </Box>
+            </Alert>
+          )}
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
             <Field.Text
               name="basePrice"
@@ -1397,6 +1490,21 @@ export function ArtworkAdd() {
           label="Package Material"
           options={packMaterial ? packMaterial : []}
         />
+        {catalogDetails?.maxDepth && (
+          <Alert severity="warning">
+            <Box>
+              <span>
+                Max Dimensions should not be greater than the Dimensions in selected Catalog.
+              </span>
+              <span className="flex gap-2 items-center list-none">
+                <li> Max Height: {catalogDetails?.maxHeight} cm</li> |
+                <li> Max Depth: {catalogDetails?.maxDepth} cm </li>|
+                <li> Max Width: {catalogDetails?.maxWidth} cm </li>|
+                <li> Max Weight: {catalogDetails?.maxWeight} kg</li>
+              </span>
+            </Box>
+          </Alert>
+        )}
         <Box
           columnGap={2}
           rowGap={3}
@@ -1520,6 +1628,7 @@ export function ArtworkAdd() {
         </div>
       </Stack>
       {addSeriesDialogBox}
+      {handleDeleteOption}
     </Form>
   );
 }

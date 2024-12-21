@@ -1,4 +1,18 @@
-import { Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, Table, TableBody, Typography } from '@mui/material';
+import {
+  Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  Table,
+  TableBody,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -19,6 +33,9 @@ import type { IUserItem } from 'src/types/user';
 import { PicklistTableRow } from './Picklist-table-row';
 import { useGetPicklistMutation } from './http/useGetPicklistMutation';
 import useUpdatePicklistName from './http/useUpdateName';
+import { useSearchParams } from 'src/routes/hooks';
+import { TextField } from '@mui/material';
+import { InputAdornment } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Field Name', width: 150 },
@@ -29,12 +46,15 @@ const TABLE_HEAD = [
 export function ListAllPicklist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
-  const [picklist, setPicklist] = useState<string>('');
   const [_list, setList] = useState([]);
+  const [search, setSearch] = useState('');
   const { data, isLoading } = useGetPicklistMutation();
   const [name, setName] = useState('');
   const [open, setOpen] = useState(false);
   const [id, setId] = useState('');
+
+  const selectedType = useSearchParams().get('selectedType');
+  const [picklist, setPicklist] = useState<string>(selectedType ? selectedType : '');
 
   useEffect(() => {
     if (data) {
@@ -48,7 +68,12 @@ export function ListAllPicklist() {
   }, [data, picklist]);
 
   const dataFiltered = applyFilter({
-    inputData: _list,
+    inputData: _list.filter((item) => {
+      if (search) {
+        return item.name.toLowerCase().includes(search.toLowerCase());
+      }
+      return true;
+    }),
     comparator: getComparator(table.order, table.orderBy),
   });
 
@@ -80,13 +105,13 @@ export function ListAllPicklist() {
       </DialogTitle>
 
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography variant="body1" sx={{color:'red'}}>
+        <Typography variant="body1" sx={{ color: 'red' }}>
           Please be Cautious while changing the Picklist Name. As if this Picklist is already in use
           somwhere in the application, then you have to change the Picklist Name there as well.
           Otherwise the data of this Picklist will not be accessible.
           <br></br>
-          If this Picklist is being used somewhere, change the Picklist
-          Name with the new Picklist Name in the application as well.
+          If this Picklist is being used somewhere, change the Picklist Name with the new Picklist
+          Name in the application as well.
         </Typography>
         <input
           required
@@ -144,7 +169,15 @@ export function ListAllPicklist() {
           <Select
             label="Select Picklist"
             inputProps={{ id: 'Picklist' }}
-            onChange={(e) => setPicklist(e.target.value)}
+            onChange={(e) => {
+              setPicklist(e.target.value);
+
+              const url = new URL(window.location.href);
+              if (url.searchParams.has('selectedType')) {
+                url.searchParams.delete('selectedType');
+                window.history.replaceState({}, document.title, url);
+              }
+            }}
             value={picklist}
             sx={{ textTransform: 'capitalize' }}
           >
@@ -158,9 +191,21 @@ export function ListAllPicklist() {
           </Select>
         </FormControl>
 
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={`Search By "${picklist}" Picklist Item Name...`}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
         <span
           onClick={() => setOpen(true)}
-          className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1 cursor-pointer"
+          className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1 cursor-pointer w-[21rem]"
         >
           <Iconify icon="solar:pen-bold" /> Edit Picklist Name
         </span>

@@ -19,14 +19,14 @@ export function ArtworkDetailView() {
 
   const { data, isPending } = useGetArtworkById(id);
 
-  console.log(data?.data);
-
   useEffect(() => {
     const arr = [
       data?.data?.media?.mainImage,
       data?.data?.media?.backImage,
       data?.data?.media?.inProcessImage,
       ...(data?.data?.media?.images || []),
+      data?.data?.media?.mainVideo,
+      ...(data?.data?.media?.otherVideo || []),
     ].filter(Boolean);
 
     setImages(arr);
@@ -49,6 +49,7 @@ export function ArtworkDetailView() {
   };
 
   const url = 'https://dev.freshartclub.com/images/users';
+  const url2 = 'https://dev.freshartclub.com/images/videos';
 
   return isPending ? (
     <LoadingScreen />
@@ -65,49 +66,79 @@ export function ArtworkDetailView() {
       <div className="container mx-auto md:px-6 px-3">
         <div className="flex lg:flex-row flex-col items-center gap-5 lg:gap-10 mt-5">
           <div className="flex lg:flex-row flex-col gap-4 lg:w-[50%] w-full items-center mb-2">
-            <div className="flex justify-center flex-row lg:flex-col lg:max-h-[60vh] lg:h-[60vh] lg:overflow-y-auto gap-2 w-[15%] lg:ml-4">
+            <div className="flex justify-center lg:justify-start flex-row lg:flex-col lg:max-h-[60vh] lg:h-[60vh] lg:overflow-y-auto gap-2 w-[15%] lg:ml-4">
               {images &&
                 images.length > 0 &&
-                images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={`${url}/${img}`}
-                    alt={img}
-                    className="mb-4 lg:w-20 lg:h-24 cursor-pointer object-cover"
-                    onClick={() => handleThumbnailClick(i)}
-                  />
-                ))}
+                images.map((file, i) => {
+                  const isVideo =
+                    file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.mkv');
+
+                  return isVideo ? (
+                    <video
+                      key={i}
+                      src={`${url2}/${file}`}
+                      className="mb-4 lg:w-20 lg:h-24 cursor-pointer object-cover"
+                      onClick={() => handleThumbnailClick(i)}
+                    />
+                  ) : (
+                    <img
+                      key={i}
+                      src={`${url}/${file}`}
+                      alt={file}
+                      className="mb-4 lg:w-20 lg:h-24 cursor-pointer object-cover"
+                      onClick={() => handleThumbnailClick(i)}
+                    />
+                  );
+                })}
             </div>
 
             <div className="flex-1 lg:w-[70%] w-full">
               {images ? (
                 images.length === 1 ? (
                   <div>
-                    <img
-                      src={`${url}/${images[0]}`}
-                      alt={`Slide ${images[0] + 1}`}
-                      className="mx-auto object-cover lg:h-[60vh]"
-                    />
+                    {images[0].endsWith('.mp4') ||
+                    images[0].endsWith('.webm') ||
+                    images[0].endsWith('.mkv') ? (
+                      <video
+                        src={`${url2}/${images[0]}`}
+                        controls
+                        className="mx-auto object-cover lg:h-[60vh]"
+                      />
+                    ) : (
+                      <img
+                        src={`${url}/${images[0]}`}
+                        alt={`Slide ${images[0] + 1}`}
+                        className="mx-auto object-cover lg:h-[60vh]"
+                      />
+                    )}
                   </div>
                 ) : (
                   <Slider
                     {...settings}
                     ref={sliderRef}
-                    className="discover_more max-h-[100%] lg:h-[55vh] w-full"
+                    className="discover_more max-h-[100%] lg:mt-[-2rem] lg:h-[55vh] w-full"
                   >
                     {images.map((src, index) => (
                       <div key={index}>
-                        <img
-                          src={`${url}/${src}`}
-                          alt={`Slide ${index + 1}`}
-                          className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
-                        />
+                        {src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.ogg') ? (
+                          <video
+                            src={`${url2}/${src}`}
+                            controls
+                            className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
+                          />
+                        ) : (
+                          <img
+                            src={`${url}/${src}`}
+                            alt={`Slide ${index + 1}`}
+                            className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
+                          />
+                        )}
                       </div>
                     ))}
                   </Slider>
                 )
               ) : (
-                <div>No Image Available</div>
+                <div>No Media Available</div>
               )}
             </div>
           </div>

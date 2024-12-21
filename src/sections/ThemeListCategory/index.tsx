@@ -51,9 +51,6 @@ export function ThemeListCategory() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-
   return (
     <div>
       <CustomBreadcrumbs
@@ -79,7 +76,7 @@ export function ThemeListCategory() {
         sx={{ mb: 2 }}
         fullWidth
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search By Theme Name..."
+        placeholder="Search By Theme Name/Discipline..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -102,14 +99,7 @@ export function ThemeListCategory() {
               />
               <TableBody>
                 {dataFiltered.map((row) => (
-                  <ThemeTableRow
-                    key={row._id}
-                    row={row}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
+                  <ThemeTableRow key={row._id} row={row} />
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

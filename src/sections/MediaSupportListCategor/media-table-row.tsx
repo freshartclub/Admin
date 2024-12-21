@@ -17,13 +17,9 @@ import useDeleteMediaMutation from './http/useDeleteMediaMutation';
 
 type Props = {
   row: ArtistDisciplineType;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function MediaTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function MediaTableRow({ row }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteMediaMutation();
 

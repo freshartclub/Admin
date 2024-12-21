@@ -222,7 +222,7 @@ export function Invoice({
     remove(index);
   };
   const addCatelog = () => {
-    append({ PublishingCatalog: '' });
+    append({ PublishingCatalog: '', ArtistFees: '' });
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -279,7 +279,6 @@ export function Invoice({
       }
     }, 1000);
 
-    // Cleanup the timeout on component unmount
     return () => clearTimeout(timeout);
   }, []);
 
@@ -439,7 +438,6 @@ export function Invoice({
         <Field.SingelSelect
           disabled={isReadOnly}
           required
-          checkbox
           name="CustomOrder"
           label="Are you accepting custom Order?"
           options={PRODUCT_CUSTOMORDER_OPTIONS}
@@ -472,23 +470,26 @@ export function Invoice({
                 <Field.SingelSelect
                   disabled={isReadOnly}
                   required
-                  checkbox
                   name={`PublishingCatalog[${index}].PublishingCatalog`}
                   label={`Catalog ${index + 1}`}
                   onClick={(val) => {
                     const defaulVal = val.target.textContent;
-                    const selectedOption = data.find((item) => item.catalogName === defaulVal);
-                    formProps.setValue(
-                      `PublishingCatalog[${index}].ArtistFees`,
-                      `${selectedOption?.defaultArtistFee}`
-                    );
+                    if (defaulVal) {
+                      const selectedOption = data.find((item) => item.catalogName === defaulVal);
+                      formProps.setValue(
+                        `PublishingCatalog[${index}].ArtistFees`,
+                        `${selectedOption?.defaultArtistFee}`
+                      );
+                    }
                   }}
                   options={
                     data
                       ? filterOptions(
                           index,
                           fields,
-                          data.map((item) => ({ value: item._id, label: item.catalogName }))
+                          data
+                            .sort((a, b) => a.catalogName.localeCompare(b.catalogName))
+                            .map((item) => ({ value: item._id, label: item.catalogName }))
                         )
                       : []
                   }

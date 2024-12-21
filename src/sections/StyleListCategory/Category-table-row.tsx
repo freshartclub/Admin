@@ -17,13 +17,9 @@ import useDeleteStyleMutation from './http/useDeleteStyleMutation';
 
 type Props = {
   row: ArtistDisciplineType;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function CategoryTableRow({ row }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteStyleMutation();
 
@@ -43,7 +39,7 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
             className="cursor-pointer hover:text-[#FF9E43] hover:underline"
-            onClick={() => navigate(`${paths.dashboard.category.mediasupport.add}?id=${row._id}`)}
+            onClick={() => navigate(`${paths.dashboard.category.style.add}?id=${row._id}`)}
           >
             {row.discipline
               .map((discipline: any) => discipline.disciplineName)

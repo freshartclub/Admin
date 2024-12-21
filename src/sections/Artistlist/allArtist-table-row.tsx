@@ -241,11 +241,12 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
                   {row?.email}
                 </Box>
               </a>
+              <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.80rem' }}>
+                {phoneNo(row?.phone)}
+              </Box>
             </Stack>
           </Stack>
         </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
 

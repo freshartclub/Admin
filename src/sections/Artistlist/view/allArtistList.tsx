@@ -34,11 +34,10 @@ import { useGetArtistList } from '../http/useGetArtistList';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 200 },
-  { id: 'phone', label: 'Contact', width: 130 },
   { id: 'city', label: 'City', width: 130 },
   { id: 'state', label: 'Province', width: 130 },
   { id: 'country', label: 'Country', width: 130 },
-  { id: 'nextRevalidationDate', label: 'Next Revalidation Date', minWidth: 210 },
+  { id: 'nextRevalidationDate', label: 'Revalidation', minWidth: 150, align: 'center' },
   { id: 'isActivated', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'action', label: 'Action', width: 88 },

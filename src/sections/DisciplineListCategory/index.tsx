@@ -25,7 +25,7 @@ import { useGetDisciplineSearchData } from './http/useGetDisciplineSearchData';
 const TABLE_HEAD = [
   { id: 'disciplineName', label: 'Discipline Name', width: 150 },
   { id: 'disciplineDescription', label: 'Description', width: 200 },
-  { id: 'status', label: 'Status', width: 130 },
+  { id: 'isDeleted', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 150 },
   { id: 'actions', label: 'Actions', width: 88 },
 ];
@@ -52,9 +52,6 @@ export function DiscipleListCategory() {
     inputData: _list,
     comparator: getComparator(table.order, table.orderBy),
   });
-
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
 
   return (
     <div>
@@ -105,15 +102,7 @@ export function DiscipleListCategory() {
               />
               <TableBody>
                 {dataFiltered.map((row, i) => (
-                  <DisciplineTableRow
-                    key={i}
-                    row={row}
-                    url={url}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
+                  <DisciplineTableRow key={i} row={row} url={url} />
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}
@@ -142,6 +131,7 @@ function applyFilter({ inputData, comparator }: ApplyFilterProps) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
+
   inputData = stabilizedThis.map((el) => el[0]);
 
   return inputData;
