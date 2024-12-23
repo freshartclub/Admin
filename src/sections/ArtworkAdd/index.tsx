@@ -297,7 +297,7 @@ export function ArtworkAdd() {
       artistName: data?.data?.owner?.artistName || '',
       isArtProvider: data?.data?.isArtProvider || 'No',
       provideArtistName: data?.data?.provideArtistName || '',
-      artworkCreationYear: data?.data?.artworkCreationYear || '',
+      artworkCreationYear: data?.data?.artworkCreationYear || '2024',
       artworkSeries: data?.data?.artworkSeries || '',
       productDescription: data?.data?.productDescription || '',
 

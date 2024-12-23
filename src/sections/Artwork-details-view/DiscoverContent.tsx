@@ -195,7 +195,7 @@ const DiscoverContent = ({ data, preview }) => {
               variant={{ size: 'small', weight: 'medium' }}
               className=" text-[#999999] text-[14px]"
             >
-              {data?.inventoryShipping?.pCode}
+              {data?.inventoryShipping?.pCode ? data?.inventoryShipping?.pCode : 'N/A'}
             </P>
           </div>
           <div className="flex gap-1">

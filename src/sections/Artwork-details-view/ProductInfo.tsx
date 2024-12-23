@@ -36,7 +36,7 @@ const ProductInfo = ({ data, preview }) => {
               </Header>
               <P
                 variant={{ size: 'base', theme: 'dark', weight: 'medium' }}
-                className="text-[#999999]"
+                className="text-[#999999] whitespace-pre-line"
               >
                 {data?.productDescription}
               </P>
