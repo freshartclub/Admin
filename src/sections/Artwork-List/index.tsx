@@ -63,6 +63,7 @@ export function ArtworkListView() {
   const weeks = ['All', '1 Day', '1 Week', '1 Month', '1 Quarter', '1 Year'];
   const statusOptions = [
     { value: 'pending', label: 'Pending' },
+    { value: 'draft', label: 'Draft' },
     { value: 'published', label: 'Published' },
     { value: 'rejected', label: 'Rejected' },
   ];

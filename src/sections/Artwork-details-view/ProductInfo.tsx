@@ -28,9 +28,6 @@ const ProductInfo = ({ data, preview }) => {
         <TabPanel>
           <div className="flex gap-8 justify-between my-5">
             <div className={`${!preview ? 'w-[75%]' : 'w-[100%]]'}`}>
-              {/* <P variant={{ size: 'small', weight: 'semiBold' }} className="text-[#999999]">
-                Product information
-              </P> */}
               <Header
                 variant={{ size: 'xl', theme: 'dark', weight: 'medium' }}
                 className="my-5 mt-3"
@@ -216,10 +213,7 @@ const ProductInfo = ({ data, preview }) => {
               />
             )}
             <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
-            <PreviewData
-              head="Vat Amount"
-              val={data?.pricing?.currency + ' ' + data?.pricing?.vatAmount}
-            />
+            <PreviewData head="Vat Amount" val={data?.pricing?.vatAmount + '%'} />
           </div>
         </TabPanel>
         <TabPanel>

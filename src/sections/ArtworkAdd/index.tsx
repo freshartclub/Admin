@@ -285,6 +285,8 @@ export function ArtworkAdd() {
       data?.data?.media?.otherVideo.map((item) => videoArr.push(`${data?.url}/videos/${item}`));
   }
 
+  console.log(availableTo);
+
   const defaultValues = useMemo(
     () => ({
       artworkName: data?.data?.artworkName || '',
@@ -355,11 +357,9 @@ export function ArtworkAdd() {
       artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
       promotion: data?.data?.promotions?.promotion || '',
       promotionScore: Number(data?.data?.promotions?.promotionScore) || slide,
-      availableTo: data?.data?.restriction?.availableTo || availableTo ? availableTo[0]?.value : '',
+      availableTo: data?.data?.restriction?.availableTo || 'Available To Everybody',
       discountAcceptation:
-        data?.data?.restriction?.discountAcceptation || discountAcceptation
-          ? discountAcceptation[0]?.value
-          : '',
+        data?.data?.restriction?.discountAcceptation || 'Accept Discounts And Promotions',
       collectionList: data?.data?.collectionList || '',
     }),
     [data?.data]

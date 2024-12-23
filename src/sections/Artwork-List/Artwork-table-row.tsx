@@ -11,7 +11,13 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { fDate, fTime } from 'src/utils/format-time';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
@@ -157,6 +163,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             variant="soft"
             color={
               (row.status === 'published' && 'success') ||
+              (row.sataus === 'modified' && 'secondary') ||
               (row.status === 'pending' && 'warning') ||
               (row.status === 'rejected' && 'error') ||
               'default'
@@ -195,20 +202,27 @@ export function ArtworkTableRow({ row, url }: Props) {
             View Artwork
           </MenuItem>
           {row?.status === 'published' ? (
-            <MenuItem>
+            <MenuItem
+              onClick={() =>
+                navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}&modify=true`)
+              }
+            >
               <Iconify icon="ic:outline-published-with-changes" />
-              Published
+              Modify Artwork
             </MenuItem>
-          ) : (
+          ) : row?.status === 'draft' ? null : (
             <MenuItem onClick={() => setValidate(true)}>
               <Iconify icon="grommet-icons:validate" />
               Validate
             </MenuItem>
           )}
-          <MenuItem>
-            <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
-            ReValidate
-          </MenuItem>
+
+          {row?.status === 'draft' ? null : (
+            <MenuItem>
+              <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
+              ReValidate
+            </MenuItem>
+          )}
           <MenuItem>
             <Iconify icon="iconoir:info-empty" />
             Not Available
