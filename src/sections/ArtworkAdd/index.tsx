@@ -1652,12 +1652,11 @@ export function ArtworkAdd() {
             >
               Modify Artwork
             </span>
-          ) : null}
-          {data && data?.data?.status === 'draft' ? (
+          ) : (
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
               {isPending ? 'Processing ' + percent + '%' : 'Preview Artwork'}
             </button>
-          ) : null}
+          )}
         </div>
       </Stack>
       {addSeriesDialogBox}
