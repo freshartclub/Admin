@@ -58,6 +58,24 @@ const DiscoverContent = ({ data, preview }) => {
                 {isPending ? 'Sending...' : 'Publish'}
               </span>
             </button>
+          ) : data?.status === 'rejected' ? (
+            <button className="w-full lg:w-fit pointer-events-none">
+              <span className="font-bold block text-center rounded-full bg-red-700 text-white px-5 py-3">
+                Rejected
+              </span>
+            </button>
+          ) : data?.status === 'published' ? (
+            <button className="w-full lg:w-fit pointer-events-none">
+              <span className="font-bold block text-center rounded-full bg-green-700 text-white px-5 py-3">
+                Published
+              </span>
+            </button>
+          ) : data?.status === 'modified' ? (
+            <button className="w-full lg:w-fit pointer-events-none">
+              <span className="font-bold block text-center rounded-full bg-purple-700 text-white px-5 py-3">
+                Modified
+              </span>
+            </button>
           ) : null}
           {preview && data?.status === 'draft' ? (
             <RouterLink

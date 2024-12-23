@@ -31,6 +31,7 @@ export const ARTIST_ENDPOINTS = {
   getUserById: `${ADMIN_BASE_URL}/get-user-by-id`,
   getUserByQueryInput: `${ADMIN_BASE_URL}/get-user-by-query-input`,
   removeArtWorkList: `${ADMIN_BASE_URL}/remove-artwork`,
+  movePending: `${ADMIN_BASE_URL}/move-to-pending`,
   getAllTickets: `${ADMIN_BASE_URL}/get-all-tickets`,
   getTicketDetail: `${ADMIN_BASE_URL}/get-ticket`,
   replyTicket: `${ADMIN_BASE_URL}/reply-ticket`,

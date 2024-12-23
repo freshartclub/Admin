@@ -26,6 +26,7 @@ import { Label } from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRemoveArtWorkList } from './http/useRemoveArtWorkList';
 import { useValidateartWork } from './http/useValidateArtwork';
+import { useMoveToPending } from './http/useMoveToPending';
 
 // ----------------------------------------------------------------------
 
@@ -37,15 +38,24 @@ type Props = {
 export function ArtworkTableRow({ row, url }: Props) {
   const navigate = useNavigate();
   const [showPop, setShowPop] = useState(false);
+  const [movePending, setMovePending] = useState(false);
   const [validate, setValidate] = useState(false);
 
   const popover = usePopover();
   const { mutateAsync, isPending } = useRemoveArtWorkList(row._id);
+  const { mutateAsync: pendingMutate, isPending: pendingPending } = useMoveToPending(row._id);
   const { mutateAsync: validateMuate, isPending: validatePending } = useValidateartWork(row._id);
 
   const removeArtWorkList = () => {
     mutateAsync().then(() => {
       setShowPop(false);
+      popover.onClose();
+    });
+  };
+
+  const movePendingArtwork = () => {
+    pendingMutate().then(() => {
+      setMovePending(false);
       popover.onClose();
     });
   };
@@ -80,9 +90,33 @@ export function ArtworkTableRow({ row, url }: Props) {
       <DialogActions>
         <button
           onClick={removeArtWorkList}
-          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
+          className="text-white bg-red-700 rounded-lg px-5 py-2 hover:bg-red-800 font-medium"
         >
           {isPending ? 'Removing...' : 'Remove'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const moveDialogBox = (
+    <Dialog
+      open={movePending}
+      onClose={() => {
+        setMovePending(false);
+      }}
+    >
+      <DialogTitle>Move Artwork To Pending</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are You Sure you want to move this Art Work to Pending?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={movePendingArtwork}
+          className="text-white bg-orange-700 rounded-lg px-5 py-2 hover:bg-orange-700 font-medium"
+        >
+          {isPending ? 'Move...' : 'Move To Pending'}
         </button>
       </DialogActions>
     </Dialog>
@@ -226,7 +260,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             </MenuItem>
           ) : null}
 
-          {row?.status === 'draft' ? null : (
+          {row?.status === 'draft' || row?.status === 'rejected' ? null : (
             <MenuItem>
               <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
               ReValidate
@@ -236,14 +270,23 @@ export function ArtworkTableRow({ row, url }: Props) {
             <Iconify icon="iconoir:info-empty" />
             Not Available
           </MenuItem>
-          <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          {row?.status === 'rejected' || row?.status === 'draft' ? null : (
+            <MenuItem onClick={() => setShowPop(true)} sx={{ color: 'error.main' }}>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          )}
+          {row?.status === 'rejected' ? (
+            <MenuItem onClick={() => setMovePending(true)} sx={{ color: 'warning.main' }}>
+              <Iconify icon="grommet-icons:revert" />
+              Move to Pending
+            </MenuItem>
+          ) : null}
         </MenuList>
       </CustomPopover>
 
       {dialogBox}
+      {moveDialogBox}
       {validateDialogBox}
     </>
   );
