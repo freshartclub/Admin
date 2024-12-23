@@ -80,7 +80,7 @@ export function ArtworkTableRow({ row, url }: Props) {
       <DialogActions>
         <button
           onClick={removeArtWorkList}
-          className="text-white bg-green-400 rounded-lg px-5 py-2 hover:bg-green-500 font-medium"
+          className="text-white bg-green-600 rounded-lg px-5 py-2 hover:bg-green-700 font-medium"
         >
           {isPending ? 'Removing...' : 'Remove'}
         </button>
@@ -163,7 +163,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             variant="soft"
             color={
               (row.status === 'published' && 'success') ||
-              (row.sataus === 'modified' && 'secondary') ||
+              (row.status === 'modified' && 'secondary') ||
               (row.status === 'pending' && 'warning') ||
               (row.status === 'rejected' && 'error') ||
               'default'
@@ -201,7 +201,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             <Iconify icon="hugeicons:view" />
             View Artwork
           </MenuItem>
-          {row?.status === 'published' ? (
+          {row?.status === 'published' && (
             <MenuItem
               onClick={() =>
                 navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}&modify=true`)
@@ -210,12 +210,21 @@ export function ArtworkTableRow({ row, url }: Props) {
               <Iconify icon="ic:outline-published-with-changes" />
               Modify Artwork
             </MenuItem>
-          ) : row?.status === 'draft' ? null : (
+          )}
+
+          {row?.status === 'pending' ? (
             <MenuItem onClick={() => setValidate(true)}>
               <Iconify icon="grommet-icons:validate" />
               Validate
             </MenuItem>
-          )}
+          ) : null}
+
+          {row?.status === 'modified' ? (
+            <MenuItem>
+              <Iconify icon="grommet-icons:validate" />
+              Approve Changes
+            </MenuItem>
+          ) : null}
 
           {row?.status === 'draft' ? null : (
             <MenuItem>

@@ -72,8 +72,8 @@ import useDeleteSeries from './http/useDeleteSeries';
 export const NewProductSchema = zod.object({
   artworkName: zod.string().min(1, { message: 'Artwork Name is required!' }),
   artistID: zod.string().min(1, { message: 'Artist ID is required!' }),
-  artistName: zod.string().min(1, { message: 'artistName is required!' }),
-  isArtProvider: zod.string().min(1, { message: 'isArtProvider is required!' }),
+  artistName: zod.string().min(1, { message: 'Artist Name is required!' }),
+  isArtProvider: zod.string().min(1, { message: 'Art Provider is required!' }),
   provideArtistName: zod.string().optional(),
   artworkCreationYear: zod.string().optional(),
   artworkSeries: zod.string().optional(),
@@ -87,10 +87,10 @@ export const NewProductSchema = zod.object({
   artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
   artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
   artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
-  material: zod.string().min(1, { message: 'material is required!' }),
-  weight: zod.string().min(1, { message: 'weight required!' }),
-  height: zod.string().min(1, { message: 'height required!' }),
-  lenght: zod.string().min(1, { message: 'lenght required!' }),
+  material: zod.string().min(1, { message: 'Material is required!' }),
+  weight: zod.string().min(1, { message: 'Weight is required!' }),
+  height: zod.string().min(1, { message: 'Height is required!' }),
+  lenght: zod.string().min(1, { message: 'Depth is required!' }),
   width: zod.string().min(1, { message: 'width required!' }),
   hangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
   hangingDescription: zod.string().optional(),
@@ -141,12 +141,15 @@ export const NewProductSchema = zod.object({
 
 export function ArtworkAdd() {
   const [year, setYear] = useState('');
+  const [modified, setModified] = useState(false);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
   const [dSerise, setDSerise] = useState('');
   const [slide, setSlide] = useState(0);
+
+  const modify = useSearchParams().get('modify');
 
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
@@ -284,8 +287,6 @@ export function ArtworkAdd() {
       data?.data?.media?.otherVideo.length > 0 &&
       data?.data?.media?.otherVideo.map((item) => videoArr.push(`${data?.url}/videos/${item}`));
   }
-
-  console.log(availableTo);
 
   const defaultValues = useMemo(
     () => ({
@@ -725,6 +726,28 @@ export function ArtworkAdd() {
           className="text-white bg-red-600 rounded-lg px-5 py-2 hover:bg-red-700 font-medium"
         >
           {deletePending ? 'Deleting...' : 'Delete'}
+        </button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const modifyDialogBox = (
+    <Dialog
+      open={modified}
+      onClose={() => {
+        setModified(false);
+      }}
+    >
+      <DialogTitle>Modify Artwork</DialogTitle>
+      <DialogContent>
+        <DialogContentText>Are You Sure you want to modify artwork details?</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <button
+          onClick={onSubmit}
+          className="text-white bg-black rounded-lg px-5 py-2 cursor-pointer font-medium"
+        >
+          {isPending ? 'Processing ' + percent + '%' : 'Modify Artwork'}
         </button>
       </DialogActions>
     </Dialog>
@@ -1622,13 +1645,24 @@ export function ArtworkAdd() {
           </div>
         </div>
         <div className="flex justify-end mb-6 mr-6">
-          <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
-            {isPending ? 'Processing ' + percent + '%' : 'Preview'}
-          </button>
+          {data && data?.data?.status === 'published' && modify == 'true' ? (
+            <span
+              onClick={() => setModified(true)}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              Modify Artwork
+            </span>
+          ) : null}
+          {data && data?.data?.status === 'draft' ? (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Processing ' + percent + '%' : 'Preview Artwork'}
+            </button>
+          ) : null}
         </div>
       </Stack>
       {addSeriesDialogBox}
       {handleDeleteOption}
+      {modifyDialogBox}
     </Form>
   );
 }
