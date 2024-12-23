@@ -66,6 +66,7 @@ import { useGetArtistById } from './http/useGetArtistById';
 import { useGetSeriesList } from './http/useGetSeriesList';
 import { Chip } from '@mui/material';
 import useDeleteSeries from './http/useDeleteSeries';
+import { useGetMediaListMutation } from '../MediaSupportListCategor/http/useGetMediaListMutation';
 
 // ----------------------------------------------------------------------
 
@@ -155,6 +156,7 @@ export function ArtworkAdd() {
   const { data: technicData } = useGetTechnicMutation();
   const { data: themeData } = useGetThemeListMutation();
   const { data: styleData } = useGetStyleListMutation();
+  const { data: mediaData } = useGetMediaListMutation();
 
   const picklist = RenderAllPicklists([
     'Commercialization Options',
@@ -261,6 +263,31 @@ export function ArtworkAdd() {
             StyleArr.push(localObj);
 
             return StyleArr;
+          })
+      : [];
+
+  let MediaArr: any = [];
+  const MediaOptions =
+    mediaData && mediaData.length > 0
+      ? mediaData
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any) => {
+            let localObj: any = {
+              value: '',
+              label: '',
+              disciplineName: [],
+            };
+
+            localObj.value = item?.mediaName;
+            localObj.label = item?.mediaName;
+            localObj.disciplineName =
+              item?.discipline &&
+              item?.discipline.length > 0 &&
+              item?.discipline.map((item: any) => item?.disciplineName);
+
+            MediaArr.push(localObj);
+
+            return MediaArr;
           })
       : [];
 
@@ -566,6 +593,10 @@ export function ArtworkAdd() {
 
   const filterStyleForDiscipline = (selectedDiscipline) => {
     return StyleArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
+  };
+
+  const filterMediaForDiscipline = (selectedDiscipline) => {
+    return MediaArr.filter((style) => style.disciplineName.includes(selectedDiscipline));
   };
 
   const currentYear = dayjs();
@@ -995,7 +1026,6 @@ export function ArtworkAdd() {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
-          checkbox
           name="artworkDiscipline"
           label="Artwork Discipline"
           options={PRODUCT_CATAGORYONE_OPTIONS}
@@ -1007,7 +1037,6 @@ export function ArtworkAdd() {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
           <Field.SingelSelect
-            checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTechnic"
             label="Artwork Technic"
             options={
@@ -1023,7 +1052,6 @@ export function ArtworkAdd() {
           />
 
           <Field.SingelSelect
-            checkbox={selectedDisciplines && selectedDisciplines.length > 0}
             name="artworkTheme"
             label="Artwork Theme"
             options={
@@ -1039,7 +1067,6 @@ export function ArtworkAdd() {
           />
         </Box>
         <Field.MultiSelect
-          checkbox={selectedDisciplines && selectedDisciplines.length > 0}
           name="artworkStyle"
           label="Artwork Style"
           options={
@@ -1067,7 +1094,6 @@ export function ArtworkAdd() {
           />
           <Field.MultiSelect checkbox name="colors" label="Colors" options={colors ? colors : []} />
           <Field.SingelSelect
-            checkbox
             name="offensive"
             label="Offensive"
             options={ARTWORK_OFFENSIVE_OPTIONS}
@@ -1076,7 +1102,6 @@ export function ArtworkAdd() {
         <Stack spacing={3}>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Autocomplete
-              // disabled={isReadOnly}
               freeSolo
               fullWidth
               options={[]}
@@ -1178,10 +1203,18 @@ export function ArtworkAdd() {
           )}
         </Stack>
         <Field.SingelSelect
-          checkbox
           name="material"
           label="Material"
-          options={ARTWORK_MATERIAL_OPTIONS}
+          options={
+            selectedDisciplines && selectedDisciplines
+              ? filterMediaForDiscipline(selectedDisciplines)
+              : [
+                  {
+                    value: '',
+                    label: 'Please select discipline first',
+                  },
+                ]
+          }
         />
         <Box
           columnGap={2}
@@ -1195,19 +1228,13 @@ export function ArtworkAdd() {
           <Field.Text name="weight" label="Weight (in kg)" />
         </Box>
         <Field.SingelSelect
-          checkbox
           name="hangingAvailable"
           label="Hanging available"
           options={ARTWORK_HANGING_OPTIONS}
         />
         <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
 
-        <Field.SingelSelect
-          checkbox
-          name="framed"
-          label="Framed"
-          options={ARTWORK_FRAMED_OPTIONS}
-        />
+        <Field.SingelSelect name="framed" label="Framed" options={ARTWORK_FRAMED_OPTIONS} />
         <Field.Text name="framedDescription" label="Framed Description" multiline rows={3} />
         <Box
           columnGap={2}
@@ -1220,7 +1247,6 @@ export function ArtworkAdd() {
           <Field.Text name="frameLenght" label="Framed Depth (in cm)" />
         </Box>
         <Field.SingelSelect
-          checkbox
           name="artworkOrientation"
           label="Artwork Orientation"
           options={ARTWORK_ORIENTATION_OPTIONS}
