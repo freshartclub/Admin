@@ -23,6 +23,7 @@ import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
 import { useGetSearchCollection } from './http/useGetSearchCollection';
+import path from 'path';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 export const NewPostSchema = zod.object({
   catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
   catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
-  artworkList: zod.string().array().optional(),
+  artworkList: zod.any(),
   artworkNames: zod.string().array().optional(),
   catalogCollection: zod.string().array().optional(),
   collectionNames: zod.string().array().optional(),
@@ -57,13 +58,9 @@ export function AddCatalogForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
   const { data, isLoading } = useGetCatalogById(id);
-  const [search, setSearch] = useState('');
   const [searchColl, setSearchColl] = useState('');
 
   const picklist = RenderAllPicklist('Catalog Status');
-
-  const searchDebounce = useDebounce(search, 1000);
-  const { data: artworkData } = useGetSearchedArtworks(searchDebounce);
 
   const searchCollDebounce = useDebounce(searchColl, 800);
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
@@ -81,7 +78,15 @@ export function AddCatalogForm() {
     () => ({
       catalogName: data?.data?.catalogName || '',
       catalogDesc: data?.data?.catalogDesc || '',
-      artworkList: data?.data?.artworkList?.map((item) => item?._id) || [],
+      artworkList:
+        data?.data?.artworkList?.map((item) => {
+          return {
+            label: item?._id,
+            value: item?.artworkName,
+            artId: item?.artworkId,
+            img: `${data?.url}/users/${item?.mainImage}`,
+          };
+        }) || [],
       artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
       catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
       collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
@@ -89,6 +94,7 @@ export function AddCatalogForm() {
         data?.data?.artProvider?.map((item) => {
           return {
             label: item?._id,
+            arttistId: item?.artistId,
             value: name(item),
             img: `${data?.url}/users/${item?.mainImage}`,
           };
@@ -120,7 +126,15 @@ export function AddCatalogForm() {
       reset({
         catalogName: data?.data?.catalogName || '',
         catalogDesc: data?.data?.catalogDesc || '',
-        artworkList: data?.data?.artworkList?.map((item) => item?._id) || [],
+        artworkList:
+          data?.data?.artworkList?.map((item) => {
+            return {
+              label: item?._id,
+              value: item?.artworkName,
+              artId: item?.artworkId,
+              img: `${data?.url}/users/${item?.mainImage}`,
+            };
+          }) || [],
         artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
         catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
         collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
@@ -128,6 +142,7 @@ export function AddCatalogForm() {
           data?.data?.artProvider?.map((item) => {
             return {
               label: item?._id,
+              artistId: item?.artistId,
               value: name(item),
               img: `${data?.url}/users/${item?.mainImage}`,
             };
@@ -198,20 +213,6 @@ export function AddCatalogForm() {
 
     setSearchColl('');
   };
-
-  // const handleRemoveArtwokrk = (index) => {
-  //   const currentArtworkList = methods.getValues('artworkList') || [];
-  //   const currentArtworkNames = methods.getValues('artworkNames') || [];
-
-  //   setValue(
-  //     'artworkList',
-  //     currentArtworkList.filter((_, i) => i !== index)
-  //   );
-  //   setValue(
-  //     'artworkNames',
-  //     currentArtworkNames.filter((_, i) => i !== index)
-  //   );
-  // };
 
   const handleRemoveCollection = (index) => {
     const catalogCollection = methods.getValues('catalogCollection') || [];
@@ -321,42 +322,46 @@ export function AddCatalogForm() {
           </div>
         )}
 
-        <Field.Text
+        <Field.Autocomplete
           disabled
-          name="artworkSearch"
+          name="artworkList"
           label="Add Artwork To Catalog"
-          // placeholder="Search by Artwork Id/Name"
-          // value={search}
-          // onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {methods.watch('artworkNames') && methods.getValues('artworkNames').length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-[-1rem] pointer-events-none">
-            {methods.getValues('artworkNames').map((i, index) => (
-              <Stack
-                direction={'row'}
-                alignItems="center"
-                sx={{
-                  display: 'flex',
-                  gap: 0.3,
-                  backgroundColor: 'rgb(214 244 249)',
-                  color: 'rgb(43 135 175)',
-                  fontSize: '14px',
-                  padding: '3px 7px',
-                  borderRadius: '9px',
-                }}
-                key={index}
+          placeholder="+ Artwork"
+          multiple
+          freeSolo
+          disableCloseOnSelect
+          options={methods.getValues('artworkList') ? methods.getValues('artworkList') : []}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option) => (
+            <li {...props} key={option.value}>
+              {option.value}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <div
+                className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
+                key={option.value}
               >
-                <span>{i}</span>
-                <Iconify
-                  icon="material-symbols:close-rounded"
-                  sx={{ cursor: 'pointer', padding: '2px' }}
-                  // onClick={() => handleRemoveArtwokrk(index)}
-                />
-              </Stack>
-            ))}
-          </div>
-        )}
+                <Avatar sx={{ width: 24, height: 24 }} alt={option?.value} src={option?.img} />
+                <Stack sx={{ fontSize: '12px', gap: 2 }}>
+                  <Link
+                    color="inherit"
+                    onClick={() =>
+                      navigate(`${paths.dashboard.artwork.artworkDetail}?id=${option?.label}`)
+                    }
+                    sx={{ cursor: 'pointer', lineHeight: 0 }}
+                  >
+                    {option?.value}
+                  </Link>
+                  <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
+                    {option?.artId}
+                  </Box>
+                </Stack>
+              </div>
+            ))
+          }
+        />
 
         <Field.Autocomplete
           disabled
@@ -380,7 +385,20 @@ export function AddCatalogForm() {
                 key={option.value}
               >
                 <Avatar sx={{ width: 24, height: 24 }} alt={option?.value} src={option?.img} />
-                <span className="text-[13px]">{option.value}</span>
+                <Stack sx={{ fontSize: '12px', gap: 2 }}>
+                  <Link
+                    color="inherit"
+                    onClick={() =>
+                      navigate(`${paths.dashboard.artist.addArtist}?id=${option?.label}`)
+                    }
+                    sx={{ cursor: 'pointer', lineHeight: 0 }}
+                  >
+                    {option?.value}
+                  </Link>
+                  <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
+                    {option?.artistId}
+                  </Box>
+                </Stack>
               </div>
             ))
           }

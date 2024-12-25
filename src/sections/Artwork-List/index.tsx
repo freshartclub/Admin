@@ -66,6 +66,7 @@ export function ArtworkListView() {
     { value: 'draft', label: 'Draft' },
     { value: 'published', label: 'Published' },
     { value: 'rejected', label: 'Rejected' },
+    { value: 'modified', label: 'Modified' },
   ];
 
   useEffect(() => {

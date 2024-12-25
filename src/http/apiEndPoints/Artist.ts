@@ -66,7 +66,9 @@ export const ARTIST_ENDPOINTS = {
   deleteSeries: `${ADMIN_BASE_URL}/delete-series`,
   getSeriesList: `${ADMIN_BASE_URL}/get-series-list`,
   getReviewArtist: `${ADMIN_BASE_URL}/get-review-artist-detail`,
+  getReviewArtwork: `${ADMIN_BASE_URL}/get-review-artwork`,
   approveArtistChanges: `${ADMIN_BASE_URL}/approve-changes`,
+  approveArtworkChanges: `${ADMIN_BASE_URL}/approve-artwork-changes`,
   revalidateArtist: `${ADMIN_BASE_URL}/revalidate-artist`,
   getIncidentById: `${ADMIN_BASE_URL}/get-incident-by-id`,
 };

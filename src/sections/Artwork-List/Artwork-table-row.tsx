@@ -254,7 +254,7 @@ export function ArtworkTableRow({ row, url }: Props) {
           ) : null}
 
           {row?.status === 'modified' ? (
-            <MenuItem>
+            <MenuItem onClick={() => navigate(`${paths.dashboard.artwork.reviewArtwork(row._id)}`)}>
               <Iconify icon="grommet-icons:validate" />
               Approve Changes
             </MenuItem>

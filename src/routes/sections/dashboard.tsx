@@ -86,6 +86,8 @@ const ArtworkDetail = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkDe
 const AddPickList = lazy(() => import('src/pages/dashboard/PickList/AddPicklist'));
 const AllPickList = lazy(() => import('src/pages/dashboard/PickList/ListAllPicklist'));
 const ReviewArtist = lazy(() => import('src/pages/dashboard/Artist/ArtistReview'));
+const ReviewArtwork = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkReview'));
+
 // ----------------------------------------------------------------------
 
 const layoutContent = (
@@ -194,6 +196,7 @@ export const dashboardRoutes = [
           },
           { path: 'addArtwork', element: <AddArtwork /> },
           { path: 'artworkList', element: <ArtworkList /> },
+          { path: 'review/:id', element: <ReviewArtwork /> },
           { path: 'artworkDetail', element: <ArtworkDetail /> },
         ],
         // children: [

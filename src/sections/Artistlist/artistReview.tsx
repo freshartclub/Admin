@@ -212,7 +212,7 @@ export function ArtistReview({}) {
         <DialogActions sx={{ display: 'flex', gap: 2 }}>
           <span
             onClick={() => handleApprove(true)}
-            className={`${isApproveLoading ? 'pointer-events-none' : ''}text-white bg-black rounded-md px-3 py-2 cursor-pointer`}
+            className={`${isApproveLoading ? 'pointer-events-none' : ''} text-white bg-black rounded-md px-3 py-2 cursor-pointer`}
           >
             {isApproveLoading ? 'Approving...' : 'Approve Changes'}
           </span>
@@ -958,6 +958,20 @@ export function ArtistReview({}) {
             <Typography>Inprocess Photo</Typography>
             <Field.Upload disabled={isReadOnly} name="inProcessImage" />
           </div>
+          <div>
+            <Typography>Main Video</Typography>
+            <Field.Upload disabled={isReadOnly} name="mainVideo" />
+          </div>
+          <div>
+            <Typography>Additional Video</Typography>
+            <Field.MultiVideo
+              disabled={isReadOnly}
+              thumbnail
+              accept="video/*"
+              multiple
+              name="additionalVideo"
+            />
+          </div>
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <div>
@@ -971,6 +985,20 @@ export function ArtistReview({}) {
           <div>
             <Typography>Updated Inprocess Photo</Typography>
             <Field.Upload disabled={isReadOnly} name="updatedInProcessImage" />
+          </div>
+          <div>
+            <Typography>Updated Main Video</Typography>
+            <Field.Upload disabled={isReadOnly} name="updatedMainVideo" />
+          </div>
+          <div>
+            <Typography>Updated Additional Video</Typography>
+            <Field.MultiVideo
+              disabled={isReadOnly}
+              thumbnail
+              accept="video/*"
+              multiple
+              name="updatedAdditionalVideo"
+            />
           </div>
         </Box>
       </Stack>

@@ -116,6 +116,7 @@ export const paths = {
         list: `${ROOTS.DASHBOARD}/artwork/collection_management/list`,
       },
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
+      reviewArtwork: (id: string) => `${ROOTS.DASHBOARD}/artwork/review/${id}`,
       artworkList: `${ROOTS.DASHBOARD}/artwork/artworkList`,
       artworkDetail: `${ROOTS.DASHBOARD}/artwork/artworkDetail`,
     },
