@@ -17,7 +17,7 @@ const useCreateArtistMutation = () => {
   async function CreateArtist(newData) {
     const formData = new FormData();
 
-    if (typeof newData?.data.avatar === 'string' && !newData?.data.avatar.includes('https')) {
+    if (typeof newData?.data.avatar === 'string') {
       formData.append('avatar', newData?.data.avatar);
     } else if (newData?.data.avatar instanceof File) {
       formData.append('avatar', newData?.data.avatar);

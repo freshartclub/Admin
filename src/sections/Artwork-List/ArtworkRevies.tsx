@@ -1,11 +1,4 @@
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormLabel,
-  Typography,
-} from '@mui/material';
+import { Chip, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -16,20 +9,11 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Field, Form } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { useParams, useSearchParams } from 'src/routes/hooks';
-import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
-import { useGetReviewArtwork } from './http/useGetReviewArtwork';
-import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
-import { useGetTechnicMutation } from '../TechnicListCategory/http/useGetTechnicMutation';
-import { useGetThemeListMutation } from '../ThemeListCategory/http/useGetThemeListMutation';
-import { useGetMediaListMutation } from '../MediaSupportListCategor/http/useGetMediaListMutation';
+import { useParams } from 'src/routes/hooks';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
-import { Chip } from '@mui/material';
-import { FormControl } from '@mui/material';
-import { RadioGroup } from '@mui/material';
-import { Radio } from '@mui/material';
-import { FormControlLabel } from '@mui/material';
+import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
 import { useApproveArtworkChanges } from './http/useApproveArtworkChanges';
+import { useGetReviewArtwork } from './http/useGetReviewArtwork';
 
 // ----------------------------------------------------------------------
 
@@ -41,94 +25,17 @@ export function ArtworkRevies({}) {
   const id = useParams().id;
   const isReadOnly = true;
 
-  const { data: disciplineData } = useGetDisciplineMutation();
-  const { data: technicData } = useGetTechnicMutation();
-  const { data: themeData } = useGetThemeListMutation();
   const { data: styleData } = useGetStyleListMutation();
-  const { data: mediaData } = useGetMediaListMutation();
 
-  const picklist = RenderAllPicklists([
-    'Commercialization Options',
-    'Currency',
-    'Package Material',
-    'Emotions',
-    'Colors',
-    'Artwork Available To',
-    'Artwork Discount Options',
-  ]);
+  const picklist = RenderAllPicklists(['Emotions', 'Colors']);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
     acc[item?.fieldName] = item?.picklist;
     return acc;
   }, {});
 
-  const purOption = picklistMap['Commercialization Options'];
-  const currency = picklistMap['Currency'];
-  const packMaterial = picklistMap['Package Material'];
   const emotions = picklistMap['Emotions'];
   const colors = picklistMap['Colors'];
-  const availableTo = picklistMap['Artwork Available To'];
-  const discountAcceptation = picklistMap['Artwork Discount Options'];
-
-  const PRODUCT_CATAGORYONE_OPTIONS =
-    disciplineData && disciplineData.length > 0
-      ? disciplineData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => ({
-            value: item?.disciplineName,
-            label: item?.disciplineName,
-          }))
-      : [];
-
-  let TechnicArr: any = [];
-  const TechnicOptions =
-    technicData && technicData.length > 0
-      ? technicData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
-
-            localObj.value = item?.technicName;
-            localObj.label = item?.technicName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
-
-            TechnicArr.push(localObj);
-
-            return TechnicArr;
-          })
-      : [];
-
-  let ThemeArr: any = [];
-  const ThemeOptions =
-    themeData && themeData.length > 0
-      ? themeData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
-
-            localObj.value = item?.themeName;
-            localObj.label = item?.themeName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
-
-            ThemeArr.push(localObj);
-
-            return ThemeArr;
-          })
-      : [];
 
   let StyleArr: any = [];
   const StyleOptions =
@@ -152,31 +59,6 @@ export function ArtworkRevies({}) {
             StyleArr.push(localObj);
 
             return StyleArr;
-          })
-      : [];
-
-  let MediaArr: any = [];
-  const MediaOptions =
-    mediaData && mediaData.length > 0
-      ? mediaData
-          .filter((item: any) => !item.isDeleted)
-          .map((item: any) => {
-            let localObj: any = {
-              value: '',
-              label: '',
-              disciplineName: [],
-            };
-
-            localObj.value = item?.mediaName;
-            localObj.label = item?.mediaName;
-            localObj.disciplineName =
-              item?.discipline &&
-              item?.discipline.length > 0 &&
-              item?.discipline.map((item: any) => item?.disciplineName);
-
-            MediaArr.push(localObj);
-
-            return MediaArr;
           })
       : [];
 
@@ -339,6 +221,7 @@ export function ArtworkRevies({}) {
     }
     return false;
   };
+  console.log(data?.data?.additionalInfo);
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -401,7 +284,6 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={isReadOnly}
             value={data?.data?.artworkName}
-            InputLabelProps={{ shrink: true }}
             required
             name="artworkName"
             label="Artwork Name"
@@ -409,14 +291,12 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={isReadOnly}
             value={name(data?.data?.owner) || 'N/A'}
-            InputLabelProps={{ shrink: true }}
             required
             name="ownerName"
             label="Owner Name"
           />
           <Field.Text
             disabled={isReadOnly}
-            InputLabelProps={{ shrink: true }}
             value={data?.data?.artworkCreationYear}
             required
             name="artworkCreationYear"
@@ -456,7 +336,6 @@ export function ArtworkRevies({}) {
               isReadOnly
             }
             value={data?.data?.reviewDetails?.artworkName}
-            InputLabelProps={{ shrink: true }}
             required
             name="artworkName"
             label="Updated Artwork Name"
@@ -479,7 +358,6 @@ export function ArtworkRevies({}) {
             value={data?.data?.reviewDetails?.artworkCreationYear}
             name="artworkCreationYear"
             label="Updated Artwork Creation Year"
-            InputLabelProps={{ shrink: true }}
           />
           <Field.Text
             disabled={
@@ -489,7 +367,6 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.data?.reviewDetails?.artworkSeries}
-            InputLabelProps={{ shrink: true }}
             name="artworkSeries"
             label="Updated Artwork Series"
           />
@@ -702,9 +579,24 @@ export function ArtworkRevies({}) {
             multiline
             rows={4}
           />
-          <Field.Text disabled={isReadOnly} name="framedHeight" label="Framed Height (in cm)" />
-          <Field.Text disabled={isReadOnly} name="framedWidth" label="Framed Width (in cm)" />
-          <Field.Text disabled={isReadOnly} name="framedLenght" label="Framed Depth (in cm)" />
+          <Field.Text
+            value={data?.data?.additionalInfo?.frameHeight}
+            disabled={isReadOnly}
+            name="framedHeight"
+            label="Framed Height (in cm)"
+          />
+          <Field.Text
+            value={data?.data?.additionalInfo?.frameWidth}
+            disabled={isReadOnly}
+            name="framedWidth"
+            label="Framed Width (in cm)"
+          />
+          <Field.Text
+            value={data?.data?.additionalInfo?.frameLength}
+            disabled={isReadOnly}
+            name="framedLenght"
+            label="Framed Depth (in cm)"
+          />
           <Field.Text
             disabled={isReadOnly}
             value={data?.data?.additionalInfo?.artworkOrientation}
@@ -828,7 +720,13 @@ export function ArtworkRevies({}) {
             }
           />
           <Field.Autocomplete
-            disabled={isReadOnly}
+            disabled={
+              !checkIsArrayChanged(
+                data?.data?.reviewDetails?.additionalInfo?.extTags,
+                data?.data?.additionalInfo?.extTags
+              ) && isReadOnly
+            }
+            className="pointer-events-none"
             required
             name="updatedExtTags"
             label="External Tags"
@@ -969,40 +867,40 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.framedHeight,
-                data?.data?.additionalInfo?.framedHeight
+                data?.data?.reviewDetails?.additionalInfo?.frameHeight,
+                data?.data?.additionalInfo?.frameHeight
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.framedHeight}
+            value={data?.data?.reviewDetails?.additionalInfo?.frameHeight}
             required
             name="updateHeight"
-            label="Updated Height (in cm)"
+            label="Updated Framed Height (in cm)"
           />
 
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.framedWidth,
-                data?.data?.additionalInfo?.framedWidth
+                data?.data?.reviewDetails?.additionalInfo?.frameWidth,
+                data?.data?.additionalInfo?.frameWidth
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.framedWidth}
+            value={data?.data?.reviewDetails?.additionalInfo?.frameWidth}
             required
             name="updateWidth"
-            label="Updated Width (in cm)"
+            label="Updated Framed Width (in cm)"
           />
 
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.framedLength,
-                data?.data?.additionalInfo?.framedLength
+                data?.data?.reviewDetails?.additionalInfo?.frameLength,
+                data?.data?.additionalInfo?.frameLength
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.framedLength}
+            value={data?.data?.reviewDetails?.additionalInfo?.frameLength}
             required
             name="updateLength"
-            label="Updated Length (in cm)"
+            label="Updated Framed Length (in cm)"
           />
           <Field.Text
             disabled={
