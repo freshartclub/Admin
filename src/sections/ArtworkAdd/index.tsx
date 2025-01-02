@@ -22,7 +22,6 @@ import {
   ARTWORK_COLLECTIONLIST_OPTIONS,
   ARTWORK_FRAMED_OPTIONS,
   ARTWORK_HANGING_OPTIONS,
-  ARTWORK_MATERIAL_OPTIONS,
   ARTWORK_OFFENSIVE_OPTIONS,
   ARTWORK_ORIENTATION_OPTIONS,
   ARTWORK_PROMOTIONS_OPTIONS,
@@ -86,13 +85,13 @@ export const NewProductSchema = zod.object({
   mainVideo: schemaHelper.file({ required: false }).optional(),
   otherVideo: zod.any(),
   artworkTechnic: zod.string().min(1, { message: 'Artwork Technic is required!' }),
-  artworkTheme: zod.string().min(1, { message: 'artworkTheme is required!' }),
+  artworkTheme: zod.string().min(1, { message: 'Artwork Theme is required!' }),
   artworkOrientation: zod.string().min(1, { message: 'Artwork Orientation is required!' }),
   material: zod.string().min(1, { message: 'Material is required!' }),
   weight: zod.string().min(1, { message: 'Weight is required!' }),
   height: zod.string().min(1, { message: 'Height is required!' }),
   lenght: zod.string().min(1, { message: 'Depth is required!' }),
-  width: zod.string().min(1, { message: 'width required!' }),
+  width: zod.string().min(1, { message: 'Width is required!' }),
   hangingAvailable: zod.string().min(1, { message: 'Hanging Available required!' }),
   hangingDescription: zod.string().optional(),
   framed: zod.string().min(1, { message: 'Framed is required!' }),
@@ -129,7 +128,7 @@ export const NewProductSchema = zod.object({
   collectionList: zod.string().optional(),
   existingImages: zod.any().array().optional(),
   existingVideos: zod.any().array().optional(),
-  currency: zod.string().min(1, { message: 'currency is required!' }),
+  currency: zod.string().min(1, { message: 'Currency is required!' }),
   comingSoon: zod.boolean().optional(),
   packageHeight: zod.string().min(1, { message: 'Package Height is required!' }),
   packageLength: zod.string().min(1, { message: 'Package Lenght is required!' }),
@@ -373,7 +372,7 @@ export function ArtworkAdd() {
       vatAmount: data?.data?.pricing?.vatAmount || 0,
       acceptOfferPrice: data?.data?.pricing?.acceptOfferPrice || '',
       artistFees: data?.data?.pricing?.artistFees || '',
-      offensive: data?.data?.additionalInfo?.offensive || '',
+      offensive: data?.data?.additionalInfo?.offensive || 'No',
       pCode: data?.data?.inventoryShipping?.pCode || '',
       location: data?.data?.inventoryShipping?.location || '',
       comingSoon: data?.data?.inventoryShipping?.comingSoon || false,
@@ -1394,34 +1393,32 @@ export function ArtworkAdd() {
             label="Currency"
             options={currency ? currency : []}
           />
+          <Field.Text
+            name="basePrice"
+            label="Base Price"
+            placeholder="Base Price"
+            InputLabelProps={{ shrink: true }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
+                    {methods.getValues('currency')}
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
+          />
           {fixPrice === 'Price By Request' ||
           fixPrice === 'Fixed Price' ||
           fixPrice === 'Downward Offer' ? (
-            <>
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-                <Field.Text
-                  name="basePrice"
-                  label="Base Price"
-                  placeholder="Base Price"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                          {methods.getValues('currency')}
-                        </Box>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Field.Text
-                  name="dpersentage"
-                  label="Discount Percentage"
-                  placeholder="0.00%"
-                  type="number"
-                />
-              </Stack>
-            </>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+              <Field.Text
+                name="dpersentage"
+                label="Discount Percentage"
+                placeholder="0.00%"
+                type="number"
+              />
+            </Stack>
           ) : null}
           {fixPrice === 'Downward Offer' || fixPrice === 'Upward Offer' ? (
             <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
@@ -1565,7 +1562,7 @@ export function ArtworkAdd() {
           <Field.Text name="packageLength" label="Package Depth (in cm)" />
         </Box>
         <Field.Text name="packageWeight" label="Package Weight (in Kg)" />
-        <Field.Checkbox name="comingSoon" label="Comming Soon" />
+        <Field.Checkbox name="comingSoon" label="Coming Soon" />
       </Stack>
     </Card>
   );

@@ -134,6 +134,9 @@ export function GeneralInformation({
       getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
         formProps.setValue('city', city || '');
         formProps.setValue('state', state || '');
+        if (!artistFormData?.residentialAddress && city && state) {
+          setSearchResult(zipCode + ' ' + city + ' ' + state + ' ' + country);
+        }
       });
     }
   }, [zipCode, country]);

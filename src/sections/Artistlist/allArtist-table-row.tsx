@@ -63,6 +63,7 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
 
   const handleSuspend = async (id) => {
     mutate(id);
+    setShowPop(false);
   };
 
   const onSubmit = handleSubmit(async (data) => {
