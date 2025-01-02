@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { CollectionListView } from 'src/sections/Collection-Management/Collection-List-view';
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Collection List - ${CONFIG.site.name}` };
 
 export default function  CollectionList() {
   return (

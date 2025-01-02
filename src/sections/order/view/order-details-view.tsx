@@ -18,7 +18,6 @@ import { useGetOrderDetail } from '../http/useGetOrderDetail';
 export function OrderDetailsView() {
   const { data: order, isLoading } = useGetOrderDetail();
   const [status, setStatus] = useState(order?.status);
-  console.log(order);
 
   const handleChangeStatus = (value: string) => {};
   return (

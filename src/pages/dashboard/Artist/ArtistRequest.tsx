@@ -4,8 +4,6 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { paths } from 'src/routes/paths';
-import { Iconify } from 'src/components/iconify';
-import { RouterLink } from 'src/routes/components';
 import { ArtistsRequest } from 'src/sections/Artistlist/view/artistRequest';
 
 // ----------------------------------------------------------------------

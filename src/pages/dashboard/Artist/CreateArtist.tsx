@@ -7,7 +7,7 @@ import { CreateArtistForm } from 'src/sections/Artistlist/createArtitstForm';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create Artist | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Create Artist - ${CONFIG.site.name}` };
 
 export default function artistList() {
   return (

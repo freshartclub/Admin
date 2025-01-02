@@ -8,7 +8,7 @@ import { AddCreadentialForm } from 'src/sections/AddCreadentialForm';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Add Insignia - ${CONFIG.site.name}` };
+const metadata = { title: `Add Credentials and Insignia - ${CONFIG.site.name}` };
 
 export default function AddMediaSupport() {
   return (

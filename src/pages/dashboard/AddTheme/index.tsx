@@ -2,13 +2,10 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
-
-import { BlankView } from 'src/sections/blank/view';
-
 import { AddThemeCategory } from 'src/sections/AddThemeCategory';
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Add Theme - ${CONFIG.site.name}` };
 
 export default function AddTheme() {
   return (

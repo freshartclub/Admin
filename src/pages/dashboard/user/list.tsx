@@ -6,17 +6,15 @@ import { UserList } from 'src/sections/user/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `User list | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `User list - ${CONFIG.site.name}` };
 
 export default function Page() {
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
-        <UserList />
-      </DashboardContent>
-    </>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
+      <UserList />
+    </DashboardContent>
   );
 }

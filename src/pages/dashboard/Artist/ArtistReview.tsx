@@ -7,7 +7,7 @@ import { ArtistReview } from 'src/sections/Artistlist/artistReview';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Review Artist Details - ${CONFIG.site.name}` };
+const metadata = { title: `Review Artist - ${CONFIG.site.name}` };
 
 export default function artistList() {
   return (

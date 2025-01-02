@@ -9,14 +9,12 @@ const metadata = { title: `Add Picklist - ${CONFIG.site.name}` };
 
 export default function AddPicklistt() {
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
 
-        <AddPicklist />
-      </DashboardContent>
-    </>
+      <AddPicklist />
+    </DashboardContent>
   );
 }

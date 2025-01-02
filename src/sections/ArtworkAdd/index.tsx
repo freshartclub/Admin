@@ -130,7 +130,7 @@ export const NewProductSchema = zod.object({
   existingImages: zod.any().array().optional(),
   existingVideos: zod.any().array().optional(),
   currency: zod.string().min(1, { message: 'currency is required!' }),
-  commingSoon: zod.boolean().optional(),
+  comingSoon: zod.boolean().optional(),
   packageHeight: zod.string().min(1, { message: 'Package Height is required!' }),
   packageLength: zod.string().min(1, { message: 'Package Lenght is required!' }),
   packageWidth: zod.string().min(1, { message: 'Package Width is required!' }),
@@ -376,7 +376,7 @@ export function ArtworkAdd() {
       offensive: data?.data?.additionalInfo?.offensive || '',
       pCode: data?.data?.inventoryShipping?.pCode || '',
       location: data?.data?.inventoryShipping?.location || '',
-      commingSoon: data?.data?.inventoryShipping?.commingSoon || false,
+      comingSoon: data?.data?.inventoryShipping?.comingSoon || false,
       packageMaterial: data?.data?.inventoryShipping?.packageMaterial || '',
       packageWeight: data?.data?.inventoryShipping?.packageWeight || '',
       packageLength: data?.data?.inventoryShipping?.packageLength || '',
@@ -1565,7 +1565,7 @@ export function ArtworkAdd() {
           <Field.Text name="packageLength" label="Package Depth (in cm)" />
         </Box>
         <Field.Text name="packageWeight" label="Package Weight (in Kg)" />
-        <Field.Checkbox name="commingSoon" label="Comming Soon" />
+        <Field.Checkbox name="comingSoon" label="Comming Soon" />
       </Stack>
     </Card>
   );

@@ -234,7 +234,7 @@ const ProductInfo = ({ data, preview }) => {
               head="Package Weight"
               val={data?.inventoryShipping?.packageWeight + ' kg'}
             />
-            <PreviewData head="Comming Soon" val={String(data?.inventoryShipping?.commingSoon)} />
+            <PreviewData head="Comming Soon" val={String(data?.inventoryShipping?.comingSoon)} />
           </div>
         </TabPanel>
         <TabPanel>

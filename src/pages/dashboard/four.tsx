@@ -1,12 +1,11 @@
 import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
-
 import { BlankView } from 'src/sections/blank/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page four | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Page four - ${CONFIG.site.name}` };
 
 export default function Page() {
   return (

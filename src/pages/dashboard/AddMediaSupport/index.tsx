@@ -7,7 +7,7 @@ import { AddMediaSupportCategory } from 'src/sections/AddMediaSupportCategory.ts
  
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Add Media Support - ${CONFIG.site.name}` };
 
 export default function AddMediaSupport() {
   return (

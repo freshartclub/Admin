@@ -10,14 +10,12 @@ export default function TicketDescription() {
   const location = useLocation();
   const { data } = location.state;
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
 
-        <TicketDetailView ticket={data} />
-      </DashboardContent>
-    </>
+      <TicketDetailView ticket={data} />
+    </DashboardContent>
   );
 }

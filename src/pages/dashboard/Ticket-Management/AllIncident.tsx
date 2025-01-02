@@ -10,14 +10,12 @@ const metadata = { title: `All Incident - ${CONFIG.site.name}` };
 
 export default function StyleList() {
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
 
-        <AllIncidentView />
-      </DashboardContent>
-    </>
+      <AllIncidentView />
+    </DashboardContent>
   );
 }

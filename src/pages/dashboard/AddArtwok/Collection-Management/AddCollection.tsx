@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { AddCollectionForm } from 'src/sections/Collection-Management/AddCollectinForm';
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Add Collection - ${CONFIG.site.name}` };
 
 export default function  AddCollection() {
   return (

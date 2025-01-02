@@ -1,7 +1,7 @@
 import { paths } from 'src/routes/paths';
 import { useNavigate } from 'react-router';
 import { fDate, fTime } from 'src/utils/format-time';
-import { Avatar } from '@mui/material';
+import { Avatar, Card, Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import { Box } from '@mui/material';
 import { Link } from '@mui/material';
@@ -43,7 +43,35 @@ export function TicketCartd({ url, data }) {
       <p className="text-[#84818A] text-[14px] font-semibold pb-3">
         {(data.message || '').slice(0, 250).concat('...')}
       </p>
-      <hr />
+      {data?.ticketFeedback ? (
+        <Card
+          sx={{
+            p: 1,
+            border: '1px solid #E0E0E0',
+            borderRadius: '4px',
+            backgroundColor: '#F5F5F5',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          <span className="text-[14px] text-[#84818A]">
+            User Feedback -{' '}
+            <span className="font-semibold text-[#000000]">
+              {data?.ticketFeedback?.isLiked ? 'Helpfull' : 'Not Helpfull'}{' '}
+              {data?.ticketFeedback?.isLiked ? '👍' : '👎'}
+            </span>
+          </span>
+          <span className="text-[14px] text-[#84818A]">
+            User Comment -{' '}
+            <span className="font-semibold text-[#000000]">
+              {data?.ticketFeedback?.message ? data?.ticketFeedback?.message : 'N/A'}
+            </span>
+          </span>
+        </Card>
+      ) : (
+        <hr />
+      )}
       <div className="flex gap-4 pt-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <Avatar alt={data?.artistName} src={`${url}/users/${data?.mainImage}`} />

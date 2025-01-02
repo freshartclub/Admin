@@ -1318,8 +1318,8 @@ export function ArtworkRevies({}) {
           />
           <Field.Checkbox
             disabled={isReadOnly}
-            checked={data?.data?.inventoryShipping?.commingSoon}
-            name="commingSoon"
+            checked={data?.data?.inventoryShipping?.comingSoon}
+            name="comingSoon"
             label="Comming Soon"
           />
         </Box>
@@ -1404,12 +1404,12 @@ export function ArtworkRevies({}) {
           <Field.Checkbox
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.commingSoon,
-                data?.data?.inventoryShipping?.commingSoon
+                data?.data?.reviewDetails?.inventoryShipping?.comingSoon,
+                data?.data?.inventoryShipping?.comingSoon
               ) && isReadOnly
             }
-            checked={data?.data?.reviewDetails?.inventoryShipping?.commingSoon}
-            name="commingSoon"
+            checked={data?.data?.reviewDetails?.inventoryShipping?.comingSoon}
+            name="comingSoon"
             label="Comming Soon"
           />
         </Box>

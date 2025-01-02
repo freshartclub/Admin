@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { ArtworkListView } from 'src/sections/Artwork-List';
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Artwork List - ${CONFIG.site.name}` };
 
 export default function  ArtworkList() {
   return (

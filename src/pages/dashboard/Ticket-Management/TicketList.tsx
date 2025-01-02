@@ -10,14 +10,12 @@ const metadata = { title: `Ticket List - ${CONFIG.site.name}` };
 
 export default function StyleList() {
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
 
-        <TicketsListView />
-      </DashboardContent>
-    </>
+      <TicketsListView />
+    </DashboardContent>
   );
 }

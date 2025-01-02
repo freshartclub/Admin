@@ -5,7 +5,7 @@ import { AddStyleCategory } from 'src/sections/AddStylecategory';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Add Style - ${CONFIG.site.name}` };
 
 export default function AddStyle() {
   return (

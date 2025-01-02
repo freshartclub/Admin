@@ -9,14 +9,12 @@ const metadata = { title: `Add Incident - ${CONFIG.site.name}` };
 
 export default function StyleList() {
   return (
-    <>
-      <DashboardContent>
-        <Helmet>
-          <title> {metadata.title}</title>
-        </Helmet>
+    <DashboardContent>
+      <Helmet>
+        <title> {metadata.title}</title>
+      </Helmet>
 
-        <AddIncidentForm />
-      </DashboardContent>
-    </>
+      <AddIncidentForm />
+    </DashboardContent>
   );
 }

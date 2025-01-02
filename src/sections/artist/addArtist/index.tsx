@@ -153,7 +153,7 @@ function AddArtistIndex() {
         if (data.data.pageCount === 7) {
           setTabIndex(0);
         } else {
-          setTabIndex(data.data.pageCount);
+          setTabIndex(data.data.pageCount === 1 ? 0 : data.data.pageCount);
         }
       });
   }, []);
@@ -163,7 +163,7 @@ function AddArtistIndex() {
   return (
     <Box sx={{ p: 1, position: 'relative' }}>
       <span
-        className={`w-fit right-[1rem] z-10 fixed h-fit rounded-2xl text-[12px] px-2 py-1 ${artistFormData?.isActivated === true ? 'bg-[#E7F4EE] text-[#0D894F]' : artistFormData?.profileStatus === 'inactive' ? 'bg-[#FFF2E7] text-[#f07b38]' : 'bg-[#FEEDEC] text-[#F04438]'}`}
+        className={`w-fit right-[1rem] z-10 fixed h-fit rounded-2xl text-[12px] px-2 py-1 ${artistFormData?.isActivated === false ? 'bg-[#FEEDEC] text-[#F04438]' : artistFormData?.profileStatus === 'inactive' || artistFormData?.profileStatus === 'under-review' ? 'bg-[#FFF2E7] text-[#f07b38]' : 'bg-[#E7F4EE] text-[#0D894F]'}`}
       >
         {artistFormData?.isActivated === false
           ? 'Inactive'

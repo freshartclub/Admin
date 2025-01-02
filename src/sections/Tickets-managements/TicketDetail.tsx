@@ -16,6 +16,7 @@ import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddReplyMutation from './http/useAddReplyMutation';
 import { useGetTicketDetailMutation } from './http/useGetTicketDetailMutation';
 import { useGetTicketReply } from './http/useGetTicketReply';
+import { Divider } from '@mui/material';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -325,6 +326,27 @@ export function TicketDetailView() {
           </Form>
         </Box>
       </Card>
+      {data?.data?.ticketFeedback ? (
+        <Card sx={{ border: '1px solid #E0E0E0', mt: 2 }}>
+          <CardHeader title="User Feedback" sx={{ mb: 2 }} />
+          <Divider />
+          <Stack spacing={1} p={2} direction={'column'}>
+            <span className="text-[14px] text-[#84818A]">
+              User Feedback -{' '}
+              <span className="font-semibold text-[#000000]">
+                {data?.data?.ticketFeedback?.isLiked ? 'Helpfull' : 'Not Helpfull'}{' '}
+                {data?.data?.ticketFeedback?.isLiked ? '👍' : '👎'}
+              </span>
+            </span>
+            <span className="text-[14px] text-[#84818A]">
+              User Comment -{' '}
+              <span className="font-semibold text-[#000000]">
+                {data?.data?.ticketFeedback?.message ? data?.data?.ticketFeedback?.message : 'N/A'}
+              </span>
+            </span>
+          </Stack>
+        </Card>
+      ) : null}
     </>
   );
 }

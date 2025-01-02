@@ -8,7 +8,7 @@ import { ArtistsPendingRequest } from 'src/sections/Artistlist/view/artistPendin
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Artist Pending Request - ${CONFIG.site.name}` };
+const metadata = { title: `Artist Pending List - ${CONFIG.site.name}` };
 
 export default function artistPendingList() {
   return (

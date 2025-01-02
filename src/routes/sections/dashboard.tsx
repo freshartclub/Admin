@@ -104,12 +104,9 @@ export const dashboardRoutes = [
     element: <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       { element: <IndexPage />, index: true },
-      // { path: 'two', element: <PageTwo /> },
-      // { path: 'three', element: <PageThree /> },
       {
         path: 'artist',
         children: [
-          // { element: <PageFour />, index: true },
           { path: 'create', element: <CreateArtist /> },
           { path: 'add', element: <AddArtistFormIndex /> },
           { path: 'five', element: <PageFive /> },

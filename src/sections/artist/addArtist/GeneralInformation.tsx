@@ -263,7 +263,6 @@ export function GeneralInformation({
 
           <Field.SingelSelect
             required
-            checkbox
             disabled={isReadOnly}
             name="gender"
             label="Gender"

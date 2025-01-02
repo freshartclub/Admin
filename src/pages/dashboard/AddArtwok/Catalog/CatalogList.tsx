@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { CatalogListView } from 'src/sections/Catalogs/CatalogList';
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page five | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Catalog List - ${CONFIG.site.name}` };
 
 export default function  CatalogList() {
   return (
