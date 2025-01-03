@@ -139,6 +139,10 @@ export const navData = [
             title: 'Picklist',
             path: paths.dashboard.category.picklist.list,
           },
+          {
+            title: 'Email Settings',
+            path: paths.dashboard.category.email.list,
+          },
         ],
       },
 

@@ -85,6 +85,8 @@ const AddPickList = lazy(() => import('src/pages/dashboard/PickList/AddPicklist'
 const AllPickList = lazy(() => import('src/pages/dashboard/PickList/ListAllPicklist'));
 const ReviewArtist = lazy(() => import('src/pages/dashboard/Artist/ArtistReview'));
 const ReviewArtwork = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkReview'));
+const AddEmail = lazy(() => import('src/pages/dashboard/EmailSettings/AddEmailType'));
+const AllEmailType = lazy(() => import('src/pages/dashboard/EmailSettings/EmailList'));
 
 // ----------------------------------------------------------------------
 
@@ -161,6 +163,13 @@ export const dashboardRoutes = [
             children: [
               { path: 'add', element: <AddPickList /> },
               { path: 'list', element: <AllPickList /> },
+            ],
+          },
+          {
+            path: 'email',
+            children: [
+              { path: 'add', element: <AddEmail /> },
+              { path: 'list', element: <AllEmailType /> },
             ],
           },
         ],

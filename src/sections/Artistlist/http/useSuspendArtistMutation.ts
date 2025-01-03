@@ -6,18 +6,16 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 export const useSuspendArtistMutation = () => {
   const queryClient = useQueryClient();
 
-  async function CreateArtist(id) {
+  async function suspendArtist(id) {
     const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
     return response;
   }
 
   return useMutation({
-    mutationFn: CreateArtist,
-    onSuccess: async (res, body) => {
-      queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getAllPendingArtist],
-        refetchType: 'all',
-      });
+    mutationFn: suspendArtist,
+    onSuccess: async (res) => {
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllPendingArtist] });
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllBecomeArtist] });
 
       toast.success(res.data.message);
     },

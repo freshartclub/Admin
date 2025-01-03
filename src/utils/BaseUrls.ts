@@ -6,5 +6,5 @@ export const PAYMENT_BASE_URL = 'api/payment';
 export const COMMENT_BASE_URL = 'api/comment';
 export const CART_BASE_URL = 'api/cart';
 export const ORDER_BASE_URL = 'api/order';
-export const EVENT_BASE_URL = 'api/event';
+export const EMAIL_BASE_URL = 'api/email';
 export const ADMIN_BASE_URL = 'api/admin';

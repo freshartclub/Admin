@@ -97,6 +97,11 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/category/picklist/add`,
         list: `${ROOTS.DASHBOARD}/category/picklist/list`,
       },
+      email: {
+        root: `${ROOTS.DASHBOARD}/email`,
+        add: `${ROOTS.DASHBOARD}/category/email/add`,
+        list: `${ROOTS.DASHBOARD}/category/email/list`,
+      },
     },
     creadentialsAndInsigniasArea: {
       root: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea`,

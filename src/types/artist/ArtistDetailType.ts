@@ -156,6 +156,7 @@ export interface ArtistListType {
 
 export interface ArtistDisciplineType {
   disciplineImage: any;
+  emailType: string;
   _id: string;
   mediaName: string;
   disciplineSpanishName: string;
