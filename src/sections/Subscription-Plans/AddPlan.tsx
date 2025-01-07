@@ -1,151 +1,118 @@
-import type { IPostItem } from 'src/types/blog';
-
-import { z as zod } from 'zod';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
+import { Avatar } from '@mui/material';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _tags } from 'src/_mock';
-
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
- 
-import {
-    PLAN_NUMOFARTWORK_OPTIONS,
-    PLAN_SHIPMENTS_OPTIONS,
-    PLAN_STATUS_OPTIONS,
-
-} from "src/_mock"
+import { useNavigate } from 'react-router';
+import { PLAN_NUMOFARTWORK_OPTIONS, PLAN_SHIPMENTS_OPTIONS, PLAN_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Checkbox } from '@mui/material';
+import { Field, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
+import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import useAddPlan from './http/useAddPlan';
+import { useGetPlanById } from './http/useGetPlanById';
 
-
-const SUBTASKS = [
-    'CAtalog 01',
-    'CAtalog 02',
-    'CAtalog 03',
-    'CAtalog 04',
-    'CAtalog 05',
-    'CAtalog 06',
-  ];
-// ----------------------------------------------------------------------
-
-export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
+type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-    group: zod.string().min(1, { message: 'group is required!' }),
-    name: zod.string().min(1, { message: 'Name is required!' }),
-    CDescription: schemaHelper.editor().min(100, { message: 'Description must be at least 100 characters' }),
-    standardPrice: zod.string().min(1, { message: 'Price is required!' }),
-    yearlyPrice: zod.string().min(1, { message: 'Price is required!' }),
-    currentPrice: zod.string().min(1, { message: 'Price is required!' }),
-    yearlyCurrentPrice: zod.string().min(1, { message: 'Price is required!' }),
-    artistFees: zod.string().min(1, { message: 'Fees is required!' }),
-    numOfArtwork: zod.string().min(1, { message: 'Number of Artwork is required!' }),
-    numOfLargeArtwork: zod.string().min(1, { message: 'Number of Artwork is required!' }),
-    shipments: zod.string().min(1, { message: 'shipments is required!' }),
-    logCarrierSubscription: zod.string().min(1, { message: 'Log Subscription is required!' }),
-    logCarrierPurchase: zod.string().min(1, { message: 'Log Purchase is required!' }),
-    purchaseDiscount: zod.string().min(1, { message: 'Discount is required!' }),
-    limitPurchaseDiscount: zod.string().min(1, { message: 'Discount Limit is required!' }),
-    discountSubscriptin: zod.string().min(1, { message: 'Discount  is required!' }),
-    goupImage: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
-    planStatus: zod.string().min(1, { message: 'status is required!' }),
-    planData: zod.array(
-        zod.object({
-          size: zod.string().min(1, { message: 'size is required!' }),
-          minSubscriptionTime: zod.string().min(1, { message: 'min Subscription time is required!' }),
-          
-        })
-      ),
-
-
-//    images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
-//   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  
+  planGrp: zod.string().min(1, { message: 'Group is required!' }),
+  planName: zod.string().min(1, { message: 'Name is required!' }),
+  planDesc: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
+  standardPrice: zod.number().min(0, { message: 'Standard Price is required!' }),
+  standardYearlyPrice: zod.number().min(0, { message: 'Standard Yearly Price is required!' }),
+  currentPrice: zod.number().min(0, { message: 'Current Price is required!' }),
+  currentYearlyPrice: zod.number().min(0, { message: 'Current Yearly Price is required!' }),
+  defaultArtistFees: zod.number().min(0, { message: 'Default Artist Fees are required!' }),
+  numArtworks: zod.number().min(0, { message: 'Number of Artworks is required!' }),
+  numLargeArtworks: zod.number().min(0, { message: 'Number of Large Artworks is required!' }),
+  individualShipment: zod.boolean({ message: 'Individual Shipment is required!' }),
+  logCarrierSubscription: zod.string().min(1, { message: 'Log Carrier Subscription is required!' }),
+  logCarrierPurchase: zod.string().min(1, { message: 'Log Carrier Purchase is required!' }),
+  purchaseDiscount: zod.string().min(1, { message: 'Purchase Discount is required!' }),
+  limitPurchaseDiscount: zod.string().min(1, { message: 'Limit Purchase Discount is required!' }),
+  // discountSubscription: zod.string().min(1, { message: 'Discount Subscription is required!' }),
+  monthsDiscountSubscription: zod
+    .number()
+    .min(0, { message: 'Months Discount Subscription is required!' }),
+  planImg: schemaHelper.file({ message: { required_error: 'Plan Image is required!' } }),
+  status: zod.string().min(1, { message: 'Status is required!' }),
+  planData: zod.array(
+    zod.object({
+      size: zod.string().min(1, { message: 'Size is required!' }),
+      minSubTime: zod.string().min(1, { message: 'Minimum Subscription Time is required!' }),
+    })
+  ),
 });
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
+export function AddPlanForm() {
+  const navigate = useNavigate();
+  const [catData, setCatData] = useState(null);
+  const id = useSearchParams().get('id');
 
-export function AddPlanForm({ currentPost }: Props) {
-  const router = useRouter();
-
-  const preview = useBoolean();
+  const { data, isLoading } = useGetPlanById(id);
+  const { data: catalogData } = useGetAllCatalog();
 
   const defaultValues = useMemo(
     () => ({
-      group: currentPost?.group || '',
-      name:currentPost?.title || '',
-      CDescription:currentPost?.CDescription || '',
-      standardPrice: currentPost?.standardPrice || '',
-      yearlyPrice: currentPost?.yearlyPrice || '',
-      artistFees: currentPost?.artistFees || '',
-      numOfArtwork: currentPost?.numOfArtwork || '',
-      numOfLargeArtwork: currentPost?.numOfLargeArtwork || '',
-      shipments: currentPost?.shipments || '',
-      logCarrierSubscription: currentPost?.logCarrierSubscription || '',
-      logCarrierPurchase: currentPost?.logCarrierPurchase || '',
-      purchaseDiscount: currentPost?.purchaseDiscount || '',
-      limitPurchaseDiscount: currentPost?.limitPurchaseDiscount || '',
-      discountSubscriptin: currentPost?.discountSubscriptin || '',
-      goupImage:currentPost?.goupImage || null,
-      planStatus: currentPost?.goupImage || '',
-    //   planData: currentPost?.planData || '',
-
-
-      images: currentPost?.images || [],
-    //   tags: currentPost?.tags || [],
-      
+      planGrp: data?.data?.planGrp || '',
+      planName: data?.data?.planName || '',
+      planDesc: data?.data?.planDesc || '',
+      standardPrice: data?.data?.standardPrice || 0,
+      standardYearlyPrice: data?.data?.standardYearlyPrice || 0,
+      currentPrice: data?.data?.currentPrice || 0,
+      currentYearlyPrice: data?.data?.currentYearlyPrice || 0,
+      defaultArtistFees: data?.data?.defaultArtistFees || 0,
+      numArtworks: data?.data?.numArtworks || 5,
+      numLargeArtworks: data?.data?.numLargeArtworks || 5,
+      individualShipment: data?.data?.individualShipment || false,
+      logCarrierSubscription: data?.data?.logCarrierSubscription || '',
+      logCarrierPurchase: data?.data?.logCarrierPurchase || '',
+      purchaseDiscount: data?.data?.purchaseDiscount || '',
+      limitPurchaseDiscount: data?.data?.limitPurchaseDiscount || '',
+      // discountSubscription: data?.data?.discountSubscription || '',
+      monthsDiscountSubscription: data?.data?.monthsDiscountSubscription || 0,
+      planImg: data?.data?.planImg || null,
+      status: data?.data?.status || '',
+      planData: data?.data?.planData || [],
     }),
-    [currentPost]
+    [data?.data]
   );
 
   const formProps = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = formProps;
-  
+  const { reset, watch, setValue, handleSubmit } = formProps;
   const values = watch();
 
   useEffect(() => {
-    if (currentPost) {
-      reset(defaultValues);
+    if (data?.data) {
+      const updatedData = {
+        ...data?.data,
+        planImg: `${data?.url}/users/${data.data.planImg || ''}`,
+      };
+      reset(updatedData);
     }
-  }, [currentPost, defaultValues, reset]);
+  }, [data?.data]);
 
-  const { fields, append, remove } = useFieldArray({ control: formProps.control, name: 'planData' });
+  const { fields, append, remove } = useFieldArray({
+    control: formProps.control,
+    name: 'planData',
+  });
 
   const handleRemove = (index) => {
     remove(index);
@@ -154,58 +121,54 @@ export function AddPlanForm({ currentPost }: Props) {
   const haddCv = () => {
     append({
       size: '',
-      minSubscriptionTime: '',
-     
+      minSubTime: '',
     });
   };
+
+  const { mutate, isPending } = useAddPlan(id);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      preview.onFalse();
-      toast.success(currentPost ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
+      await mutate(data);
     } catch (error) {
       console.error(error);
     }
   });
-  
-  const handleRemoveFileDetails = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
 
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
-  }, [setValue]);
- 
   const handleRemoveFile = useCallback(() => {
-    setValue('goupImage', null);
+    setValue('planImg', null);
   }, [setValue]);
-  
+
+  if (isLoading) return <LoadingScreen />;
+
   const renderDetails = (
     <Card>
-
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.SingelSelect
+          name="planGrp"
+          options={
+            catalogData
+              ? catalogData?.map((item) => ({ value: item._id, label: item.catalogName }))
+              : []
+          }
+          onClick={(val) => {
+            const defaulVal = val.target.textContent;
+            if (defaulVal) {
+              const selectedOption = catalogData.find((item) => item.catalogName === defaulVal);
+              const catalogImg = `https://dev.freshartclub.com/images/users/${selectedOption.catalogImg}`;
+              setCatData({ ...selectedOption, catalogImg });
+            }
+          }}
+          label="Plan Group"
+        />
 
-        {/* <Field.SingelSelect 
-         checkbox
-         name="group"
-         label="select Group"
-         options={FAQ_GROUP_OPTIONS}
-        /> */}
-        <Field.Text name="group" label="Plan Group" />
-        
-        <Field.Text name="name" label="Plan Name" />
+        <Field.Text name="planName" label="Plan Name" />
 
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Commercial Description</Typography>
-          <Field.Editor name="CDescription" sx={{ maxHeight: 480 }} />
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Description</Typography>
+          <Field.Editor name="planDesc" sx={{ maxHeight: 480 }} />
         </Stack>
 
         <Box
@@ -214,34 +177,30 @@ export function AddPlanForm({ currentPost }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-            <Field.Text name="standardPrice" label="Standard Price" />
-
-            <Field.Text name="yearlyPrice" label="Yearly Standard Price" />
-
-            <Field.Text name="currentPrice" label="Current Price" />
-
-            <Field.Text name="yearlyCurrentPrice" label="Yearly Current Price" />
+          <Field.Text type="number" name="standardPrice" label="Standard Price" />
+          <Field.Text type="number" name="standardYearlyPrice" label="Yearly Standard Price" />
+          <Field.Text type="number" name="currentPrice" label="Current Price" />
+          <Field.Text type="number" name="currentYearlyPrice" label="Yearly Current Price" />
         </Box>
 
-        <Field.Text name="artistFees" label="Default Artist Fees" />
-  
-        <Field.SingelSelect 
-         checkbox
-         name="numOfArtwork"
-         label="Number of Artworks included in subscription"
-         options={PLAN_NUMOFARTWORK_OPTIONS}
+        <Field.Text type="number" name="defaultArtistFees" label="Default Artist Fees" />
+
+        <Field.SingelSelect
+          type="number"
+          name="numArtworks"
+          label="Number of Artworks Included in Subscription"
+          options={PLAN_NUMOFARTWORK_OPTIONS}
         />
-        <Field.SingelSelect 
-         checkbox
-         name="numOfLargeArtwork"
-         label="Number of large format artworks allowed"
-         options={PLAN_NUMOFARTWORK_OPTIONS}
+        <Field.SingelSelect
+          type="number"
+          name="numLargeArtworks"
+          label="Number of Large Format Artworks Allowed"
+          options={PLAN_NUMOFARTWORK_OPTIONS}
         />
-        <Field.SingelSelect 
-         checkbox
-         name="shipments"
-         label="Individual Shipments"
-         options={PLAN_SHIPMENTS_OPTIONS}
+        <Field.SingelSelect
+          name="individualShipment"
+          label="Individual Shipments"
+          options={PLAN_SHIPMENTS_OPTIONS}
         />
         <Box
           columnGap={2}
@@ -249,193 +208,139 @@ export function AddPlanForm({ currentPost }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-             <Field.Text name="logCarrierSubscription" label="Default log carrier in subscriptions" />
-
-             <Field.Text name="logCarrierPurchase" label="Default log carrier in Purchase" />
-
+          <Field.Text name="logCarrierSubscription" label="Default Log Carrier in Subscriptions" />
+          <Field.Text name="logCarrierPurchase" label="Default Log Carrier in Purchase" />
         </Box>
-        <Field.Text name="purchaseDiscount" label="Purchase discount in included catalogs" />
+        <Field.Text name="purchaseDiscount" label="Purchase Discount in Included Catalogs" />
 
-        <Field.Text name="limitPurchaseDiscount" label="Monthly limit for Purchase Discount (Artworks)" />
-   
-        <Field.SingelSelect 
-         checkbox
-         name="discountSubscriptin"
-         label="#Months to be discounted on Subscription Purchase Option"
-         options={PLAN_NUMOFARTWORK_OPTIONS}
+        <Field.Text
+          name="limitPurchaseDiscount"
+          label="Monthly Limit for Purchase Discount (Artworks)"
         />
 
+        <Field.SingelSelect
+          type="number"
+          name="monthsDiscountSubscription"
+          label="Months to Be Discounted on Subscription Purchase Option"
+          options={PLAN_NUMOFARTWORK_OPTIONS}
+        />
 
-       {/* try start */}
-       {fields.map((item, index) => (
-            <Stack
-              key={item.id}
-              aligncvs={{ xs: 'flex-center', md: 'flex-end' }}
-              spacing={1.5}
-              className=""
+        {fields.map((item, index) => (
+          <Stack key={item.id} alignItems={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
             >
-              <Box
-                columnGap={2}
-                rowGap={3}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-              >
-              
               <Field.Text name={`planData[${index}].size`} label="Size (WxHxD)" />
-                <Field.Text name={`planData[${index}].minSubscriptionTime`} label="Min. Subscription Times (months)​" />
-              </Box>
-
-              <Button
-                size="small"
-                color="error"
-                className="flex justify-end"
-                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button>
-            </Stack>
-          ))}
-          <Button
-            size="small"
-            color="primary"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={haddCv}
-          >
-            Add row
-          </Button>
-          
-               
-        {/* try end */}
-
-        {/* <Field.Autocomplete
-          name="tags"
-          label="Tags"
-          placeholder="+ Tags"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={_tags.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
+              <Field.Text
+                name={`planData[${index}].minSubscriptionTime`}
+                label="Min. Subscription Times (Months)"
               />
-            ))
-          }
-        /> */}
-        
+            </Box>
+
+            <Button
+              size="small"
+              color="error"
+              className="flex justify-end"
+              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+              onClick={() => handleRemove(index)}
+            >
+              Remove
+            </Button>
+          </Stack>
+        ))}
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={haddCv}
+        >
+          Add Row
+        </Button>
       </Stack>
     </Card>
   );
 
   const renderProperties = (
-    <Card sx={{mb: 3}}>
+    <Card sx={{ mb: 3 }}>
       <Divider />
-      <CardHeader title='Catalog'/>
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-          <Typography variant="subtitle2">choose catalogs</Typography>
-          {SUBTASKS.map((taskItem) => (
-          <FormControlLabel
-            key={taskItem}
-            control={
-              <Checkbox
-                disableRipple
-                name={taskItem}
-                // checked={subtaskCompleted.includes(taskItem)}
-              />
-            }
-            label={taskItem}
-            // onChange={() => handleClickSubtaskComplete(taskItem)}
-          />
-        ))}
-        </Stack>
-       </Stack>
+      <CardHeader title="Select Catalogs" />
+      <Stack spacing={2} alignItems="center" direction="row" sx={{ p: 2 }}>
+        {catData ? (
+          <>
+            <Avatar alt={catData.catalogName} src={catData.catalogImg} />
+            <Typography variant="subtitle2">{catData.catalogName}</Typography>
+          </>
+        ) : (
+          'No Catalog Seleted'
+        )}
+      </Stack>
     </Card>
   );
- 
+
   const media = (
-    <Card sx={{mb: 3}}>
+    <Card sx={{ mb: 3 }}>
       <Divider />
-      <CardHeader title='Icon'/>
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Image</Typography>
-           <Field.Upload name="goupImage" maxSize={3145728} onDelete={handleRemoveFile} />
-        </Stack>
-       </Stack>
+      <CardHeader title="Image" />
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Upload name="planImg" maxSize={3145728} onDelete={handleRemoveFile} />
+      </Stack>
     </Card>
   );
-  
+
   const status = (
-    <Card sx={{mb: 3}}>
+    <Card sx={{ mb: 3 }}>
       <Divider />
-      <CardHeader title='Status of Plan'/>
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-       <Field.SingelSelect 
-         checkbox
-         name="planStatus"
-         label="Status"
-         options={PLAN_STATUS_OPTIONS}
-        />
+      <CardHeader title="Status" />
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Stack spacing={1.5}>
+          <Field.SingelSelect name="status" label="Status" options={PLAN_STATUS_OPTIONS} />
         </Stack>
-       </Stack>
+      </Stack>
     </Card>
   );
 
   return (
     <div>
-        <CustomBreadcrumbs
+      <CustomBreadcrumbs
         heading="Subscription Plan"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Add Subscription', href: paths.dashboard.subscriptionplan.add},
-        //   { name: 'Add KB' },
+          { name: 'Add Subscription', href: paths.dashboard.subscriptionplan.add },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: 3 }}
       />
 
-
       <FormProvider {...formProps}>
-    <form onSubmit={onSubmit}>
-      <Stack spacing={5}> 
-       <div className='grid grid-cols-3 gap-3'>
+        <form onSubmit={onSubmit}>
+          <Stack spacing={5}>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                {renderDetails}
+                <div className="flex flex-row justify-end gap-3 mt-8">
+                  <span
+                    onClick={() => navigate(paths.dashboard.subscriptionplan.list)}
+                    className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                  >
+                    Cancel
+                  </span>
+                  <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                    {isPending ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
 
-        <div className='col-span-2'>
-        {renderDetails}
-        <div className='flex flex-row justify-end gap-3 mt-8'>
-        <button type='button' className='bg-white text-black border py-2 px-3 rounded-md'>Cencel</button>
-        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save</button>
-      </div>
-        </div>
-
-        <div className='col-span-1'>
-        {renderProperties}
-
-        {media}
-
-        {status}
-        </div>
-        </div>
-       
-      </Stack>
-
-      
-    </form>
-    </FormProvider>
+              <div className="col-span-1">
+                {renderProperties}
+                {media}
+                {status}
+              </div>
+            </div>
+          </Stack>
+        </form>
+      </FormProvider>
     </div>
   );
 }

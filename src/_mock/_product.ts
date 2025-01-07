@@ -552,15 +552,15 @@ export const COUPON_DISCOUNT_OPTIONS = [
   { value: '25 %', label: '25 %' },
 ];
 export const PLAN_NUMOFARTWORK_OPTIONS = [
-  { value: '5 ', label: '5 ' },
-  { value: '10 ', label: '10 ' },
-  { value: '15 ', label: '15 ' },
-  { value: '20 ', label: '20 ' },
-  { value: '25 ', label: '25 ' },
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 15, label: '15' },
+  { value: 20, label: '20' },
+  { value: 25, label: '25' },
 ];
 export const PLAN_SHIPMENTS_OPTIONS = [
-  { value: 'yes', label: 'yes' },
-  { value: 'No', label: 'No' },
+  { value: true, label: 'Yes' },
+  { value: false, label: 'No' },
 ];
 export const PLAN_STATUS_OPTIONS = [
   { value: 'published', label: 'Published' },

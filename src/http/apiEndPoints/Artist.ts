@@ -73,6 +73,9 @@ export const ARTIST_ENDPOINTS = {
   approveArtworkChanges: `${ADMIN_BASE_URL}/approve-artwork-changes`,
   revalidateArtist: `${ADMIN_BASE_URL}/revalidate-artist`,
   getIncidentById: `${ADMIN_BASE_URL}/get-incident-by-id`,
+  addPlan: `${ADMIN_BASE_URL}/add-plan`,
+  getAllPlan: `${ADMIN_BASE_URL}/get-all-plans`,
+  getPlanById: `${ADMIN_BASE_URL}/get-plan-by-id`,
 };
 
 export const USER_ENDPOINTS = {
