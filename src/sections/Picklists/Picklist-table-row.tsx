@@ -18,20 +18,9 @@ import useDeletePicklist from './http/useDeletePicklist';
 type Props = {
   row: ArtistDisciplineType;
   _id: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function PicklistTableRow({
-  row,
-  _id,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export function PicklistTableRow({ row, _id }: Props) {
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useDeletePicklist(_id, row?.name);

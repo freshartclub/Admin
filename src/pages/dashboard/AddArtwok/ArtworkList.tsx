@@ -8,17 +8,14 @@ import { ArtworkListView } from 'src/sections/Artwork-List';
 
 const metadata = { title: `Artwork List - ${CONFIG.site.name}` };
 
-export default function  ArtworkList() {
+export default function ArtworkList() {
   return (
-    <>
     <DashboardContent>
       <Helmet>
         <title> {metadata.title}</title>
       </Helmet>
 
-      <ArtworkListView/>
-      
-      </DashboardContent>
-    </>
-  );    
+      <ArtworkListView />
+    </DashboardContent>
+  );
 }

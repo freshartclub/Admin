@@ -21,6 +21,9 @@ import { paths } from 'src/routes/paths';
 import { CredentialTable } from './credential-table-row';
 import { useGetInsigniaList } from './http/useGetInsigniaList';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
+import { saveAs } from 'file-saver';
 
 const TABLE_HEAD = [
   { id: 'credentialName', label: 'Insignias Name', width: 200 },
@@ -34,8 +37,9 @@ export function CredentialAreaList() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 1000);
+  const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { data, isLoading } = useGetInsigniaList(debounceSearch);
 
@@ -50,6 +54,25 @@ export function CredentialAreaList() {
     inputData: _list,
     comparator: getComparator(table.order, table.orderBy),
   });
+
+  const downloadInsigniaExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(`${ARTIST_ENDPOINTS.downloadInsignia}?s=${search}`, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Insignia_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -66,11 +89,18 @@ export function CredentialAreaList() {
                 <Iconify icon="mingcute:add-line" /> Add Insignias
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+            <span
+              onClick={() => downloadInsigniaExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
         sx={{ mb: { xs: 3, md: 3 } }}

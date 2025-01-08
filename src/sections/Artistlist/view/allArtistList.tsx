@@ -32,6 +32,11 @@ import { paths } from 'src/routes/paths';
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
 import { imgUrl } from 'src/utils/BaseUrls';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { saveAs } from 'file-saver';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { RouterLink } from 'src/routes/components';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 200 },
@@ -50,6 +55,7 @@ export function AllArtist() {
   const [date, setDate] = useState('All');
   const [profile, setProfile] = useState('All');
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
@@ -72,6 +78,28 @@ export function AllArtist() {
   const handleDeleteRow = (id: string) => {};
   const handleEditRow = (id: string) => {
     navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
+  };
+
+  const downloadArtistExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        `${ARTIST_ENDPOINTS.downloadAllArtist}?s=${search}&date=${date}&status=${profile}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'All_Artist_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const profileStatus = [
@@ -110,6 +138,35 @@ export function AllArtist() {
 
   return (
     <>
+      <CustomBreadcrumbs
+        heading="All Artist List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'All Artist List​', href: paths.dashboard.artist.allArtist },
+        ]}
+        sx={{ mb: { xs: 3, md: 3 } }}
+        action={
+          <div className="flex gap-2 items-center">
+            <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
+              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+                <Iconify icon="mingcute:add-line" /> Create Artist
+              </span>
+            </RouterLink>
+            <span
+              onClick={() => downloadArtistExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
+          </div>
+        }
+      />
       <Stack sx={{ mb: 2 }} direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth

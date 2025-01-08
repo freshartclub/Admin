@@ -77,6 +77,11 @@ export const ARTIST_ENDPOINTS = {
   getAllPlan: `${ADMIN_BASE_URL}/get-all-plans`,
   getPlanById: `${ADMIN_BASE_URL}/get-plan-by-id`,
   downloadArtwork: `${ADMIN_BASE_URL}/download-artwork-list`,
+  downloadAllArtist: `${ADMIN_BASE_URL}/download-all-artist-list`,
+  downloadDiscipline: `${ADMIN_BASE_URL}/download-discipline-list`,
+  downloadCategory: `${ADMIN_BASE_URL}/download-category-list`,
+  downloadPicklist: `${ADMIN_BASE_URL}/download-picklist`,
+  downloadInsignia: `${ADMIN_BASE_URL}/download-insignia-list`,
 };
 
 export const USER_ENDPOINTS = {

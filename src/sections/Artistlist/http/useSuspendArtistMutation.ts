@@ -14,8 +14,8 @@ export const useSuspendArtistMutation = () => {
   return useMutation({
     mutationFn: suspendArtist,
     onSuccess: async (res) => {
-      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllPendingArtist] });
-      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllBecomeArtist] });
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllArtist] });
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getAllArtistInDatabase] });
 
       toast.success(res.data.message);
     },

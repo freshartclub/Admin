@@ -104,7 +104,7 @@ export function AddPlanForm() {
     if (data) {
       const updatedData = {
         ...data,
-        planImg: `${imgUrl}/users/${data.data.planImg || ''}`,
+        planImg: `${imgUrl}/users/${data.planImg || ''}`,
       };
       reset(updatedData);
     }
@@ -158,7 +158,7 @@ export function AddPlanForm() {
             const defaulVal = val.target.textContent;
             if (defaulVal) {
               const selectedOption = catalogData.find((item) => item.catalogName === defaulVal);
-              const catalogImg = `https://dev.freshartclub.com/images/users/${selectedOption.catalogImg}`;
+              const catalogImg = `${imgUrl}/users/${selectedOption.catalogImg}`;
               setCatData({ ...selectedOption, catalogImg });
             }
           }}

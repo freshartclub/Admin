@@ -22,6 +22,9 @@ import { paths } from 'src/routes/paths';
 import { DisciplineTableRow } from './Discipline-table-row';
 import { useGetDisciplineSearchData } from './http/useGetDisciplineSearchData';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
+import { saveAs } from 'file-saver';
 
 const TABLE_HEAD = [
   { id: 'disciplineName', label: 'Discipline Name', width: 150 },
@@ -37,6 +40,7 @@ export function DiscipleListCategory() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { data, isLoading } = useGetDisciplineSearchData(debounceSearch);
 
@@ -52,6 +56,28 @@ export function DiscipleListCategory() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
+  const downloadDisciplineExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        `${ARTIST_ENDPOINTS.downloadDiscipline}?s=${search}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Discipline_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <CustomBreadcrumbs
@@ -65,11 +91,19 @@ export function DiscipleListCategory() {
                 <Iconify icon="mingcute:add-line" /> Add Discipline
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+
+            <span
+              onClick={() => downloadDisciplineExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
       />

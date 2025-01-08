@@ -20,6 +20,9 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { RouterLink } from 'src/routes/components';
 import { Iconify } from 'src/components/iconify';
 import { TextField } from '@mui/material';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
+import { saveAs } from 'file-saver';
 
 const TABLE_HEAD = [
   { id: 'mediaName', label: 'Media Name', width: 150 },
@@ -35,6 +38,7 @@ export function MediaSupportListCategory() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { data, isLoading } = useGetMediaListMutation(debounceSearch);
 
@@ -49,6 +53,28 @@ export function MediaSupportListCategory() {
     inputData: _list,
     comparator: getComparator(table.order, table.orderBy),
   });
+
+  const downloadCategoryExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        `${ARTIST_ENDPOINTS.downloadCategory}?s=${search}&fieldName=mediaName&type=MediaSupport`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Media_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -66,11 +92,18 @@ export function MediaSupportListCategory() {
                 <Iconify icon="mingcute:add-line" /> Add Media
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+            <span
+              onClick={() => downloadCategoryExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
       />

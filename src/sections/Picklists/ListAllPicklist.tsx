@@ -36,6 +36,12 @@ import useUpdatePicklistName from './http/useUpdateName';
 import { useSearchParams } from 'src/routes/hooks';
 import { TextField } from '@mui/material';
 import { InputAdornment } from '@mui/material';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import axiosInstance from 'src/utils/axios';
+import { saveAs } from 'file-saver';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { MenuList } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Field Name', width: 150 },
@@ -52,6 +58,10 @@ export function ListAllPicklist() {
   const [name, setName] = useState('');
   const [open, setOpen] = useState(false);
   const [id, setId] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const confirm = useBoolean();
+  const popover = usePopover();
 
   const selectedType = useSearchParams().get('selectedType');
   const [picklist, setPicklist] = useState<string>(selectedType ? selectedType : '');
@@ -83,13 +93,29 @@ export function ListAllPicklist() {
     setNotFound(dataFiltered.length === 0);
   }, [dataFiltered]);
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-
   const handleChange = (id: string) => {
     if (!name) return toast.error('Picklist Name is required!');
     const data = { picklistName: name };
     mutateAsync(data).then(() => setOpen(false));
+  };
+
+  const downloadPicklistExcel = async (term) => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(`${ARTIST_ENDPOINTS.downloadPicklist}?s=${term}`, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Pick_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const changeDialogBox = (
@@ -153,11 +179,18 @@ export function ListAllPicklist() {
                 <Iconify icon="mingcute:add-line" /> Add Picklist Item
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+            <span
+              onClick={popover.onOpen}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
       />
@@ -224,15 +257,7 @@ export function ListAllPicklist() {
               />
               <TableBody>
                 {dataFiltered.map((row) => (
-                  <PicklistTableRow
-                    key={row._id}
-                    row={row}
-                    _id={id}
-                    selected={table.selected.includes(row._id)}
-                    onSelectRow={() => table.onSelectRow(row._id)}
-                    onDeleteRow={() => handleDeleteRow(row._id)}
-                    onEditRow={() => handleEditRow(row._id)}
-                  />
+                  <PicklistTableRow key={row._id} row={row} _id={id} />
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}
@@ -244,6 +269,34 @@ export function ListAllPicklist() {
           </Scrollbar>
         </Card>
       )}
+      <CustomPopover
+        open={popover.open}
+        anchorEl={popover.anchorEl}
+        onClose={popover.onClose}
+        slotProps={{ arrow: { placement: 'right-top' } }}
+      >
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+              downloadPicklistExcel('All');
+            }}
+          >
+            Export All Data
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+              downloadPicklistExcel(picklist);
+            }}
+          >
+            Export Selected Data
+          </MenuItem>
+        </MenuList>
+      </CustomPopover>
       {changeDialogBox}
     </>
   );
