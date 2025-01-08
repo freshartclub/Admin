@@ -16,6 +16,7 @@ import { z as zod } from 'zod';
 import useAddInsigniaMutation from './http/useAddInsigniaMutation';
 import { useGetInsigniaById } from './http/useGetInsigniaById';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -41,11 +42,11 @@ export function AddCreadentialForm() {
 
   const defaultValues = useMemo(
     () => ({
-      insigniaImage: data?.data?.insigniaImage || null,
-      isActive: data?.data?.isActive || true,
-      credentialName: data?.data?.credentialName || '',
-      credentialGroup: data?.data?.credentialGroup || '',
-      credentialPriority: data?.data?.credentialPriority || '',
+      insigniaImage: data?.insigniaImage || null,
+      isActive: data?.isActive || true,
+      credentialName: data?.credentialName || '',
+      credentialGroup: data?.credentialGroup || '',
+      credentialPriority: data?.credentialPriority || '',
     }),
     [data]
   );
@@ -58,16 +59,16 @@ export function AddCreadentialForm() {
   const { reset, handleSubmit } = methods;
 
   useEffect(() => {
-    if (id && data?.data) {
+    if (id && data) {
       reset({
-        insigniaImage: `${data?.url}/users/${data?.data?.insigniaImage}` || null,
-        isActive: data?.data?.isActive,
-        credentialName: data?.data?.credentialName || '',
-        credentialGroup: data?.data?.credentialGroup || '',
-        credentialPriority: data?.data?.credentialPriority || '',
+        insigniaImage: `${imgUrl}/users/${data?.insigniaImage}` || null,
+        isActive: data?.isActive,
+        credentialName: data?.credentialName || '',
+        credentialGroup: data?.credentialGroup || '',
+        credentialPriority: data?.credentialPriority || '',
       });
     }
-  }, [data?.data]);
+  }, [data]);
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {

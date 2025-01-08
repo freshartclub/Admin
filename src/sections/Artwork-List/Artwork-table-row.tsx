@@ -159,7 +159,14 @@ export function ArtworkTableRow({ row, url }: Props) {
                 </Typography>
               }
               secondary={
-                <Link noWrap variant="body2" sx={{ color: 'text.disabled', cursor: 'pointer' }}>
+                <Link
+                  onClick={() =>
+                    navigate(`${paths.dashboard.artwork.artworkDetail}?id=${row?._id}&preview=true`)
+                  }
+                  noWrap
+                  variant="body2"
+                  sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                >
                   {row?.artworkId ? row?.artworkId : 'N/A'}
                 </Link>
               }

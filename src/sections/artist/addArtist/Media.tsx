@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import useAddArtistMutation from 'src/http/createArtist/useAddArtistMutation';
 import { useSearchParams } from 'src/routes/hooks';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -41,9 +42,7 @@ export function Media({
 }: AddArtistComponentProps) {
   const view = useSearchParams().get('view');
   const id = useSearchParams().get('id');
-
   const isReadOnly = view !== null;
-  const url = 'https://dev.freshartclub.com/images';
 
   const [percent, setPercent] = useState(0);
 
@@ -64,24 +63,26 @@ export function Media({
   if (id && artistFormData) {
     artistFormData.additionalImage &&
       artistFormData.additionalImage.length > 0 &&
-      artistFormData.additionalImage.forEach((item: any, i) => imgArr.push(`${url}/users/${item}`));
+      artistFormData.additionalImage.forEach((item: any, i) =>
+        imgArr.push(`${imgUrl}/users/${item}`)
+      );
     artistFormData.additionalVideo &&
       artistFormData.additionalVideo.length > 0 &&
       artistFormData.additionalVideo.forEach((item: any, i) =>
-        videoArr.push(`${url}/videos/${item}`)
+        videoArr.push(`${imgUrl}/videos/${item}`)
       );
   }
 
   const defaultValues = useMemo(
     () => ({
       profileImage: artistFormData?.profileImage
-        ? `${url}/users/${artistFormData?.profileImage}`
+        ? `${imgUrl}/users/${artistFormData?.profileImage}`
         : null,
       additionalImage: imgArr || [],
       inProcessImage: artistFormData?.inProcessImage
-        ? `${url}/users/${artistFormData?.inProcessImage}`
+        ? `${imgUrl}/users/${artistFormData?.inProcessImage}`
         : null,
-      mainVideo: artistFormData?.mainVideo ? `${url}/videos/${artistFormData?.mainVideo}` : null,
+      mainVideo: artistFormData?.mainVideo ? `${imgUrl}/videos/${artistFormData?.mainVideo}` : null,
       additionalVideo: videoArr || [],
       existingImages: artistFormData?.additionalImage || [],
       existingVideos: artistFormData?.additionalVideo || [],
@@ -262,7 +263,7 @@ export function Media({
                     <source src={`${formProps.getValues('mainVideo')}`} type="video/mp4" />
                   ) : (
                     <source
-                      src={URL.createObjectURL(formProps.getValues('mainVideo'))}
+                      src={imgUrl.createObjectURL(formProps.getValues('mainVideo'))}
                       type="video/mp4"
                     />
                   )}

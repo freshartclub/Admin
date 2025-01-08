@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
+import { saveAs } from 'file-saver';
 import {
   emptyRows,
   getComparator,
@@ -33,6 +34,9 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { ArtworkTableRow } from './Artwork-table-row';
 import { useGetArtworkList } from './http/useGetArtworkList';
+import { ADMIN_BASE_URL, ARTIST_BASE_URL, imgUrl } from 'src/utils/BaseUrls';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
 // ----------------------------------------------------------------------
 
@@ -55,7 +59,7 @@ export function ArtworkListView() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 1000);
   const [notFound, setNotFound] = useState(false);
-  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
   const [_artworkList, setArtworkList] = useState<IInvoice[]>([]);
 
   const { data, isLoading } = useGetArtworkList(debounceSearch, sStatus, days);
@@ -70,17 +74,38 @@ export function ArtworkListView() {
   ];
 
   useEffect(() => {
-    if (data?.data) {
-      setArtworkList(data?.data);
-      setUrl(data?.url);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setArtworkList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _artworkList,
     comparator: getComparator(table.order, table.orderBy),
   });
+
+  const downloadArtworkExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        `${ARTIST_ENDPOINTS.downloadArtwork}?s=${search}&status=${sStatus}&days=${days}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Artwork_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -96,8 +121,11 @@ export function ArtworkListView() {
               </span>
             </RouterLink>
             <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
+              <span
+                onClick={() => downloadArtworkExcel()}
+                className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1"
+              >
+                <Iconify icon="mingcute:add-line" /> {loading ? 'Downloading...' : 'Export CSV'}
               </span>
             </RouterLink>
           </div>
@@ -177,7 +205,7 @@ export function ArtworkListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row, i) => (
-                      <ArtworkTableRow key={i} row={row} url={url} />
+                      <ArtworkTableRow key={i} row={row} url={imgUrl} />
                     ))}
 
                   <TableEmptyRows

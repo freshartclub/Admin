@@ -15,21 +15,17 @@ import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { fDate } from 'src/utils/format-time';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IUserItem;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function UserTableRow({ row }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
-  const url = 'https://dev.freshartclub.com/images/users';
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -42,16 +38,16 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
+      <TableRow hover>
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
             <Avatar
               alt={row?.artistName}
-              src={row?.profile?.mainImage ? `${url}/${row?.profile?.mainImage}` : ''}
+              src={row?.profile?.mainImage ? `${imgUrl}/users/${row?.profile?.mainImage}` : ''}
             />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link color="inherit" sx={{ cursor: 'pointer' }}>
                 {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
@@ -99,7 +95,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error">
             Delete
           </Button>
         }

@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search, grp) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllFAQ}?s=${search}&grp=${grp}`);
-  return data;
+  return data.data;
 }
 
 export const useGetAllFAQ = (search, grp) => {

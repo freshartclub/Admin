@@ -66,10 +66,6 @@ export function KbListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
-
   return (
     <>
       <CustomBreadcrumbs
@@ -140,15 +136,7 @@ export function KbListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <KbTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                    />
+                    <KbTableRow key={row._id} row={row} />
                   ))}
 
                 <TableEmptyRows

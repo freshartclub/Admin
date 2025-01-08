@@ -39,14 +39,7 @@ export function OrderDetailsInfo({ url, customer, delivery, payment, shippingAdd
 
   const renderCustomer = (
     <>
-      <CardHeader
-        title="Customer info"
-        // action={
-        //   <IconButton>
-        //     <Iconify icon="solar:pen-bold" />
-        //   </IconButton>
-        // }
-      />
+      <CardHeader title="Customer info" />
       <Stack direction="row" sx={{ p: 3 }}>
         <Avatar
           alt={customer?.artistName}
@@ -112,14 +105,20 @@ export function OrderDetailsInfo({ url, customer, delivery, payment, shippingAdd
           <Box component="span" sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}>
             Address
           </Box>
-          {shippingAddress?.fullAddress}
+          {shippingAddress?.address +
+            ', ' +
+            shippingAddress?.city +
+            ', ' +
+            shippingAddress?.country +
+            ', ' +
+            shippingAddress?.zipCode}
         </Stack>
 
         <Stack direction="row">
           <Box component="span" sx={{ color: 'text.secondary', width: 120, flexShrink: 0 }}>
             Phone number
           </Box>
-          {shippingAddress?.phoneNumber}
+          {shippingAddress?.phone}
         </Stack>
       </Stack>
     </>

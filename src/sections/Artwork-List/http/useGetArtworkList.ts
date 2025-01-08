@@ -6,7 +6,7 @@ async function fetchData(search, sStatus, days) {
   const { data } = await axiosInstance.get(
     `${ARTIST_ENDPOINTS.getArtWorkList}?s=${search}&status=${sStatus}&days=${days}`
   );
-  return data;
+  return data.data;
 }
 
 export const useGetArtworkList = (search, sStatus, days) => {

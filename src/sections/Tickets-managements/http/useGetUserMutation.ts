@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(input) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getUserByQueryInput}?s=${input}`);
-  return data;
+  return data.data;
 }
 
 export const useGetUesrByQueryInput = (input) => {

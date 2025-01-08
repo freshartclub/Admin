@@ -9,6 +9,7 @@ import P from './comman/P';
 import { RouterLink } from 'src/routes/components';
 import usePublishArtworkMutation from './http/usePublishArtworkMutation';
 import { paths } from 'src/routes/paths';
+import { currencies } from 'src/_mock/_currency';
 
 const DiscoverContent = ({ data, preview }) => {
   const { mutate, isPending } = usePublishArtworkMutation(data?._id);
@@ -20,11 +21,6 @@ const DiscoverContent = ({ data, preview }) => {
     if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
 
     return fullName.trim();
-  };
-
-  const tags = (val) => {
-    if (!val || val.length === 0) return '';
-    return val.join(' | ');
   };
 
   const publishArtwork = async () => {
@@ -138,7 +134,9 @@ const DiscoverContent = ({ data, preview }) => {
       </div>
 
       <Header variant={{ size: 'xl', theme: 'dark', weight: 'semiBold' }} className="lg:my-4 my-2">
-        {data?.pricing?.currency + ' ' + data?.pricing?.basePrice}
+        {currencies.find((item) => item.code === data?.pricing?.currency.split(' ')[0])?.symbol +
+          ' ' +
+          data?.pricing?.basePrice}
       </Header>
 
       {preview ? null : (

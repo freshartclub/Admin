@@ -66,6 +66,8 @@ import { useGetSeriesList } from './http/useGetSeriesList';
 import { Chip } from '@mui/material';
 import useDeleteSeries from './http/useDeleteSeries';
 import { useGetMediaListMutation } from '../MediaSupportListCategor/http/useGetMediaListMutation';
+import { currencies } from 'src/_mock/_currency';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -147,6 +149,7 @@ export function ArtworkAdd() {
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
   const [dSerise, setDSerise] = useState('');
+  const [currencySymbol, setCurrencySymbol] = useState('€');
   const [slide, setSlide] = useState(0);
 
   const modify = useSearchParams().get('modify');
@@ -304,92 +307,86 @@ export function ArtworkAdd() {
   let arr: any = [];
   let videoArr: any = [];
 
-  if (id && data?.data) {
-    data?.data?.media?.images &&
-      data?.data?.media?.images.length > 0 &&
-      data?.data?.media?.images.map((item) => arr.push(`${data?.url}/users/${item}`));
+  if (id && data) {
+    data?.media?.images &&
+      data?.media?.images.length > 0 &&
+      data?.media?.images.map((item) => arr.push(`${imgUrl}/users/${item}`));
 
-    data?.data?.media?.otherVideo &&
-      data?.data?.media?.otherVideo.length > 0 &&
-      data?.data?.media?.otherVideo.map((item) => videoArr.push(`${data?.url}/videos/${item}`));
+    data?.media?.otherVideo &&
+      data?.media?.otherVideo.length > 0 &&
+      data?.media?.otherVideo.map((item) => videoArr.push(`${imgUrl}/videos/${item}`));
   }
 
   const defaultValues = useMemo(
     () => ({
-      artworkName: data?.data?.artworkName || '',
-      artistID: data?.data?.owner?.artistId || '',
-      intTags: data?.data?.tags?.intTags || [],
-      extTags: data?.data?.tags?.extTags || [],
-      artistName: data?.data?.owner?.artistName || '',
-      isArtProvider: data?.data?.isArtProvider || 'No',
-      provideArtistName: data?.data?.provideArtistName || '',
-      artworkCreationYear: data?.data?.artworkCreationYear || '2024',
-      artworkSeries: data?.data?.artworkSeries || '',
-      productDescription: data?.data?.productDescription || '',
+      artworkName: data?.artworkName || '',
+      artistID: data?.owner?.artistId || '',
+      intTags: data?.tags?.intTags || [],
+      extTags: data?.tags?.extTags || [],
+      artistName: data?.owner?.artistName || '',
+      isArtProvider: data?.isArtProvider || 'No',
+      provideArtistName: data?.provideArtistName || '',
+      artworkCreationYear: data?.artworkCreationYear || new Date().getFullYear(),
+      artworkSeries: data?.artworkSeries || '',
+      productDescription: data?.productDescription || '',
 
-      mainImage: data?.data?.media?.mainImage
-        ? `${data?.url}/users/${data?.data?.media?.mainImage}`
+      mainImage: data?.media?.mainImage ? `${imgUrl}/users/${data?.media?.mainImage}` : null,
+      backImage: data?.media?.backImage ? `${imgUrl}/users/${data?.media?.backImage}` : null,
+      inProcessImage: data?.media?.inProcessImage
+        ? `${imgUrl}/users/${data?.media?.inProcessImage}`
         : null,
-      backImage: data?.data?.media?.backImage
-        ? `${data?.url}/users/${data?.data?.media?.backImage}`
-        : null,
-      inProcessImage: data?.data?.media?.inProcessImage
-        ? `${data?.url}/users/${data?.data?.media?.inProcessImage}`
-        : null,
-      mainVideo: data?.data?.media?.mainVideo
-        ? `${data?.url}/videos/${data?.data?.media?.mainVideo}`
-        : null,
+      mainVideo: data?.media?.mainVideo ? `${imgUrl}/videos/${data?.media?.mainVideo}` : null,
       images: arr || [],
       otherVideo: videoArr || [],
-      existingImages: data?.data?.media?.images || [],
-      existingVideos: data?.data?.media?.otherVideo || [],
-      artworkTechnic: data?.data?.additionalInfo?.artworkTechnic || '',
-      artworkTheme: data?.data?.additionalInfo?.artworkTheme || '',
-      artworkOrientation: data?.data?.additionalInfo?.artworkOrientation || '',
-      material: data?.data?.additionalInfo?.material || '',
-      weight: data?.data?.additionalInfo?.weight || '',
-      lenght: data?.data?.additionalInfo?.length || '',
-      height: data?.data?.additionalInfo?.height || '',
-      width: data?.data?.additionalInfo?.width || '',
-      hangingAvailable: data?.data?.additionalInfo?.hangingAvailable || '',
-      hangingDescription: data?.data?.additionalInfo?.hangingDescription || ' ',
-      framed: data?.data?.additionalInfo?.framed || '',
-      framedDescription: data?.data?.additionalInfo?.framedDescription || ' ',
-      frameHeight: data?.data?.additionalInfo?.frameHeight || '',
-      frameLenght: data?.data?.additionalInfo?.frameLength || '',
-      frameWidth: data?.data?.additionalInfo?.frameWidth || '',
-      artworkStyle: data?.data?.additionalInfo?.artworkStyle || [],
-      emotions: data?.data?.additionalInfo?.emotions || [],
-      colors: data?.data?.additionalInfo?.colors || [],
-      purchaseCatalog: data?.data?.commercialization?.purchaseCatalog || '',
-      subscriptionCatalog: data?.data?.commercialization?.subscriptionCatalog || '',
-      purchaseType: data?.data?.commercialization?.purchaseType || '',
-      purchaseOption: data?.data?.commercialization?.purchaseOption || '',
-      activeTab: data?.data?.commercialization?.activeTab || '',
-      basePrice: data?.data?.pricing?.basePrice || '',
-      currency: data?.data?.pricing?.currency || 'EUR',
-      dpersentage: data?.data?.pricing?.dpersentage || 0,
-      vatAmount: data?.data?.pricing?.vatAmount || 0,
-      acceptOfferPrice: data?.data?.pricing?.acceptOfferPrice || '',
-      artistFees: data?.data?.pricing?.artistFees || '',
-      offensive: data?.data?.additionalInfo?.offensive || 'No',
-      pCode: data?.data?.inventoryShipping?.pCode || '',
-      location: data?.data?.inventoryShipping?.location || '',
-      comingSoon: data?.data?.inventoryShipping?.comingSoon || false,
-      packageMaterial: data?.data?.inventoryShipping?.packageMaterial || '',
-      packageWeight: data?.data?.inventoryShipping?.packageWeight || '',
-      packageLength: data?.data?.inventoryShipping?.packageLength || '',
-      packageHeight: data?.data?.inventoryShipping?.packageHeight || '',
-      packageWidth: data?.data?.inventoryShipping?.packageWidth || '',
-      artworkDiscipline: data?.data?.discipline?.artworkDiscipline || '',
-      promotion: data?.data?.promotions?.promotion || '',
-      promotionScore: Number(data?.data?.promotions?.promotionScore) || slide,
-      availableTo: data?.data?.restriction?.availableTo || 'Available To Everybody',
+      existingImages: data?.media?.images || [],
+      existingVideos: data?.media?.otherVideo || [],
+      artworkTechnic: data?.additionalInfo?.artworkTechnic || '',
+      artworkTheme: data?.additionalInfo?.artworkTheme || '',
+      artworkOrientation: data?.additionalInfo?.artworkOrientation || '',
+      material: data?.additionalInfo?.material || '',
+      weight: data?.additionalInfo?.weight || '',
+      lenght: data?.additionalInfo?.length || '',
+      height: data?.additionalInfo?.height || '',
+      width: data?.additionalInfo?.width || '',
+      hangingAvailable: data?.additionalInfo?.hangingAvailable || '',
+      hangingDescription: data?.additionalInfo?.hangingDescription || ' ',
+      framed: data?.additionalInfo?.framed || '',
+      framedDescription: data?.additionalInfo?.framedDescription || ' ',
+      frameHeight: data?.additionalInfo?.frameHeight || '',
+      frameLenght: data?.additionalInfo?.frameLength || '',
+      frameWidth: data?.additionalInfo?.frameWidth || '',
+      artworkStyle: data?.additionalInfo?.artworkStyle || [],
+      emotions: data?.additionalInfo?.emotions || [],
+      colors: data?.additionalInfo?.colors || [],
+      purchaseCatalog: data?.commercialization?.purchaseCatalog || '',
+      subscriptionCatalog: data?.commercialization?.subscriptionCatalog || '',
+      purchaseType: data?.commercialization?.purchaseType || '',
+      purchaseOption: data?.commercialization?.purchaseOption || '',
+      activeTab: data?.commercialization?.activeTab || '',
+      basePrice: data?.pricing?.basePrice || '',
+      currency: data?.pricing?.currency || 'EUR (Euro)',
+      dpersentage: data?.pricing?.dpersentage || 0,
+      vatAmount: data?.pricing?.vatAmount || 0,
+      acceptOfferPrice: data?.pricing?.acceptOfferPrice || '',
+      artistFees: data?.pricing?.artistFees || '',
+      offensive: data?.additionalInfo?.offensive || 'No',
+      pCode: data?.inventoryShipping?.pCode || '',
+      location: data?.inventoryShipping?.location || '',
+      comingSoon: data?.inventoryShipping?.comingSoon || false,
+      packageMaterial: data?.inventoryShipping?.packageMaterial || '',
+      packageWeight: data?.inventoryShipping?.packageWeight || '',
+      packageLength: data?.inventoryShipping?.packageLength || '',
+      packageHeight: data?.inventoryShipping?.packageHeight || '',
+      packageWidth: data?.inventoryShipping?.packageWidth || '',
+      artworkDiscipline: data?.discipline?.artworkDiscipline || '',
+      promotion: data?.promotions?.promotion || '',
+      promotionScore: Number(data?.promotions?.promotionScore) || slide,
+      availableTo: data?.restriction?.availableTo || 'Available To Everybody',
       discountAcceptation:
-        data?.data?.restriction?.discountAcceptation || 'Accept Discounts And Promotions',
-      collectionList: data?.data?.collectionList || '',
+        data?.restriction?.discountAcceptation || 'Accept Discounts And Promotions',
+      collectionList: data?.collectionList || '',
     }),
-    [data?.data]
+    [data]
   );
 
   const { mutate, isPending } = useCreateArtworkMutation(id);
@@ -603,12 +600,12 @@ export function ArtworkAdd() {
   useEffect(() => {
     if (id) {
       setOpen(false);
-      setmongoDBId(data?.data?.owner?._id);
-      setSelectedOption(data?.data?.commercialization?.activeTab);
-      setYear(data?.data?.artworkCreationYear);
-      setSlide(data?.data?.promotions?.promotionScore);
+      setmongoDBId(data?.owner?._id);
+      setSelectedOption(data?.commercialization?.activeTab);
+      setYear(data?.artworkCreationYear);
+      setSlide(data?.promotions?.promotionScore);
     }
-  }, [data?.data]);
+  }, [data]);
 
   useEffect(() => {
     setValue('vatAmount', artworkData?.vatAmount);
@@ -666,7 +663,7 @@ export function ArtworkAdd() {
   };
 
   const valuetext = (value: number) => {
-    if (value === 0) return `${data?.data?.promotions?.promotionScore}`;
+    if (value === 0) return `${data?.promotions?.promotionScore}`;
     setSlide(value);
     return `${value}`;
   };
@@ -825,8 +822,8 @@ export function ArtworkAdd() {
                   <TableCell>
                     <CircularProgress size={30} />
                   </TableCell>
-                ) : artistData?.data && artistData?.data?.length > 0 ? (
-                  artistData?.data.map((i, j) => (
+                ) : artistData && artistData?.length > 0 ? (
+                  artistData.map((i, j) => (
                     <TableCell
                       onClick={() => refillData(i)}
                       key={j}
@@ -838,10 +835,7 @@ export function ArtworkAdd() {
                       }}
                     >
                       <Stack spacing={2} direction="row" alignItems="center">
-                        <Avatar
-                          alt={i?.artistName}
-                          src={`${artistData?.url}/users/${i?.mainImage}`}
-                        />
+                        <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
 
                         <ListItemText
                           disableTypography
@@ -883,9 +877,9 @@ export function ArtworkAdd() {
           <DatePicker
             name="artworkCreationYear"
             label="Artwork Year"
-            // value={dayjs(data?.data?.artworkCreationYear) || currentYear}
+            // value={dayjs(data?.artworkCreationYear) || currentYear}
             maxDate={currentYear}
-            defaultValue={dayjs(data?.data?.artworkCreationYear)}
+            defaultValue={dayjs(data?.artworkCreationYear)}
             views={['year']}
             openTo="year"
             onChange={(e) => {
@@ -919,7 +913,6 @@ export function ArtworkAdd() {
                     icon="mdi:delete"
                     sx={{ cursor: 'pointer', marginLeft: 1, ':hover': { color: 'red' } }}
                     onClick={(e) => {
-                      console.log('option', option);
                       e.stopPropagation();
                       setDSerise(option);
                       setDeleteSeriesOpen(true);
@@ -1388,9 +1381,17 @@ export function ArtworkAdd() {
           )}
           <Field.SingelSelect
             required
-            sx={{ minWidth: 150 }}
+            sx={{ minWidth: 250 }}
             name="currency"
             label="Currency"
+            onClick={(val) => {
+              const defaulVal = val.target.textContent;
+              if (defaulVal) {
+                const selectedOption = currencies.find((i) => i.code === defaulVal.split(' ')[0]);
+                setCurrencySymbol(selectedOption ? selectedOption.symbol : defaulVal.split(' ')[0]);
+                methods.setValue('currency', defaulVal);
+              }
+            }}
             options={currency ? currency : []}
           />
           <Field.Text
@@ -1402,7 +1403,7 @@ export function ArtworkAdd() {
               startAdornment: (
                 <InputAdornment position="start">
                   <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                    {methods.getValues('currency')}
+                    {currencySymbol}
                   </Box>
                 </InputAdornment>
               ),
@@ -1439,7 +1440,7 @@ export function ArtworkAdd() {
               startAdornment: (
                 <InputAdornment position="start">
                   <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                    {methods.getValues('currency')}
+                    {currencySymbol}
                   </Box>
                 </InputAdornment>
               ),
@@ -1468,7 +1469,7 @@ export function ArtworkAdd() {
                 startAdornment: (
                   <InputAdornment position="start">
                     <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                      {methods.getValues('currency')}
+                      {currencySymbol}
                     </Box>
                   </InputAdornment>
                 ),
@@ -1476,9 +1477,19 @@ export function ArtworkAdd() {
             />
             <Field.SingelSelect
               required
-              sx={{ minWidth: 150 }}
+              sx={{ minWidth: 250 }}
               name="currency"
               label="Currency"
+              onClick={(val) => {
+                const defaulVal = val.target.textContent;
+                if (defaulVal) {
+                  const selectedOption = currencies.find((i) => i.code === defaulVal.split(' ')[0]);
+                  setCurrencySymbol(
+                    selectedOption ? selectedOption.symbol : defaulVal.split(' ')[0]
+                  );
+                  methods.setValue('currency', defaulVal);
+                }
+              }}
               options={currency ? currency : []}
             />
           </Stack>
@@ -1505,7 +1516,7 @@ export function ArtworkAdd() {
               startAdornment: (
                 <InputAdornment position="start">
                   <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                    {methods.getValues('currency')}
+                    {currencySymbol}
                   </Box>
                 </InputAdornment>
               ),
@@ -1668,7 +1679,7 @@ export function ArtworkAdd() {
           </div>
         </div>
         <div className="flex justify-end mb-6 mr-6">
-          {data && data?.data?.status === 'published' && modify == 'true' ? (
+          {data && data?.status === 'published' && modify == 'true' ? (
             <span
               onClick={() => setModified(true)}
               className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"

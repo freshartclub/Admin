@@ -33,6 +33,7 @@ import { RenderAllPicklists } from 'src/sections/Picklists/RenderAllPicklist';
 import { z as zod } from 'zod';
 import { FormHelperText } from '@mui/material';
 import { AddressAutoComplete } from './AddressAutoComplete';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -117,7 +118,6 @@ export function OtherDetails({
   const language = picklistMap['Language'];
 
   const isReadOnly = view !== null;
-  const url = 'https://dev.freshartclub.com/images';
 
   const [showPop, setShowPop] = useState(false);
 
@@ -142,7 +142,7 @@ export function OtherDetails({
       artistFormData?.documents?.forEach((item: any, i) =>
         documentArr.push({
           documentName: item.documentName,
-          uploadDocs: `${url}/documents/${item.uploadDocs}`,
+          uploadDocs: `${imgUrl}/documents/${item.uploadDocs}`,
         })
       );
   }

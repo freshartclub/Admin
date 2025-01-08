@@ -16,6 +16,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddDisciplineMutation from './http/useAddDisciplineMutation';
 import { useGetDisciplineById } from './http/useGetDisciplineById';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -39,10 +40,10 @@ export function AddDisciline() {
 
   const defaultValues = useMemo(
     () => ({
-      disciplineImage: data?.data?.disciplineImage || null,
-      name: data?.data?.disciplineName || '',
-      isDeleted: data?.data?.isDeleted || false,
-      description: data?.data?.disciplineDescription || '',
+      disciplineImage: data?.disciplineImage || null,
+      name: data?.disciplineName || '',
+      isDeleted: data?.isDeleted || false,
+      description: data?.disciplineDescription || '',
     }),
     [data]
   );
@@ -55,15 +56,15 @@ export function AddDisciline() {
   const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
-    if (id && data?.data) {
+    if (id && data) {
       reset({
-        disciplineImage: `${data?.url}/users/${data?.data?.disciplineImage}` || null,
-        name: data?.data?.disciplineName || '',
-        isDeleted: data?.data?.isDeleted || false,
-        description: data?.data?.disciplineDescription || '',
+        disciplineImage: `${imgUrl}/users/${data?.disciplineImage}` || null,
+        name: data?.disciplineName || '',
+        isDeleted: data?.isDeleted || false,
+        description: data?.disciplineDescription || '',
       });
     }
-  }, [data?.data, reset]);
+  }, [data, reset]);
 
   const handleRemoveFile = useCallback(() => {
     setValue('disciplineImage', null);

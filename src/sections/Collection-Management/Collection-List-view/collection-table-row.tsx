@@ -23,22 +23,9 @@ import { fDate } from 'src/utils/format-time';
 type Props = {
   row: IInvoice;
   url: string;
-  selected: boolean;
-  onSelectRow: () => void;
-  onViewRow: () => void;
-  onEditRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function CollectionTableRow({
-  row,
-  url,
-  selected,
-  onSelectRow,
-  onViewRow,
-  onEditRow,
-  onDeleteRow,
-}: Props) {
+export function CollectionTableRow({ row, url }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
 
@@ -124,7 +111,7 @@ export function CollectionTableRow({
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error">
             Delete
           </Button>
         }

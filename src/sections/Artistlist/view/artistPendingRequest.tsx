@@ -13,7 +13,6 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-// const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 import { useGetPendingArtist } from '../http/useGetAllPendingArtist';
 import { Stack } from '@mui/material';
@@ -23,6 +22,7 @@ import { Iconify } from 'src/components/iconify';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useNavigate } from 'react-router';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 180 },
@@ -44,11 +44,11 @@ export function ArtistsPendingRequest() {
   const { data, isLoading } = useGetPendingArtist(debounceSearch);
 
   useEffect(() => {
-    if (data?.data) {
-      setUserList(data?.data);
-      setNotFound(data?.data.length === 0);
+    if (data) {
+      setUserList(data);
+      setNotFound(data.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
@@ -98,7 +98,7 @@ export function ArtistsPendingRequest() {
                     <ArtistPendingRequest
                       key={row._id}
                       row={row}
-                      url={data?.url}
+                      url={imgUrl}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

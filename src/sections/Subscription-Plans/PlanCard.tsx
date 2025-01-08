@@ -10,8 +10,8 @@ const PlanCard = ({ url, plan }: planProps) => {
   return (
     <Card sx={{ py: 2, px: 3, border: '1px solid #e0e0e0', width: '19rem' }}>
       <Stack direction="column">
-        <Avatar alt={plan.planGrp} src={`${url}/users/${plan.planImg}`} />
-        <Typography variant="h6">{plan.planGrp}</Typography>
+        <Avatar alt={plan?.planGrp?.catalogName} src={`${url}/users/${plan.planImg}`} />
+        <Typography variant="h6">{plan.planGrp?.catalogName}</Typography>
       </Stack>
       <Stack mt={2}>
         <div className="flex gap-1 items-baseline">

@@ -26,6 +26,7 @@ import { useGetTicketListMutation } from '../http/useGetTicketListMutation';
 import { TicketCartd } from './Card';
 import { TicketTableToolbar } from './Tecket-table-toolbar';
 import { RouterLink } from 'src/routes/components';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 export function TicketsListView() {
   const [search, setSearch] = useState<string>('');
@@ -51,10 +52,10 @@ export function TicketsListView() {
   const [tableData, setTableData] = useState<IOrderItem[]>([]);
 
   useEffect(() => {
-    if (data?.data) {
-      setTableData(data?.data);
+    if (data) {
+      setTableData(data);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData:
@@ -158,7 +159,7 @@ export function TicketsListView() {
                   table.page * table.rowsPerPage + table.rowsPerPage
                 )
                 .map((row) => (
-                  <TicketCartd key={row._id} url={data?.url} data={row} />
+                  <TicketCartd key={row._id} url={imgUrl} data={row} />
                 ))}
             </Scrollbar>
           </Box>

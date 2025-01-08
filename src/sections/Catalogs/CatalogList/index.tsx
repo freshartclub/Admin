@@ -25,6 +25,7 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { useGetAllCatalogList } from '../http/useGetAllCatalog';
 import { CatalogTableRow } from './Catalog-table-row';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -49,11 +50,11 @@ export function CatalogListView() {
   const { data, isLoading } = useGetAllCatalogList(debounceSearch);
 
   useEffect(() => {
-    if (data?.data) {
-      setCatalogList(data.data);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setCatalogList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _catalogList,
@@ -111,16 +112,7 @@ export function CatalogListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <CatalogTableRow
-                      key={row.id}
-                      row={row}
-                      url={data?.url}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                    />
+                    <CatalogTableRow key={row.id} row={row} url={imgUrl} />
                   ))}
 
                 <TableEmptyRows

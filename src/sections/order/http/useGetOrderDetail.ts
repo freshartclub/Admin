@@ -8,7 +8,7 @@ async function fetchData(id, orderType) {
   const { data } = await axiosInstance.get(
     `${ORDER_ENDPOINTS.getOrderDetail}/${id}?orderType=${orderType}`
   );
-  return data;
+  return data.data;
 }
 
 export const useGetOrderDetail = () => {

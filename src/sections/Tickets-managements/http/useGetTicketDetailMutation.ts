@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getTicketDetail}/${id}`);
-  return data;
+  return data.data;
 }
 
 export const useGetTicketDetailMutation = (id) => {

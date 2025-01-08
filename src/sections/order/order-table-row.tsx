@@ -11,11 +11,11 @@ import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { useNavigate } from 'react-router';
+import { currencies } from 'src/_mock/_currency';
 import { Iconify } from 'src/components/iconify';
 import { Label } from 'src/components/label';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
-import { fCurrency } from 'src/utils/format-number';
 import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
@@ -23,15 +23,15 @@ import { fDate } from 'src/utils/format-time';
 type Props = {
   row: IOrderItem;
   url: string;
-  selected: boolean;
-  onViewRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDeleteRow }: Props) {
+export function OrderTableRow({ row, url }: Props) {
   const collapse = useBoolean();
   const navigate = useNavigate();
+
+  const currencySymbol = currencies.find(
+    (item) => item.code === row?.items[0]?.artWork?.pricing?.currency?.split(' ')[0]
+  )?.symbol;
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -43,9 +43,16 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
   };
 
   const renderPrimary = (
-    <TableRow hover selected={selected}>
+    <TableRow hover>
       <TableCell>
-        <Link color="inherit" onClick={onViewRow} underline="always" sx={{ cursor: 'pointer' }}>
+        <Link
+          color="inherit"
+          onClick={() =>
+            navigate(paths.dashboard.order.details + `/${row?._id}?orderType=${row?.orderType}`)
+          }
+          underline="always"
+          sx={{ cursor: 'pointer' }}
+        >
           {row?.orderID}
         </Link>
       </TableCell>
@@ -59,7 +66,7 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
         </Stack>
       </TableCell>
       <TableCell align="center">{row?.items?.length}</TableCell>
-      <TableCell> {row?.subTotal} </TableCell>
+      <TableCell> {currencySymbol + ' ' + row?.total} </TableCell>
 
       <TableCell>
         <Label
@@ -126,7 +133,7 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
 
                 <ListItemText
                   primary={item?.artWork?.artworkName}
-                  secondary={item?.artWork?.inventoryShipping?.pCode}
+                  secondary={item?.artWork?.artworkId}
                   primaryTypographyProps={{ typography: 'body2' }}
                   secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
                 />
@@ -134,7 +141,7 @@ export function OrderTableRow({ row, url, selected, onViewRow, onSelectRow, onDe
                 <div>x{item.quantity} </div>
 
                 <Box sx={{ width: 110, textAlign: 'right' }}>
-                  {fCurrency(item?.artWork?.pricing?.basePrice)}
+                  {currencySymbol + ' ' + item?.artWork?.pricing?.basePrice}
                 </Box>
               </Stack>
             ))}

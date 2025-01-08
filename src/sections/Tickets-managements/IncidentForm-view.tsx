@@ -1,5 +1,3 @@
-import type { IPostItem } from 'src/types/blog';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,13 +9,13 @@ import { useNavigate } from 'react-router';
 import { INC_SEVERITY_OPTIONS, INC_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { z as zod } from 'zod';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddIncidentMutation from './http/useAddIncidentMutation';
-import { useSearchParams } from 'src/routes/hooks';
 import { useGetIncidentById } from './http/useGetIncidentById';
-import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -37,11 +35,7 @@ export const NewPostSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
-
-export function AddIncidentForm({ currentPost }: Props) {
+export function AddIncidentForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
 
@@ -60,17 +54,17 @@ export function AddIncidentForm({ currentPost }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      incGroup: currentPost?.incGroup || '',
-      incType: currentPost?.incType || '',
-      title: currentPost?.title || '',
-      description: currentPost?.description || '',
-      initTime: currentPost?.initTime || '',
-      endTime: currentPost?.endTime || '',
-      severity: currentPost?.severity || '',
-      status: currentPost?.status || '',
-      note: currentPost?.note || '',
+      incGroup: data?.incGroup || '',
+      incType: data?.incType || '',
+      title: data?.title || '',
+      description: data?.description || '',
+      initTime: data?.initTime || '',
+      endTime: data?.endTime || '',
+      severity: data?.severity || '',
+      status: data?.status || '',
+      note: data?.note || '',
     }),
-    [currentPost]
+    [data]
   );
 
   const methods = useForm<NewPostSchemaType>({

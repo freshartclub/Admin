@@ -14,6 +14,7 @@ import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
 import { useApproveArtworkChanges } from './http/useApproveArtworkChanges';
 import { useGetReviewArtwork } from './http/useGetReviewArtwork';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -69,59 +70,55 @@ export function ArtworkRevies({}) {
   let updatedImgArr: any = [];
   let updatedVideoArr: any = [];
 
-  if (id && data?.data) {
-    data?.data?.media?.images &&
-      data?.data?.media?.images.length > 0 &&
-      data?.data?.media?.images.forEach((item: any, i) =>
-        imgArr.push(`${data?.url}/users/${item}`)
-      );
-    data?.data?.media?.otherVideo &&
-      data?.data?.media?.otherVideo.length > 0 &&
-      data?.data?.media?.otherVideo.forEach((item: any, i) =>
-        videoArr.push(`${data?.url}/videos/${item}`)
-      );
+  if (id && data) {
+    data?.media?.images &&
+      data?.media?.images.length > 0 &&
+      data?.media?.images.forEach((item: any, i) => imgArr.push(`${imgUrl}/users/${item}`));
+    data?.media?.otherVideo &&
+      data?.media?.otherVideo.length > 0 &&
+      data?.media?.otherVideo.forEach((item: any, i) => videoArr.push(`${imgUrl}/videos/${item}`));
   }
 
-  if (id && data?.data?.reviewDetails) {
-    data?.data?.reviewDetails?.media?.images &&
-      data?.data?.reviewDetails?.media?.images.length > 0 &&
-      data?.data?.reviewDetails?.media?.images.forEach((item: any, i) =>
-        updatedImgArr.push(`${data?.url}/users/${item}`)
+  if (id && data?.reviewDetails) {
+    data?.reviewDetails?.media?.images &&
+      data?.reviewDetails?.media?.images.length > 0 &&
+      data?.reviewDetails?.media?.images.forEach((item: any, i) =>
+        updatedImgArr.push(`${imgUrl}/users/${item}`)
       );
-    data?.data?.reviewDetails?.media?.otherVideo &&
-      data?.data?.reviewDetails?.media?.otherVideo.length > 0 &&
-      data?.data?.reviewDetails?.media?.otherVideo.forEach((item: any, i) =>
-        updatedVideoArr.push(`${data?.url}/videos/${item}`)
+    data?.reviewDetails?.media?.otherVideo &&
+      data?.reviewDetails?.media?.otherVideo.length > 0 &&
+      data?.reviewDetails?.media?.otherVideo.forEach((item: any, i) =>
+        updatedVideoArr.push(`${imgUrl}/videos/${item}`)
       );
   }
 
   const defaultValues = useMemo(
     () => ({
-      backImage: data?.data?.media?.backImage || null,
-      inProcessImage: data?.data?.media?.inProcessImage || null,
-      mainImage: data?.data?.media?.mainImage || null,
-      mainVideo: data?.data?.media?.mainVideo || null,
+      backImage: data?.media?.backImage || null,
+      inProcessImage: data?.media?.inProcessImage || null,
+      mainImage: data?.media?.mainImage || null,
+      mainVideo: data?.media?.mainVideo || null,
       images: imgArr,
       otherVideo: videoArr,
-      updatedBackImage: data?.data?.reviewDetails?.media?.backImage || null,
-      updatedInProcessImage: data?.data?.reviewDetails?.media?.inProcessImage || null,
-      updatedMainImage: data?.data?.reviewDetails?.media?.mainImage || null,
-      updatedMainVideo: data?.data?.reviewDetails?.media?.mainVideo || null,
+      updatedBackImage: data?.reviewDetails?.media?.backImage || null,
+      updatedInProcessImage: data?.reviewDetails?.media?.inProcessImage || null,
+      updatedMainImage: data?.reviewDetails?.media?.mainImage || null,
+      updatedMainVideo: data?.reviewDetails?.media?.mainVideo || null,
       updatedImages: updatedImgArr || [],
       updatedOtherVideo: updatedVideoArr || [],
-      intTags: data?.data?.tags?.intTags || [],
-      extTags: data?.data?.tags?.extTags || [],
-      updatedIntTags: data?.data?.reviewDetails?.tags?.intTags || [],
-      updatedExtTags: data?.data?.reviewDetails?.tags?.extTags || [],
-      artworkStyle: data?.data?.additionalInfo?.artworkStyle || [],
-      emotions: data?.data?.additionalInfo?.emotions || [],
-      colors: data?.data?.additionalInfo?.colors || [],
-      updatedArtworkStyle: data?.data?.reviewDetails?.additionalInfo?.artworkStyle || [],
-      updatedEmotions: data?.data?.reviewDetails?.additionalInfo?.emotions || [],
-      updatedColors: data?.data?.reviewDetails?.additionalInfo?.colors || [],
+      intTags: data?.tags?.intTags || [],
+      extTags: data?.tags?.extTags || [],
+      updatedIntTags: data?.reviewDetails?.tags?.intTags || [],
+      updatedExtTags: data?.reviewDetails?.tags?.extTags || [],
+      artworkStyle: data?.additionalInfo?.artworkStyle || [],
+      emotions: data?.additionalInfo?.emotions || [],
+      colors: data?.additionalInfo?.colors || [],
+      updatedArtworkStyle: data?.reviewDetails?.additionalInfo?.artworkStyle || [],
+      updatedEmotions: data?.reviewDetails?.additionalInfo?.emotions || [],
+      updatedColors: data?.reviewDetails?.additionalInfo?.colors || [],
       note: '',
     }),
-    [data?.data]
+    [data]
   );
 
   const formProps = useForm({
@@ -135,7 +132,7 @@ export function ArtworkRevies({}) {
     const note = formProps.getValues('note');
     if (!note) return toast.error('Note is required');
 
-    let bodyData = data?.data?.reviewDetails;
+    let bodyData = data?.reviewDetails;
     bodyData.isApproved = isApproved;
     bodyData.note = note;
     bodyData.id = id;
@@ -155,49 +152,43 @@ export function ArtworkRevies({}) {
   };
 
   useEffect(() => {
-    if (data?.data) {
+    if (data) {
       reset({
-        mainImage: data?.data?.media?.mainImage
-          ? `${data?.url}/users/${data?.data?.media?.mainImage}`
-          : null,
-        mainVideo: data?.data?.media?.mainVideo
-          ? `${data?.url}/videos/${data?.data?.media?.mainVideo}`
-          : null,
-        backImage: data?.data?.media?.backImage
-          ? `${data?.url}/users/${data?.data?.media?.backImage}`
-          : null,
-        inProcessImage: data?.data?.media?.inProcessImage
-          ? `${data?.url}/users/${data?.data?.media?.inProcessImage}`
+        mainImage: data?.media?.mainImage ? `${imgUrl}/users/${data?.media?.mainImage}` : null,
+        mainVideo: data?.media?.mainVideo ? `${imgUrl}/videos/${data?.media?.mainVideo}` : null,
+        backImage: data?.media?.backImage ? `${imgUrl}/users/${data?.media?.backImage}` : null,
+        inProcessImage: data?.media?.inProcessImage
+          ? `${imgUrl}/users/${data?.media?.inProcessImage}`
           : null,
         images: imgArr,
         otherVideo: videoArr,
-        updatedMainImage: data?.data?.reviewDetails?.media?.mainImage
-          ? `${data?.url}/users/${data?.data?.reviewDetails?.media?.mainImage}`
+        updatedMainImage: data?.reviewDetails?.media?.mainImage
+          ? `${imgUrl}/users/${data?.reviewDetails?.media?.mainImage}`
           : null,
-        updatedMainVideo: data?.data?.reviewDetails?.media?.mainVideo
-          ? `${data?.url}/videos/${data?.data?.reviewDetails?.media?.mainVideo}`
+        updatedMainVideo: data?.reviewDetails?.media?.mainVideo
+          ? `${imgUrl}/videos/${data?.reviewDetails?.media?.mainVideo}`
           : null,
-        updatedBackImage: data?.data?.reviewDetails?.media?.backImage
-          ? `${data?.url}/users/${data?.data?.reviewDetails?.media?.backImage}`
+        updatedBackImage: data?.reviewDetails?.media?.backImage
+          ? `${imgUrl}/users/${data?.reviewDetails?.media?.backImage}`
           : null,
-        updatedInProcessImage: data?.data?.reviewDetails?.media?.inProcessImage
-          ? `${data?.url}/users/${data?.data?.reviewDetails?.media?.inProcessImage}`
+        updatedInProcessImage: data?.reviewDetails?.media?.inProcessImage
+          ? `${imgUrl}/users/${data?.reviewDetails?.media?.inProcessImage}`
           : null,
         updatedImages: updatedImgArr || [],
         updatedOtherVideo: updatedVideoArr || [],
-        intTags: data?.data?.tags?.intTags || [],
-        extTags: data?.data?.tags?.extTags || [],
-        updatedIntTags: data?.data?.reviewDetails?.tags?.intTags || [],
-        updatedExtTags: data?.data?.reviewDetails?.tags?.extTags || [],
-        artworkStyle: data?.data?.additionalInfo?.artworkStyle || [],
-        emotions: data?.data?.additionalInfo?.emotions || [],
-        colors: data?.data?.additionalInfo?.colors || [],
-        updatedArtworkStyle: data?.data?.reviewDetails?.additionalInfo?.artworkStyle || [],
-        updatedEmotions: data?.data?.reviewDetails?.additionalInfo?.emotions || [],
-        updatedColors: data?.data?.reviewDetails?.additionalInfo?.colors || [],
+        intTags: data?.tags?.intTags || [],
+        extTags: data?.tags?.extTags || [],
+        updatedIntTags: data?.reviewDetails?.tags?.intTags || [],
+        updatedExtTags: data?.reviewDetails?.tags?.extTags || [],
+        artworkStyle: data?.additionalInfo?.artworkStyle || [],
+        emotions: data?.additionalInfo?.emotions || [],
+        colors: data?.additionalInfo?.colors || [],
+        updatedArtworkStyle: data?.reviewDetails?.additionalInfo?.artworkStyle || [],
+        updatedEmotions: data?.reviewDetails?.additionalInfo?.emotions || [],
+        updatedColors: data?.reviewDetails?.additionalInfo?.colors || [],
       });
     }
-  }, [data?.data]);
+  }, [data]);
 
   const checkIsChanged = (input1, input2) => {
     if (input1 !== input2) {
@@ -208,7 +199,7 @@ export function ArtworkRevies({}) {
   };
 
   const checkIsArrayChanged = (array1, array2) => {
-    if (!data?.data) return;
+    if (!data) return;
     if (!array1 || !array2) return true;
     if (array1.length !== array2.length) {
       return true;
@@ -221,7 +212,6 @@ export function ArtworkRevies({}) {
     }
     return false;
   };
-  console.log(data?.data?.additionalInfo);
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -243,7 +233,7 @@ export function ArtworkRevies({}) {
       }}
     >
       <DialogTitle>
-        Approve Changes - ({data?.data?.artworkName} {`"${data?.data?.artworkId}"`})
+        Approve Changes - ({data?.artworkName} {`"${data?.artworkId}"`})
       </DialogTitle>
       <form>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -283,46 +273,46 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.artworkName}
+            value={data?.artworkName}
             required
             name="artworkName"
             label="Artwork Name"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={name(data?.data?.owner) || 'N/A'}
+            value={name(data?.owner) || 'N/A'}
             required
             name="ownerName"
             label="Owner Name"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.artworkCreationYear}
+            value={data?.artworkCreationYear}
             required
             name="artworkCreationYear"
             label="Artwork Creation Year"
           />
           <Field.Text
-            value={data?.data?.artworkSeries}
+            value={data?.artworkSeries}
             disabled={isReadOnly}
             name="artworkSeries"
             label="Artwork Series"
           />
           <Field.Text
-            value={data?.data?.isArtProvider ? 'Yes' : 'No'}
+            value={data?.isArtProvider ? 'Yes' : 'No'}
             disabled={isReadOnly}
             name="isArtProvider"
             label="Art Provider"
           />
           <Field.Text
-            value={data?.data?.isArtProvider ? data?.data?.provideArtistName : 'N/A'}
+            value={data?.isArtProvider ? data?.provideArtistName : 'N/A'}
             disabled={isReadOnly}
             name="provideArtistName"
             label="Art Provider Name"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.productDescription || 'N/A'}
+            value={data?.productDescription || 'N/A'}
             name="productDescription"
             multiline
             rows={4}
@@ -332,17 +322,16 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.artworkName, data?.data?.artworkName) &&
-              isReadOnly
+              !checkIsChanged(data?.reviewDetails?.artworkName, data?.artworkName) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.artworkName}
+            value={data?.reviewDetails?.artworkName}
             required
             name="artworkName"
             label="Updated Artwork Name"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={name(data?.data?.owner) || 'N/A'}
+            value={name(data?.owner) || 'N/A'}
             required
             name="ownerName"
             label="Owner Name"
@@ -350,61 +339,49 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.artworkCreationYear,
-                data?.data?.artworkCreationYear
+                data?.reviewDetails?.artworkCreationYear,
+                data?.artworkCreationYear
               ) && isReadOnly
             }
             required
-            value={data?.data?.reviewDetails?.artworkCreationYear}
+            value={data?.reviewDetails?.artworkCreationYear}
             name="artworkCreationYear"
             label="Updated Artwork Creation Year"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.artworkSeries,
-                data?.data?.artworkSeries
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.artworkSeries, data?.artworkSeries) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.artworkSeries}
+            value={data?.reviewDetails?.artworkSeries}
             name="artworkSeries"
             label="Updated Artwork Series"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.isArtProvider,
-                data?.data?.isArtProvider
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.isArtProvider, data?.isArtProvider) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.isArtProvider}
+            value={data?.reviewDetails?.isArtProvider}
             InputLabelProps={{ shrink: true }}
             name="isArtProvider"
             label="Updated Art Provider"
           />
           <Field.Text
             value={
-              data?.data?.reviewDetails?.isArtProvider
-                ? data?.data?.reviewDetails?.provideArtistName
-                : 'N/A'
+              data?.reviewDetails?.isArtProvider ? data?.reviewDetails?.provideArtistName : 'N/A'
             }
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.provideArtistName,
-                data?.data?.provideArtistName
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.provideArtistName, data?.provideArtistName) &&
+              isReadOnly
             }
             name="provideArtistName"
             label="Updated Art Provider Name"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.productDescription,
-                data?.data?.productDescription
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.productDescription, data?.productDescription) &&
+              isReadOnly
             }
-            value={data?.data?.reviewDetails?.productDescription || 'N/A'}
+            value={data?.reviewDetails?.productDescription || 'N/A'}
             multiline
             rows={4}
             InputLabelProps={{ shrink: true }}
@@ -424,46 +401,46 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.discipline?.artworkDiscipline}
+            value={data?.discipline?.artworkDiscipline}
             name="discipline"
             label="Artwork Discipline"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.artworkTechnic}
+            value={data?.additionalInfo?.artworkTechnic}
             name="artworkTechnic"
             label="Artwork Technic"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.artworkTheme}
+            value={data?.additionalInfo?.artworkTheme}
             name="artworkTheme"
             label="Artwork Technic"
           />
           <Field.MultiSelect
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.artworkStyle}
+            value={data?.additionalInfo?.artworkStyle}
             name="artworkStyle"
             label="Artwork Style"
             options={StyleArr ? StyleArr : []}
           />
           <Field.MultiSelect
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.emotions}
+            value={data?.additionalInfo?.emotions}
             name="emotions"
             label="Artwork Emotion"
             options={emotions ? emotions : []}
           />
           <Field.MultiSelect
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.colors}
+            value={data?.additionalInfo?.colors}
             name="colors"
             label="Artwork Color"
             options={colors ? colors : []}
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.offensive}
+            value={data?.additionalInfo?.offensive}
             name="offensive"
             label="Artwork Offensive"
           />
@@ -523,43 +500,43 @@ export function ArtworkRevies({}) {
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.material}
+            value={data?.additionalInfo?.material}
             name="material"
             label="Artwork Material"
           />
           <Field.Text
-            value={data?.data?.additionalInfo.height}
+            value={data?.additionalInfo.height}
             disabled={isReadOnly}
             name="height"
             label="Height (in cm)"
           />
           <Field.Text
-            value={data?.data?.additionalInfo.width}
+            value={data?.additionalInfo.width}
             disabled={isReadOnly}
             name="width"
             label="Width (in cm)"
           />
           <Field.Text
-            value={data?.data?.additionalInfo.length}
+            value={data?.additionalInfo.length}
             disabled={isReadOnly}
             name="lenght"
             label="Depth (in cm)"
           />
           <Field.Text
-            value={data?.data?.additionalInfo.weight}
+            value={data?.additionalInfo.weight}
             disabled={isReadOnly}
             name="weight"
             label="Weight (in kg)"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.hangingAvailable}
+            value={data?.additionalInfo?.hangingAvailable}
             name="hangingAvailable"
             label="Hanging Available"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.hangingDescription}
+            value={data?.additionalInfo?.hangingDescription}
             name="hangingDescription"
             label="Hanging Description"
             multiline
@@ -567,39 +544,39 @@ export function ArtworkRevies({}) {
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.framed}
+            value={data?.additionalInfo?.framed}
             name="framed"
             label="Framed"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.framedDescription}
+            value={data?.additionalInfo?.framedDescription}
             name="framedDescription"
             label="Framed Description"
             multiline
             rows={4}
           />
           <Field.Text
-            value={data?.data?.additionalInfo?.frameHeight}
+            value={data?.additionalInfo?.frameHeight}
             disabled={isReadOnly}
             name="framedHeight"
             label="Framed Height (in cm)"
           />
           <Field.Text
-            value={data?.data?.additionalInfo?.frameWidth}
+            value={data?.additionalInfo?.frameWidth}
             disabled={isReadOnly}
             name="framedWidth"
             label="Framed Width (in cm)"
           />
           <Field.Text
-            value={data?.data?.additionalInfo?.frameLength}
+            value={data?.additionalInfo?.frameLength}
             disabled={isReadOnly}
             name="framedLenght"
             label="Framed Depth (in cm)"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.additionalInfo?.artworkOrientation}
+            value={data?.additionalInfo?.artworkOrientation}
             name="artworkOrientation"
             label="Artwork Orientation"
           />
@@ -608,11 +585,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.discipline?.artworkDiscipline,
-                data?.data?.discipline?.artworkDiscipline
+                data?.reviewDetails?.discipline?.artworkDiscipline,
+                data?.discipline?.artworkDiscipline
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.discipline?.artworkDiscipline}
+            value={data?.reviewDetails?.discipline?.artworkDiscipline}
             required
             name="updateDiscipline"
             label="Updated Artwork Discipline"
@@ -620,11 +597,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.artworkTechnic,
-                data?.data?.additionalInfo?.artworkTechnic
+                data?.reviewDetails?.additionalInfo?.artworkTechnic,
+                data?.additionalInfo?.artworkTechnic
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.artworkTechnic}
+            value={data?.reviewDetails?.additionalInfo?.artworkTechnic}
             required
             name="updateTechnic"
             label="Updated Artwork Technic"
@@ -632,11 +609,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.artworkTheme,
-                data?.data?.additionalInfo?.artworkTheme
+                data?.reviewDetails?.additionalInfo?.artworkTheme,
+                data?.additionalInfo?.artworkTheme
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.artworkTheme}
+            value={data?.reviewDetails?.additionalInfo?.artworkTheme}
             required
             name="updateTheme"
             label="Updated Artwork Theme"
@@ -644,11 +621,11 @@ export function ArtworkRevies({}) {
           <Field.MultiSelect
             disabled={
               !checkIsArrayChanged(
-                data?.data?.reviewDetails?.additionalInfo?.artworkStyle,
-                data?.data?.additionalInfo?.artworkStyle
+                data?.reviewDetails?.additionalInfo?.artworkStyle,
+                data?.additionalInfo?.artworkStyle
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.artworkStyle}
+            value={data?.reviewDetails?.additionalInfo?.artworkStyle}
             required
             name="updatedArtworkStyle"
             label="Updated Artwork Style"
@@ -657,11 +634,11 @@ export function ArtworkRevies({}) {
           <Field.MultiSelect
             disabled={
               !checkIsArrayChanged(
-                data?.data?.reviewDetails?.additionalInfo?.emotions,
-                data?.data?.additionalInfo?.emotions
+                data?.reviewDetails?.additionalInfo?.emotions,
+                data?.additionalInfo?.emotions
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.emotions}
+            value={data?.reviewDetails?.additionalInfo?.emotions}
             required
             name="updatedEmotions"
             label="Updated Artwork Emotion"
@@ -670,11 +647,11 @@ export function ArtworkRevies({}) {
           <Field.MultiSelect
             disabled={
               !checkIsArrayChanged(
-                data?.data?.reviewDetails?.additionalInfo?.colors,
-                data?.data?.additionalInfo?.colors
+                data?.reviewDetails?.additionalInfo?.colors,
+                data?.additionalInfo?.colors
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.colors}
+            value={data?.reviewDetails?.additionalInfo?.colors}
             required
             name="updatedColors"
             label="Updated Artwork Color"
@@ -683,11 +660,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.offensive,
-                data?.data?.additionalInfo?.offensive
+                data?.reviewDetails?.additionalInfo?.offensive,
+                data?.additionalInfo?.offensive
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.offensive}
+            value={data?.reviewDetails?.additionalInfo?.offensive}
             required
             name="updatedOffensive"
             label="Updated Offensive"
@@ -722,8 +699,8 @@ export function ArtworkRevies({}) {
           <Field.Autocomplete
             disabled={
               !checkIsArrayChanged(
-                data?.data?.reviewDetails?.additionalInfo?.extTags,
-                data?.data?.additionalInfo?.extTags
+                data?.reviewDetails?.additionalInfo?.extTags,
+                data?.additionalInfo?.extTags
               ) && isReadOnly
             }
             className="pointer-events-none"
@@ -755,11 +732,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.material,
-                data?.data?.additionalInfo?.material
+                data?.reviewDetails?.additionalInfo?.material,
+                data?.additionalInfo?.material
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.material}
+            value={data?.reviewDetails?.additionalInfo?.material}
             required
             name="updatematerial"
             label="Updated Artwork Material"
@@ -767,11 +744,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.height,
-                data?.data?.additionalInfo?.height
+                data?.reviewDetails?.additionalInfo?.height,
+                data?.additionalInfo?.height
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.height}
+            value={data?.reviewDetails?.additionalInfo?.height}
             required
             name="updateheight"
             label="Updated Height (in cm)"
@@ -779,11 +756,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.width,
-                data?.data?.additionalInfo?.width
+                data?.reviewDetails?.additionalInfo?.width,
+                data?.additionalInfo?.width
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.width}
+            value={data?.reviewDetails?.additionalInfo?.width}
             required
             name="updatewidth"
             label="Updated Width (in cm)"
@@ -791,11 +768,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.length,
-                data?.data?.additionalInfo?.length
+                data?.reviewDetails?.additionalInfo?.length,
+                data?.additionalInfo?.length
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.length}
+            value={data?.reviewDetails?.additionalInfo?.length}
             required
             name="updatelength"
             label="Updated Depth (in cm)"
@@ -803,11 +780,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.weight,
-                data?.data?.additionalInfo?.weight
+                data?.reviewDetails?.additionalInfo?.weight,
+                data?.additionalInfo?.weight
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.weight}
+            value={data?.reviewDetails?.additionalInfo?.weight}
             required
             name="updateweight"
             label="Updated Weight (in kg)"
@@ -815,11 +792,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.hangingAvailable,
-                data?.data?.additionalInfo?.hangingAvailable
+                data?.reviewDetails?.additionalInfo?.hangingAvailable,
+                data?.additionalInfo?.hangingAvailable
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.hangingAvailable}
+            value={data?.reviewDetails?.additionalInfo?.hangingAvailable}
             required
             name="updatehanging"
             label="Updated Hanging"
@@ -827,11 +804,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.hangingDescription,
-                data?.data?.additionalInfo?.hangingDescription
+                data?.reviewDetails?.additionalInfo?.hangingDescription,
+                data?.additionalInfo?.hangingDescription
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.hangingDescription}
+            value={data?.reviewDetails?.additionalInfo?.hangingDescription}
             required
             multiline
             rows={4}
@@ -841,11 +818,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.framed,
-                data?.data?.additionalInfo?.framed
+                data?.reviewDetails?.additionalInfo?.framed,
+                data?.additionalInfo?.framed
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.framed}
+            value={data?.reviewDetails?.additionalInfo?.framed}
             required
             name="updateframed"
             label="Updated Framed"
@@ -853,11 +830,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.framedDescription,
-                data?.data?.additionalInfo?.framedDescription
+                data?.reviewDetails?.additionalInfo?.framedDescription,
+                data?.additionalInfo?.framedDescription
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.framedDescription}
+            value={data?.reviewDetails?.additionalInfo?.framedDescription}
             required
             multiline
             rows={4}
@@ -867,11 +844,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.frameHeight,
-                data?.data?.additionalInfo?.frameHeight
+                data?.reviewDetails?.additionalInfo?.frameHeight,
+                data?.additionalInfo?.frameHeight
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.frameHeight}
+            value={data?.reviewDetails?.additionalInfo?.frameHeight}
             required
             name="updateHeight"
             label="Updated Framed Height (in cm)"
@@ -880,11 +857,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.frameWidth,
-                data?.data?.additionalInfo?.frameWidth
+                data?.reviewDetails?.additionalInfo?.frameWidth,
+                data?.additionalInfo?.frameWidth
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.frameWidth}
+            value={data?.reviewDetails?.additionalInfo?.frameWidth}
             required
             name="updateWidth"
             label="Updated Framed Width (in cm)"
@@ -893,11 +870,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.frameLength,
-                data?.data?.additionalInfo?.frameLength
+                data?.reviewDetails?.additionalInfo?.frameLength,
+                data?.additionalInfo?.frameLength
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.frameLength}
+            value={data?.reviewDetails?.additionalInfo?.frameLength}
             required
             name="updateLength"
             label="Updated Framed Length (in cm)"
@@ -905,11 +882,11 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.additionalInfo?.artworkOrientation,
-                data?.data?.additionalInfo?.artworkOrientation
+                data?.reviewDetails?.additionalInfo?.artworkOrientation,
+                data?.additionalInfo?.artworkOrientation
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.additionalInfo?.artworkOrientation}
+            value={data?.reviewDetails?.additionalInfo?.artworkOrientation}
             required
             name="updateArtworkOrientation"
             label="Artwork Orientation"
@@ -928,21 +905,21 @@ export function ArtworkRevies({}) {
           <Field.Text
             label="Selected Method"
             name="activeTab"
-            value={data?.data?.commercialization?.activeTab}
+            value={data?.commercialization?.activeTab}
             disabled={isReadOnly}
           />
-          {data?.data && data?.data?.commercialization?.activeTab === 'subscription' ? (
+          {data && data?.commercialization?.activeTab === 'subscription' ? (
             <>
               <Field.Text
                 label="Subscription Catalog"
                 name="subscriptionCatalog"
-                value={data?.data?.commercialization?.publishingCatalog?.catalogName}
+                value={data?.commercialization?.publishingCatalog?.catalogName}
                 disabled={isReadOnly}
               />
               <Field.Text
                 label="Purchase Option"
                 name="options"
-                value={data?.data?.commercialization?.purchaseOption}
+                value={data?.commercialization?.purchaseOption}
                 disabled={isReadOnly}
               />
             </>
@@ -951,13 +928,13 @@ export function ArtworkRevies({}) {
               <Field.Text
                 label="Purchase Catalog"
                 name="price"
-                value={data?.data?.commercialization?.publishingCatalog?.catalogName}
+                value={data?.commercialization?.publishingCatalog?.catalogName}
                 disabled={isReadOnly}
               />
               <Field.Text
                 name="purchaseType"
                 label="Purchase Type"
-                value={data?.data?.commercialization?.purchaseType}
+                value={data?.commercialization?.purchaseType}
                 disabled={isReadOnly}
               />
             </>
@@ -967,36 +944,35 @@ export function ArtworkRevies({}) {
           <Field.Text
             label="Selected Method"
             name="activeTab"
-            value={data?.data?.reviewDetails?.commercialization?.activeTab}
+            value={data?.reviewDetails?.commercialization?.activeTab}
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.commercialization?.activeTab,
-                data?.data?.commercialization?.activeTab
+                data?.reviewDetails?.commercialization?.activeTab,
+                data?.commercialization?.activeTab
               ) && isReadOnly
             }
           />
-          {data?.data &&
-          data?.data?.reviewDetails?.commercialization?.activeTab === 'subscription' ? (
+          {data && data?.reviewDetails?.commercialization?.activeTab === 'subscription' ? (
             <>
               <Field.Text
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.commercialization?.subscriptionCatalog,
-                    data?.data?.commercialization?.publishingCatalog?._id
+                    data?.reviewDetails?.commercialization?.subscriptionCatalog,
+                    data?.commercialization?.publishingCatalog?._id
                   ) && isReadOnly
                 }
                 label="Subscription Catalog"
                 name="subscriptionCatalog"
-                value={data?.data?.catalogReviewInfo}
+                value={data?.catalogReviewInfo}
               />
               <Field.Text
                 label="Purchase Option"
                 name="options"
-                value={data?.data?.reviewDetails?.commercialization?.purchaseOption}
+                value={data?.reviewDetails?.commercialization?.purchaseOption}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.commercialization?.purchaseOption,
-                    data?.data?.commercialization?.purchaseOption
+                    data?.reviewDetails?.commercialization?.purchaseOption,
+                    data?.commercialization?.purchaseOption
                   ) && isReadOnly
                 }
               />
@@ -1006,22 +982,22 @@ export function ArtworkRevies({}) {
               <Field.Text
                 label="Purchase Catalog"
                 name="price"
-                value={data?.data?.catalogReviewInfo}
+                value={data?.catalogReviewInfo}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.commercialization?.purchaseCatalog,
-                    data?.data?.commercialization?.publishingCatalog?._id
+                    data?.reviewDetails?.commercialization?.purchaseCatalog,
+                    data?.commercialization?.publishingCatalog?._id
                   ) && isReadOnly
                 }
               />
               <Field.Text
                 name="purchaseType"
                 label="Purchase Type"
-                value={data?.data?.reviewDetails?.commercialization?.purchaseType}
+                value={data?.reviewDetails?.commercialization?.purchaseType}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.commercialization?.purchaseType,
-                    data?.data?.commercialization?.purchaseType
+                    data?.reviewDetails?.commercialization?.purchaseType,
+                    data?.commercialization?.purchaseType
                   ) && isReadOnly
                 }
               />
@@ -1041,16 +1017,16 @@ export function ArtworkRevies({}) {
           <Field.Text
             name="currency"
             label="Currency"
-            value={data?.data?.pricing?.currency}
+            value={data?.pricing?.currency}
             disabled={isReadOnly}
           />
-          {data?.data && data?.data?.commercialization?.activeTab === 'subscription' ? (
+          {data && data?.commercialization?.activeTab === 'subscription' ? (
             <>
               <Field.Text
                 name="basePrice"
                 label="Base Price"
                 placeholder="Base Price"
-                value={data?.data?.pricing?.basePrice}
+                value={data?.pricing?.basePrice}
                 disabled={isReadOnly}
               />
               <Field.Text
@@ -1059,11 +1035,11 @@ export function ArtworkRevies({}) {
                 placeholder="0.00%"
                 type="number"
                 disabled={isReadOnly}
-                value={data?.data?.pricing?.dpersentage}
+                value={data?.pricing?.dpersentage}
               />
               <Field.Text
                 type="number"
-                value={data?.data?.pricing?.vatAmount}
+                value={data?.pricing?.vatAmount}
                 disabled={isReadOnly}
                 name="vatAmount"
                 label="VAT Amount (%)"
@@ -1072,21 +1048,21 @@ export function ArtworkRevies({}) {
                 name="artistFees"
                 label="Artist Fees"
                 placeholder="Artist Fees"
-                value={data?.data?.pricing?.artistFees}
+                value={data?.pricing?.artistFees}
                 disabled={isReadOnly}
               />
             </>
           ) : (
             <>
-              {data?.data?.commercialization?.purchaseType === 'Price By Request' ||
-              data?.data?.commercialization?.purchaseType === 'Fixed Price' ||
-              data?.data?.commercialization?.purchaseType === 'Downward Offer' ? (
+              {data?.commercialization?.purchaseType === 'Price By Request' ||
+              data?.commercialization?.purchaseType === 'Fixed Price' ||
+              data?.commercialization?.purchaseType === 'Downward Offer' ? (
                 <>
                   <Field.Text
                     name="basePrice"
                     label="Base Price"
                     placeholder="Base Price"
-                    value={data?.data?.pricing?.basePrice}
+                    value={data?.pricing?.basePrice}
                     disabled={isReadOnly}
                   />
                   <Field.Text
@@ -1094,15 +1070,15 @@ export function ArtworkRevies({}) {
                     label="Discount Percentage"
                     placeholder="0.00%"
                     type="number"
-                    value={data?.data?.pricing?.dpersentage}
+                    value={data?.pricing?.dpersentage}
                     disabled={isReadOnly}
                   />
                 </>
               ) : null}
-              {data?.data?.commercialization?.purchaseType === 'Downward Offer' ||
-              data?.data?.commercialization?.purchaseType === 'Upward Offer' ? (
+              {data?.commercialization?.purchaseType === 'Downward Offer' ||
+              data?.commercialization?.purchaseType === 'Upward Offer' ? (
                 <Field.Text
-                  value={data?.data?.pricing?.acceptOfferPrice}
+                  value={data?.pricing?.acceptOfferPrice}
                   disabled={isReadOnly}
                   name="acceptOfferPrice"
                   label="Accept offer min. price"
@@ -1110,7 +1086,7 @@ export function ArtworkRevies({}) {
               ) : null}
               <Field.Text
                 type="number"
-                value={data?.data?.pricing?.vatAmount}
+                value={data?.pricing?.vatAmount}
                 name="vatAmount"
                 label="VAT Amount (%)"
                 disabled={isReadOnly}
@@ -1119,7 +1095,7 @@ export function ArtworkRevies({}) {
                 name="artistFees"
                 label="Artist Fees"
                 placeholder="Artist Fees"
-                value={data?.data?.pricing?.artistFees}
+                value={data?.pricing?.artistFees}
                 disabled={isReadOnly}
               />
             </>
@@ -1129,26 +1105,23 @@ export function ArtworkRevies({}) {
           <Field.Text
             name="currency"
             label="Currency"
-            value={data?.data?.reviewDetails?.pricing?.currency}
+            value={data?.reviewDetails?.pricing?.currency}
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.pricing?.currency,
-                data?.data?.pricing?.currency
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.pricing?.currency, data?.pricing?.currency) &&
+              isReadOnly
             }
           />
-          {data?.data &&
-          data?.data?.reviewDetails?.commercialization?.activeTab === 'subscription' ? (
+          {data && data?.reviewDetails?.commercialization?.activeTab === 'subscription' ? (
             <>
               <Field.Text
                 name="basePrice"
                 label="Base Price"
                 placeholder="Base Price"
-                value={data?.data?.reviewDetails?.pricing?.basePrice}
+                value={data?.reviewDetails?.pricing?.basePrice}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.basePrice,
-                    data?.data?.pricing?.basePrice
+                    data?.reviewDetails?.pricing?.basePrice,
+                    data?.pricing?.basePrice
                   ) && isReadOnly
                 }
               />
@@ -1159,19 +1132,19 @@ export function ArtworkRevies({}) {
                 type="number"
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.dpersentage,
-                    data?.data?.pricing?.dpersentage
+                    data?.reviewDetails?.pricing?.dpersentage,
+                    data?.pricing?.dpersentage
                   ) && isReadOnly
                 }
-                value={data?.data?.reviewDetails?.pricing?.dpersentage}
+                value={data?.reviewDetails?.pricing?.dpersentage}
               />
               <Field.Text
                 type="number"
-                value={data?.data?.reviewDetails?.pricing?.vatAmount}
+                value={data?.reviewDetails?.pricing?.vatAmount}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.vatAmount,
-                    data?.data?.pricing?.vatAmount
+                    data?.reviewDetails?.pricing?.vatAmount,
+                    data?.pricing?.vatAmount
                   ) && isReadOnly
                 }
                 name="vatAmount"
@@ -1181,30 +1154,30 @@ export function ArtworkRevies({}) {
                 name="artistFees"
                 label="Artist Fees"
                 placeholder="Artist Fees"
-                value={data?.data?.reviewDetails?.pricing?.artistFees}
+                value={data?.reviewDetails?.pricing?.artistFees}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.artistFees,
-                    data?.data?.pricing?.artistFees
+                    data?.reviewDetails?.pricing?.artistFees,
+                    data?.pricing?.artistFees
                   ) && isReadOnly
                 }
               />
             </>
           ) : (
             <>
-              {data?.data?.reviewDetails?.commercialization?.purchaseType === 'Price By Request' ||
-              data?.data?.reviewDetails?.commercialization?.purchaseType === 'Fixed Price' ||
-              data?.data?.reviewDetails?.commercialization?.purchaseType === 'Downward Offer' ? (
+              {data?.reviewDetails?.commercialization?.purchaseType === 'Price By Request' ||
+              data?.reviewDetails?.commercialization?.purchaseType === 'Fixed Price' ||
+              data?.reviewDetails?.commercialization?.purchaseType === 'Downward Offer' ? (
                 <>
                   <Field.Text
                     name="basePrice"
                     label="Base Price"
                     placeholder="Base Price"
-                    value={data?.data?.reviewDetails?.pricing?.basePrice}
+                    value={data?.reviewDetails?.pricing?.basePrice}
                     disabled={
                       !checkIsChanged(
-                        data?.data?.reviewDetails?.pricing?.basePrice,
-                        data?.data?.pricing?.basePrice
+                        data?.reviewDetails?.pricing?.basePrice,
+                        data?.pricing?.basePrice
                       ) && isReadOnly
                     }
                   />
@@ -1213,24 +1186,24 @@ export function ArtworkRevies({}) {
                     label="Discount Percentage"
                     placeholder="0.00%"
                     type="number"
-                    value={data?.data?.reviewDetails?.pricing?.dpersentage}
+                    value={data?.reviewDetails?.pricing?.dpersentage}
                     disabled={
                       !checkIsChanged(
-                        data?.data?.reviewDetails?.pricing?.dpersentage,
-                        data?.data?.pricing?.dpersentage
+                        data?.reviewDetails?.pricing?.dpersentage,
+                        data?.pricing?.dpersentage
                       ) && isReadOnly
                     }
                   />
                 </>
               ) : null}
-              {data?.data?.reviewDetails?.commercialization?.purchaseType === 'Downward Offer' ||
-              data?.data?.reviewDetails?.commercialization?.purchaseType === 'Upward Offer' ? (
+              {data?.reviewDetails?.commercialization?.purchaseType === 'Downward Offer' ||
+              data?.reviewDetails?.commercialization?.purchaseType === 'Upward Offer' ? (
                 <Field.Text
-                  value={data?.data?.reviewDetails?.pricing?.acceptOfferPrice}
+                  value={data?.reviewDetails?.pricing?.acceptOfferPrice}
                   disabled={
                     !checkIsChanged(
-                      data?.data?.reviewDetails?.pricing?.acceptOfferPrice,
-                      data?.data?.pricing?.acceptOfferPrice
+                      data?.reviewDetails?.pricing?.acceptOfferPrice,
+                      data?.pricing?.acceptOfferPrice
                     ) && isReadOnly
                   }
                   name="acceptOfferPrice"
@@ -1239,13 +1212,13 @@ export function ArtworkRevies({}) {
               ) : null}
               <Field.Text
                 type="number"
-                value={data?.data?.reviewDetails?.pricing?.vatAmount}
+                value={data?.reviewDetails?.pricing?.vatAmount}
                 name="vatAmount"
                 label="VAT Amount (%)"
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.vatAmount,
-                    data?.data?.pricing?.vatAmount
+                    data?.reviewDetails?.pricing?.vatAmount,
+                    data?.pricing?.vatAmount
                   ) && isReadOnly
                 }
               />
@@ -1253,11 +1226,11 @@ export function ArtworkRevies({}) {
                 name="artistFees"
                 label="Artist Fees"
                 placeholder="Artist Fees"
-                value={data?.data?.reviewDetails?.pricing?.artistFees}
+                value={data?.reviewDetails?.pricing?.artistFees}
                 disabled={
                   !checkIsChanged(
-                    data?.data?.reviewDetails?.pricing?.artistFees,
-                    data?.data?.pricing?.artistFees
+                    data?.reviewDetails?.pricing?.artistFees,
+                    data?.pricing?.artistFees
                   ) && isReadOnly
                 }
               />
@@ -1276,13 +1249,13 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.pCode}
+            value={data?.inventoryShipping?.pCode}
             name="pCode"
             label="Product code"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.location}
+            value={data?.inventoryShipping?.location}
             name="location"
             label="Location"
           />
@@ -1290,35 +1263,35 @@ export function ArtworkRevies({}) {
             disabled={isReadOnly}
             name="packageMaterial"
             label="Package Material"
-            value={data?.data?.inventoryShipping?.packageMaterial}
+            value={data?.inventoryShipping?.packageMaterial}
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.packageHeight}
+            value={data?.inventoryShipping?.packageHeight}
             name="packageHeight"
             label="Package Height (in cm)"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.packageWidth}
+            value={data?.inventoryShipping?.packageWidth}
             name="packageWidth"
             label="Package Width (in cm)"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.packageLength}
+            value={data?.inventoryShipping?.packageLength}
             name="packageLength"
             label="Package Depth (in cm)"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.inventoryShipping?.packageWeight}
+            value={data?.inventoryShipping?.packageWeight}
             name="packageWeight"
             label="Package Weight (in Kg)"
           />
           <Field.Checkbox
             disabled={isReadOnly}
-            checked={data?.data?.inventoryShipping?.comingSoon}
+            checked={data?.inventoryShipping?.comingSoon}
             name="comingSoon"
             label="Comming Soon"
           />
@@ -1327,88 +1300,88 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.pCode,
-                data?.data?.inventoryShipping?.pCode
+                data?.reviewDetails?.inventoryShipping?.pCode,
+                data?.inventoryShipping?.pCode
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.pCode}
+            value={data?.reviewDetails?.inventoryShipping?.pCode}
             name="pCode"
             label="Product code"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.location,
-                data?.data?.inventoryShipping?.location
+                data?.reviewDetails?.inventoryShipping?.location,
+                data?.inventoryShipping?.location
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.location}
+            value={data?.reviewDetails?.inventoryShipping?.location}
             name="location"
             label="Location"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.packageMaterial,
-                data?.data?.inventoryShipping?.packageMaterial
+                data?.reviewDetails?.inventoryShipping?.packageMaterial,
+                data?.inventoryShipping?.packageMaterial
               ) && isReadOnly
             }
             name="packageMaterial"
             label="Package Material"
-            value={data?.data?.reviewDetails?.inventoryShipping?.packageMaterial}
+            value={data?.reviewDetails?.inventoryShipping?.packageMaterial}
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.packageHeight,
-                data?.data?.inventoryShipping?.packageHeight
+                data?.reviewDetails?.inventoryShipping?.packageHeight,
+                data?.inventoryShipping?.packageHeight
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.packageHeight}
+            value={data?.reviewDetails?.inventoryShipping?.packageHeight}
             name="packageHeight"
             label="Package Height (in cm)"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.packageWidth,
-                data?.data?.inventoryShipping?.packageWidth
+                data?.reviewDetails?.inventoryShipping?.packageWidth,
+                data?.inventoryShipping?.packageWidth
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.packageWidth}
+            value={data?.reviewDetails?.inventoryShipping?.packageWidth}
             name="packageWidth"
             label="Package Width (in cm)"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.packageLength,
-                data?.data?.inventoryShipping?.packageLength
+                data?.reviewDetails?.inventoryShipping?.packageLength,
+                data?.inventoryShipping?.packageLength
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.packageLength}
+            value={data?.reviewDetails?.inventoryShipping?.packageLength}
             name="packageLength"
             label="Package Depth (in cm)"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.packageWeight,
-                data?.data?.inventoryShipping?.packageWeight
+                data?.reviewDetails?.inventoryShipping?.packageWeight,
+                data?.inventoryShipping?.packageWeight
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.inventoryShipping?.packageWeight}
+            value={data?.reviewDetails?.inventoryShipping?.packageWeight}
             name="packageWeight"
             label="Package Weight (in Kg)"
           />
           <Field.Checkbox
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.inventoryShipping?.comingSoon,
-                data?.data?.inventoryShipping?.comingSoon
+                data?.reviewDetails?.inventoryShipping?.comingSoon,
+                data?.inventoryShipping?.comingSoon
               ) && isReadOnly
             }
-            checked={data?.data?.reviewDetails?.inventoryShipping?.comingSoon}
+            checked={data?.reviewDetails?.inventoryShipping?.comingSoon}
             name="comingSoon"
             label="Comming Soon"
           />
@@ -1425,13 +1398,13 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.restriction?.availableTo}
+            value={data?.restriction?.availableTo}
             name="availableTo"
             label="Available To"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.restriction?.discountAcceptation}
+            value={data?.restriction?.discountAcceptation}
             name="discountAcceptation"
             label="Discount Acceptation"
           />
@@ -1440,22 +1413,22 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.restriction?.availableTo,
-                data?.data?.restriction?.availableTo
+                data?.reviewDetails?.restriction?.availableTo,
+                data?.restriction?.availableTo
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.restriction?.availableTo}
+            value={data?.reviewDetails?.restriction?.availableTo}
             name="availableTo"
             label="Available To"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.restriction?.discountAcceptation,
-                data?.data?.restriction?.discountAcceptation
+                data?.reviewDetails?.restriction?.discountAcceptation,
+                data?.restriction?.discountAcceptation
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.restriction?.discountAcceptation}
+            value={data?.reviewDetails?.restriction?.discountAcceptation}
             name="discountAcceptation"
             label="Discount Acceptation"
           />
@@ -1472,13 +1445,13 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.promotions?.promotion}
+            value={data?.promotions?.promotion}
             name="promotion"
             label="Promotion"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.promotions?.promotionScore}
+            value={data?.promotions?.promotionScore}
             name="promotionScore"
             label="Promotion Score"
           />
@@ -1487,22 +1460,22 @@ export function ArtworkRevies({}) {
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.promotions?.promotion,
-                data?.data?.promotions?.promotion
+                data?.reviewDetails?.promotions?.promotion,
+                data?.promotions?.promotion
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.promotions?.promotion}
+            value={data?.reviewDetails?.promotions?.promotion}
             name="promotion"
             label="Promotion"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.promotions?.promotionScore,
-                data?.data?.promotions?.promotionScore
+                data?.reviewDetails?.promotions?.promotionScore,
+                data?.promotions?.promotionScore
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.promotions?.promotionScore}
+            value={data?.reviewDetails?.promotions?.promotionScore}
             name="promotionScore"
             label="Promotion Score"
           />

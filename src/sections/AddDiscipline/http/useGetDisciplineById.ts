@@ -5,7 +5,7 @@ import axiosInstance from 'src/utils/axios';
 async function fetchData(id) {
   if (!id) return {};
   const { data } = await axiosInstance.get(`${GENERAL_ENDPOINTS.getDisciplineById}/${id}`);
-  return data;
+  return data.data;
 }
 
 export const useGetDisciplineById = (id) => {

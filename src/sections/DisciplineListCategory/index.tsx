@@ -21,6 +21,7 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { DisciplineTableRow } from './Discipline-table-row';
 import { useGetDisciplineSearchData } from './http/useGetDisciplineSearchData';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
   { id: 'disciplineName', label: 'Discipline Name', width: 150 },
@@ -36,17 +37,15 @@ export function DiscipleListCategory() {
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
   const [_list, setList] = useState([]);
-  const [url, setUrl] = useState('');
 
   const { data, isLoading } = useGetDisciplineSearchData(debounceSearch);
 
   useEffect(() => {
-    if (data?.data) {
-      setList(data?.data);
-      setNotFound(data?.data?.length === 0);
-      setUrl(data?.url);
+    if (data) {
+      setList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _list,
@@ -102,7 +101,7 @@ export function DiscipleListCategory() {
               />
               <TableBody>
                 {dataFiltered.map((row, i) => (
-                  <DisciplineTableRow key={i} row={row} url={url} />
+                  <DisciplineTableRow key={i} row={row} url={imgUrl} />
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

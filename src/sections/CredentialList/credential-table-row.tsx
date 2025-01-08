@@ -21,21 +21,10 @@ import useDeleteInsignia from './http/useDeleteInsignia';
 
 type Props = {
   row: ArtistDisciplineType;
-  selected: boolean;
   url: string;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function CredentialTable({
-  row,
-  url,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export function CredentialTable({ row, url }: Props) {
   const navigate = useNavigate();
   const { mutate, isPending } = useDeleteInsignia();
 
@@ -56,7 +45,7 @@ export function CredentialTable({
             <Avatar alt={row?.credentialName} src={`${url}/users/${row?.insigniaImage}`} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link color="inherit" sx={{ cursor: 'pointer' }}>
                 {row?.credentialName}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>

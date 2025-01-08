@@ -15,7 +15,7 @@ import { useSearchParams } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { FormControl } from '@mui/material';
+import { CircularProgress, FormControl } from '@mui/material';
 import { RadioGroup } from '@mui/material';
 import { Radio } from '@mui/material';
 import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
@@ -30,6 +30,7 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useGetUserByIdMutation } from './http/userGetUserByIdMutation';
 import axios from 'axios';
 import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -112,7 +113,11 @@ export function CreateArtistForm() {
 
   const { reset, watch, handleSubmit } = methods;
   const debounceUserId = useDebounce(methods.getValues('existingId'), 500);
-  const { refetch, data: artistData } = useGetUserByIdMutation(debounceUserId);
+  const {
+    refetch,
+    data: artistData,
+    isLoading: artistLoading,
+  } = useGetUserByIdMutation(debounceUserId);
   const values = watch();
 
   useEffect(() => {
@@ -120,7 +125,7 @@ export function CreateArtistForm() {
     if (data) {
       reset({
         existingAvatar: data?.profile?.mainImage
-          ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
+          ? `${imgUrl}/users/${data?.profile?.mainImage}`
           : null,
         existingId: data?.userId || '',
         existingName: data?.artistName || '',
@@ -174,10 +179,7 @@ export function CreateArtistForm() {
 
   const refillData = (data) => {
     setId(data?._id);
-    methods.setValue(
-      'existingAvatar',
-      `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
-    );
+    methods.setValue('existingAvatar', `${imgUrl}/users/${data?.profile?.mainImage}`);
     methods.setValue('existingId', data?.userId);
     methods.setValue('existingName', data?.artistName);
     methods.setValue('existingArtistSurname1', data?.artistSurname1);
@@ -201,7 +203,7 @@ export function CreateArtistForm() {
         const response = await axios.get('https://ipapi.co/json/');
         if (response.status === 200) {
           methods.setValue('existingCountry', response.data.country_name);
-          methods.setValue('existingPhoneNumber', response.data.country_code);
+          setCode(response.data.country_code);
         }
       } catch (err) {
         console.log('Failed to fetch country data by IP');
@@ -308,7 +310,11 @@ export function CreateArtistForm() {
                 {methods.getValues('existingId') && open && (
                   <div className="absolute top-[5.5rem] w-[93%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto">
                     <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {artistData && artistData.length > 0 ? (
+                      {artistLoading ? (
+                        <TableCell>
+                          <CircularProgress size={30} />
+                        </TableCell>
+                      ) : artistData && artistData.length > 0 ? (
                         artistData.map((i, j) => (
                           <TableCell
                             onClick={() => refillData(i)}
@@ -343,7 +349,7 @@ export function CreateArtistForm() {
                           </TableCell>
                         ))
                       ) : (
-                        <TableCell>No Data Available</TableCell>
+                        <TableCell>No User Found</TableCell>
                       )}
                     </TableRow>
                   </div>
@@ -404,7 +410,6 @@ export function CreateArtistForm() {
                     disabled={isReadOnly}
                     fetchCode={code ? code : ''}
                     name="existingPhoneNumber"
-                    required
                     label="Phone Number"
                   />
 

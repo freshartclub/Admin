@@ -23,6 +23,7 @@ import { TextField } from '@mui/material';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { FormControl } from '@mui/material';
 import { InputLabel } from '@mui/material';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​' },
@@ -47,11 +48,11 @@ export function ArtistsRequest() {
   const { data, isLoading } = useGetAllArtistRequest(debounceSearch, sStatus);
 
   useEffect(() => {
-    if (data?.data) {
-      setUserList(data?.data);
-      setNotFound(data?.data.length === 0);
+    if (data) {
+      setUserList(data);
+      setNotFound(data.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
@@ -120,7 +121,7 @@ export function ArtistsRequest() {
                     <ArtistRequest
                       key={row._id}
                       row={row}
-                      url={data?.url}
+                      url={imgUrl}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

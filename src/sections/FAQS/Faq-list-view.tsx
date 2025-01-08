@@ -60,20 +60,16 @@ export function FaqListView() {
   const { data, isLoading } = useGetAllFAQ(debounceSearch, grp);
 
   useEffect(() => {
-    if (data?.data) {
-      setFAQList(data.data);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setFAQList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _faqList,
     comparator: getComparator(table.order, table.orderBy),
   });
-
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
 
   return (
     <>
@@ -152,15 +148,7 @@ export function FaqListView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row, i) => (
-                    <FaqTableRow
-                      key={i}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                    />
+                    <FaqTableRow key={i} row={row} />
                   ))}
 
                 <TableEmptyRows

@@ -8,3 +8,4 @@ export const CART_BASE_URL = 'api/cart';
 export const ORDER_BASE_URL = 'api/order';
 export const EMAIL_BASE_URL = 'api/email';
 export const ADMIN_BASE_URL = 'api/admin';
+export const imgUrl = import.meta.env.VITE_IMG_URL ? import.meta.env.VITE_IMG_URL : '';

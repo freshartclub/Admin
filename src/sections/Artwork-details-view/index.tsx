@@ -11,6 +11,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useGetArtworkById } from './http/useGetArtworkById';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 export function ArtworkDetailView() {
   const preview = useSearchParams().get('preview');
@@ -21,16 +22,16 @@ export function ArtworkDetailView() {
 
   useEffect(() => {
     const arr = [
-      data?.data?.media?.mainImage,
-      data?.data?.media?.backImage,
-      data?.data?.media?.inProcessImage,
-      ...(data?.data?.media?.images || []),
-      data?.data?.media?.mainVideo,
-      ...(data?.data?.media?.otherVideo || []),
+      data?.media?.mainImage,
+      data?.media?.backImage,
+      data?.media?.inProcessImage,
+      ...(data?.media?.images || []),
+      data?.media?.mainVideo,
+      ...(data?.media?.otherVideo || []),
     ].filter(Boolean);
 
     setImages(arr);
-  }, [data?.data]);
+  }, [data]);
 
   const sliderRef = useRef<Slider>(null);
   const settings = {
@@ -48,9 +49,6 @@ export function ArtworkDetailView() {
     }
   };
 
-  const url = 'https://dev.freshartclub.com/images/users';
-  const url2 = 'https://dev.freshartclub.com/images/videos';
-
   return isPending ? (
     <LoadingScreen />
   ) : (
@@ -60,7 +58,7 @@ export function ArtworkDetailView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: preview ? 'Artwork Preview' : 'Artwork Details' },
-          { name: '#' + data?.data?.artworkId },
+          { name: '#' + data?.artworkId },
         ]}
       />
       <div className="container mx-auto md:px-6 px-3">
@@ -76,14 +74,14 @@ export function ArtworkDetailView() {
                   return isVideo ? (
                     <video
                       key={i}
-                      src={`${url2}/${file}`}
+                      src={`${imgUrl}/videos/${file}`}
                       className="mb-4 lg:w-20 lg:h-24 cursor-pointer object-cover"
                       onClick={() => handleThumbnailClick(i)}
                     />
                   ) : (
                     <img
                       key={i}
-                      src={`${url}/${file}`}
+                      src={`${imgUrl}/users/${file}`}
                       alt={file}
                       className="mb-4 lg:w-20 lg:h-24 cursor-pointer object-cover"
                       onClick={() => handleThumbnailClick(i)}
@@ -100,13 +98,13 @@ export function ArtworkDetailView() {
                     images[0].endsWith('.webm') ||
                     images[0].endsWith('.mkv') ? (
                       <video
-                        src={`${url2}/${images[0]}`}
+                        src={`${imgUrl}/videos/${images[0]}`}
                         controls
                         className="mx-auto object-cover lg:h-[60vh]"
                       />
                     ) : (
                       <img
-                        src={`${url}/${images[0]}`}
+                        src={`${imgUrl}/users/${images[0]}`}
                         alt={`Slide ${images[0] + 1}`}
                         className="mx-auto object-cover lg:h-[60vh]"
                       />
@@ -122,13 +120,13 @@ export function ArtworkDetailView() {
                       <div key={index}>
                         {src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.ogg') ? (
                           <video
-                            src={`${url2}/${src}`}
+                            src={`${imgUrl}/videos/${src}`}
                             controls
                             className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
                           />
                         ) : (
                           <img
-                            src={`${url}/${src}`}
+                            src={`${imgUrl}/users/${src}`}
                             alt={`Slide ${index + 1}`}
                             className="mx-auto object-cover h-[20rem] md:h-[60vh] lg:h-[60vh]"
                           />
@@ -144,11 +142,11 @@ export function ArtworkDetailView() {
           </div>
 
           <div className="lg:w-[50%] w-full">
-            <DiscoverContent data={data?.data} preview={preview} />
+            <DiscoverContent data={data} preview={preview} />
           </div>
         </div>
 
-        <ProductInfo data={data?.data} preview={preview} />
+        <ProductInfo data={data} preview={preview} />
       </div>
       {!preview && <SelectedSection />}
     </>

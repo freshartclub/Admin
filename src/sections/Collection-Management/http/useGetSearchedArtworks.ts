@@ -5,7 +5,7 @@ import axiosInstance from 'src/utils/axios';
 async function fetchData(search) {
   if (search === '') return [];
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getSearchedArtwork}?s=${search}`);
-  return data;
+  return data.data;
 }
 
 export const useGetSearchedArtworks = (search) => {

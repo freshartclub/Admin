@@ -17,6 +17,7 @@ import useAddReplyMutation from './http/useAddReplyMutation';
 import { useGetTicketDetailMutation } from './http/useGetTicketDetailMutation';
 import { useGetTicketReply } from './http/useGetTicketReply';
 import { Divider } from '@mui/material';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
@@ -47,13 +48,13 @@ export function TicketDetailView() {
   const popover = usePopover();
   const defaultValues = useMemo(
     () => ({
-      email: data?.data?.user?.email || '',
-      ticketType: data?.data?.ticketType || '',
-      status: data?.data?.status || '',
+      email: data?.user?.email || '',
+      ticketType: data?.ticketType || '',
+      status: data?.status || '',
       ticketImg: null,
       message: '',
     }),
-    [data?.data]
+    [data]
   );
 
   const methods = useForm<NewPostSchemaType>({
@@ -64,16 +65,16 @@ export function TicketDetailView() {
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
-    if (data?.data) {
+    if (data) {
       reset({
-        email: data?.data?.user?.email || '',
-        ticketType: data?.data?.ticketType || '',
-        status: data?.data?.status || '',
+        email: data?.user?.email || '',
+        ticketType: data?.ticketType || '',
+        status: data?.status || '',
         ticketImg: null,
         message: '',
       });
     }
-  }, [data?.data, reset]);
+  }, [data, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -177,7 +178,7 @@ export function TicketDetailView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ticket List', href: paths.dashboard.tickets.allList },
-          { name: `Ticket Detail - ${data?.data?.ticketId}` },
+          { name: `Ticket Detail - ${data?.ticketId}` },
         ]}
         sx={{ mb: 3 }}
       />
@@ -185,9 +186,9 @@ export function TicketDetailView() {
         <Stack mb={3} direction="row" alignItems="center" justifyContent="space-between">
           <div className="flex gap-4">
             <span
-              className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.data?.status === 'Created' ? 'bg-[#F8A534]' : data?.data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
+              className={`w-[1.5rem] h-[1.5rem] rounded-full ${data?.status === 'Created' ? 'bg-[#F8A534]' : data?.status === 'Dispatched' ? 'bg-[#3B8AFF]' : data?.status === 'Technical Finish' ? 'bg-[#8E33FF]' : data?.status === 'In progress' ? 'bg-[#FFAB00]' : 'bg-[#54C104]'}`}
             ></span>
-            <h2 className="text-[16px] text-black font-bold">{data?.data?.ticketId}</h2>
+            <h2 className="text-[16px] text-black font-bold">{data?.ticketId}</h2>
             <span
               onClick={popover.onOpen}
               className="bg-green-600 text-white rounded-sm px-1 pr-2 flex items-center cursor-pointer"
@@ -203,49 +204,45 @@ export function TicketDetailView() {
               <MenuList>
                 <MenuItem>
                   <Iconify icon="tabler:urgent" />
-                  Urgency - {data?.data?.urgency}
+                  Urgency - {data?.urgency}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="flat-color-icons:high-priority" />
-                  Priority - {data?.data?.priority}
+                  Priority - {data?.priority}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="game-icons:gooey-impact" />
-                  Impact - {data?.data?.impact}
+                  Impact - {data?.impact}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="gridicons:status" />
-                  Status - {data?.data?.status}
+                  Status - {data?.status}
                 </MenuItem>
               </MenuList>
             </CustomPopover>
           </div>
 
           <span className="text-[14px] flex items-center gap-3">
-            <span>{fDate(data?.data?.createdAt)}</span> {fTime(data?.data?.createdAt)}
+            <span>{fDate(data?.createdAt)}</span> {fTime(data?.createdAt)}
           </span>
         </Stack>
         <Stack spacing={1}>
-          <h2 className="text-black text-[18px] font-bold">{data?.data?.subject}</h2>
-          <p className="text-[#84818A]">{data?.data?.message}</p>
-          {data?.data?.ticketImg && (
+          <h2 className="text-black text-[18px] font-bold">{data?.subject}</h2>
+          <p className="text-[#84818A]">{data?.message}</p>
+          {data?.ticketImg && (
             <span className="flex bg-slate-100 p-2 rounded-md items-center gap-2">
               <p className="text-[#3d3d3d]">View Attachment</p> -
-              {data?.data?.ticketImg.includes('.pdf') || data?.data?.ticketImg.includes('.docx') ? (
+              {data?.ticketImg.includes('.pdf') || data?.ticketImg.includes('.docx') ? (
                 <FileThumbnail
                   sx={{ cursor: 'pointer' }}
-                  onClick={() =>
-                    window.open(`${data?.url}/documents/${data?.data?.ticketImg}`, '_blank')
-                  }
-                  file={data?.data?.ticketImg}
+                  onClick={() => window.open(`${imgUrl}/documents/${data?.ticketImg}`, '_blank')}
+                  file={data?.ticketImg}
                 />
               ) : (
                 <FileThumbnail
                   sx={{ cursor: 'pointer' }}
-                  onClick={() =>
-                    window.open(`${data?.url}/users/${data?.data?.ticketImg}`, '_blank')
-                  }
-                  file={data?.data?.ticketImg}
+                  onClick={() => window.open(`${imgUrl}/users/${data?.ticketImg}`, '_blank')}
+                  file={data?.ticketImg}
                 />
               )}
             </span>
@@ -269,8 +266,8 @@ export function TicketDetailView() {
                       <span>
                         {reply?.userType === 'user' ? (
                           <>
-                            {`${name(data?.data?.user)} wrote `}
-                            <span className="text-[#858585]">({data?.data?.user?.email})</span> :
+                            {`${name(data?.user)} wrote `}
+                            <span className="text-[#858585]">({data?.user?.email})</span> :
                           </>
                         ) : (
                           <>
@@ -295,7 +292,7 @@ export function TicketDetailView() {
                         <FileThumbnail
                           sx={{ cursor: 'pointer' }}
                           onClick={() =>
-                            window.open(`${data?.url}/documents/${reply.ticketImg}`, '_blank')
+                            window.open(`${imgUrl}/documents/${reply.ticketImg}`, '_blank')
                           }
                           file={reply.ticketImg}
                         />
@@ -303,7 +300,7 @@ export function TicketDetailView() {
                         <FileThumbnail
                           sx={{ cursor: 'pointer' }}
                           onClick={() =>
-                            window.open(`${data?.url}/users/${reply.ticketImg}`, '_blank')
+                            window.open(`${imgUrl}/users/${reply.ticketImg}`, '_blank')
                           }
                           file={reply.ticketImg}
                         />
@@ -326,7 +323,7 @@ export function TicketDetailView() {
           </Form>
         </Box>
       </Card>
-      {data?.data?.ticketFeedback ? (
+      {data?.ticketFeedback ? (
         <Card sx={{ border: '1px solid #E0E0E0', mt: 2 }}>
           <CardHeader title="User Feedback" sx={{ mb: 2 }} />
           <Divider />
@@ -334,14 +331,14 @@ export function TicketDetailView() {
             <span className="text-[14px] text-[#84818A]">
               User Feedback -{' '}
               <span className="font-semibold text-[#000000]">
-                {data?.data?.ticketFeedback?.isLiked ? 'Helpfull' : 'Not Helpfull'}{' '}
-                {data?.data?.ticketFeedback?.isLiked ? '👍' : '👎'}
+                {data?.ticketFeedback?.isLiked ? 'Helpfull' : 'Not Helpfull'}{' '}
+                {data?.ticketFeedback?.isLiked ? '👍' : '👎'}
               </span>
             </span>
             <span className="text-[14px] text-[#84818A]">
               User Comment -{' '}
               <span className="font-semibold text-[#000000]">
-                {data?.data?.ticketFeedback?.message ? data?.data?.ticketFeedback?.message : 'N/A'}
+                {data?.ticketFeedback?.message ? data?.ticketFeedback?.message : 'N/A'}
               </span>
             </span>
           </Stack>

@@ -20,21 +20,9 @@ import { fDate } from 'src/utils/format-time';
 
 type Props = {
   row: IInvoice;
-  selected: boolean;
-  onSelectRow: () => void;
-  onViewRow: () => void;
-  onEditRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function KbTableRow({
-  row,
-  selected,
-  onSelectRow,
-  onViewRow,
-  onEditRow,
-  onDeleteRow,
-}: Props) {
+export function KbTableRow({ row }: Props) {
   const navigate = useNavigate();
   const confirm = useBoolean();
   const popover = usePopover();
@@ -100,7 +88,7 @@ export function KbTableRow({
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error">
             Delete
           </Button>
         }

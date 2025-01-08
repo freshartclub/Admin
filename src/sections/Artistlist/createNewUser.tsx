@@ -13,6 +13,7 @@ import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutati
 import { fData } from 'src/utils/format-number';
 import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
 import { CreateArtistFormSchema } from './createArtitstForm';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
   const [value, setValue] = useState('new');
@@ -24,9 +25,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
 
   const defaultValues = useMemo(() => {
     const obj = {
-      avatar: data?.profile?.mainImage
-        ? `https://dev.freshartclub.com/images/users/${data?.profile?.mainImage}`
-        : null,
+      avatar: data?.profile?.mainImage ? `${imgUrl}/users/${data?.profile?.mainImage}` : null,
       name: data?.artistName || '',
       artistSurname1: data?.artistSurname1 || '',
       artistSurname2: data?.artistSurname2 || '',
@@ -54,8 +53,6 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
         value: value,
       };
 
-      // return;
-
       mutate(newData);
     } catch (error) {
       console.error(error);
@@ -72,7 +69,7 @@ const CreateNewUser = ({ existingUser, data, isReadOnly }) => {
         const response = await axios.get('https://ipapi.co/json/');
         if (methods.getValues('country') === '') {
           methods.setValue('country', response.data.country_name);
-          methods.setValue('phoneNumber', response.data.country_code);
+          setCode(response.data.country_code);
         }
       } catch (err) {
         console.log('Failed to fetch country data by IP');

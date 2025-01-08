@@ -76,6 +76,7 @@ export const ARTIST_ENDPOINTS = {
   addPlan: `${ADMIN_BASE_URL}/add-plan`,
   getAllPlan: `${ADMIN_BASE_URL}/get-all-plans`,
   getPlanById: `${ADMIN_BASE_URL}/get-plan-by-id`,
+  downloadArtwork: `${ADMIN_BASE_URL}/download-artwork-list`,
 };
 
 export const USER_ENDPOINTS = {

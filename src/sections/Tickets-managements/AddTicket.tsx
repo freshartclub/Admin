@@ -25,6 +25,7 @@ import { z as zod } from 'zod';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddTicketMutation from './http/useAddTicketMutation';
 import { useGetUesrByQueryInput } from './http/useGetUserMutation';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -185,8 +186,8 @@ export function AddTicket() {
                 <TableCell>
                   <CircularProgress size={30} />
                 </TableCell>
-              ) : artistData?.data && artistData?.data?.length > 0 ? (
-                artistData?.data.map((i, j) => (
+              ) : artistData && artistData?.length > 0 ? (
+                artistData.map((i, j) => (
                   <TableCell
                     onClick={() => refillData(i)}
                     key={j}
@@ -198,7 +199,7 @@ export function AddTicket() {
                     }}
                   >
                     <Stack spacing={2} direction="row" alignItems="center">
-                      <Avatar alt={i?.artistName} src={`${artistData.url}/users/${i?.mainImage}`} />
+                      <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
 
                       <ListItemText
                         disableTypography

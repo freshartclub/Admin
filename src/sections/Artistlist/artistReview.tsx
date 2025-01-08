@@ -13,6 +13,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { useApproveArtistChanges } from './http/useApproveArtistChanges';
 import { useGetReviewArtist } from './http/useGetReviewArtist';
 import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -52,53 +53,53 @@ export function ArtistReview({}) {
   let updatedImgArr: any = [];
   let updatedVideoArr: any = [];
 
-  if (id && data?.data) {
-    data?.data?.profile?.additionalImage &&
-      data?.data?.profile?.additionalImage.length > 0 &&
-      data?.data?.profile?.additionalImage.forEach((item: any, i) =>
-        imgArr.push(`${data?.url}/users/${item}`)
+  if (id && data) {
+    data?.profile?.additionalImage &&
+      data?.profile?.additionalImage.length > 0 &&
+      data?.profile?.additionalImage.forEach((item: any, i) =>
+        imgArr.push(`${imgUrl}/users/${item}`)
       );
-    data?.data?.profile?.additionalVideo &&
-      data?.data?.profile?.additionalVideo.length > 0 &&
-      data?.data?.profile?.additionalVideo.forEach((item: any, i) =>
-        videoArr.push(`${data?.url}/videos/${item}`)
+    data?.profile?.additionalVideo &&
+      data?.profile?.additionalVideo.length > 0 &&
+      data?.profile?.additionalVideo.forEach((item: any, i) =>
+        videoArr.push(`${imgUrl}/videos/${item}`)
       );
   }
 
-  if (id && data?.data?.reviewDetails) {
-    data?.data?.reviewDetails?.profile?.additionalImage &&
-      data?.data?.reviewDetails?.profile?.additionalImage.length > 0 &&
-      data?.data?.reviewDetails?.profile?.additionalImage.forEach((item: any, i) =>
-        updatedImgArr.push(`${data?.url}/users/${item}`)
+  if (id && data?.reviewDetails) {
+    data?.reviewDetails?.profile?.additionalImage &&
+      data?.reviewDetails?.profile?.additionalImage.length > 0 &&
+      data?.reviewDetails?.profile?.additionalImage.forEach((item: any, i) =>
+        updatedImgArr.push(`${imgUrl}/users/${item}`)
       );
-    data?.data?.reviewDetails?.profile?.additionalVideo &&
-      data?.data?.reviewDetails?.profile?.additionalVideo.length > 0 &&
-      data?.data?.reviewDetails?.profile?.additionalVideo.forEach((item: any, i) =>
-        updatedVideoArr.push(`${data?.url}/videos/${item}`)
+    data?.reviewDetails?.profile?.additionalVideo &&
+      data?.reviewDetails?.profile?.additionalVideo.length > 0 &&
+      data?.reviewDetails?.profile?.additionalVideo.forEach((item: any, i) =>
+        updatedVideoArr.push(`${imgUrl}/videos/${item}`)
       );
   }
 
   const defaultValues = useMemo(
     () => ({
-      about: data?.data?.aboutArtist?.about || '',
-      discipline: data?.data?.aboutArtist?.discipline || [],
-      changedDiscipline: data?.data?.reviewDetails?.aboutArtist?.discipline || [],
-      chnagedAbout: data?.data?.reviewDetails?.aboutArtist?.about || '',
-      addHighlights: data?.data?.highlights?.addHighlights || '',
-      chnagedAddHighlights: data?.data?.reviewDetails?.highlights?.addHighlights || '',
-      mainImage: data?.data?.profile?.mainImage || null,
+      about: data?.aboutArtist?.about || '',
+      discipline: data?.aboutArtist?.discipline || [],
+      changedDiscipline: data?.reviewDetails?.aboutArtist?.discipline || [],
+      chnagedAbout: data?.reviewDetails?.aboutArtist?.about || '',
+      addHighlights: data?.highlights?.addHighlights || '',
+      chnagedAddHighlights: data?.reviewDetails?.highlights?.addHighlights || '',
+      mainImage: data?.profile?.mainImage || null,
       additionalImage: imgArr || [],
-      inProcessImage: data?.data?.profile?.inProcessImage || null,
-      mainVideo: data?.data?.profile?.mainVideo || null,
+      inProcessImage: data?.profile?.inProcessImage || null,
+      mainVideo: data?.profile?.mainVideo || null,
       additionalVideo: videoArr || [],
-      updatedMainImage: data?.data?.reviewDetails?.profile?.mainImage || null,
+      updatedMainImage: data?.reviewDetails?.profile?.mainImage || null,
       updatedAdditionalImage: updatedImgArr || [],
-      updatedInProcessImage: data?.data?.reviewDetails?.profile?.inProcessImage || null,
-      updatedMainVideo: data?.data?.reviewDetails?.profile?.mainVideo || null,
+      updatedInProcessImage: data?.reviewDetails?.profile?.inProcessImage || null,
+      updatedMainVideo: data?.reviewDetails?.profile?.mainVideo || null,
       updatedAdditionalVideo: updatedVideoArr || [],
       note: '',
     }),
-    [data?.data]
+    [data]
   );
 
   const formProps = useForm({
@@ -112,7 +113,7 @@ export function ArtistReview({}) {
     const note = formProps.getValues('note');
     if (!note) return toast.error('Note is required');
 
-    let bodyData = data?.data?.reviewDetails;
+    let bodyData = data?.reviewDetails;
     bodyData.isApproved = isApproved;
     bodyData.note = note;
     bodyData.id = id;
@@ -132,39 +133,35 @@ export function ArtistReview({}) {
   };
 
   useEffect(() => {
-    if (data?.data) {
+    if (data) {
       reset({
-        about: data?.data?.aboutArtist?.about || '',
-        chnagedAbout: data?.data?.reviewDetails?.aboutArtist?.about || '',
-        discipline: data?.data?.aboutArtist?.discipline || [],
-        changedDiscipline: data?.data?.reviewDetails?.aboutArtist?.discipline || [],
-        addHighlights: data?.data?.highlights?.addHighlights || '',
-        chnagedAddHighlights: data?.data?.reviewDetails?.highlights?.addHighlights || '',
-        mainImage: data?.data?.profile?.mainImage
-          ? `${data?.url}/users/${data?.data?.profile?.mainImage}`
-          : null,
+        about: data?.aboutArtist?.about || '',
+        chnagedAbout: data?.reviewDetails?.aboutArtist?.about || '',
+        discipline: data?.aboutArtist?.discipline || [],
+        changedDiscipline: data?.reviewDetails?.aboutArtist?.discipline || [],
+        addHighlights: data?.highlights?.addHighlights || '',
+        chnagedAddHighlights: data?.reviewDetails?.highlights?.addHighlights || '',
+        mainImage: data?.profile?.mainImage ? `${imgUrl}/users/${data?.profile?.mainImage}` : null,
         additionalImage: imgArr || [],
-        inProcessImage: data?.data?.profile?.inProcessImage
-          ? `${data?.url}/users/${data?.data?.profile?.inProcessImage}`
+        inProcessImage: data?.profile?.inProcessImage
+          ? `${imgUrl}/users/${data?.profile?.inProcessImage}`
           : null,
-        mainVideo: data?.data?.profile?.mainVideo
-          ? `${data?.url}/videos/${data?.data?.profile?.mainVideo}`
-          : null,
+        mainVideo: data?.profile?.mainVideo ? `${imgUrl}/videos/${data?.profile?.mainVideo}` : null,
         additionalVideo: videoArr || [],
-        updatedMainImage: data?.data?.reviewDetails?.profile?.mainImage
-          ? `${data?.url}/users/${data?.data?.reviewDetails?.profile?.mainImage}`
+        updatedMainImage: data?.reviewDetails?.profile?.mainImage
+          ? `${imgUrl}/users/${data?.reviewDetails?.profile?.mainImage}`
           : null,
         updatedAdditionalImage: updatedImgArr || [],
-        updatedInProcessImage: data?.data?.reviewDetails?.profile?.inProcessImage
-          ? `${data?.url}/users/${data?.data?.reviewDetails?.profile?.inProcessImage}`
+        updatedInProcessImage: data?.reviewDetails?.profile?.inProcessImage
+          ? `${imgUrl}/users/${data?.reviewDetails?.profile?.inProcessImage}`
           : null,
-        updatedMainVideo: data?.data?.reviewDetails?.profile?.mainVideo
-          ? `${data?.url}/videos/${data?.data?.reviewDetails?.profile?.mainVideo}`
+        updatedMainVideo: data?.reviewDetails?.profile?.mainVideo
+          ? `${imgUrl}/videos/${data?.reviewDetails?.profile?.mainVideo}`
           : null,
         updatedAdditionalVideo: updatedVideoArr || [],
       });
     }
-  }, [data?.data]);
+  }, [data]);
 
   const checkIsChanged = (input1, input2) => {
     if (input1 !== input2) {
@@ -196,7 +193,7 @@ export function ArtistReview({}) {
       }}
     >
       <DialogTitle>
-        Validate Artist Changes - ({data?.data?.artistName} {data?.data?.artistId})
+        Validate Artist Changes - ({data?.artistName} {data?.artistId})
       </DialogTitle>
       <form>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -236,72 +233,62 @@ export function ArtistReview({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.artistName}
+            value={data?.artistName}
             required
             name="artistName"
             label="Artist name"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.artistSurname1}
+            value={data?.artistSurname1}
             required
             name="artistSurname1"
             label="Artist Surname 1"
           />
           <Field.Text
-            value={data?.data?.artistSurname2}
+            value={data?.artistSurname2}
             disabled={isReadOnly}
             name="artistSurname2"
             label="Artist Surname 2"
           />
           <Field.Text
-            value={data?.data?.nickName}
+            value={data?.nickName}
             disabled={isReadOnly}
             name="NickName"
             label="Artist Nickname"
           />
-          <Field.Text disabled={isReadOnly} value={data?.data?.email} name="email" label="Email" />
+          <Field.Text disabled={isReadOnly} value={data?.email} name="email" label="Email" />
 
+          <Field.Text disabled={isReadOnly} value={data?.gender} name="gender" label="Gender" />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.gender}
-            name="gender"
-            label="Gender"
-          />
-          <Field.Text
-            disabled={isReadOnly}
-            value={data?.data?.language}
+            value={data?.language}
             name="language"
             label="Language"
           />
-          <Field.Text disabled={isReadOnly} value={data?.data?.phone} name="phone" label="Phone" />
+          <Field.Text disabled={isReadOnly} value={data?.phone} name="phone" label="Phone" />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.address?.country}
+            value={data?.address?.country}
             name="country"
             label="Country"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.address?.zipCode}
+            value={data?.address?.zipCode}
             name="zipCode"
             label="Zip Code"
           />
+          <Field.Text disabled={isReadOnly} value={data?.address?.city} name="city" label="City" />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.address?.city}
-            name="city"
-            label="City"
-          />
-          <Field.Text
-            disabled={isReadOnly}
-            value={data?.data?.address?.state}
+            value={data?.address?.state}
             name="state"
             label="State"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.data?.address?.residentialAddress}
+            value={data?.address?.residentialAddress}
             name="residentialAddress"
             label="Residential Address"
           />
@@ -309,132 +296,106 @@ export function ArtistReview({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.artistName, data?.data?.artistName) &&
-              isReadOnly
+              !checkIsChanged(data?.reviewDetails?.artistName, data?.artistName) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.artistName}
+            value={data?.reviewDetails?.artistName}
             required
             name="artistName"
             label="Updated Artist name"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.artistSurname1,
-                data?.data?.artistSurname1
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.artistSurname1, data?.artistSurname1) &&
+              isReadOnly
             }
             required
-            value={data?.data?.reviewDetails?.artistSurname1}
+            value={data?.reviewDetails?.artistSurname1}
             name="artistSurname1"
             label="Updated Artist Surname 1"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.artistSurname2,
-                data?.data?.artistSurname2
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.artistSurname2, data?.artistSurname2) &&
+              isReadOnly
             }
-            value={data?.data?.reviewDetails?.artistSurname2}
+            value={data?.reviewDetails?.artistSurname2}
             name="artistSurname2"
             label="Updated Artist Surname 2"
           />
           <Field.Text
-            disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.nickName, data?.data?.nickName) &&
-              isReadOnly
-            }
-            value={data?.data?.reviewDetails?.nickName}
+            disabled={!checkIsChanged(data?.reviewDetails?.nickName, data?.nickName) && isReadOnly}
+            value={data?.reviewDetails?.nickName}
             name="nickName"
             label="Updated Artist Nickname"
           />
           <Field.Text
-            disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.email, data?.data?.email) && isReadOnly
-            }
-            value={data?.data?.reviewDetails?.email || 'N/A'}
+            disabled={!checkIsChanged(data?.reviewDetails?.email, data?.email) && isReadOnly}
+            value={data?.reviewDetails?.email || 'N/A'}
             name="email"
             label="Updated Email"
           />
           <Field.Text
-            disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.gender, data?.data?.gender) && isReadOnly
-            }
-            value={data?.data?.reviewDetails?.gender}
+            disabled={!checkIsChanged(data?.reviewDetails?.gender, data?.gender) && isReadOnly}
+            value={data?.reviewDetails?.gender}
             name="gender"
             label="Updated Gender"
           />
           <Field.Text
-            disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.language, data?.data?.language) &&
-              isReadOnly
-            }
-            value={data?.data?.reviewDetails?.language}
+            disabled={!checkIsChanged(data?.reviewDetails?.language, data?.language) && isReadOnly}
+            value={data?.reviewDetails?.language}
             name="language"
             label="Updated Language"
           />
           <Field.Text
-            disabled={
-              !checkIsChanged(data?.data?.reviewDetails?.phone, data?.data?.phone) && isReadOnly
-            }
-            value={data?.data?.reviewDetails?.phone}
+            disabled={!checkIsChanged(data?.reviewDetails?.phone, data?.phone) && isReadOnly}
+            value={data?.reviewDetails?.phone}
             name="phone"
             label="Updated Phone"
           />
 
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.address?.country,
-                data?.data?.address?.country
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.address?.country, data?.address?.country) &&
+              isReadOnly
             }
-            value={data?.data?.reviewDetails?.address?.country}
+            value={data?.reviewDetails?.address?.country}
             name="country"
             label="Updated Country"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.address?.zipCode,
-                data?.data?.address?.zipCode
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.address?.zipCode, data?.address?.zipCode) &&
+              isReadOnly
             }
-            value={data?.data?.reviewDetails?.address?.zipCode}
+            value={data?.reviewDetails?.address?.zipCode}
             name="zipCode"
             label="Updated Zip Code"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.address?.city,
-                data?.data?.address?.city
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.address?.city, data?.address?.city) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.address?.city}
+            value={data?.reviewDetails?.address?.city}
             name="city"
             label="Updated City"
           />
           <Field.Text
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.address?.state,
-                data?.data?.address?.state
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.address?.state, data?.address?.state) &&
+              isReadOnly
             }
-            value={data?.data?.reviewDetails?.address?.state}
+            value={data?.reviewDetails?.address?.state}
             name="state"
             label="Updated State"
           />
           <Field.Text
             disabled={
               !checkIsChanged(
-                data?.data?.reviewDetails?.address?.residentialAddress,
-                data?.data?.address?.residentialAddress
+                data?.reviewDetails?.address?.residentialAddress,
+                data?.address?.residentialAddress
               ) && isReadOnly
             }
-            value={data?.data?.reviewDetails?.address?.residentialAddress}
+            value={data?.reviewDetails?.address?.residentialAddress}
             name="residentialAddress"
             label="Updated Residential Address"
           />
@@ -455,10 +416,8 @@ export function ArtistReview({}) {
           <Field.Editor
             required
             disabled={
-              !checkIsChanged(
-                data?.data?.reviewDetails?.aboutArtist?.about,
-                data?.data?.aboutArtist?.about
-              ) && isReadOnly
+              !checkIsChanged(data?.reviewDetails?.aboutArtist?.about, data?.aboutArtist?.about) &&
+              isReadOnly
             }
             name="chnagedAbout"
             sx={{ maxHeight: 480 }}
@@ -486,8 +445,8 @@ export function ArtistReview({}) {
             required
             disabled={
               !checkIsChanged(
-                data?.data?.highlights?.addHighlights,
-                data?.data?.reviewDetails?.highlights?.addHighlights
+                data?.highlights?.addHighlights,
+                data?.reviewDetails?.highlights?.addHighlights
               ) && isReadOnly
             }
             name="chnagedAddHighlights"
@@ -504,9 +463,9 @@ export function ArtistReview({}) {
       <Divider />
       <Stack spacing={3} p={2} direction={'row'}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.aboutArtist?.discipline &&
-            data?.data?.aboutArtist?.discipline.length > 0 &&
-            data?.data?.aboutArtist?.discipline.map((item, index) => (
+          {data?.aboutArtist?.discipline &&
+            data?.aboutArtist?.discipline.length > 0 &&
+            data?.aboutArtist?.discipline.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -532,9 +491,9 @@ export function ArtistReview({}) {
             ))}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.reviewDetails?.aboutArtist?.discipline &&
-            data?.data?.reviewDetails?.aboutArtist?.discipline.length > 0 &&
-            data?.data?.reviewDetails?.aboutArtist?.discipline.map((item, index) => (
+          {data?.reviewDetails?.aboutArtist?.discipline &&
+            data?.reviewDetails?.aboutArtist?.discipline.length > 0 &&
+            data?.reviewDetails?.aboutArtist?.discipline.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -547,8 +506,8 @@ export function ArtistReview({}) {
                   label="Updated Discipline"
                   disabled={
                     !checkIsChanged(
-                      data?.data?.aboutArtist?.discipline[index]?.discipline,
-                      data?.data?.reviewDetails?.aboutArtist?.discipline[index]?.discipline
+                      data?.aboutArtist?.discipline[index]?.discipline,
+                      data?.reviewDetails?.aboutArtist?.discipline[index]?.discipline
                     ) && isReadOnly
                   }
                   name={`changedDiscipline[${index}].discipline`}
@@ -559,8 +518,8 @@ export function ArtistReview({}) {
                     <Field.MultiSelect
                       disabled={
                         !checkIsArrayChanged(
-                          data?.data?.aboutArtist?.discipline[index]?.style,
-                          data?.data?.reviewDetails?.aboutArtist?.discipline[index]?.style
+                          data?.aboutArtist?.discipline[index]?.style,
+                          data?.reviewDetails?.aboutArtist?.discipline[index]?.style
                         ) && isReadOnly
                       }
                       label="Updated Style"
@@ -581,8 +540,8 @@ export function ArtistReview({}) {
       <Divider />
       <Stack spacing={3} p={2} direction={'row'}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.links && data?.data?.links.length > 0 ? (
-            data?.data?.links.map((item, index) => (
+          {data?.links && data?.links.length > 0 ? (
+            data?.links.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -605,8 +564,8 @@ export function ArtistReview({}) {
           )}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.reviewDetails?.links && data?.data?.reviewDetails?.links.length > 0 ? (
-            data?.data?.reviewDetails?.links.map((item, index) => (
+          {data?.reviewDetails?.links && data?.reviewDetails?.links.length > 0 ? (
+            data?.reviewDetails?.links.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -616,13 +575,13 @@ export function ArtistReview({}) {
                   Updated Social Link - {index + 1}
                 </Typography>
                 <Field.Text
-                  disabled={!checkIsChanged(item.name, data?.data?.links[index].name) && isReadOnly}
+                  disabled={!checkIsChanged(item.name, data?.links[index].name) && isReadOnly}
                   name="uadtedPlatformName"
                   value={item.name}
                   label="Platform Name"
                 />
                 <Field.Text
-                  disabled={!checkIsChanged(item.link, data?.data?.links[index].link) && isReadOnly}
+                  disabled={!checkIsChanged(item.link, data?.links[index].link) && isReadOnly}
                   name="updatedLink"
                   value={item.link}
                   label="Link"
@@ -645,8 +604,8 @@ export function ArtistReview({}) {
       <Divider />
       <Stack spacing={3} p={2} direction={'row'}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.highlights?.cv && data?.data?.highlights?.cv.length > 0 ? (
-            data?.data?.highlights?.cv.map((item, index) => (
+          {data?.highlights?.cv && data?.highlights?.cv.length > 0 ? (
+            data?.highlights?.cv.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -692,9 +651,8 @@ export function ArtistReview({}) {
           )}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
-          {data?.data?.reviewDetails.highlights?.cv &&
-          data?.data?.reviewDetails.highlights?.cv.length > 0 ? (
-            data?.data?.reviewDetails.highlights?.cv.map((item, index) => (
+          {data?.reviewDetails.highlights?.cv && data?.reviewDetails.highlights?.cv.length > 0 ? (
+            data?.reviewDetails.highlights?.cv.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -703,8 +661,7 @@ export function ArtistReview({}) {
                 <Typography sx={{ fontWeight: 'bold' }}>Updated CV - {index + 1}</Typography>
                 <Field.Text
                   disabled={
-                    !checkIsChanged(item.year, data?.data?.highlights?.cv[index]?.year) &&
-                    isReadOnly
+                    !checkIsChanged(item.year, data?.highlights?.cv[index]?.year) && isReadOnly
                   }
                   value={item.year}
                   name={`cvData[${index}].year`}
@@ -713,8 +670,7 @@ export function ArtistReview({}) {
                 <Field.Text
                   value={item.Type}
                   disabled={
-                    !checkIsChanged(item.Type, data?.data?.highlights?.cv[index]?.Type) &&
-                    isReadOnly
+                    !checkIsChanged(item.Type, data?.highlights?.cv[index]?.Type) && isReadOnly
                   }
                   name={`cvData[${index}].Type`}
                   label="Type"
@@ -722,10 +678,8 @@ export function ArtistReview({}) {
                 <Field.Text
                   value={item.Description}
                   disabled={
-                    !checkIsChanged(
-                      item.Description,
-                      data?.data?.highlights?.cv[index]?.Description
-                    ) && isReadOnly
+                    !checkIsChanged(item.Description, data?.highlights?.cv[index]?.Description) &&
+                    isReadOnly
                   }
                   name={`cvData[${index}].Description`}
                   label="Description"
@@ -733,7 +687,7 @@ export function ArtistReview({}) {
                 <Field.Text
                   value={item.Location}
                   disabled={
-                    !checkIsChanged(item.Location, data?.data?.highlights?.cv[index]?.Location) &&
+                    !checkIsChanged(item.Location, data?.highlights?.cv[index]?.Location) &&
                     isReadOnly
                   }
                   name={`cvData[${index}].Location`}
@@ -742,8 +696,7 @@ export function ArtistReview({}) {
                 <Field.Text
                   value={item.Scope}
                   disabled={
-                    !checkIsChanged(item.Scope, data?.data?.highlights?.cv[index]?.Scope) &&
-                    isReadOnly
+                    !checkIsChanged(item.Scope, data?.highlights?.cv[index]?.Scope) && isReadOnly
                   }
                   name={`cvData[${index}].Scope`}
                   label="Scope"
@@ -765,58 +718,58 @@ export function ArtistReview({}) {
       <CardHeader title="Manager Details" sx={{ mb: 2 }} />
       <Divider />
       <Stack spacing={3} p={2} direction={'row'}>
-        {data?.data?.isManagerDetails && data?.data?.isManagerDetails === true ? (
+        {data?.isManagerDetails && data?.isManagerDetails === true ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
             <Field.Text
-              value={data?.data?.managerDetails?.managerName || ''}
+              value={data?.managerDetails?.managerName || ''}
               disabled={isReadOnly}
               name="managerName"
               label="Manager Name"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.managerEmail || ''}
+              value={data?.managerDetails?.managerEmail || ''}
               disabled={isReadOnly}
               name="managerEmail"
               label="Manager Email"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.managerPhoneNumber || ''}
+              value={data?.managerDetails?.managerPhoneNumber || ''}
               disabled={isReadOnly}
               name="managerPhoneNumber"
               label="Manager Phone Number"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.managerGender || ''}
+              value={data?.managerDetails?.managerGender || ''}
               disabled={isReadOnly}
               name="managerGender"
               label="Manager Gender"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.address?.address || ''}
+              value={data?.managerDetails?.address?.address || ''}
               disabled={isReadOnly}
               name="managerAddress"
               label="Manager Address"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.address?.city || ''}
+              value={data?.managerDetails?.address?.city || ''}
               disabled={isReadOnly}
               name="managerCity"
               label="Manager City"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.address?.state || ''}
+              value={data?.managerDetails?.address?.state || ''}
               disabled={isReadOnly}
               name="managerState"
               label="Manager State"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.address?.zipCode || ''}
+              value={data?.managerDetails?.address?.zipCode || ''}
               disabled={isReadOnly}
               name="managerZipCode"
               label="Manager Zip Code"
             />
             <Field.Text
-              value={data?.data?.managerDetails?.address?.country || ''}
+              value={data?.managerDetails?.address?.country || ''}
               disabled={isReadOnly}
               name="managerCountry"
               label="Manager Country"
@@ -828,103 +781,102 @@ export function ArtistReview({}) {
           </Box>
         )}
 
-        {data?.data?.reviewDetails?.isManagerDetails &&
-        data?.data?.reviewDetails?.isManagerDetails === true ? (
+        {data?.reviewDetails?.isManagerDetails && data?.reviewDetails?.isManagerDetails === true ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.managerName || ''}
+              value={data?.reviewDetails?.managerDetails?.managerName || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.managerName,
-                  data?.data?.managerDetails?.managerName
+                  data?.reviewDetails?.managerDetails?.managerName,
+                  data?.managerDetails?.managerName
                 ) && isReadOnly
               }
               name="changedManagerName"
               label="Updated Manager Name"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.managerEmail || ''}
+              value={data?.reviewDetails?.managerDetails?.managerEmail || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.managerEmail,
-                  data?.data?.managerDetails?.managerEmail
+                  data?.reviewDetails?.managerDetails?.managerEmail,
+                  data?.managerDetails?.managerEmail
                 ) && isReadOnly
               }
               name="UpdatedManagerEmail"
               label="Updated Manager Email"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.managerPhoneNumber || ''}
+              value={data?.reviewDetails?.managerDetails?.managerPhoneNumber || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.managerPhone,
-                  data?.data?.managerDetails?.managerPhone
+                  data?.reviewDetails?.managerDetails?.managerPhone,
+                  data?.managerDetails?.managerPhone
                 ) && isReadOnly
               }
               name="UpdatedManagerPhoneNumber"
               label="Updated Manager Phone Number"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.managerGender || ''}
+              value={data?.reviewDetails?.managerDetails?.managerGender || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.managerGender,
-                  data?.data?.managerDetails?.managerGender
+                  data?.reviewDetails?.managerDetails?.managerGender,
+                  data?.managerDetails?.managerGender
                 ) && isReadOnly
               }
               name="UpdatedManagerGender"
               label="Updated Manager Gender"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.address?.address || ''}
+              value={data?.reviewDetails?.managerDetails?.address?.address || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.address?.address,
-                  data?.data?.managerDetails?.address?.address
+                  data?.reviewDetails?.managerDetails?.address?.address,
+                  data?.managerDetails?.address?.address
                 ) && isReadOnly
               }
               name="UpdatedManagerAddress"
               label="Updated Manager Address"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.address?.city || ''}
+              value={data?.reviewDetails?.managerDetails?.address?.city || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.address?.managerCity,
-                  data?.data?.managerDetails?.address?.managerCity
+                  data?.reviewDetails?.managerDetails?.address?.managerCity,
+                  data?.managerDetails?.address?.managerCity
                 ) && isReadOnly
               }
               name="managerCity"
               label="Updated Manager City"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.address?.state || ''}
+              value={data?.reviewDetails?.managerDetails?.address?.state || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.address?.managerState,
-                  data?.data?.managerDetails?.address?.managerState
+                  data?.reviewDetails?.managerDetails?.address?.managerState,
+                  data?.managerDetails?.address?.managerState
                 ) && isReadOnly
               }
               name="UpdatedManagerState"
               label="Updated Manager State"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.address?.zipCode || ''}
+              value={data?.reviewDetails?.managerDetails?.address?.zipCode || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.address?.managerZipCode,
-                  data?.data?.managerDetails?.address?.managerZipCode
+                  data?.reviewDetails?.managerDetails?.address?.managerZipCode,
+                  data?.managerDetails?.address?.managerZipCode
                 ) && isReadOnly
               }
               name="UpdatedManagerZipCode"
               label="Updated Manager Zip Code"
             />
             <Field.Text
-              value={data?.data?.reviewDetails?.managerDetails?.address?.country || ''}
+              value={data?.reviewDetails?.managerDetails?.address?.country || ''}
               disabled={
                 !checkIsChanged(
-                  data?.data?.reviewDetails?.managerDetails?.address?.managerCountry,
-                  data?.data?.managerDetails?.address?.managerCountry
+                  data?.reviewDetails?.managerDetails?.address?.managerCountry,
+                  data?.managerDetails?.address?.managerCountry
                 ) && isReadOnly
               }
               name="UpdatedManagerCountry"

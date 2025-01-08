@@ -24,6 +24,7 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { useGetAllCollectionList } from '../http/useGetAllCollection';
 import { CollectionTableRow } from './collection-table-row';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -42,25 +43,21 @@ export function CollectionListView() {
   const [notFound, setNotFound] = useState(false);
   const [_collectionList, setCollectionList] = useState<IInvoice[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 1000);
+  const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllCollectionList(debounceSearch);
 
   useEffect(() => {
-    if (data?.data) {
-      setCollectionList(data.data);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setCollectionList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _collectionList,
     comparator: getComparator(table.order, table.orderBy),
   });
-
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
 
   return (
     <>
@@ -110,16 +107,7 @@ export function CollectionListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row, i) => (
-                      <CollectionTableRow
-                        key={i}
-                        row={row}
-                        url={data?.url}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
+                      <CollectionTableRow key={i} row={row} url={imgUrl} />
                     ))}
 
                   <TableEmptyRows

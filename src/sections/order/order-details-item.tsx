@@ -1,17 +1,13 @@
 import type { IOrderProductItem } from 'src/types/order';
 
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Text from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
-import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-
-import { fCurrency } from 'src/utils/format-number';
-
-import { Iconify } from 'src/components/iconify';
+import Stack from '@mui/material/Stack';
+import Text from '@mui/material/Typography';
+import { currencies } from 'src/_mock/_currency';
 import { Scrollbar } from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
@@ -22,6 +18,7 @@ type Props = {
   discount?: number;
   subtotal?: number;
   totalAmount?: number;
+  currency?: string;
   url: string;
   items?: IOrderProductItem[];
 };
@@ -35,49 +32,48 @@ export function OrderDetailsItems({
   items = [],
   totalAmount,
 }: Props) {
+  const currencySymbol = currencies.find(
+    (item) => item.code === items[0]?.artWork?.pricing?.currency?.split(' ')[0]
+  )?.symbol;
+
   const renderTotal = (
     <Stack spacing={2} alignItems="flex-end" sx={{ p: 3, textAlign: 'right', typography: 'body2' }}>
       <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>Subtotal</Box>
-        <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subtotal) || '0'}</Box>
+        <Box sx={{ width: 160, typography: 'subtitle2' }}>
+          {currencySymbol + ' ' + subtotal || '0'}
+        </Box>
       </Stack>
 
       <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>Shipping</Box>
         <Box sx={{ width: 160, ...(shipping && { color: 'error.main' }) }}>
-          {shipping ? `- ${fCurrency(shipping)}` : '0'}
+          {shipping ? currencySymbol + ' ' + shipping : '0'}
         </Box>
       </Stack>
 
       <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>Discount</Box>
         <Box sx={{ width: 160, ...(discount && { color: 'error.main' }) }}>
-          {discount ? `- ${fCurrency(discount)}` : '0'}
+          {discount ? currencySymbol + ' ' + discount : '0'}
         </Box>
       </Stack>
 
       <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>Taxes</Box>
-        <Box sx={{ width: 160 }}>{taxes ? fCurrency(taxes) : '0'}</Box>
+        <Box sx={{ width: 160 }}>{taxes ? taxes + '%' : '0'}</Box>
       </Stack>
 
       <Stack direction="row" sx={{ typography: 'subtitle1' }}>
         <div>Total</div>
-        <Box sx={{ width: 160 }}>{fCurrency(totalAmount) || '0'}</Box>
+        <Box sx={{ width: 160 }}>{currencySymbol + ' ' + totalAmount}</Box>
       </Stack>
     </Stack>
   );
 
   return (
     <Card>
-      <CardHeader
-        title="Artwork Details"
-        // action={
-        //   <IconButton>
-        //     <Iconify icon="solar:pen-bold" />
-        //   </IconButton>
-        // }
-      />
+      <CardHeader title="Artwork Details" />
 
       <Scrollbar>
         {items.map((item, i) => (
@@ -99,7 +95,7 @@ export function OrderDetailsItems({
 
             <ListItemText
               primary={item?.artWork.artworkName}
-              secondary={item?.artWork?.inventoryShipping?.pCode}
+              secondary={item?.artWork?.artworkId}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
             />
@@ -127,7 +123,7 @@ export function OrderDetailsItems({
             <Box sx={{ typography: 'body2' }}>x{item.quantity}</Box>
 
             <Box sx={{ width: 110, textAlign: 'right', typography: 'subtitle2' }}>
-              {fCurrency(item?.artWork.pricing?.basePrice)}
+              {currencySymbol + ' ' + item?.artWork.pricing?.basePrice}
             </Box>
           </Stack>
         ))}

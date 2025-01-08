@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData() {
   const { data } = await axiosInstance.get(ARTIST_ENDPOINTS.getAllPlan);
-  return data;
+  return data.data;
 }
 
 export const useGetAllPlans = () => {

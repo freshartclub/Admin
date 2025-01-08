@@ -1,14 +1,12 @@
 import type { IOrderItem } from 'src/types/order';
 
-import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { paths } from 'src/routes/paths';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { DashboardContent } from 'src/layouts/dashboard';
+import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   emptyRows,
@@ -19,9 +17,11 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
-import { LoadingScreen } from 'src/components/loading-screen';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { paths } from 'src/routes/paths';
 import { useGetSubscriptionOrder } from '../http/useGetSubscriptionOrder';
 import { OrderTableRow } from '../order-table-row';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -43,99 +43,82 @@ const TABLE_HEAD = [
 
 export function OrderListView() {
   const table = useTable();
-  const confirm = useBoolean();
 
   const [notFound, setNotFound] = useState(false);
-  const [url, setUrl] = useState('');
   const [_orderList, setOrderList] = useState<IOrderItem[]>([]);
 
   const { data, isLoading } = useGetSubscriptionOrder();
 
   useEffect(() => {
-    if (data?.data) {
-      setOrderList(data?.data);
-      setUrl(data?.url);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setOrderList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _orderList,
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
-
   return (
-    <>
-      <DashboardContent>
-        <CustomBreadcrumbs
-          heading="Subscription Order List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Subscription Order List' },
-          ]}
-          sx={{ mb: { xs: 3, md: 3 } }}
-        />
+    <DashboardContent>
+      <CustomBreadcrumbs
+        heading="Subscription Order List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Subscription Order List' },
+        ]}
+        sx={{ mb: { xs: 3, md: 3 } }}
+      />
 
-        {isLoading ? (
-          <LoadingScreen />
-        ) : (
-          <Card>
-            <Box sx={{ position: 'relative' }}>
-              <Scrollbar sx={{ minHeight: 444 }}>
-                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    onSort={table.onSort}
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Card>
+          <Box sx={{ position: 'relative' }}>
+            <Scrollbar sx={{ minHeight: 444 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  onSort={table.onSort}
+                />
+
+                <TableBody>
+                  {dataFiltered
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row) => (
+                      <OrderTableRow key={row._id} row={row} url={imgUrl} />
+                    ))}
+
+                  <TableEmptyRows
+                    height={table.dense ? 56 : 56 + 20}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableBody>
-                    {dataFiltered
-                      .slice(
-                        table.page * table.rowsPerPage,
-                        table.page * table.rowsPerPage + table.rowsPerPage
-                      )
-                      .map((row) => (
-                        <OrderTableRow
-                          key={row._id}
-                          row={row}
-                          url={url}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onViewRow={() => handleViewRow(row.id)}
-                        />
-                      ))}
+                  <TableNoData notFound={notFound} />
+                </TableBody>
+              </Table>
+            </Scrollbar>
+          </Box>
 
-                    <TableEmptyRows
-                      height={table.dense ? 56 : 56 + 20}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                    />
-
-                    <TableNoData notFound={notFound} />
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            </Box>
-
-            <TablePaginationCustom
-              page={table.page}
-              dense={table.dense}
-              count={dataFiltered.length}
-              rowsPerPage={table.rowsPerPage}
-              onPageChange={table.onChangePage}
-              onChangeDense={table.onChangeDense}
-              onRowsPerPageChange={table.onChangeRowsPerPage}
-            />
-          </Card>
-        )}
-      </DashboardContent>
-    </>
+          <TablePaginationCustom
+            page={table.page}
+            dense={table.dense}
+            count={dataFiltered.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onChangeDense={table.onChangeDense}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      )}
+    </DashboardContent>
   );
 }
 

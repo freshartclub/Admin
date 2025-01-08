@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(search) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getAllCatalog}?s=${search}`);
-  return data;
+  return data.data;
 }
 
 export const useGetAllCatalogList = (search) => {

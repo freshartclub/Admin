@@ -17,7 +17,6 @@ import { useSearchParams } from 'src/routes/hooks';
 
 function AddArtistIndex() {
   const [artistFormData, setArtistFormData] = useState<ArtistDetailType>();
-
   const { refetch } = useGetArtist();
 
   const id = useSearchParams().get('id');

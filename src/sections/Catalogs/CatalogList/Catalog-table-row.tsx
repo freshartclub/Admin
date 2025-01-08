@@ -25,22 +25,9 @@ import useDeleteCatalog from '../http/useDeleteCatalog';
 type Props = {
   row: IInvoice;
   url: string;
-  selected: boolean;
-  onSelectRow: () => void;
-  onViewRow: () => void;
-  onEditRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function CatalogTableRow({
-  row,
-  url,
-  selected,
-  onSelectRow,
-  onViewRow,
-  onEditRow,
-  onDeleteRow,
-}: Props) {
+export function CatalogTableRow({ row, url }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
   const navigate = useNavigate();
@@ -77,12 +64,7 @@ export function CatalogTableRow({
                 </Typography>
               }
               secondary={
-                <Link
-                  noWrap
-                  variant="body2"
-                  onClick={onViewRow}
-                  sx={{ color: 'text.disabled', cursor: 'pointer' }}
-                >
+                <Link noWrap variant="body2" sx={{ color: 'text.disabled', cursor: 'pointer' }}>
                   {row?.catalogName}
                 </Link>
               }
@@ -117,13 +99,7 @@ export function CatalogTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {row?.isDeleted ? // <MenuItem
-          // onClick={() => navigate(`${paths.dashboard.artwork.catalog.add}?id=${row._id}`)}
-          // >
-          //   <Iconify icon="carbon:face-activated" />
-          //   Activate
-          // </MenuItem>
-          null : (
+          {row?.isDeleted ? null : (
             <MenuItem onClick={confirm.onTrue} sx={{ color: 'error.main' }}>
               <Iconify icon="solar:trash-bin-trash-bold" />
               Delete

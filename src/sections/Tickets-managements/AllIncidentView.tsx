@@ -47,9 +47,6 @@ export function AllIncidentView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-
   return (
     <>
       <CustomBreadcrumbs
@@ -76,14 +73,7 @@ export function AllIncidentView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <AllIncidentList
-                      key={row._id}
-                      row={row}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
-                    />
+                    <AllIncidentList key={row._id} row={row} />
                   ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

@@ -20,6 +20,7 @@ import { useGetInsigniaList } from 'src/sections/CredentialList/http/useGetInsig
 import { useGetDisciplineMutation } from 'src/sections/DisciplineListCategory/http/useGetDisciplineMutation';
 import { RenderAllPicklist } from 'src/sections/Picklists/RenderAllPicklist';
 import { useGetStyleListMutation } from 'src/sections/StyleListCategory/http/useGetStyleListMutation';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -251,9 +252,7 @@ export function AboutArtist({
           freeSolo
           disableCloseOnSelect
           options={
-            data?.data && data?.data?.length > 0
-              ? data?.data.filter((option) => option.isDeleted === false)
-              : []
+            data && data?.length > 0 ? data.filter((option) => option.isDeleted === false) : []
           }
           getOptionLabel={(option) => option.credentialName}
           isOptionEqualToValue={(option, value) => option._id === value._id}
@@ -261,7 +260,7 @@ export function AboutArtist({
             <div className="flex items-center gap-4" {...props} key={option._id}>
               <Avatar
                 alt={option?.credentialName}
-                src={`${data?.url}/users/${option?.insigniaImage}`}
+                src={`${imgUrl}/users/${option?.insigniaImage}`}
               />
               <span className="ml-2">{option.credentialName}</span>
             </div>
@@ -283,8 +282,8 @@ export function AboutArtist({
             setValue('insignia', selectedIds);
           }}
           value={
-            data?.data && data?.data?.length > 0
-              ? data?.data?.filter((item) => watch('insignia').includes(item._id))
+            data && data?.length > 0
+              ? data?.filter((item) => watch('insignia').includes(item._id))
               : []
           }
         />

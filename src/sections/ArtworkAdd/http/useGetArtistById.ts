@@ -4,7 +4,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function fetchData(input) {
   const { data } = await axiosInstance.get(`${ARTIST_ENDPOINTS.getArtistById}?nameEmail=${input}`);
-  return data;
+  return data.data;
 }
 
 export const useGetArtistById = (input) => {

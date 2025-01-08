@@ -22,6 +22,7 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import useAddPlan from './http/useAddPlan';
 import { useGetPlanById } from './http/useGetPlanById';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
@@ -67,28 +68,28 @@ export function AddPlanForm() {
 
   const defaultValues = useMemo(
     () => ({
-      planGrp: data?.data?.planGrp || '',
-      planName: data?.data?.planName || '',
-      planDesc: data?.data?.planDesc || '',
-      standardPrice: data?.data?.standardPrice || 0,
-      standardYearlyPrice: data?.data?.standardYearlyPrice || 0,
-      currentPrice: data?.data?.currentPrice || 0,
-      currentYearlyPrice: data?.data?.currentYearlyPrice || 0,
-      defaultArtistFees: data?.data?.defaultArtistFees || 0,
-      numArtworks: data?.data?.numArtworks || 5,
-      numLargeArtworks: data?.data?.numLargeArtworks || 5,
-      individualShipment: data?.data?.individualShipment || false,
-      logCarrierSubscription: data?.data?.logCarrierSubscription || '',
-      logCarrierPurchase: data?.data?.logCarrierPurchase || '',
-      purchaseDiscount: data?.data?.purchaseDiscount || '',
-      limitPurchaseDiscount: data?.data?.limitPurchaseDiscount || '',
-      // discountSubscription: data?.data?.discountSubscription || '',
-      monthsDiscountSubscription: data?.data?.monthsDiscountSubscription || 0,
-      planImg: data?.data?.planImg || null,
-      status: data?.data?.status || '',
-      planData: data?.data?.planData || [],
+      planGrp: data?.planGrp || '',
+      planName: data?.planName || '',
+      planDesc: data?.planDesc || '',
+      standardPrice: data?.standardPrice || 0,
+      standardYearlyPrice: data?.standardYearlyPrice || 0,
+      currentPrice: data?.currentPrice || 0,
+      currentYearlyPrice: data?.currentYearlyPrice || 0,
+      defaultArtistFees: data?.defaultArtistFees || 0,
+      numArtworks: data?.numArtworks || 5,
+      numLargeArtworks: data?.numLargeArtworks || 5,
+      individualShipment: data?.individualShipment || false,
+      logCarrierSubscription: data?.logCarrierSubscription || '',
+      logCarrierPurchase: data?.logCarrierPurchase || '',
+      purchaseDiscount: data?.purchaseDiscount || '',
+      limitPurchaseDiscount: data?.limitPurchaseDiscount || '',
+      // discountSubscription: data?.discountSubscription || '',
+      monthsDiscountSubscription: data?.monthsDiscountSubscription || 0,
+      planImg: data?.planImg || null,
+      status: data?.status || '',
+      planData: data?.planData || [],
     }),
-    [data?.data]
+    [data]
   );
 
   const formProps = useForm<NewPostSchemaType>({
@@ -100,14 +101,14 @@ export function AddPlanForm() {
   const values = watch();
 
   useEffect(() => {
-    if (data?.data) {
+    if (data) {
       const updatedData = {
-        ...data?.data,
-        planImg: `${data?.url}/users/${data.data.planImg || ''}`,
+        ...data,
+        planImg: `${imgUrl}/users/${data.data.planImg || ''}`,
       };
       reset(updatedData);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const { fields, append, remove } = useFieldArray({
     control: formProps.control,

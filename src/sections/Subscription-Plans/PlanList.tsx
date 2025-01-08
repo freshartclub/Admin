@@ -1,12 +1,12 @@
-import Card from '@mui/material/Card';
+import { Stack } from '@mui/material';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
-import PlanCard from './PlanCard';
-import { LoadingScreen } from 'src/components/loading-screen';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { useGetAllPlans } from './http/useGetAllPlans';
-import { Stack } from '@mui/material';
+import PlanCard from './PlanCard';
 
 // ----------------------------------------------------------------------
 
@@ -39,8 +39,8 @@ export function PlanList() {
         <LoadingScreen />
       ) : (
         <Stack direction="row" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, border: 'none' }}>
-          {data?.data && data?.data.length > 0
-            ? data?.data.map((plan, i) => <PlanCard key={i} url={data?.url} plan={plan} />)
+          {data && data.length > 0
+            ? data.map((plan, i) => <PlanCard key={i} url={imgUrl} plan={plan} />)
             : 'No Data Found'}
         </Stack>
       )}

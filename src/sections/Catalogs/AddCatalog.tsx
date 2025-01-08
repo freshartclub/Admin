@@ -18,12 +18,11 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
-import { useGetSearchedArtworks } from '../Collection-Management/http/useGetSearchedArtworks';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
 import { useGetSearchCollection } from './http/useGetSearchCollection';
-import path from 'path';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -57,13 +56,14 @@ export const NewPostSchema = zod.object({
 export function AddCatalogForm() {
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
-  const { data, isLoading } = useGetCatalogById(id);
   const [searchColl, setSearchColl] = useState('');
 
   const picklist = RenderAllPicklist('Catalog Status');
 
   const searchCollDebounce = useDebounce(searchColl, 800);
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
+
+  const { data, isLoading } = useGetCatalogById(id);
 
   const name = (val) => {
     let fullName = val?.artistName || '';
@@ -76,42 +76,42 @@ export function AddCatalogForm() {
 
   const defaultValues = useMemo(
     () => ({
-      catalogName: data?.data?.catalogName || '',
-      catalogDesc: data?.data?.catalogDesc || '',
+      catalogName: data?.catalogName || '',
+      catalogDesc: data?.catalogDesc || '',
       artworkList:
-        data?.data?.artworkList?.map((item) => {
+        data?.artworkList?.map((item) => {
           return {
             label: item?._id,
             value: item?.artworkName,
             artId: item?.artworkId,
-            img: `${data?.url}/users/${item?.mainImage}`,
+            img: `${imgUrl}/users/${item?.mainImage}`,
           };
         }) || [],
-      artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
-      catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
-      collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
+      artworkNames: data?.artworkList?.map((item) => item?.artworkName) || [],
+      catalogCollection: data?.catalogCollection?.map((item) => item?._id) || [],
+      collectionNames: data?.catalogCollection?.map((item) => item?.collectionName) || [],
       artProvider:
-        data?.data?.artProvider?.map((item) => {
+        data?.artProvider?.map((item) => {
           return {
             label: item?._id,
             arttistId: item?.artistId,
             value: name(item),
-            img: `${data?.url}/users/${item?.mainImage}`,
+            img: `${imgUrl}/users/${item?.mainImage}`,
           };
         }) || [],
-      subPlan: data?.data?.subPlan || [],
-      catalogCommercialization: data?.data?.catalogCommercialization || '',
-      defaultArtistFee: data?.data?.defaultArtistFee || 0,
-      exclusiveCatalog: data?.data?.exclusiveCatalog || false,
-      status: data?.data?.status || '',
-      catalogImg: data?.data?.catalogImg || 0,
-      maxPrice: data?.data?.maxPrice || 0,
-      maxHeight: data?.data?.maxHeight || 0,
-      maxWidth: data?.data?.maxWidth || 0,
-      maxDepth: data?.data?.maxDepth || 0,
-      maxWeight: data?.data?.maxWeight || 0,
+      subPlan: data?.subPlan || [],
+      catalogCommercialization: data?.catalogCommercialization || '',
+      defaultArtistFee: data?.defaultArtistFee || 0,
+      exclusiveCatalog: data?.exclusiveCatalog || false,
+      status: data?.status || '',
+      catalogImg: data?.catalogImg || 0,
+      maxPrice: data?.maxPrice || 0,
+      maxHeight: data?.maxHeight || 0,
+      maxWidth: data?.maxWidth || 0,
+      maxDepth: data?.maxDepth || 0,
+      maxWeight: data?.maxWeight || 0,
     }),
-    [data?.data]
+    [data]
   );
 
   const methods = useForm<NewPostSchemaType>({
@@ -122,45 +122,45 @@ export function AddCatalogForm() {
   const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
-    if (id && data?.data) {
+    if (id && data) {
       reset({
-        catalogName: data?.data?.catalogName || '',
-        catalogDesc: data?.data?.catalogDesc || '',
+        catalogName: data?.catalogName || '',
+        catalogDesc: data?.catalogDesc || '',
         artworkList:
-          data?.data?.artworkList?.map((item) => {
+          data?.artworkList?.map((item) => {
             return {
               label: item?._id,
               value: item?.artworkName,
               artId: item?.artworkId,
-              img: `${data?.url}/users/${item?.mainImage}`,
+              img: `${imgUrl}/users/${item?.mainImage}`,
             };
           }) || [],
-        artworkNames: data?.data?.artworkList?.map((item) => item?.artworkName) || [],
-        catalogCollection: data?.data?.catalogCollection.map((item) => item?._id) || [],
-        collectionNames: data?.data?.catalogCollection.map((item) => item?.collectionName) || [],
+        artworkNames: data?.artworkList?.map((item) => item?.artworkName) || [],
+        catalogCollection: data?.catalogCollection.map((item) => item?._id) || [],
+        collectionNames: data?.catalogCollection.map((item) => item?.collectionName) || [],
         artProvider:
-          data?.data?.artProvider?.map((item) => {
+          data?.artProvider?.map((item) => {
             return {
               label: item?._id,
               artistId: item?.artistId,
               value: name(item),
-              img: `${data?.url}/users/${item?.mainImage}`,
+              img: `${imgUrl}/users/${item?.mainImage}`,
             };
           }) || [],
-        subPlan: data?.data?.subPlan || [],
-        catalogCommercialization: data?.data?.catalogCommercialization || '',
-        defaultArtistFee: data?.data?.defaultArtistFee || 0,
-        exclusiveCatalog: data?.data?.exclusiveCatalog || false,
-        status: data?.data?.status || '',
-        catalogImg: `${data?.url}/users/${data?.data?.catalogImg}` || null,
-        maxPrice: data?.data?.details?.maxPrice || 0,
-        maxHeight: data?.data?.details?.maxHeight || 0,
-        maxWidth: data?.data?.details?.maxWidth || 0,
-        maxDepth: data?.data?.details?.maxDepth || 0,
-        maxWeight: data?.data?.details?.maxWeight || 0,
+        subPlan: data?.subPlan || [],
+        catalogCommercialization: data?.catalogCommercialization || '',
+        defaultArtistFee: data?.defaultArtistFee || 0,
+        exclusiveCatalog: data?.exclusiveCatalog || false,
+        status: data?.status || '',
+        catalogImg: `${imgUrl}/users/${data?.catalogImg}` || null,
+        maxPrice: data?.details?.maxPrice || 0,
+        maxHeight: data?.details?.maxHeight || 0,
+        maxWidth: data?.details?.maxWidth || 0,
+        maxDepth: data?.details?.maxDepth || 0,
+        maxWeight: data?.details?.maxWeight || 0,
       });
     }
-  }, [data?.data, reset]);
+  }, [data, reset]);
 
   const { mutate, isPending } = useAddCatalogMutation(id);
   const onSubmit = handleSubmit(async (data: any) => {

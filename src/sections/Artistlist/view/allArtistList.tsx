@@ -31,6 +31,7 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { AllArtistList } from '../allArtist-table-row';
 import { useGetArtistList } from '../http/useGetArtistList';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 200 },
@@ -57,11 +58,11 @@ export function AllArtist() {
   const { data, isLoading } = useGetArtistList(debounceSearch, date, profile);
 
   useEffect(() => {
-    if (data?.data) {
-      setUserList(data?.data);
-      setNotFound(data?.data?.length === 0);
+    if (data) {
+      setUserList(data);
+      setNotFound(data?.length === 0);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const dataFiltered = applyFilter({
     inputData: _userList,
@@ -179,7 +180,7 @@ export function AllArtist() {
                     <AllArtistList
                       key={row._id}
                       row={row}
-                      url={data?.url}
+                      url={imgUrl}
                       selected={table.selected.includes(row._id)}
                       onSelectRow={() => table.onSelectRow(row._id)}
                       onDeleteRow={() => handleDeleteRow(row._id)}

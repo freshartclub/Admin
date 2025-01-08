@@ -6,7 +6,11 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Dialog,
   DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   InputAdornment,
   Link,
   ListItemText,
@@ -23,6 +27,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { COLLECTION_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -30,19 +35,14 @@ import { toast } from 'src/components/snackbar';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { fData } from 'src/utils/format-number';
 import { z as zod } from 'zod';
 import useAddCollectionMutation from './http/useAddCollectionMutation';
+import useDeleteArtworkColl from './http/useDeleteArtworkColl';
 import { useGetCollectionById } from './http/useGetCollectionById';
 import { useGetSearchedArtworks } from './http/useGetSearchedArtworks';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { usePopover } from 'src/components/custom-popover';
-import useDeleteArtworkColl from './http/useDeleteArtworkColl';
-import { Dialog } from '@mui/material';
-import { DialogTitle } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogContentText } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -77,6 +77,7 @@ export const NewPostSchema = zod.object({
 // ----------------------------------------------------------------------
 
 export function AddCollectionForm() {
+  const confirm = useBoolean();
   const [search, setSearch] = useState({
     search: '',
     index: null,
@@ -85,13 +86,14 @@ export function AddCollectionForm() {
   const [selectedArtwork, setSelectedArtwork] = useState(null);
   const id = useSearchParams().get('id');
   const navigate = useNavigate();
+
   const { data, isLoading } = useGetCollectionById(id);
 
   const defaultValues = useMemo(
     () => ({
-      collectionName: data?.data?.collectionName || '',
-      collectionDesc: data?.data?.collectionDesc || '',
-      artworkList: data?.data?.artworkList || [
+      collectionName: data?.collectionName || '',
+      collectionDesc: data?.collectionDesc || '',
+      artworkList: data?.artworkList || [
         {
           artwork: '',
           artworkDesc: '',
@@ -102,14 +104,14 @@ export function AddCollectionForm() {
           isBackend: false,
         },
       ],
-      expertDesc: data?.data?.expertDetails?.expertDesc || '',
-      expertImg: data?.data?.expertDetails?.expertImg || null,
-      createdBy: data?.data?.expertDetails?.createdBy || '',
-      collectionFile: data?.data?.collectionFile || null,
-      collectionTags: data?.data?.collectionTags || [],
-      status: data?.data?.status || 'Draft',
+      expertDesc: data?.expertDetails?.expertDesc || '',
+      expertImg: data?.expertDetails?.expertImg || null,
+      createdBy: data?.expertDetails?.createdBy || '',
+      collectionFile: data?.collectionFile || null,
+      collectionTags: data?.collectionTags || [],
+      status: data?.status || 'Draft',
     }),
-    [data?.data]
+    [data]
   );
 
   const name = (val) => {
@@ -150,29 +152,29 @@ export function AddCollectionForm() {
   const values = watch();
 
   useEffect(() => {
-    if (id && data?.data) {
+    if (id && data) {
       reset({
-        collectionName: data?.data?.collectionName || '',
-        collectionDesc: data?.data?.collectionDesc || '',
+        collectionName: data?.collectionName || '',
+        collectionDesc: data?.collectionDesc || '',
         artworkList:
-          data?.data?.artworkList.map((item) => ({
+          data?.artworkList.map((item) => ({
             artwork: item?.artworkId?.artworkName,
             artworkDesc: item.artworkDesc,
             pCode: item.artworkId?.artworkId,
             artworkId: item.artworkId?._id,
             artistName: name(item.artworkId?.owner),
-            artworkImg: `${data?.url}/users/${item.artworkId?.media?.mainImage}` || null,
+            artworkImg: `${imgUrl}/users/${item.artworkId?.media?.mainImage}` || null,
             isBackend: true,
           })) || [],
-        expertDesc: data?.data?.expertDetails?.expertDesc || '',
-        expertImg: `${data?.url}/users/${data?.data?.expertDetails?.expertImg}` || null,
-        createdBy: data?.data?.expertDetails?.createdBy || '',
-        collectionFile: data?.data?.collectionFile || null,
-        collectionTags: data?.data?.collectionTags || [],
-        status: data?.data?.status || 'Draft',
+        expertDesc: data?.expertDetails?.expertDesc || '',
+        expertImg: `${imgUrl}/users/${data?.expertDetails?.expertImg}` || null,
+        createdBy: data?.expertDetails?.createdBy || '',
+        collectionFile: data?.collectionFile || null,
+        collectionTags: data?.collectionTags || [],
+        status: data?.status || 'Draft',
       });
     }
-  }, [data?.data, reset]);
+  }, [data, reset]);
 
   const { mutate, isPending } = useAddCollectionMutation(id);
   const { mutate: deleteArtwork, isPending: isPendingDelete } = useDeleteArtworkColl(id);
@@ -253,7 +255,7 @@ export function AddCollectionForm() {
     setValue(`artworkList[${index}].artwork`, i?.artworkName);
     setValue(`artworkList[${index}].pCode`, i?.artworkId);
     setValue(`artworkList[${index}].artistName`, name(i));
-    setValue(`artworkList[${index}].artworkImg`, `${data?.url}/users/${i?.media}`);
+    setValue(`artworkList[${index}].artworkImg`, `${imgUrl}/users/${i?.media}`);
     setSearch({ search: '', index: null });
   };
 
@@ -294,7 +296,7 @@ export function AddCollectionForm() {
     >
       <DialogTitle>{`Delete Artwork - ${selectedArtwork?.artwork}`}</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <DialogContentText>{`Are you sure want to delete this artwork from collection - "${data?.data?.collectionName}" ?`}</DialogContentText>
+        <DialogContentText>{`Are you sure want to delete this artwork from collection - "${data?.collectionName}" ?`}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <button
@@ -407,7 +409,7 @@ export function AddCollectionForm() {
                       open={confirm.value}
                       onClose={confirm.onFalse}
                       title={`Delete Artwork - ${item.artwork}`}
-                      content={`Are you sure want to delete this artwork from collection - "${data?.data?.collectionName}"`}
+                      content={`Are you sure want to delete this artwork from collection - "${data?.collectionName}"`}
                       action={
                         <Button
                           variant="contained"
@@ -426,8 +428,8 @@ export function AddCollectionForm() {
                           <TableCell>
                             <CircularProgress size={30} />
                           </TableCell>
-                        ) : artworkData?.data && artworkData?.data?.length > 0 ? (
-                          artworkData?.data.map((i, j) => (
+                        ) : artworkData && artworkData?.length > 0 ? (
+                          artworkData.map((i, j) => (
                             <TableCell
                               onClick={() => refillData(i, index)}
                               key={j}
@@ -439,10 +441,7 @@ export function AddCollectionForm() {
                               }}
                             >
                               <Stack spacing={2} direction="row" alignItems="center">
-                                <Avatar
-                                  alt={i?.artworkName}
-                                  src={`${artworkData?.url}/users/${i?.media}`}
-                                />
+                                <Avatar alt={i?.artworkName} src={`${imgUrl}/users/${i?.media}`} />
 
                                 <ListItemText
                                   disableTypography
@@ -461,7 +460,7 @@ export function AddCollectionForm() {
                             </TableCell>
                           ))
                         ) : (
-                          <TableCell>No Data Available</TableCell>
+                          <TableCell>No Artwork Found</TableCell>
                         )}
                       </TableRow>
                     </div>
@@ -544,7 +543,7 @@ export function AddCollectionForm() {
                     <source
                       src={
                         typeof file === 'string'
-                          ? `${data?.url}/videos/${file}`
+                          ? `${imgUrl}/videos/${file}`
                           : URL.createObjectURL(file)
                       }
                       type="video/mp4"
@@ -557,7 +556,7 @@ export function AddCollectionForm() {
                   <img
                     src={
                       typeof file === 'string'
-                        ? `${data?.url}/users/${file}`
+                        ? `${imgUrl}/users/${file}`
                         : URL.createObjectURL(file)
                     }
                     alt="Uploaded content"

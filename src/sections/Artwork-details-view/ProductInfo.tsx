@@ -6,6 +6,8 @@ import print from './assets/print.png';
 import return1 from './assets/return.png';
 import P from './comman/P';
 import Header from './comman/Header';
+import { currencies } from 'src/_mock/_currency';
+import { fDateTime } from 'src/utils/format-time';
 
 const ProductInfo = ({ data, preview }) => {
   const mapData = (val) => {
@@ -197,19 +199,34 @@ const ProductInfo = ({ data, preview }) => {
             {data?.pricing?.basePrice && (
               <PreviewData
                 head="Base Price"
-                val={data?.pricing?.currency + ' ' + data?.pricing?.basePrice}
+                val={
+                  currencies.find((item) => item.code === data?.pricing?.currency.split(' ')[0])
+                    ?.symbol +
+                  ' ' +
+                  data?.pricing?.basePrice
+                }
               />
             )}
             {data?.pricing?.artistFees && (
               <PreviewData
                 head="Artist Fees"
-                val={data?.pricing?.currency + ' ' + data?.pricing?.artistFees}
+                val={
+                  currencies.find((item) => item.code === data?.pricing?.currency.split(' ')[0])
+                    ?.symbol +
+                  ' ' +
+                  data?.pricing?.artistFees
+                }
               />
             )}
             {data?.pricing?.acceptOfferPrice && (
               <PreviewData
                 head="Accept Offer Price"
-                val={data?.pricing?.currency + ' ' + data?.pricing?.acceptOfferPrice}
+                val={
+                  currencies.find((item) => item.code === data?.pricing?.currency.split(' ')[0])
+                    ?.symbol +
+                  ' ' +
+                  data?.pricing?.acceptOfferPrice
+                }
               />
             )}
             <PreviewData head="Discount Percentage" val={data?.pricing?.dpersentage + '%'} />
@@ -239,7 +256,7 @@ const ProductInfo = ({ data, preview }) => {
         </TabPanel>
         <TabPanel>
           <div className="flex flex-col my-5">
-            {/* <PreviewData head="Collection List" val={data?.collectionList} /> */}
+            <PreviewData head="Created At" val={fDateTime(data?.createdAt)} />
             <PreviewData head="Promotion" val={data?.promotions?.promotion} />
             <PreviewData head="Promotion Score" val={data?.promotions?.promotionScore} />
             <PreviewData head="Available To" val={data?.restriction?.availableTo} />
