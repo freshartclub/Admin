@@ -86,9 +86,7 @@ export function OrderTableRow({ row, url }: Props) {
       <TableCell sx={{ whiteSpace: 'nowrap' }}>
         <IconButton
           color="inherit"
-          onClick={() =>
-            navigate(`${paths.dashboard.order.details}/${row._id}?orderType=${row?.orderType}`)
-          }
+          onClick={() => navigate(`${paths.dashboard.order.details}/${row._id}`)}
         >
           <Iconify icon="solar:eye-bold" />
         </IconButton>
@@ -132,13 +130,12 @@ export function OrderTableRow({ row, url }: Props) {
                 />
 
                 <ListItemText
-                  primary={item?.artWork?.artworkName}
+                  primary={item?.artWork?.artworkName + ` (${item?.type})`}
                   secondary={item?.artWork?.artworkId}
                   primaryTypographyProps={{ typography: 'body2' }}
                   secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
                 />
-
-                <div>x{item.quantity} </div>
+                <span>x{item.quantity} </span>
 
                 <Box sx={{ width: 110, textAlign: 'right' }}>
                   {currencySymbol + ' ' + item?.artWork?.pricing?.basePrice}

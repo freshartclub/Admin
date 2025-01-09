@@ -211,8 +211,8 @@ export const dashboardRoutes = [
       {
         path: 'order',
         children: [
-          { path: 'subscribe', element: <OrderList /> },
-          { path: 'purchese', element: <OrderPurcheseList /> },
+          { path: 'list', element: <OrderList /> },
+          // { path: 'purchese', element: <OrderPurcheseList /> },
           { path: 'details/:id', element: <OrderDetailsPage /> },
         ],
       },
@@ -236,16 +236,6 @@ export const dashboardRoutes = [
           { path: 'account', element: <UserAccount /> },
         ],
       },
-      // {
-      //   path: 'circle',
-      //   children: [
-      //     { element: <CircleList />, index: true },
-      //     { path: 'addcircle', element: <AddCircle/> },
-      //     { path: 'circlelist', element: <CircleList/> },
-      //     { path: ':id', element: <CircleDetails/> },
-      //     { path: ':id/circleedit', element: <CircleEdit/> },
-      //   ],
-      // },
       {
         path: 'circle',
         children: [

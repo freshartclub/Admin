@@ -40,7 +40,7 @@ export function DisciplineTableRow({ row, url }: Props) {
       <TableRow hover>
         <TableCell>
           <Stack spacing={1} direction="row" alignItems="center">
-            <Avatar alt={row?.disciplineImage} src={`${url}/users/${row?.disciplineImage}`} />
+            <Avatar alt={row.disciplineName} src={`${url}/users/${row?.disciplineImage}`} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               {row.disciplineName}

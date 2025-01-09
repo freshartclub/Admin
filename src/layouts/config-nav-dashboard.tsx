@@ -41,20 +41,10 @@ const ICONS = {
 // ----------------------------------------------------------------------
 
 export const navData = [
-  /**
-   * Overview
-   */
   {
     subheader: 'Fresh Art Admin',
-    items: [
-      { title: 'Dashboard', path: paths.dashboard.root, icon: ICONS.dashboard },
-      // { title: 'Artist', path: paths.dashboard.two, icon: ICONS.ecommerce },
-      // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
-    ],
+    items: [{ title: 'Dashboard', path: paths.dashboard.root, icon: ICONS.dashboard }],
   },
-  /**
-   * Management
-   */
   {
     subheader: 'Management',
     items: [
@@ -63,8 +53,6 @@ export const navData = [
         path: paths.dashboard.artist.Root,
         icon: ICONS.paintBrush,
         children: [
-          // { title: 'Add Artist', path: paths.dashboard.artist.addArtist },
-          // { title: 'Add Artist', path: paths.dashboard.artist.createArtist },
           { title: 'New Artist Request', path: paths.dashboard.artist.artistRequest },
           { title: 'All Artist', path: paths.dashboard.artist.allArtist },
           { title: 'Active Artist', path: paths.dashboard.artist.artistList },
@@ -145,22 +133,25 @@ export const navData = [
           },
         ],
       },
-
       {
         title: 'Credentials and Insignias',
         path: paths.dashboard.creadentialsAndInsigniasArea.list,
         icon: ICONS.course,
       },
-
       {
-        title: 'Order',
-        path: paths.dashboard.order.Root,
+        title: 'All Orders',
+        path: paths.dashboard.order.list,
         icon: ICONS.order,
-        children: [
-          { title: 'Subsciption order', path: paths.dashboard.order.subscribe },
-          { title: 'Purchase order', path: paths.dashboard.order.purchese },
-        ],
       },
+      // {
+      //   title: 'Order',
+      //   path: paths.dashboard.order.Root,
+      //   icon: ICONS.order,
+      //   children: [
+      //     { title: 'Subsciption order', path: paths.dashboard.order.subscribe },
+      //     // { title: 'Purchase order', path: paths.dashboard.order.purchese },
+      //   ],
+      // },
       {
         title: 'Invoice',
         path: paths.dashboard.invoice.Root,
@@ -185,18 +176,6 @@ export const navData = [
           { title: 'Account', path: paths.dashboard.user.account },
         ],
       },
-      // {
-      //   title: 'Circle Managemant',
-      //   path: paths.dashboard.circle.Root,
-      //   icon: ICONS.user,
-      //   children: [
-      //     { title: 'addcircle', path: paths.dashboard.circle.addcircle },
-      //     { title: 'circlelist', path: paths.dashboard.circle.circlelist },
-      //     {title: 'circledetails', path:paths.dashboard.circle.demo.circledetails},
-      //     {title: 'circleedit', path:paths.dashboard.circle.demo.circleedit},
-
-      //   ],
-      // },
       {
         title: 'Circle Managemant',
         path: paths.dashboard.circle.root,
@@ -248,7 +227,6 @@ export const navData = [
       },
 
       {
-        // title: 'Job',
         title: 'Content Management',
         path: paths.dashboard.contentmanagement.Root,
         icon: ICONS.job,
@@ -300,22 +278,6 @@ export const navData = [
           { title: 'List', path: paths.dashboard.notificationAndMessage.List },
         ],
       },
-      // try end
     ],
   },
 ];
-
-// items: [
-// {
-//   title: 'User',
-//   path: paths.dashboard.user.root,
-//   icon: ICONS.user,
-//   children: [
-//     { title: 'Profile', path: paths.dashboard.user.root },
-//     { title: 'Cards', path: paths.dashboard.user.cards },
-//     { title: 'List', path: paths.dashboard.user.list },
-//     { title: 'Create', path: paths.dashboard.user.new },
-//     { title: 'Edit', path: paths.dashboard.user.demo.edit },
-//     { title: 'Account', path: paths.dashboard.user.account },
-//   ],
-// },

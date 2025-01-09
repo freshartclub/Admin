@@ -22,6 +22,7 @@ import { paths } from 'src/routes/paths';
 import { useGetSubscriptionOrder } from '../http/useGetSubscriptionOrder';
 import { OrderTableRow } from '../order-table-row';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { useGetAllOrders } from '../http/useGetAllOrder';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ export function OrderListView() {
   const [notFound, setNotFound] = useState(false);
   const [_orderList, setOrderList] = useState<IOrderItem[]>([]);
 
-  const { data, isLoading } = useGetSubscriptionOrder();
+  const { data, isLoading } = useGetAllOrders();
 
   useEffect(() => {
     if (data) {
@@ -64,11 +65,8 @@ export function OrderListView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Subscription Order List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Subscription Order List' },
-        ]}
+        heading="Order List"
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Order List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
 

@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-import { Avatar } from '@mui/material';
+import { Avatar, Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -20,9 +20,10 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
 import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddPlan from './http/useAddPlan';
 import { useGetPlanById } from './http/useGetPlanById';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
@@ -32,6 +33,7 @@ export const NewPostSchema = zod.object({
   planDesc: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
   standardPrice: zod.number().min(0, { message: 'Standard Price is required!' }),
   standardYearlyPrice: zod.number().min(0, { message: 'Standard Yearly Price is required!' }),
+  catalogs: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   currentPrice: zod.number().min(0, { message: 'Current Price is required!' }),
   currentYearlyPrice: zod.number().min(0, { message: 'Current Yearly Price is required!' }),
   defaultArtistFees: zod.number().min(0, { message: 'Default Artist Fees are required!' }),
@@ -60,10 +62,10 @@ export const NewPostSchema = zod.object({
 
 export function AddPlanForm() {
   const navigate = useNavigate();
-  const [catData, setCatData] = useState(null);
   const id = useSearchParams().get('id');
 
   const { data, isLoading } = useGetPlanById(id);
+  const plans = RenderAllPicklist('Plans');
   const { data: catalogData } = useGetAllCatalog();
 
   const defaultValues = useMemo(
@@ -71,6 +73,7 @@ export function AddPlanForm() {
       planGrp: data?.planGrp || '',
       planName: data?.planName || '',
       planDesc: data?.planDesc || '',
+      catalogs: data?.catalogs || [],
       standardPrice: data?.standardPrice || 0,
       standardYearlyPrice: data?.standardYearlyPrice || 0,
       currentPrice: data?.currentPrice || 0,
@@ -147,28 +150,11 @@ export function AddPlanForm() {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.SingelSelect
-          name="planGrp"
-          options={
-            catalogData
-              ? catalogData?.map((item) => ({ value: item._id, label: item.catalogName }))
-              : []
-          }
-          onClick={(val) => {
-            const defaulVal = val.target.textContent;
-            if (defaulVal) {
-              const selectedOption = catalogData.find((item) => item.catalogName === defaulVal);
-              const catalogImg = `${imgUrl}/users/${selectedOption.catalogImg}`;
-              setCatData({ ...selectedOption, catalogImg });
-            }
-          }}
-          label="Plan Group"
-        />
-
+        <Field.SingelSelect name="planGrp" options={plans ? plans : []} label="Plan Group" />
         <Field.Text name="planName" label="Plan Name" />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Description</Typography>
+          <Typography variant="subtitle2">Commerial Description</Typography>
           <Field.Editor name="planDesc" sx={{ maxHeight: 480 }} />
         </Stack>
 
@@ -227,10 +213,10 @@ export function AddPlanForm() {
         />
 
         {fields.map((item, index) => (
-          <Stack key={item.id} alignItems={{ xs: 'flex-center', md: 'flex-end' }} spacing={1.5}>
+          <Stack key={item.id} spacing={1.5}>
             <Box
               columnGap={2}
-              rowGap={3}
+              rowGap={2}
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
             >
@@ -269,14 +255,53 @@ export function AddPlanForm() {
       <Divider />
       <CardHeader title="Select Catalogs" />
       <Stack spacing={2} alignItems="center" direction="row" sx={{ p: 2 }}>
-        {catData ? (
-          <>
-            <Avatar alt={catData.catalogName} src={catData.catalogImg} />
-            <Typography variant="subtitle2">{catData.catalogName}</Typography>
-          </>
-        ) : (
-          'No Catalog Seleted'
-        )}
+        <Field.Autocomplete
+          fullWidth
+          name="catalogs"
+          required
+          label="Select Catalogs"
+          placeholder="Select Catalogs"
+          multiple
+          disableCloseOnSelect
+          options={
+            catalogData && catalogData?.length > 0
+              ? catalogData.map((item) => ({
+                  _id: item._id,
+                  catalogName: item.catalogName,
+                  catalogImg: item.catalogImg,
+                }))
+              : []
+          }
+          getOptionLabel={(option) => option.catalogName}
+          isOptionEqualToValue={(option, value) => option._id === value._id}
+          renderOption={(props, option) => (
+            <div className="flex items-center gap-4" {...props} key={option._id}>
+              <Avatar alt={option?.catalogName} src={`${imgUrl}/users/${option?.catalogImg}`} />
+              <span className="ml-2">{option.catalogName}</span>
+            </div>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={index}
+                label={option.catalogName}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
+          onChange={(event, value) => {
+            const selectedIds = value.map((item) => item._id);
+            setValue('catalogs', selectedIds);
+          }}
+          value={
+            catalogData && catalogData?.length > 0
+              ? catalogData?.filter((item) => watch('catalogs')?.includes(item._id))
+              : []
+          }
+        />
       </Stack>
     </Card>
   );

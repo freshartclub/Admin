@@ -9,6 +9,7 @@ import { OrderDetailsInfo } from '../order-details-info';
 import { OrderDetailsItems } from '../order-details-item';
 import { OrderDetailsToolbar } from '../order-details-toolbar';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -19,11 +20,7 @@ export function OrderDetailsView() {
   return (
     <DashboardContent>
       <OrderDetailsToolbar
-        backLink={
-          order?.orderType === 'subscription'
-            ? paths.dashboard.order.subscribe
-            : paths.dashboard.order.purchese
-        }
+        backLink={paths.dashboard.order.list}
         orderNumber={order?.orderID}
         createdAt={order?.createdAt}
         status={order?.status}
@@ -39,7 +36,7 @@ export function OrderDetailsView() {
             <Stack spacing={3} direction={{ xs: 'column-reverse', md: 'column' }}>
               <OrderDetailsItems
                 items={order?.items}
-                url={order?.url}
+                url={imgUrl}
                 taxes={order?.tax}
                 shipping={order?.shipping}
                 discount={order?.discount}
@@ -53,11 +50,13 @@ export function OrderDetailsView() {
 
           <Grid xs={12} md={4}>
             <OrderDetailsInfo
-              url={order?.url}
+              url={imgUrl}
               customer={order?.user}
               delivery={order?.delivery}
               payment={order?.payment}
-              shippingAddress={order?.shippingAddress}
+              shippingAddress={
+                order?.shippingAddress ? order?.shippingAddress : order?.billingAddress
+              }
             />
           </Grid>
         </Grid>

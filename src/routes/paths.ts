@@ -126,11 +126,10 @@ export const paths = {
       artworkDetail: `${ROOTS.DASHBOARD}/artwork/artworkDetail`,
     },
 
-    // try start
     order: {
       Root: `${ROOTS.DASHBOARD}/order`,
-      subscribe: `${ROOTS.DASHBOARD}/order/subscribe`,
-      purchese: `${ROOTS.DASHBOARD}/order/purchese`,
+      list: `${ROOTS.DASHBOARD}/order/list`,
+      // purchese: `${ROOTS.DASHBOARD}/order/purchese`,
       details: `${ROOTS.DASHBOARD}/order/details`,
     },
     invoice: {
@@ -149,19 +148,6 @@ export const paths = {
       // edit: `${ROOTS.DASHBOARD}/user/edit`,
       account: `${ROOTS.DASHBOARD}/user/account`,
     },
-    //  circle: {
-    //   Root: `${ROOTS.DASHBOARD}/circle`,
-    //   addcircle: `${ROOTS.DASHBOARD}/circle/addcircle`,
-    //   circlelist: `${ROOTS.DASHBOARD}/circle/circlelist`,
-    //   // circledetails: `${ROOTS.DASHBOARD}/circle/circledetails`,
-    //   // circleedit: `${ROOTS.DASHBOARD}/circle/circleedit`,
-    //   circledetails: (id: string) => `${ROOTS.DASHBOARD}/circle/${id}`,
-    //   circleedit: (id: string) => `${ROOTS.DASHBOARD}/circle/${id}/circleedit`,
-    //   demo: {
-    //     circledetails: `${ROOTS.DASHBOARD}/circle/${MOCK_ID}`,
-    //     circleedit: `${ROOTS.DASHBOARD}/circle/${MOCK_ID}/circleedit`,
-    //   },
-    //  },
     circle: {
       root: `${ROOTS.DASHBOARD}/circle`,
       new: `${ROOTS.DASHBOARD}/circle/new`,
