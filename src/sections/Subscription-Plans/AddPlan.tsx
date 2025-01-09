@@ -44,7 +44,6 @@ export const NewPostSchema = zod.object({
   logCarrierPurchase: zod.string().min(1, { message: 'Log Carrier Purchase is required!' }),
   purchaseDiscount: zod.string().min(1, { message: 'Purchase Discount is required!' }),
   limitPurchaseDiscount: zod.string().min(1, { message: 'Limit Purchase Discount is required!' }),
-  // discountSubscription: zod.string().min(1, { message: 'Discount Subscription is required!' }),
   monthsDiscountSubscription: zod
     .number()
     .min(0, { message: 'Months Discount Subscription is required!' }),
@@ -86,11 +85,10 @@ export function AddPlanForm() {
       logCarrierPurchase: data?.logCarrierPurchase || '',
       purchaseDiscount: data?.purchaseDiscount || '',
       limitPurchaseDiscount: data?.limitPurchaseDiscount || '',
-      // discountSubscription: data?.discountSubscription || '',
-      monthsDiscountSubscription: data?.monthsDiscountSubscription || 0,
+      monthsDiscountSubscription: data?.monthsDiscountSubscription || 5,
       planImg: data?.planImg || null,
       status: data?.status || '',
-      planData: data?.planData || [],
+      planData: data?.planData || [{ size: '', minSubTime: '' }],
     }),
     [data]
   );
@@ -107,7 +105,7 @@ export function AddPlanForm() {
     if (data) {
       const updatedData = {
         ...data,
-        planImg: `${imgUrl}/users/${data.planImg || ''}`,
+        planImg: data.planImg ? `${imgUrl}/users/${data.planImg}` : null,
       };
       reset(updatedData);
     }
@@ -154,7 +152,7 @@ export function AddPlanForm() {
         <Field.Text name="planName" label="Plan Name" />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Commerial Description</Typography>
+          <Typography variant="subtitle2">Commercial Description</Typography>
           <Field.Editor name="planDesc" sx={{ maxHeight: 480 }} />
         </Stack>
 
@@ -208,7 +206,7 @@ export function AddPlanForm() {
         <Field.SingelSelect
           type="number"
           name="monthsDiscountSubscription"
-          label="Months to Be Discounted on Subscription Purchase Option"
+          label="#Months to Be Discounted on Subscription Purchase Option"
           options={PLAN_NUMOFARTWORK_OPTIONS}
         />
 
@@ -222,7 +220,7 @@ export function AddPlanForm() {
             >
               <Field.Text name={`planData[${index}].size`} label="Size (WxHxD)" />
               <Field.Text
-                name={`planData[${index}].minSubscriptionTime`}
+                name={`planData[${index}].minSubTime`}
                 label="Min. Subscription Times (Months)"
               />
             </Box>
@@ -264,7 +262,7 @@ export function AddPlanForm() {
           multiple
           disableCloseOnSelect
           options={
-            catalogData && catalogData?.length > 0
+            catalogData && catalogData.length > 0
               ? catalogData.map((item) => ({
                   _id: item._id,
                   catalogName: item.catalogName,
@@ -297,8 +295,8 @@ export function AddPlanForm() {
             setValue('catalogs', selectedIds);
           }}
           value={
-            catalogData && catalogData?.length > 0
-              ? catalogData?.filter((item) => watch('catalogs')?.includes(item._id))
+            catalogData && catalogData.length > 0
+              ? catalogData.filter((item) => watch('catalogs')?.includes(item._id))
               : []
           }
         />

@@ -6,7 +6,6 @@ import { z as zod } from 'zod';
 import { Avatar, Box, Link, ListItemText, TableCell, TableRow, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router';
@@ -18,11 +17,11 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
 import { useGetSearchCollection } from './http/useGetSearchCollection';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -59,10 +58,9 @@ export function AddCatalogForm() {
   const [searchColl, setSearchColl] = useState('');
 
   const picklist = RenderAllPicklist('Catalog Status');
-
   const searchCollDebounce = useDebounce(searchColl, 800);
+  
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
-
   const { data, isLoading } = useGetCatalogById(id);
 
   const name = (val) => {
@@ -99,7 +97,15 @@ export function AddCatalogForm() {
             img: `${imgUrl}/users/${item?.mainImage}`,
           };
         }) || [],
-      subPlan: data?.subPlan || [],
+      subPlan:
+        data?.subPlan?.map((item) => {
+          return {
+            label: item?._id,
+            value: item?.planGrp,
+            planName: item?.planName,
+            img: `${imgUrl}/users/${item?.planImg}`,
+          };
+        }) || [],
       catalogCommercialization: data?.catalogCommercialization || '',
       defaultArtistFee: data?.defaultArtistFee || 0,
       exclusiveCatalog: data?.exclusiveCatalog || false,
@@ -147,7 +153,15 @@ export function AddCatalogForm() {
               img: `${imgUrl}/users/${item?.mainImage}`,
             };
           }) || [],
-        subPlan: data?.subPlan || [],
+        subPlan:
+          data?.subPlan?.map((item) => {
+            return {
+              label: item?._id,
+              value: item?.planGrp,
+              planName: item?.planName,
+              img: `${imgUrl}/users/${item?.planImg}`,
+            };
+          }) || [],
         catalogCommercialization: data?.catalogCommercialization || '',
         defaultArtistFee: data?.defaultArtistFee || 0,
         exclusiveCatalog: data?.exclusiveCatalog || false,
@@ -481,25 +495,29 @@ export function AddCatalogForm() {
           label="Subscription Plan"
           placeholder="+ Subscription Plan"
           multiple
-          freeSolo
-          disableCloseOnSelect
-          options={[]}
+          options={methods.getValues('subPlan') ? methods.getValues('subPlan') : []}
           getOptionLabel={(option) => option}
           renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
+            <li {...props} key={option.value}>
+              {option.value}
             </li>
           )}
           renderTags={(selected, getTagProps) =>
             selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
+              <div
+                className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
+                key={option.value}
+              >
+                <Avatar sx={{ width: 24, height: 24 }} alt={option?.value} src={option?.img} />
+                <Stack sx={{ fontSize: '12px', gap: 2 }}>
+                  <Link color="inherit" sx={{ cursor: 'pointer', lineHeight: 0 }}>
+                    {option?.planName}
+                  </Link>
+                  <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
+                    {option?.value}
+                  </Box>
+                </Stack>
+              </div>
             ))
           }
         />

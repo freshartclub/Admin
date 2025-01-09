@@ -132,6 +132,8 @@ export function AboutArtist({
     [artistFormData]
   );
 
+  console.log(defaultValues);
+
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
@@ -249,7 +251,6 @@ export function AboutArtist({
           label="Add Insignia"
           placeholder="Add Insignia"
           multiple
-          freeSolo
           disableCloseOnSelect
           options={
             data && data?.length > 0 ? data.filter((option) => option.isDeleted === false) : []

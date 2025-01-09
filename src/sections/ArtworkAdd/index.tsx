@@ -326,7 +326,7 @@ export function ArtworkAdd() {
       artistName: data?.owner?.artistName || '',
       isArtProvider: data?.isArtProvider || 'No',
       provideArtistName: data?.provideArtistName || '',
-      artworkCreationYear: data?.artworkCreationYear || new Date().getFullYear(),
+      artworkCreationYear: data?.artworkCreationYear || new Date().getFullYear().toString(),
       artworkSeries: data?.artworkSeries || '',
       productDescription: data?.productDescription || '',
 
@@ -403,6 +403,7 @@ export function ArtworkAdd() {
     handleSubmit,
     formState: { errors },
   } = methods;
+  console.log('errors', errors);
   const values = watch();
 
   const selectedDisciplines = useWatch({

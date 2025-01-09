@@ -40,6 +40,14 @@ export function CatalogTableRow({ row, url }: Props) {
       .join(', ');
   };
 
+  const viewPlanList = (val) => {
+    if (!val || val.length === 0) return 'N/A';
+    return val
+      .map((item) => item.planName)
+      .slice(0, 2)
+      .join(', ');
+  };
+
   const { mutateAsync, isPending } = useDeleteCatalog(row._id);
 
   const handleDelete = () => {
@@ -73,9 +81,7 @@ export function CatalogTableRow({ row, url }: Props) {
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{viewArtworkList(row?.artworkList)}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.subPlan.length ? row?.subPlan.join(', ') : 'N/A'}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{viewPlanList(row?.subPlan)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}
           <span
