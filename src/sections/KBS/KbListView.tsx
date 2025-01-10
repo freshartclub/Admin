@@ -73,16 +73,16 @@ export function KbListView() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'KB List' }]}
         action={
           <RouterLink href={`${paths.dashboard.kbdatabase.add}`}>
-            <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2">
+            <span className="bg-black text-white justify-center rounded-md flex items-center px-2 py-3 gap-2">
               <Iconify icon="mingcute:add-line" /> Add KB
             </span>
           </RouterLink>
         }
         sx={{ mb: { xs: 3, md: 3 } }}
       />
-      <Stack sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }} direction="row">
+      <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} spacing={2} mb={2}>
         <TextField
-          sx={{ width: '70%' }}
+          fullWidth
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search By KB Title/Tags..."
           InputProps={{
@@ -93,7 +93,7 @@ export function KbListView() {
             ),
           }}
         />
-        <FormControl sx={{ width: '28%' }}>
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="KB Group">KB Group</InputLabel>
           <Select
             label="KB Group"

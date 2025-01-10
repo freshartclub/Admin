@@ -173,15 +173,15 @@ export function ListAllPicklist() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Picklists' }]}
         sx={{ mb: 3 }}
         action={
-          <div className="flex gap-2">
+          <div className="bread-links flex gap-2">
             <RouterLink href={`${paths.dashboard.category.picklist.add}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1">
+              <span className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1">
                 <Iconify icon="mingcute:add-line" /> Add Picklist Item
               </span>
             </RouterLink>
             <span
               onClick={popover.onOpen}
-              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} justify-center cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
             >
               {loading ? (
                 'Downloading...'
@@ -195,8 +195,13 @@ export function ListAllPicklist() {
         }
       />
 
-      <Stack direction={'row'} spacing={2} alignItems={'center'} sx={{ mb: 2 }}>
-        <FormControl sx={{ flexShrink: 0, width: 300 }}>
+      <Stack
+        direction={{ xs: 'column-reverse', md: 'row', lg: 'row' }}
+        spacing={2}
+        alignItems={'center'}
+        sx={{ mb: 2 }}
+      >
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="Picklist">Select Picklist</InputLabel>
 
           <Select
@@ -238,7 +243,7 @@ export function ListAllPicklist() {
         />
         <span
           onClick={() => setOpen(true)}
-          className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1 cursor-pointer w-[21rem]"
+          className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1 cursor-pointer w-full md:w-[21rem]"
         >
           <Iconify icon="solar:pen-bold" /> Edit Picklist Name
         </span>

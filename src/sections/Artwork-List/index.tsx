@@ -114,16 +114,16 @@ export function ArtworkListView() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Artwork List' }]}
         sx={{ mb: 3 }}
         action={
-          <div className="flex justify-end gap-2">
+          <div className="bread-links flex justify-end gap-2">
             <RouterLink href={paths.dashboard.artwork.addArtwork}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+              <span className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-2 md:w-[9rem]">
                 <Iconify icon="mingcute:add-line" /> Add Artwork
               </span>
             </RouterLink>
             <RouterLink href={`#`}>
               <span
                 onClick={() => downloadArtworkExcel()}
-                className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1"
+                className="bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1"
               >
                 <Iconify icon="mingcute:add-line" /> {loading ? 'Downloading...' : 'Export CSV'}
               </span>
@@ -131,7 +131,12 @@ export function ArtworkListView() {
           </div>
         }
       />
-      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack
+        direction={{ xs: 'column', md: 'row', lg: 'row' }}
+        marginBottom={2}
+        alignItems={'center'}
+        spacing={2}
+      >
         <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="Status">Status</InputLabel>
 

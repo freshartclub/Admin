@@ -94,7 +94,7 @@ export function OrderDetailsItems({
             />
 
             <ListItemText
-              primary={item?.artWork.artworkName}
+              primary={item?.artWork.artworkName + " (" + item?.type + ")"}
               secondary={item?.artWork?.artworkId}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}

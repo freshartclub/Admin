@@ -37,7 +37,7 @@ export function ListArtists() {
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 1000);
+  const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllActiveArtist(debounceSearch);
 

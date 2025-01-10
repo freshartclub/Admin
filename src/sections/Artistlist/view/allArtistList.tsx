@@ -146,15 +146,15 @@ export function AllArtist() {
         ]}
         sx={{ mb: { xs: 3, md: 3 } }}
         action={
-          <div className="flex gap-2 items-center">
+          <div className="bread-links flex gap-2 items-center">
             <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+              <span className="bg-black text-white rounded-md justify-center flex items-center px-2 py-3 gap-2 md:w-[9rem]">
                 <Iconify icon="mingcute:add-line" /> Create Artist
               </span>
             </RouterLink>
             <span
               onClick={() => downloadArtistExcel()}
-              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
             >
               {loading ? (
                 'Downloading...'
@@ -167,7 +167,7 @@ export function AllArtist() {
           </div>
         }
       />
-      <Stack sx={{ mb: 2 }} direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack sx={{ mb: 2 }} direction={{ xs: 'column', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}

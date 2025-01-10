@@ -33,9 +33,9 @@ export function TicketCartd({ url, data }) {
           ></div>
           <h2 className="text-[16px] text-black font-bold">{data?.ticketId}</h2>
         </div>
-        <div>
+        <div className="ticket-id">
           <p className="text-[#84818A] text-[14px] font-semibold">
-            Posted At - {fDate(data.createdAt)} {fTime(data.createdAt)}
+            <span>Posted At -</span> {fDate(data.createdAt)} {fTime(data.createdAt)}
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function TicketCartd({ url, data }) {
       ) : (
         <hr />
       )}
-      <div className="flex gap-4 pt-2 items-center justify-between">
+      <div className="ticket-box flex gap-4 pt-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <Avatar alt={data?.artistName} src={`${url}/users/${data?.mainImage}`} />
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
@@ -89,7 +89,7 @@ export function TicketCartd({ url, data }) {
           onClick={() => hendleTicketDetail(data)}
           className="bg-black cursor-pointer text-white rounded-md flex items-center px-2.5 py-2 gap-2"
         >
-          <Iconify icon="el:eye-open" /> Open Ticket
+          <Iconify icon="el:eye-open" /> <span>Open Ticket</span>
         </span>
       </div>
     </div>

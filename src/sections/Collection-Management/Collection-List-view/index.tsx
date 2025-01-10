@@ -66,7 +66,7 @@ export function CollectionListView() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Collection List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
-      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -79,8 +79,8 @@ export function CollectionListView() {
             ),
           }}
         />
-        <RouterLink href={`${paths.dashboard.artwork.collection_management.add}`}>
-          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[11rem]">
+        <RouterLink className='w-full' href={`${paths.dashboard.artwork.collection_management.add}`}>
+          <span className="bg-black text-white justify-center rounded-md flex items-center px-2 py-3 gap-2 md:w-[11rem]">
             <Iconify icon="mingcute:add-line" /> Add Collection
           </span>
         </RouterLink>

@@ -77,24 +77,24 @@ export function FaqListView() {
         heading="FAQ List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'FAQ List' }]}
         action={
-          <div className="flex gap-2">
+          <div className="bread-links flex gap-2">
             <RouterLink href={`${paths.dashboard.faq.add}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2">
+              <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2">
                 <Iconify icon="mingcute:add-line" /> Add FAQ
               </span>
             </RouterLink>
             <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
+              <span className="bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1">
                 <Iconify icon="mingcute:add-line" /> Export CSV
               </span>
             </RouterLink>
           </div>
         }
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
-      <Stack sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }} direction="row">
+      <Stack mb={2} direction={{ xs: 'column', md: 'row', lg: 'row' }} spacing={2}>
         <TextField
-          sx={{ width: '70%' }}
+          fullWidth
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search By FAQ Question/Tags..."
           InputProps={{
@@ -105,7 +105,7 @@ export function FaqListView() {
             ),
           }}
         />
-        <FormControl sx={{ width: '28%' }}>
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="FAQ Group">FAQ Group</InputLabel>
           <Select
             input={<OutlinedInput label="FAQ Group" />}

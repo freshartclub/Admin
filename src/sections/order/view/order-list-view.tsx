@@ -19,10 +19,14 @@ import {
 } from 'src/components/table';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { paths } from 'src/routes/paths';
-import { useGetSubscriptionOrder } from '../http/useGetSubscriptionOrder';
 import { OrderTableRow } from '../order-table-row';
 import { imgUrl } from 'src/utils/BaseUrls';
 import { useGetAllOrders } from '../http/useGetAllOrder';
+import { Stack } from '@mui/material';
+import { TextField } from '@mui/material';
+import { InputAdornment } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +35,7 @@ const TABLE_HEAD = [
   { id: 'artistName', label: 'User Name', width: 140 },
   {
     id: 'quantity',
-    label: 'Item Quantity',
+    label: 'Total Items',
     width: 120,
   },
   { id: 'subTotal', label: 'Total Price', width: 140 },
@@ -46,9 +50,11 @@ export function OrderListView() {
   const table = useTable();
 
   const [notFound, setNotFound] = useState(false);
+  const [search, setSearch] = useState('');
   const [_orderList, setOrderList] = useState<IOrderItem[]>([]);
+  const debounceSearch = useDebounce(search, 800);
 
-  const { data, isLoading } = useGetAllOrders();
+  const { data, isLoading } = useGetAllOrders(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -69,7 +75,20 @@ export function OrderListView() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Order List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
       />
-
+      <Stack marginBottom={2}>
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Order Id, User/Artist Id, User Name..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Stack>
       {isLoading ? (
         <LoadingScreen />
       ) : (

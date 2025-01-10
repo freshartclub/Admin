@@ -92,6 +92,52 @@ input[type='number']::-webkit-inner-spin-button {
   height: 18vh !important;
 }
 
+@media screen and (max-width: 600px) {
+  .css-1d9cypr-MuiStack-root {
+    flex-direction: column !important;
+    align-items: start !important;
+    gap: 1rem;
+  }
+  .css-6su6fj{
+    width: 100%;
+  }
+
+  .bread-links {
+    width: 100%;
+  }
+
+  .bread-links > a{
+    width: 100%;
+  }
+
+  .bread-links > span{
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .ticket-id > p > span{
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .ticket-box{
+    flex-direction: column !important;
+    align-items: start !important;
+  }
+  .ticket-box > span{
+    width: 100%;
+    justify-content: center !important;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .bread-links{
+    flex-direction: column !important;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

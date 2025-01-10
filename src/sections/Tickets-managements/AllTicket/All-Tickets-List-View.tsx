@@ -74,14 +74,14 @@ export function TicketsListView() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Ticket List' }]}
         sx={{ mb: { xs: 3, md: 3 } }}
         action={
-          <div className="flex justify-end gap-2">
-            <RouterLink href={`${paths.dashboard.tickets.addIncident}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+          <div className="bread-links flex justify-end gap-2">
+            <RouterLink className='w-full' href={`${paths.dashboard.tickets.addIncident}`}>
+              <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 md:w-[9rem]">
                 <Iconify icon="mingcute:add-line" /> Add Incident
               </span>
             </RouterLink>
-            <RouterLink href={`${paths.dashboard.tickets.addTicket}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[8rem]">
+            <RouterLink className='w-full' href={`${paths.dashboard.tickets.addTicket}`}>
+              <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 md:w-[8rem]">
                 <Iconify icon="mingcute:add-line" /> Add Ticket
               </span>
             </RouterLink>

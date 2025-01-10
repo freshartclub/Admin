@@ -61,10 +61,6 @@ export function CatalogListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-  const handleViewRow = (id: string) => {};
-
   return (
     <>
       <CustomBreadcrumbs
@@ -73,7 +69,7 @@ export function CatalogListView() {
         sx={{ mb: { xs: 3, md: 3 } }}
       />
 
-      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -86,8 +82,8 @@ export function CatalogListView() {
             ),
           }}
         />
-        <RouterLink href={`${paths.dashboard.artwork.catalog.add}`}>
-          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+        <RouterLink className='w-full' href={`${paths.dashboard.artwork.catalog.add}`}>
+          <span className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-2 md:w-[9rem]">
             <Iconify icon="mingcute:add-line" /> Add Catalog
           </span>
         </RouterLink>

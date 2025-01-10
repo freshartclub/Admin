@@ -86,15 +86,15 @@ export function MediaSupportListCategory() {
         ]}
         sx={{ mb: { xs: 3, md: 3 } }}
         action={
-          <div className="flex gap-2">
+          <div className="bread-links flex gap-2">
             <RouterLink href={`${paths.dashboard.category.mediasupport.add}`}>
-              <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-1">
+              <span className="bg-black text-white rounded-md justify-center flex items-center px-2 py-3 gap-1">
                 <Iconify icon="mingcute:add-line" /> Add Media
               </span>
             </RouterLink>
             <span
               onClick={() => downloadCategoryExcel()}
-              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} justify-center cursor-pointer bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1`}
             >
               {loading ? (
                 'Downloading...'

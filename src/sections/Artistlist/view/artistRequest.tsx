@@ -64,7 +64,7 @@ export function ArtistsRequest() {
 
   return (
     <>
-      <Stack direction="row" marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack direction={{ xs: 'column-reverse', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -93,8 +93,8 @@ export function ArtistsRequest() {
             ))}
           </Select>
         </FormControl>
-        <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
-          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 w-[9rem]">
+        <RouterLink className='w-full' href={`${paths.dashboard.artist.createArtist}`}>
+          <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 justify-center md:w-[9rem]">
             <Iconify icon="mingcute:add-line" /> Create Artist
           </span>
         </RouterLink>
