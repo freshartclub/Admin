@@ -198,6 +198,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
           />
         </TableCell>
+        <TableCell>{row?.comingSoon ? 'Yes' : 'No'}</TableCell>
 
         <TableCell>
           <Label
@@ -242,7 +243,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             <Iconify icon="hugeicons:view" />
             View Artwork
           </MenuItem>
-          {row?.status === 'published' && (
+          {row?.status === 'draft' || row?.status === 'rejected' ? null : (
             <MenuItem
               onClick={() =>
                 navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}&modify=true`)
@@ -267,12 +268,12 @@ export function ArtworkTableRow({ row, url }: Props) {
             </MenuItem>
           ) : null}
 
-          {row?.status === 'draft' || row?.status === 'rejected' ? null : (
+          {/* {row?.status === 'draft' || row?.status === 'rejected' ? null : (
             <MenuItem>
               <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
               ReValidate
             </MenuItem>
-          )}
+          )} */}
           <MenuItem>
             <Iconify icon="iconoir:info-empty" />
             Not Available

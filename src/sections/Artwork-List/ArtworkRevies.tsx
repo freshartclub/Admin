@@ -943,7 +943,7 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             label="Selected Method"
-            name="activeTab"
+            name="updatedActiveTab"
             value={data?.reviewDetails?.commercialization?.activeTab}
             disabled={
               !checkIsChanged(
@@ -962,12 +962,12 @@ export function ArtworkRevies({}) {
                   ) && isReadOnly
                 }
                 label="Subscription Catalog"
-                name="subscriptionCatalog"
+                name="updatedSubscriptionCatalog"
                 value={data?.catalogReviewInfo}
               />
               <Field.Text
                 label="Purchase Option"
-                name="options"
+                name="updatedOptions"
                 value={data?.reviewDetails?.commercialization?.purchaseOption}
                 disabled={
                   !checkIsChanged(
@@ -981,7 +981,7 @@ export function ArtworkRevies({}) {
             <>
               <Field.Text
                 label="Purchase Catalog"
-                name="price"
+                name="updatedPrice"
                 value={data?.catalogReviewInfo}
                 disabled={
                   !checkIsChanged(
@@ -991,7 +991,7 @@ export function ArtworkRevies({}) {
                 }
               />
               <Field.Text
-                name="purchaseType"
+                name="updatedPurchaseType"
                 label="Purchase Type"
                 value={data?.reviewDetails?.commercialization?.purchaseType}
                 disabled={
@@ -1093,7 +1093,7 @@ export function ArtworkRevies({}) {
               />
               <Field.Text
                 name="artistFees"
-                label="Artist Fees"
+                label="Artist Fees (%)"
                 placeholder="Artist Fees"
                 value={data?.pricing?.artistFees}
                 disabled={isReadOnly}
@@ -1114,7 +1114,7 @@ export function ArtworkRevies({}) {
           {data && data?.reviewDetails?.commercialization?.activeTab === 'subscription' ? (
             <>
               <Field.Text
-                name="basePrice"
+                name="updatedBasePrice"
                 label="Base Price"
                 placeholder="Base Price"
                 value={data?.reviewDetails?.pricing?.basePrice}
@@ -1126,7 +1126,7 @@ export function ArtworkRevies({}) {
                 }
               />
               <Field.Text
-                name="dpersentage"
+                name="updatedDpersentage"
                 label="Discount Percentage"
                 placeholder="0.00%"
                 type="number"
@@ -1147,11 +1147,11 @@ export function ArtworkRevies({}) {
                     data?.pricing?.vatAmount
                   ) && isReadOnly
                 }
-                name="vatAmount"
+                name="updatedVatAmount"
                 label="VAT Amount (%)"
               />
               <Field.Text
-                name="artistFees"
+                name="updatedArtistFees"
                 label="Artist Fees"
                 placeholder="Artist Fees"
                 value={data?.reviewDetails?.pricing?.artistFees}
@@ -1170,7 +1170,7 @@ export function ArtworkRevies({}) {
               data?.reviewDetails?.commercialization?.purchaseType === 'Downward Offer' ? (
                 <>
                   <Field.Text
-                    name="basePrice"
+                    name="updatedBasePrice"
                     label="Base Price"
                     placeholder="Base Price"
                     value={data?.reviewDetails?.pricing?.basePrice}
@@ -1182,7 +1182,7 @@ export function ArtworkRevies({}) {
                     }
                   />
                   <Field.Text
-                    name="dpersentage"
+                    name="updatedDpersentage"
                     label="Discount Percentage"
                     placeholder="0.00%"
                     type="number"
@@ -1206,14 +1206,14 @@ export function ArtworkRevies({}) {
                       data?.pricing?.acceptOfferPrice
                     ) && isReadOnly
                   }
-                  name="acceptOfferPrice"
+                  name="updatedAcceptOfferPrice"
                   label="Accept offer min. price"
                 />
               ) : null}
               <Field.Text
                 type="number"
                 value={data?.reviewDetails?.pricing?.vatAmount}
-                name="vatAmount"
+                name="updatedVatAmount"
                 label="VAT Amount (%)"
                 disabled={
                   !checkIsChanged(
@@ -1223,8 +1223,8 @@ export function ArtworkRevies({}) {
                 }
               />
               <Field.Text
-                name="artistFees"
-                label="Artist Fees"
+                name="updatedArtistFees"
+                label="Artist Fees (%)"
                 placeholder="Artist Fees"
                 value={data?.reviewDetails?.pricing?.artistFees}
                 disabled={
@@ -1305,7 +1305,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.pCode}
-            name="pCode"
+            name="updatedPCode"
             label="Product code"
           />
           <Field.Text
@@ -1316,7 +1316,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.location}
-            name="location"
+            name="updatedLocation"
             label="Location"
           />
           <Field.Text
@@ -1326,7 +1326,7 @@ export function ArtworkRevies({}) {
                 data?.inventoryShipping?.packageMaterial
               ) && isReadOnly
             }
-            name="packageMaterial"
+            name="updatedPackageMaterial"
             label="Package Material"
             value={data?.reviewDetails?.inventoryShipping?.packageMaterial}
           />
@@ -1338,7 +1338,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.packageHeight}
-            name="packageHeight"
+            name="updatedPackageHeight"
             label="Package Height (in cm)"
           />
           <Field.Text
@@ -1349,7 +1349,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.packageWidth}
-            name="packageWidth"
+            name="updatedPackageWidth"
             label="Package Width (in cm)"
           />
           <Field.Text
@@ -1360,7 +1360,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.packageLength}
-            name="packageLength"
+            name="updatedPackageLength"
             label="Package Depth (in cm)"
           />
           <Field.Text
@@ -1371,7 +1371,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.inventoryShipping?.packageWeight}
-            name="packageWeight"
+            name="updatedPackageWeight"
             label="Package Weight (in Kg)"
           />
           <Field.Checkbox
@@ -1382,8 +1382,9 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             checked={data?.reviewDetails?.inventoryShipping?.comingSoon}
-            name="comingSoon"
-            label="Comming Soon"
+            name="updatedComingSoon"
+            sx={{ PointerEvent: 'none' }}
+            label="Coming Soon"
           />
         </Box>
       </Stack>
@@ -1418,7 +1419,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.restriction?.availableTo}
-            name="availableTo"
+            name="updatedAvailableTo"
             label="Available To"
           />
           <Field.Text
@@ -1429,7 +1430,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.restriction?.discountAcceptation}
-            name="discountAcceptation"
+            name="updatedDiscountAcceptation"
             label="Discount Acceptation"
           />
         </Box>
@@ -1465,7 +1466,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.promotions?.promotion}
-            name="promotion"
+            name="updatedPromotion"
             label="Promotion"
           />
           <Field.Text
@@ -1476,7 +1477,7 @@ export function ArtworkRevies({}) {
               ) && isReadOnly
             }
             value={data?.reviewDetails?.promotions?.promotionScore}
-            name="promotionScore"
+            name="updatedPromotionScore"
             label="Promotion Score"
           />
         </Box>

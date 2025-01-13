@@ -26,13 +26,13 @@ import { InputLabel } from '@mui/material';
 import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
-  { id: 'artistName', label: 'Artist Name​' },
-  { id: 'phone', label: 'Contact' },
+  { id: 'artistName', label: 'User Nam​e' },
   { id: 'city', label: 'City' },
   { id: 'state', label: 'Province' },
   { id: 'country', label: 'Country' },
   { id: 'isArtistRequestStatus', label: 'Status' },
   { id: 'cv', label: 'CV' },
+  { id: 'createdAt', label: 'Requested At' },
   { id: 'buttons', label: 'Button' },
   { id: 'action', label: 'Action' },
 ];
@@ -43,7 +43,7 @@ export function ArtistsRequest() {
   const [sStatus, setStatus] = useState('Pending');
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 1000);
+  const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllArtistRequest(debounceSearch, sStatus);
 
@@ -59,12 +59,14 @@ export function ArtistsRequest() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
-
   return (
     <>
-      <Stack direction={{ xs: 'column-reverse', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack
+        direction={{ xs: 'column-reverse', md: 'row', lg: 'row' }}
+        marginBottom={2}
+        alignItems={'center'}
+        spacing={2}
+      >
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -77,7 +79,7 @@ export function ArtistsRequest() {
             ),
           }}
         />
-        <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 180 } }}>
+        <FormControl sx={{ flexShrink: 1, width: { xs: 1, md: 280 } }}>
           <InputLabel htmlFor="Status">Status</InputLabel>
 
           <Select
@@ -93,7 +95,7 @@ export function ArtistsRequest() {
             ))}
           </Select>
         </FormControl>
-        <RouterLink className='w-full' href={`${paths.dashboard.artist.createArtist}`}>
+        <RouterLink className="w-full md:w-[9rem]" href={`${paths.dashboard.artist.createArtist}`}>
           <span className="bg-black text-white rounded-md flex items-center px-2 py-3 gap-2 justify-center md:w-[9rem]">
             <Iconify icon="mingcute:add-line" /> Create Artist
           </span>
@@ -118,15 +120,7 @@ export function ArtistsRequest() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <ArtistRequest
-                      key={row._id}
-                      row={row}
-                      url={imgUrl}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
-                    />
+                    <ArtistRequest key={row._id} row={row} url={imgUrl} />
                   ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

@@ -33,16 +33,14 @@ import { useRejectRequestMutation } from './http/useRejectRequestMutation';
 import { useUnBanRequest } from './http/useUnBanRequest';
 import { useUnRejectRequest } from './http/useUnRejectRequest';
 import { FileThumbnail } from 'src/components/file-thumbnail';
+import { fDate } from 'src/utils/format-time';
+import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: ArtistListType;
   url: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
 const style = {
@@ -59,7 +57,7 @@ const style = {
   overflow: 'auto',
 };
 
-export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ArtistRequest({ row, url }: Props) {
   const popover = usePopover();
   const navigate = useNavigate();
 
@@ -252,6 +250,15 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
               label="Social Media URL"
               variant="outlined"
             />
+            <Button
+              size="small"
+              color="primary"
+              className="flex justify-end"
+              startIcon={<Iconify icon="majesticons:open" />}
+              onClick={() => window.open(row?.links[0]?.link, '_blank')}
+            >
+              Open Link In New Tab
+            </Button>
             <Box
               sx={{
                 display: 'flex',
@@ -384,17 +391,18 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link color="inherit" sx={{ cursor: 'pointer' }}>
                 {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}
               </Box>
+              <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.80rem' }}>
+                {phoneNo(row?.phone)}
+              </Box>
             </Stack>
           </Stack>
         </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.state}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
@@ -408,11 +416,13 @@ export function ArtistRequest({ row, url, selected, onEditRow, onSelectRow, onDe
                 row?.isArtistRequestStatus.slice(1)}
           </span>
         </TableCell>
+
         <TableCell sx={{ alignContent: 'center' }}>
           <span onClick={handleDocsPreview} className="cursor-pointer">
             <Iconify icon="mdi:eye-outline" />
           </span>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.isArtistRequestStatus === 'pending' ? (
             <RouterLink

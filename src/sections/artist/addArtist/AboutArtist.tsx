@@ -32,7 +32,7 @@ export const ArtistCatagory = zod.object({
 
 export const NewProductSchema = zod.object({
   About: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
-  insignia: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  insignia: zod.string().array().optional(),
   link: zod.array(
     zod.object({
       name: zod.string().min(1, { message: 'Name is required!' }),

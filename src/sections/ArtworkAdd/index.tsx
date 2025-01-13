@@ -106,7 +106,7 @@ export const NewProductSchema = zod.object({
   colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   purchaseCatalog: zod.string().optional(),
   subscriptionCatalog: zod.string().optional(),
-  artistFees: zod.string().optional(),
+  artistFees: zod.string().min(1, { message: 'Artist Fees is required!' }),
   purchaseType: zod.string().optional(),
   acceptOfferPrice: zod.string().optional(),
   basePrice: zod.string().min(1, { message: 'Base price is required!' }),
@@ -380,7 +380,7 @@ export function ArtworkAdd() {
       packageWidth: data?.inventoryShipping?.packageWidth || '',
       artworkDiscipline: data?.discipline?.artworkDiscipline || '',
       promotion: data?.promotions?.promotion || '',
-      promotionScore: Number(data?.promotions?.promotionScore) || slide,
+      promotionScore: Number(data?.promotions?.promotionScore) || slide ? slide : 0,
       availableTo: data?.restriction?.availableTo || 'Available To Everybody',
       discountAcceptation:
         data?.restriction?.discountAcceptation || 'Accept Discounts And Promotions',
@@ -791,6 +791,7 @@ export function ArtworkAdd() {
         <div className="relative">
           <Field.Text
             disabled={id ? true : false}
+            required
             name="artistID"
             label="Artist ID"
             placeholder="Search by artist Name/Email"
@@ -862,7 +863,7 @@ export function ArtworkAdd() {
           )}
         </div>
         {methods.getValues('isArtProvider') === 'No' && (
-          <Field.Text disabled name="artistName" label="Artist Name" />
+          <Field.Text disabled required name="artistName" label="Artist Name" />
         )}
         {methods.getValues('isArtProvider') === 'Yes' && (
           <Field.Text name="provideArtistName" label="Artist Name" />
@@ -877,7 +878,7 @@ export function ArtworkAdd() {
         >
           <DatePicker
             name="artworkCreationYear"
-            label="Artwork Year"
+            label="Artwork Year *"
             // value={dayjs(data?.artworkCreationYear) || currentYear}
             maxDate={currentYear}
             defaultValue={dayjs(data?.artworkCreationYear)}
@@ -894,7 +895,7 @@ export function ArtworkAdd() {
               required
               disabled={mongoDBId ? false : true}
               name="artworkSeries"
-              label="Artwork Series"
+              label="Artwork Series *"
               placeholder={`${mongoDBId ? 'Search For Series' : 'Search For Artist First'}`}
               fullWidth
               disableCloseOnSelect={false}
@@ -945,7 +946,13 @@ export function ArtworkAdd() {
           </Box>
         </Box>
 
-        <Field.Text name="productDescription" label="Product Description" multiline rows={4} />
+        <Field.Text
+          required
+          name="productDescription"
+          label="Product Description"
+          multiline
+          rows={4}
+        />
       </Stack>
     </Card>
   );
@@ -964,7 +971,7 @@ export function ArtworkAdd() {
         >
           <div>
             <Typography>Main Photo</Typography>
-            <Field.Upload name="mainImage" maxSize={3145728} onDelete={handleRemoveFile} />
+            <Field.Upload required name="mainImage" maxSize={3145728} onDelete={handleRemoveFile} />
           </div>
 
           <div>
@@ -1019,6 +1026,7 @@ export function ArtworkAdd() {
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect
+          required
           name="artworkDiscipline"
           label="Artwork Discipline"
           options={PRODUCT_CATAGORYONE_OPTIONS}
@@ -1031,6 +1039,7 @@ export function ArtworkAdd() {
         >
           <Field.SingelSelect
             name="artworkTechnic"
+            required
             label="Artwork Technic"
             options={
               selectedDisciplines && selectedDisciplines
@@ -1046,6 +1055,7 @@ export function ArtworkAdd() {
 
           <Field.SingelSelect
             name="artworkTheme"
+            required
             label="Artwork Theme"
             options={
               selectedDisciplines && selectedDisciplines
@@ -1061,6 +1071,7 @@ export function ArtworkAdd() {
         </Box>
         <Field.MultiSelect
           name="artworkStyle"
+          required
           label="Artwork Style"
           options={
             selectedDisciplines && selectedDisciplines
@@ -1081,11 +1092,18 @@ export function ArtworkAdd() {
         >
           <Field.MultiSelect
             checkbox
+            required
             name="emotions"
             label="Emotions"
             options={emotions ? emotions : []}
           />
-          <Field.MultiSelect checkbox name="colors" label="Colors" options={colors ? colors : []} />
+          <Field.MultiSelect
+            required
+            checkbox
+            name="colors"
+            label="Colors"
+            options={colors ? colors : []}
+          />
           <Field.SingelSelect
             name="offensive"
             label="Offensive"
@@ -1197,6 +1215,7 @@ export function ArtworkAdd() {
         </Stack>
         <Field.SingelSelect
           name="material"
+          required
           label="Material"
           options={
             selectedDisciplines && selectedDisciplines
@@ -1215,31 +1234,45 @@ export function ArtworkAdd() {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
         >
-          <Field.Text name="height" label="Height (in cm)" />
-          <Field.Text name="width" label="Width (in cm)" />
-          <Field.Text name="lenght" label="Depth (in cm)" />
-          <Field.Text name="weight" label="Weight (in kg)" />
+          <Field.Text required name="height" label="Height (in cm)" />
+          <Field.Text required name="width" label="Width (in cm)" />
+          <Field.Text required name="lenght" label="Depth (in cm)" />
+          <Field.Text required name="weight" label="Weight (in kg)" />
         </Box>
         <Field.SingelSelect
+          required
           name="hangingAvailable"
           label="Hanging available"
           options={ARTWORK_HANGING_OPTIONS}
         />
-        <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
 
-        <Field.SingelSelect name="framed" label="Framed" options={ARTWORK_FRAMED_OPTIONS} />
-        <Field.Text name="framedDescription" label="Framed Description" multiline rows={3} />
-        <Box
-          columnGap={2}
-          rowGap={3}
-          display="grid"
-          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
-        >
-          <Field.Text name="frameHeight" label="Framed Height (in cm)" />
-          <Field.Text name="frameWidth" label="Framed Width (in cm)" />
-          <Field.Text name="frameLenght" label="Framed Depth (in cm)" />
-        </Box>
+        {methods.getValues('hangingAvailable') === 'Yes' && (
+          <Field.Text name="hangingDescription" label="Hanging Description" multiline rows={3} />
+        )}
+
         <Field.SingelSelect
+          required
+          name="framed"
+          label="Framed"
+          options={ARTWORK_FRAMED_OPTIONS}
+        />
+        {methods.getValues('framed') === 'Yes' && (
+          <>
+            <Field.Text name="framedDescription" label="Framed Description" multiline rows={3} />
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+            >
+              <Field.Text name="frameHeight" label="Framed Height (in cm)" />
+              <Field.Text name="frameWidth" label="Framed Width (in cm)" />
+              <Field.Text name="frameLenght" label="Framed Depth (in cm)" />
+            </Box>
+          </>
+        )}
+        <Field.SingelSelect
+          required
           name="artworkOrientation"
           label="Artwork Orientation"
           options={ARTWORK_ORIENTATION_OPTIONS}
@@ -1396,8 +1429,10 @@ export function ArtworkAdd() {
             options={currency ? currency : []}
           />
           <Field.Text
+            required
             name="basePrice"
             label="Base Price"
+            value={methods.getValues('basePrice')}
             placeholder="Base Price"
             InputLabelProps={{ shrink: true }}
             InputProps={{
@@ -1423,10 +1458,15 @@ export function ArtworkAdd() {
             </Stack>
           ) : null}
           {fixPrice === 'Downward Offer' || fixPrice === 'Upward Offer' ? (
-            <Field.Text name="acceptOfferPrice" label="Accept offer min. price" />
+            <Field.Text
+              value={methods.getValues('acceptOfferPrice')}
+              name="acceptOfferPrice"
+              label="Accept offer min. price"
+            />
           ) : null}
           <Field.Text
             type="number"
+            required
             value={methods.getValues('vatAmount')}
             name="vatAmount"
             label="VAT Amount (%)"
@@ -1434,18 +1474,10 @@ export function ArtworkAdd() {
           />
           <Field.Text
             name="artistFees"
+            required
             label="Artist Fees"
-            placeholder="Artist Fees"
+            placeholder="Artist Fees (%)"
             InputLabelProps={{ shrink: true }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                    {currencySymbol}
-                  </Box>
-                </InputAdornment>
-              ),
-            }}
           />
         </Stack>
       ) : (
@@ -1464,6 +1496,8 @@ export function ArtworkAdd() {
             <Field.Text
               name="basePrice"
               label="Base Price"
+              required
+              value={methods.getValues('basePrice')}
               placeholder="Base Price"
               InputLabelProps={{ shrink: true }}
               InputProps={{
@@ -1502,6 +1536,7 @@ export function ArtworkAdd() {
           />
 
           <Field.Text
+            required
             type="number"
             value={methods.getValues('vatAmount')}
             InputLabelProps={{ shrink: true }}
@@ -1509,19 +1544,11 @@ export function ArtworkAdd() {
             label="VAT Amount (%)"
           />
           <Field.Text
+            required
             name="artistFees"
             label="Artist Fees"
-            placeholder="Artist Fees"
+            placeholder="Artist Fees (%)"
             InputLabelProps={{ shrink: true }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.85rem' }}>
-                    {currencySymbol}
-                  </Box>
-                </InputAdornment>
-              ),
-            }}
           />
         </Stack>
       )}
@@ -1544,6 +1571,7 @@ export function ArtworkAdd() {
           <Field.Text name="location" label="Location" />
         </Box>
         <Field.SingelSelect
+          required
           name="packageMaterial"
           label="Package Material"
           options={packMaterial ? packMaterial : []}
@@ -1569,11 +1597,11 @@ export function ArtworkAdd() {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
         >
-          <Field.Text name="packageHeight" label="Package Height (in cm)" />
-          <Field.Text name="packageWidth" label="Package Width (in cm)" />
-          <Field.Text name="packageLength" label="Package Depth (in cm)" />
+          <Field.Text required name="packageHeight" label="Package Height (in cm)" />
+          <Field.Text required name="packageWidth" label="Package Width (in cm)" />
+          <Field.Text required name="packageLength" label="Package Depth (in cm)" />
         </Box>
-        <Field.Text name="packageWeight" label="Package Weight (in Kg)" />
+        <Field.Text required name="packageWeight" label="Package Weight (in Kg)" />
         <Field.Checkbox name="comingSoon" label="Coming Soon" />
       </Stack>
     </Card>

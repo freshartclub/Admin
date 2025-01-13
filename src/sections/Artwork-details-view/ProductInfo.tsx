@@ -162,11 +162,11 @@ const ProductInfo = ({ data, preview }) => {
             <div>
               <PreviewData2
                 head="Frame Description"
-                val={data?.additionalInfo?.framedDescription}
+                val={data?.additionalInfo?.framedDescription || 'N/A'}
               />
               <PreviewData2
                 head="Hanging Description"
-                val={data?.additionalInfo?.hangingDescription}
+                val={data?.additionalInfo?.hangingDescription || 'N/A'}
               />
             </div>
           </div>
@@ -208,15 +208,7 @@ const ProductInfo = ({ data, preview }) => {
               />
             )}
             {data?.pricing?.artistFees && (
-              <PreviewData
-                head="Artist Fees"
-                val={
-                  currencies.find((item) => item.code === data?.pricing?.currency.split(' ')[0])
-                    ?.symbol +
-                  ' ' +
-                  data?.pricing?.artistFees
-                }
-              />
+              <PreviewData head="Artist Fees" val={data?.pricing?.artistFees + '%'} />
             )}
             {data?.pricing?.acceptOfferPrice && (
               <PreviewData

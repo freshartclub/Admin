@@ -134,9 +134,6 @@ export function GeneralInformation({
       getCityStateFromZipCountry(zipCode, country, apiKey).then(({ city, state }) => {
         formProps.setValue('city', city || '');
         formProps.setValue('state', state || '');
-        if (!artistFormData?.residentialAddress && city && state) {
-          setSearchResult(zipCode + ' ' + city + ' ' + state + ' ' + country);
-        }
       });
     }
   }, [zipCode, country]);
@@ -146,7 +143,7 @@ export function GeneralInformation({
   }, [artistFormData?.residentialAddress]);
 
   const placesSelected = (places: google.maps.places.PlaceResult) => {
-    const address_comp = ['street_number', 'route', 'locality', 'administrative_area_level_2'];
+    const address_comp = ['route', 'street_number'];
 
     const comp = address_comp
       .map((type) => places.address_components?.find((c) => c.types.includes(type))?.long_name)

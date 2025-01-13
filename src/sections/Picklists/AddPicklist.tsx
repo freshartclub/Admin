@@ -33,6 +33,7 @@ export const NewProductSchema = zod.object({
 export function AddPicklist() {
   const id = useSearchParams().get('id');
   const name = useSearchParams().get('name');
+  const selectedType = useSearchParams().get('selectedType');
 
   const navigate = useNavigate();
   const { data, isLoading } = useGetPicklistMutation();
@@ -40,7 +41,7 @@ export function AddPicklist() {
 
   const defaultValues = useMemo(
     () => ({
-      picklistName: picklistData?.picklistName || '',
+      picklistName: picklistData?.picklistName || selectedType ? selectedType : '',
       name: picklistData?.name || '',
     }),
     [picklistData]

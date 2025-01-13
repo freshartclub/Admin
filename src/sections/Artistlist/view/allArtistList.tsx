@@ -120,19 +120,15 @@ export function AllArtist() {
     },
     {
       value: 1,
-      label: '1 Week',
+      label: 'Less than 1 Week',
     },
     {
       value: 2,
-      label: '2 Week',
+      label: 'Btw 1 and 2 Week',
     },
     {
       value: 3,
-      label: '3 Week',
-    },
-    {
-      value: 4,
-      label: '4 Week',
+      label: 'More than 2 Week',
     },
   ];
 
@@ -142,9 +138,9 @@ export function AllArtist() {
         heading="All Artist List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'All Artist List​', href: paths.dashboard.artist.allArtist },
+          { name: 'All Artist List', href: paths.dashboard.artist.allArtist },
         ]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
         action={
           <div className="bread-links flex gap-2 items-center">
             <RouterLink href={`${paths.dashboard.artist.createArtist}`}>
@@ -167,7 +163,12 @@ export function AllArtist() {
           </div>
         }
       />
-      <Stack sx={{ mb: 2 }} direction={{ xs: 'column', md: 'row', lg: 'row' }} marginBottom={2} alignItems={'center'} spacing={2}>
+      <Stack
+        direction={{ xs: 'column', md: 'row', lg: 'row' }}
+        marginBottom={2}
+        alignItems={'center'}
+        spacing={2}
+      >
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}

@@ -17,6 +17,9 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
 import { fDate } from 'src/utils/format-time';
+import useDeleteCollection from '../http/useDeleteCollection';
+import { useState } from 'react';
+import useRestoreCollection from '../http/useRestoreCollection';
 
 // ----------------------------------------------------------------------
 
@@ -28,8 +31,11 @@ type Props = {
 export function CollectionTableRow({ row, url }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
+  const [openConfirmRestore, setOpenConfirmRestore] = useState(false);
 
   const navigate = useNavigate();
+  const { mutate, isPending } = useDeleteCollection(row._id);
+  const { mutate: mutateRestore, isPending: isPendingRestore } = useRestoreCollection(row._id);
 
   const tags = (val) => {
     if (!val || val.length === 0) return '';
@@ -39,6 +45,18 @@ export function CollectionTableRow({ row, url }: Props) {
     } else {
       return val.slice(0, 3).join(' | ');
     }
+  };
+
+  const deleteCollection = () => {
+    mutate();
+    confirm.onFalse();
+    popover.onClose();
+  };
+
+  const restoreCollection = () => {
+    mutateRestore();
+    setOpenConfirmRestore(false);
+    popover.onClose();
   };
 
   return (
@@ -67,8 +85,15 @@ export function CollectionTableRow({ row, url }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{tags(row?.collectionTags)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.status}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.createdBy}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <span
+            className={`w-fit h-fit ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F] rounded-2xl px-2 py-1' : 'bg-[#FEEDEC] text-[#F04438] rounded-2xl px-2 py-1'}`}
+          >
+            {!row?.isDeleted ? 'Active' : 'Inactive'}
+          </span>
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -83,16 +108,22 @@ export function CollectionTableRow({ row, url }: Props) {
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          {row?.isDeleted ? (
+            <MenuItem onClick={() => setOpenConfirmRestore(true)} sx={{ color: 'success.main' }}>
+              <Iconify icon="system-uicons:reverse" /> Restore
+            </MenuItem>
+          ) : (
+            <MenuItem
+              onClick={() => {
+                confirm.onTrue();
+                popover.onClose();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Delete
+            </MenuItem>
+          )}
 
           <MenuItem
             onClick={() =>
@@ -108,11 +139,23 @@ export function CollectionTableRow({ row, url }: Props) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={`Delete Collection - "${row.collectionName}"`}
+        content="Are you sure want to delete this collection?"
         action={
-          <Button variant="contained" color="error">
-            Delete
+          <Button variant="contained" color="error" onClick={deleteCollection}>
+            {isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
+        open={openConfirmRestore}
+        onClose={() => setOpenConfirmRestore(false)}
+        title={`Restore Collection - "${row.collectionName}"`}
+        content="Are you sure you want to restore this collection?"
+        action={
+          <Button variant="contained" color="success" onClick={restoreCollection}>
+            {isPendingRestore ? 'Activating...' : 'Restore'}
           </Button>
         }
       />

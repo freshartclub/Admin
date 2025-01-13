@@ -540,7 +540,7 @@ export function OtherDetails({
       <Divider />
       <Stack spacing={3} mb={2} padding={2}>
         <Field.DatePicker disabled name="lastRevalidationDate" label="Last Revaliadtion Date" />
-        <Field.DatePicker disabled name="nextRevalidationDate" label="Next Revaliadtion Date" />
+        <Field.DatePicker name="nextRevalidationDate" label="Next Revaliadtion Date" />
       </Stack>
     </Card>
   );

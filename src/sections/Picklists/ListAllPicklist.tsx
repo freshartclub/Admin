@@ -1,21 +1,23 @@
 import {
+  Autocomplete,
   Card,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  InputLabel,
   MenuItem,
-  Select,
+  MenuList,
   Stack,
   Table,
   TableBody,
+  TextField,
   Typography,
 } from '@mui/material';
+import { saveAs } from 'file-saver';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -27,21 +29,16 @@ import {
   TableNoData,
   useTable,
 } from 'src/components/table';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { RouterLink } from 'src/routes/components';
+import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import type { IUserItem } from 'src/types/user';
+import axiosInstance from 'src/utils/axios';
 import { PicklistTableRow } from './Picklist-table-row';
 import { useGetPicklistMutation } from './http/useGetPicklistMutation';
 import useUpdatePicklistName from './http/useUpdateName';
-import { useSearchParams } from 'src/routes/hooks';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
-import axiosInstance from 'src/utils/axios';
-import { saveAs } from 'file-saver';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { CustomPopover, usePopover } from 'src/components/custom-popover';
-import { MenuList } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Field Name', width: 150 },
@@ -53,7 +50,6 @@ export function ListAllPicklist() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_list, setList] = useState([]);
-  const [search, setSearch] = useState('');
   const { data, isLoading } = useGetPicklistMutation();
   const [name, setName] = useState('');
   const [open, setOpen] = useState(false);
@@ -78,12 +74,7 @@ export function ListAllPicklist() {
   }, [data, picklist]);
 
   const dataFiltered = applyFilter({
-    inputData: _list.filter((item) => {
-      if (search) {
-        return item.name.toLowerCase().includes(search.toLowerCase());
-      }
-      return true;
-    }),
+    inputData: _list,
     comparator: getComparator(table.order, table.orderBy),
   });
 
@@ -174,7 +165,7 @@ export function ListAllPicklist() {
         sx={{ mb: 3 }}
         action={
           <div className="bread-links flex gap-2">
-            <RouterLink href={`${paths.dashboard.category.picklist.add}`}>
+            <RouterLink href={`${paths.dashboard.category.picklist.add}?selectedType=${picklist}`}>
               <span className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1">
                 <Iconify icon="mingcute:add-line" /> Add Picklist Item
               </span>
@@ -199,48 +190,34 @@ export function ListAllPicklist() {
         direction={{ xs: 'column-reverse', md: 'row', lg: 'row' }}
         spacing={2}
         alignItems={'center'}
-        sx={{ mb: 2 }}
+        marginBottom={2}
       >
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
-          <InputLabel htmlFor="Picklist">Select Picklist</InputLabel>
-
-          <Select
-            label="Select Picklist"
-            inputProps={{ id: 'Picklist' }}
-            onChange={(e) => {
-              setPicklist(e.target.value);
+        <Autocomplete
+          fullWidth
+          options={data ? data : []}
+          getOptionLabel={(option) => option.picklistName || ''}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Type or Select Picklist Name"
+              placeholder="Type or Select Picklist Name"
+            />
+          )}
+          onChange={(event, newValue) => {
+            if (newValue) {
+              setPicklist(newValue.picklistName);
 
               const url = new URL(window.location.href);
               if (url.searchParams.has('selectedType')) {
                 url.searchParams.delete('selectedType');
                 window.history.replaceState({}, document.title, url);
               }
-            }}
-            value={picklist}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {data &&
-              data.length > 0 &&
-              data.map((option) => (
-                <MenuItem key={option.picklistName} value={option.picklistName}>
-                  {option.picklistName}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-
-        <TextField
-          fullWidth
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={`Search By "${picklist}" Picklist Item Name...`}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
+            }
           }}
+          value={data ? data.find((item) => item.picklistName === picklist) : null}
+          isOptionEqualToValue={(option, value) => option?.picklistName === value?.picklistName}
         />
+
         <span
           onClick={() => setOpen(true)}
           className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1 cursor-pointer w-full md:w-[21rem]"
@@ -248,6 +225,7 @@ export function ListAllPicklist() {
           <Iconify icon="solar:pen-bold" /> Edit Picklist Name
         </span>
       </Stack>
+
       {isLoading ? (
         <LoadingScreen />
       ) : (

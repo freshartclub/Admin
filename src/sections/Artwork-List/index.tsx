@@ -44,8 +44,9 @@ const TABLE_HEAD = [
   { id: 'artworkName', label: 'Artwork Name', width: 180 },
   { id: 'artistName', label: 'Artist Name', width: 150 },
   { id: 'discipline', label: 'Discipline', width: 100 },
-  { id: 'activeTab', label: 'Commercialization ', width: 100 },
+  { id: 'activeTab', label: 'Commercialization', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 100 },
+  { id: 'comingSoon', label: 'Comming Soon', width: 100 },
   { id: 'status', label: 'Status', width: 100 },
   { id: 'action', label: 'Action', width: 100 },
 ];

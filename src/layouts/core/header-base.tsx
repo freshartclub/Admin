@@ -1,32 +1,27 @@
 import type { NavSectionProps } from 'src/components/nav-section';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import { styled, useTheme } from '@mui/material/styles';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-
-import { Logo } from 'src/components/logo';
-
-import { HeaderSection } from './header-section';
-import { Searchbar } from '../components/searchbar';
-import { MenuButton } from '../components/menu-button';
-import { SignInButton } from '../components/sign-in-button';
+import { paths } from 'src/routes/paths';
+import logo from '../../assets/images/Logo01 2.png';
 import { AccountDrawer } from '../components/account-drawer';
-import { SettingsButton } from '../components/settings-button';
-import { LanguagePopover } from '../components/language-popover';
-import { ContactsPopover } from '../components/contacts-popover';
-import { WorkspacesPopover } from '../components/workspaces-popover';
+import { MenuButton } from '../components/menu-button';
 import { NotificationsDrawer } from '../components/notifications-drawer';
+import { Searchbar } from '../components/searchbar';
+import { SettingsButton } from '../components/settings-button';
+import { SignInButton } from '../components/sign-in-button';
+import { HeaderSection } from './header-section';
 
-import type { HeaderSectionProps } from './header-section';
 import type { AccountDrawerProps } from '../components/account-drawer';
 import type { ContactsPopoverProps } from '../components/contacts-popover';
 import type { LanguagePopoverProps } from '../components/language-popover';
-import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
+import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
+import type { HeaderSectionProps } from './header-section';
 
 // ----------------------------------------------------------------------
 
@@ -133,7 +128,8 @@ export function HeaderBase({
             )}
 
             {/* -- Logo -- */}
-            <Logo data-slot="logo" />
+            {/* <Logo data-slot="logo" /> */}
+            <img width={150} height={50} src={logo} alt="logo" />
 
             {/* -- Divider -- */}
             <StyledDivider data-slot="divider" />
