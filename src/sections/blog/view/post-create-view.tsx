@@ -1,9 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-
 import { PostNewEditForm } from '../post-new-edit-form';
 
 // ----------------------------------------------------------------------
@@ -18,7 +16,7 @@ export function PostCreateView() {
           { name: 'Circle', href: paths.dashboard.circle.new },
           { name: 'Create' },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: 3 }}
       />
 
       <PostNewEditForm />

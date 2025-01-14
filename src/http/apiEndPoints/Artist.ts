@@ -5,6 +5,7 @@ import {
   PICKLIST_BASE_URL,
   ORDER_BASE_URL,
   EMAIL_BASE_URL,
+  CIRCLE_BASE_URL,
 } from 'src/utils/BaseUrls';
 
 export const ARTIST_ENDPOINTS = {
@@ -94,6 +95,11 @@ export const EMAIL_ENDPOINTS = {
   addEmail: `${EMAIL_BASE_URL}/add-email-type`,
   getEmail: `${EMAIL_BASE_URL}/get-email-types`,
   getEmailById: `${EMAIL_BASE_URL}/get-email-type-by-id`,
+};
+
+export const CIRCLE_ENDPOINTS = {
+  addCircle: `${CIRCLE_BASE_URL}/add-circle`,
+  getCircle: `${CIRCLE_BASE_URL}/get-circle`,
 };
 
 export const GENERAL_ENDPOINTS = {

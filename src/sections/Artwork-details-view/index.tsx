@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import DiscoverContent from './DiscoverContent';
 import ProductInfo from './ProductInfo';
 import SelectedSection from './SelectedSection';
-
+import { QRCodeCanvas } from 'qrcode.react';
 import 'slick-carousel/slick/slick-theme.css';
 import 'slick-carousel/slick/slick.css';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -12,11 +12,19 @@ import { useSearchParams } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useGetArtworkById } from './http/useGetArtworkById';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { Iconify } from 'src/components/iconify';
+import { Modal } from '@mui/material';
+import { Box } from '@mui/material';
+import { Typography } from '@mui/material';
+import { Button } from '@mui/material';
+import { toast } from 'sonner';
 
 export function ArtworkDetailView() {
   const preview = useSearchParams().get('preview');
   const id = useSearchParams().get('id');
   const [images, setImages] = useState<any>([]);
+  const [openQR, setOpenQR] = useState(false);
+  const [qrCode, setQrCode] = useState('');
 
   const { data, isPending } = useGetArtworkById(id);
 
@@ -49,6 +57,22 @@ export function ArtworkDetailView() {
     }
   };
 
+  const generateQRCode = () => {
+    if (!id) return toast.error('Publish the artwork first');
+    const url = `${import.meta.env.VITE_SERVER_BASE_URL}/all-artworks?type=${data?.commercialization?.activeTab}&code=true`;
+    setQrCode(url);
+    setOpenQR(true);
+  };
+
+  const downloadQRCode = () => {
+    const canvas = document.querySelector('canvas');
+    const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+    const link = document.createElement('a');
+    link.href = pngUrl;
+    link.download = 'qr-code.png';
+    link.click();
+  };
+
   return isPending ? (
     <LoadingScreen />
   ) : (
@@ -60,6 +84,21 @@ export function ArtworkDetailView() {
           { name: preview ? 'Artwork Preview' : 'Artwork Details' },
           { name: '#' + data?.artworkId },
         ]}
+        action={
+          data && data?.status === 'published' ? (
+            <div className="bread-links flex gap-2 items-center">
+              <span
+                onClick={generateQRCode}
+                className="bg-black cursor-pointer text-white rounded-md justify-center flex items-center px-2 py-3 gap-2"
+              >
+                <Iconify icon="mingcute:add-line" /> Generate QR Code
+              </span>
+              <span className="bg-black cursor-pointer text-white rounded-md justify-center flex items-center px-2 py-3 gap-2">
+                <Iconify icon="mingcute:add-line" /> Generate Certificate Of Authenticity
+              </span>
+            </div>
+          ) : null
+        }
       />
       <div className="container mx-auto md:px-6 px-3">
         <div className="flex lg:flex-row flex-col items-center gap-5 lg:gap-10 mt-5">
@@ -149,6 +188,39 @@ export function ArtworkDetailView() {
         <ProductInfo data={data} preview={preview} />
       </div>
       {!preview && <SelectedSection />}
+      <Modal open={openQR} onClose={() => setOpenQR(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Generated QR Code
+          </Typography>
+          <QRCodeCanvas value={qrCode} size={200} />
+          <span className="flex flex-col">
+            <Button variant="contained" color="secondary" onClick={downloadQRCode} sx={{ mt: 2 }}>
+              Download QR Code
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => setOpenQR(false)}
+              sx={{ mt: 2 }}
+            >
+              Close
+            </Button>
+          </span>
+        </Box>
+      </Modal>
     </>
   );
 }
