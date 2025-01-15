@@ -185,13 +185,7 @@ export function ArtistReview({}) {
   };
 
   const validateChangeDialogBox = (
-    <Dialog
-      sx={{ width: '100vw' }}
-      open={validateChange}
-      onClose={() => {
-        setValidateChange(false);
-      }}
-    >
+    <Dialog sx={{ width: '100vw' }} open={validateChange} onClose={() => setValidateChange(false)}>
       <DialogTitle>
         Validate Artist Changes - ({data?.artistName} {data?.artistId})
       </DialogTitle>
@@ -575,13 +569,13 @@ export function ArtistReview({}) {
                   Updated Social Link - {index + 1}
                 </Typography>
                 <Field.Text
-                  disabled={!checkIsChanged(item.name, data?.links[index].name) && isReadOnly}
+                  disabled={!checkIsChanged(item.name, data?.links[index]?.name) && isReadOnly}
                   name="uadtedPlatformName"
                   value={item.name}
                   label="Platform Name"
                 />
                 <Field.Text
-                  disabled={!checkIsChanged(item.link, data?.links[index].link) && isReadOnly}
+                  disabled={!checkIsChanged(item.link, data?.links[index]?.link) && isReadOnly}
                   name="updatedLink"
                   value={item.link}
                   label="Link"

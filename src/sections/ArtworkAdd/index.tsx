@@ -411,7 +411,7 @@ export function ArtworkAdd() {
     name: 'artworkDiscipline',
   });
 
-  const debounceArtistId = useDebounce(search, 1000);
+  const debounceArtistId = useDebounce(search, 800);
   const { data: artistData, isLoading: artistLoading } = useGetArtistById(debounceArtistId);
 
   const { mutateAsync, isPending: isSeriesLoad } = useAddArtistSeries();

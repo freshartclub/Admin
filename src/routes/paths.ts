@@ -1,4 +1,5 @@
 import { _id, _postTitles } from 'src/_mock/assets';
+import { list } from 'src/theme/core/components/list';
 import { paramCase } from 'src/utils/change-case';
 
 const MOCK_ID = _id[1];
@@ -150,7 +151,8 @@ export const paths = {
     },
     circle: {
       root: `${ROOTS.DASHBOARD}/circle`,
-      new: `${ROOTS.DASHBOARD}/circle/new`,
+      add: `${ROOTS.DASHBOARD}/circle/add`,
+      list: `${ROOTS.DASHBOARD}/circle/list`,
       details: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}`,
       edit: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}/edit`,
       demo: {

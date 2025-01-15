@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { CIRCLE_ENDPOINTS, GENERAL_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { CIRCLE_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {

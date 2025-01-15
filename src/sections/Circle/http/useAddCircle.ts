@@ -8,11 +8,8 @@ import { paths } from 'src/routes/paths';
 const useAddCircle = (id) => {
   const navigate = useNavigate();
 
-  let url = `${CIRCLE_ENDPOINTS.addCircle}`;
-  if (id) url = `${CIRCLE_ENDPOINTS.addCircle}?id=${id}`;
-
   async function addCircle(data) {
-    return axiosInstance.post(url, data, {
+    return axiosInstance.post(`${CIRCLE_ENDPOINTS.addCircle}/${id}`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -23,7 +20,7 @@ const useAddCircle = (id) => {
     mutationFn: addCircle,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.category.discipline.list);
+      navigate(paths.dashboard.circle.list);
     },
 
     onError: (res) => {

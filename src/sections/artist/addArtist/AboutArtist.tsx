@@ -132,8 +132,6 @@ export function AboutArtist({
     [artistFormData]
   );
 
-  console.log(defaultValues);
-
   const formProps = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,

@@ -181,9 +181,9 @@ export const navData = [
         path: paths.dashboard.circle.root,
         icon: ICONS.blog,
         children: [
-          { title: 'List', path: paths.dashboard.circle.root },
+          { title: 'List', path: paths.dashboard.circle.list },
           { title: 'Details', path: paths.dashboard.circle.demo.details },
-          { title: 'Create', path: paths.dashboard.circle.new },
+          { title: 'Create', path: paths.dashboard.circle.add },
           { title: 'Edit', path: paths.dashboard.circle.demo.edit },
         ],
       },

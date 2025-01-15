@@ -100,6 +100,7 @@ export const EMAIL_ENDPOINTS = {
 export const CIRCLE_ENDPOINTS = {
   addCircle: `${CIRCLE_BASE_URL}/add-circle`,
   getCircle: `${CIRCLE_BASE_URL}/get-circle`,
+  allCircles: `${CIRCLE_BASE_URL}/get-all-circles`,
 };
 
 export const GENERAL_ENDPOINTS = {

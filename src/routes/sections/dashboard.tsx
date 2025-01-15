@@ -239,11 +239,10 @@ export const dashboardRoutes = [
       {
         path: 'circle',
         children: [
-          { element: <CircleList />, index: true },
           { path: 'list', element: <CircleList /> },
           { path: ':title', element: <CircleDetails /> },
           { path: ':title/edit', element: <CircleEdit /> },
-          { path: 'new', element: <AddCircle /> },
+          { path: 'add', element: <AddCircle /> },
         ],
       },
 

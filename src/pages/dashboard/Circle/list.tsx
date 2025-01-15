@@ -1,21 +1,21 @@
 import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
-
-import { PostListView } from 'src/sections/blog/view';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { CircleList } from 'src/sections/Circle/CircleList';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Post list | Dashboard - ${CONFIG.site.name}` };
+const metadata = { title: `Circle list | Dashboard - ${CONFIG.site.name}` };
 
 export default function Page() {
   return (
-    <>
+    <DashboardContent>
       <Helmet>
         <title> {metadata.title}</title>
       </Helmet>
 
-      <PostListView />
-    </>
+      <CircleList />
+    </DashboardContent>
   );
 }

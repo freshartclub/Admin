@@ -129,7 +129,7 @@ export function AddCollectionForm() {
     defaultValues,
   });
 
-  const searchDebounce = useDebounce(search.search, 1000);
+  const searchDebounce = useDebounce(search.search, 800);
   const {
     data: artworkData,
     refetch,

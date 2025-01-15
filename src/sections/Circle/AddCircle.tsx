@@ -1,4 +1,4 @@
-import { CardHeader, Stack } from '@mui/material';
+import { Avatar, CardHeader, CircularProgress, Link, Stack, TableRow } from '@mui/material';
 import { Divider } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Chip } from '@mui/material';
@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z as zod } from 'zod';
 import { schemaHelper } from 'src/components/hook-form';
 import { useForm } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { _tags } from 'src/_mock';
 import { useNavigate } from 'react-router';
 import useAddCircle from './http/useAddCircle';
@@ -18,22 +18,43 @@ import { useSearchParams } from 'src/routes/hooks';
 import { toast } from 'sonner';
 import { useGetCircleById } from './http/useGetCircleById';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { TableCell } from '@mui/material';
+import { ListItemText } from '@mui/material';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { useGetArtistById } from '../ArtworkAdd/http/useGetArtistById';
+import { imgUrl } from 'src/utils/BaseUrls';
+import { Box } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+import { IconButton } from '@mui/material';
+import { status } from 'nprogress';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
   title: zod.string().min(1, { message: 'Title is required!' }),
   description: zod.string().min(1, { message: 'Description is required!' }),
-  content: schemaHelper.editor().min(100, { message: 'Content must be at least 100 characters' }),
-  backImage: schemaHelper.file({ message: { required_error: 'Cover Photo is required!' } }),
-  mainImage: schemaHelper.file({ message: { required_error: 'Main Photo is required!' } }),
-  categories: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  content: schemaHelper.editor({ message: { required_error: 'Content is required!' } }),
+  backImage: schemaHelper.file({ message: { required_error: 'Cover Image is required!' } }),
+  mainImage: schemaHelper.file({ message: { required_error: 'Main Image is required!' } }),
+  categories: zod.string().array().min(2, { message: 'Must have at least 2 Categories!' }),
   managers: zod.string().array().min(1, { message: 'Must assign at least 1 Manager!' }),
+  managerInfo: zod.any(),
+  status: zod.string().min(1, { message: 'Status is required!' }),
 });
 
 const AddCircle = () => {
   const navigate = useNavigate();
   const id = useSearchParams().get('id');
+  const [search, setSearch] = useState('');
+
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
 
   const { data, isLoading } = useGetCircleById(id);
 
@@ -46,6 +67,8 @@ const AddCircle = () => {
       mainImage: data?.mainImage || null,
       categories: data?.categories || [],
       managers: data?.managers || [],
+      managerInfo: data?.managers || [],
+      status: data?.status || '',
     }),
     [data]
   );
@@ -54,12 +77,31 @@ const AddCircle = () => {
     defaultValues,
   });
 
+  const debounceArtistId = useDebounce(search, 800);
+  const { data: artistData, isLoading: artistLoading } = useGetArtistById(debounceArtistId);
+
   const { reset, watch, handleSubmit } = methods;
   const values = watch();
 
   useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
+    if (data) {
+      const updatedData = {
+        ...data,
+        managers: data.managers ? data.managers.map((item) => item._id) : [],
+        managerInfo: data.managers
+          ? data?.managers?.map((item) => {
+              return {
+                _id: item?._id,
+                artistId: item?.artistId,
+                name: name(item),
+                img: `${imgUrl}/users/${item?.img}`,
+              };
+            })
+          : [],
+      };
+      reset(updatedData);
+    }
+  }, [data]);
 
   const { mutate, isPending } = useAddCircle(id);
 
@@ -74,7 +116,7 @@ const AddCircle = () => {
   const onSubmit = handleSubmit(async (data: any) => {
     try {
       if (!data.mainImage) {
-        toast.error('Main Photo is required');
+        toast.error('Main Image is required');
         return;
       }
       const formData = new FormData();
@@ -86,6 +128,7 @@ const AddCircle = () => {
       formData.append('mainImage', data.mainImage);
       formData.append('categories', JSON.stringify(data.categories));
       formData.append('managers', JSON.stringify(data.managers));
+      formData.append('status', data.status);
 
       mutate(formData);
     } catch (error) {
@@ -93,15 +136,16 @@ const AddCircle = () => {
     }
   });
 
+  const statusOptions = ['Draft', 'Published'];
+
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Title, short description, image..." sx={{ mb: 3 }} />
+      <CardHeader title="Details" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text name="title" label="Circle Title" />
-
         <Field.Text name="description" label="Circle Description" multiline rows={3} />
 
         <Stack spacing={1.5}>
@@ -110,7 +154,7 @@ const AddCircle = () => {
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Main Photo</Typography>
+          <Typography variant="subtitle2">Main Image</Typography>
           <Field.Upload name="mainImage" maxSize={3145728} onDelete={handleMainRemoveFile} />
         </Stack>
 
@@ -141,9 +185,84 @@ const AddCircle = () => {
             ))
           }
         />
+        <div className="relative">
+          <Field.Text
+            name="artistSearch"
+            label="Search Artist"
+            placeholder="Search by Artist ID/Name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[40vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto">
+              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {artistLoading ? (
+                  <TableCell>
+                    <CircularProgress size={30} />
+                  </TableCell>
+                ) : artistData && artistData?.length > 0 ? (
+                  artistData.map((i, j) => (
+                    <TableCell
+                      className={`${methods.getValues('managers').includes(i?._id) && 'bg-zinc-300'}`}
+                      onClick={() => {
+                        const getManagers = methods.getValues('managers');
+                        const getManagersInfo = methods.getValues('managerInfo');
 
+                        if (getManagers?.includes(i?._id)) {
+                          methods.setValue(
+                            'managers',
+                            getManagers.filter((id) => id !== i?._id)
+                          );
+                          methods.setValue(
+                            'managerInfo',
+                            getManagersInfo.filter((a) => a?._id !== i?._id)
+                          );
+                        } else {
+                          methods.setValue('managers', [...getManagers, i?._id]);
+                          methods.setValue('managerInfo', [
+                            ...getManagersInfo,
+                            {
+                              _id: i?._id,
+                              artistId: i?.artistId,
+                              name: name(i),
+                              img: `${imgUrl}/users/${i?.mainImage}`,
+                            },
+                          ]);
+                        }
+                        setSearch('');
+                      }}
+                      key={j}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      <Stack spacing={2} direction="row" alignItems="center">
+                        <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
+
+                        <ListItemText
+                          disableTypography
+                          primary={
+                            <Typography variant="body2" noWrap>
+                              {name(i)} - {i?.artistId}
+                            </Typography>
+                          }
+                          secondary={<Link sx={{ color: 'text.disabled' }}>{i?.email}</Link>}
+                        />
+                      </Stack>
+                    </TableCell>
+                  ))
+                ) : (
+                  <TableCell>No Data Available</TableCell>
+                )}
+              </TableRow>
+            </div>
+          )}
+        </div>
         <Field.Autocomplete
-          name="managers"
+          name="managerInfo"
           label="Assign Managers"
           placeholder="+ Assign Managers"
           multiple
@@ -158,22 +277,53 @@ const AddCircle = () => {
           )}
           renderTags={(selected, getTagProps) =>
             selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
+              <div
+                className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
+                key={option?._id}
+              >
+                <Avatar sx={{ width: 24, height: 24 }} alt={option?._id} src={option?.img} />
+                <Stack sx={{ fontSize: '12px', gap: 2 }}>
+                  <Link color="inherit" sx={{ cursor: 'pointer', lineHeight: 0 }}>
+                    {option?.name}
+                  </Link>
+                  <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
+                    {option?.artistId}
+                  </Box>
+                </Stack>
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    const getManagers = methods.getValues('managers');
+                    const getManagersInfo = methods.getValues('managerInfo');
+                    methods.setValue(
+                      'managers',
+                      getManagers.filter((id) => id !== option?._id)
+                    );
+                    methods.setValue(
+                      'managerInfo',
+                      getManagersInfo.filter((a) => a?._id !== option?._id)
+                    );
+                  }}
+                >
+                  <Iconify icon="eva:close-fill" />
+                </IconButton>
+              </div>
             ))
           }
         />
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Cover</Typography>
+          <Typography variant="subtitle2">Cover Image</Typography>
           <Field.Upload name="backImage" maxSize={3145728} onDelete={handleBackRemoveFile} />
         </Stack>
+
+        <Field.SingelSelect
+          name="status"
+          label="Status"
+          options={statusOptions.map((i) => {
+            return { value: i, label: i };
+          })}
+        />
       </Stack>
     </Card>
   );
@@ -192,7 +342,7 @@ const AddCircle = () => {
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
-          {renderDetails}{' '}
+          {renderDetails}
           <div className="flex justify-end gap-2">
             <span
               onClick={() => navigate(paths.dashboard.category.discipline.list)}
