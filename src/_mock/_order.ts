@@ -11,7 +11,7 @@ export const ORDER_STATUS_OPTIONS = [
 export const TICKET_OPTIONS = [
   { value: 'allTickets', label: 'All Tickets' },
   { value: 'ongoing', label: 'On Going' },
-  { value: 'Finalise', label: 'Historic' },
+  { value: 'Closed', label: 'Historic' },
 ];
 
 const ITEMS = [...Array(3)].map((_, index) => ({

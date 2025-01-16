@@ -132,6 +132,8 @@ export function ArtistReview({}) {
     });
   };
 
+  console.log(data);
+
   useEffect(() => {
     if (data) {
       reset({
@@ -172,7 +174,7 @@ export function ArtistReview({}) {
   };
 
   const checkIsArrayChanged = (array1, array2) => {
-    if (array1.length !== array2.length) {
+    if (array1?.length !== array2?.length) {
       return true;
     }
 
@@ -486,8 +488,8 @@ export function ArtistReview({}) {
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           {data?.reviewDetails?.aboutArtist?.discipline &&
-            data?.reviewDetails?.aboutArtist?.discipline.length > 0 &&
-            data?.reviewDetails?.aboutArtist?.discipline.map((item, index) => (
+            data?.reviewDetails?.aboutArtist?.discipline?.length > 0 &&
+            data?.reviewDetails?.aboutArtist?.discipline?.map((item, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -508,7 +510,7 @@ export function ArtistReview({}) {
                   InputLabelProps={{ shrink: true }}
                 />
                 {formProps.getValues(`changedDiscipline[${index}].style`) &&
-                  formProps.getValues(`changedDiscipline[${index}].style`).length > 0 && (
+                  formProps.getValues(`changedDiscipline[${index}].style`)?.length > 0 && (
                     <Field.MultiSelect
                       disabled={
                         !checkIsArrayChanged(

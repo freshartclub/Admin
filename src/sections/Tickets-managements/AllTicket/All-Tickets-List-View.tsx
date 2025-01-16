@@ -59,8 +59,8 @@ export function TicketsListView() {
 
   const dataFiltered = applyFilter({
     inputData:
-      selectedTab === 'Finalise'
-        ? tableData.filter((item) => item.status === 'Finalise')
+      selectedTab === 'Closed'
+        ? tableData.filter((item) => item.status === 'Closed')
         : selectedTab === 'ongoing'
           ? tableData.filter((item) => ongoingStatuses.includes(item.status))
           : tableData,
@@ -75,12 +75,12 @@ export function TicketsListView() {
         sx={{ mb: { xs: 3, md: 3 } }}
         action={
           <div className="bread-links flex justify-end gap-2">
-            <RouterLink className='w-full' href={`${paths.dashboard.tickets.addIncident}`}>
+            <RouterLink className="w-full" href={`${paths.dashboard.tickets.addIncident}`}>
               <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 md:w-[9rem]">
                 <Iconify icon="mingcute:add-line" /> Add Incident
               </span>
             </RouterLink>
-            <RouterLink className='w-full' href={`${paths.dashboard.tickets.addTicket}`}>
+            <RouterLink className="w-full" href={`${paths.dashboard.tickets.addTicket}`}>
               <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 md:w-[8rem]">
                 <Iconify icon="mingcute:add-line" /> Add Ticket
               </span>
@@ -121,8 +121,8 @@ export function TicketsListView() {
                 label={tab.label}
                 icon={
                   <Label variant={(tab.value === selectedTab && 'filled') || 'soft'}>
-                    {tab.value === 'Finalise'
-                      ? tableData.filter((item) => item.status === 'Finalise').length
+                    {tab.value === 'Closed'
+                      ? tableData.filter((item) => item.status === 'Closed').length
                       : tab.value === 'ongoing'
                         ? tableData.filter((item) => ongoingStatuses.includes(item.status)).length
                         : tableData.length}
