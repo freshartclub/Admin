@@ -379,8 +379,12 @@ export function ArtworkAdd() {
       packageHeight: data?.inventoryShipping?.packageHeight || '',
       packageWidth: data?.inventoryShipping?.packageWidth || '',
       artworkDiscipline: data?.discipline?.artworkDiscipline || '',
-      promotion: data?.promotions?.promotion || '',
-      promotionScore: Number(data?.promotions?.promotionScore) || slide ? slide : 0,
+      promotion: data?.promotions?.promotion || 'No',
+      promotionScore: slide
+        ? slide
+        : data?.promotions?.promotionScore
+          ? Number(data?.promotions?.promotionScore)
+          : 0,
       availableTo: data?.restriction?.availableTo || 'Available To Everybody',
       discountAcceptation:
         data?.restriction?.discountAcceptation || 'Accept Discounts And Promotions',

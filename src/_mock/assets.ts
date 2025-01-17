@@ -507,8 +507,7 @@ export const ArtworkList = [
   `Artwork 05`,
   `Artwork 06`,
   `Artwork 07`,
-  
-]
+];
 export const Collections = [
   `Collection 01`,
   `Collection 02`,
@@ -516,7 +515,7 @@ export const Collections = [
   `Collection 04`,
   `Collection 05`,
   `Collection 06`,
-]
+];
 export const Art_provider = [
   `Provider 01`,
   `Provider 02`,
@@ -524,15 +523,14 @@ export const Art_provider = [
   `Provider 04`,
   `Provider 05`,
   `Provider 06`,
-]
+];
 export const _artworks = [
   `Edgar Degas`,
   `Claude Monet`,
   `Pierre-Auguste Renoir`,
   `Paul Cézanne`,
   `Johannes Vermeer `,
-  
-]
+];
 export const _userTages = [
   `Tage 01`,
   `Tage 02`,
@@ -541,13 +539,8 @@ export const _userTages = [
   `Tage 05`,
   `Tage 06`,
   `Tage 07`,
-]
-export const _restriction = [
-  `For User`,
-  `Artworks`,
-  `Artist`,
-  `Collections`,
-]
+];
+export const _restriction = [`For User`, `Artworks`, `Artist`, `Collections`, 'Minimum Price'];
 export const _catalog = [
   `Catalog 1`,
   `Catalog 2`,
@@ -556,7 +549,7 @@ export const _catalog = [
   `Catalog 5`,
   `Catalog 6`,
   `Catalog 7`,
-]
+];
 
 // ----------------------------------------------------------------------
 

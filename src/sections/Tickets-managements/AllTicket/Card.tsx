@@ -1,11 +1,8 @@
-import { paths } from 'src/routes/paths';
+import { Avatar, Box, Card, Link, MenuItem, MenuList, Stack } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { fDate, fTime } from 'src/utils/format-time';
-import { Avatar, Card, Typography } from '@mui/material';
-import { Stack } from '@mui/material';
-import { Box } from '@mui/material';
-import { Link } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
+import { paths } from 'src/routes/paths';
+import { fDate, fTime } from 'src/utils/format-time';
 
 export function TicketCartd({ url, data }) {
   const navigate = useNavigate();
@@ -72,6 +69,35 @@ export function TicketCartd({ url, data }) {
       ) : (
         <hr />
       )}
+
+      <MenuList
+        sx={{
+          p: 1,
+          border: '1px solid #E0E0E0',
+          borderRadius: '4px',
+          backgroundColor: '#F5F5F5',
+          display: 'flex',
+          gap: '4px',
+        }}
+      >
+        <MenuItem sx={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <Iconify icon="tabler:urgent" />
+          Urgency ({data?.urgency || 'N/A'})
+        </MenuItem>
+        <MenuItem sx={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <Iconify icon="flat-color-icons:high-priority" />
+          Priority ({data?.priority || 'N/A'})
+        </MenuItem>
+        <MenuItem sx={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <Iconify icon="game-icons:gooey-impact" />
+          Impact ({data?.impact || 'N/A'})
+        </MenuItem>
+        <MenuItem sx={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <Iconify icon="gridicons:status" />
+          Status ({data?.status || 'N/A'})
+        </MenuItem>
+      </MenuList>
+
       <div className="ticket-box flex gap-4 pt-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <Avatar alt={data?.artistName} src={`${url}/users/${data?.mainImage}`} />

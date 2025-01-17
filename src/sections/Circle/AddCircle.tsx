@@ -26,7 +26,6 @@ import { imgUrl } from 'src/utils/BaseUrls';
 import { Box } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
 import { IconButton } from '@mui/material';
-import { status } from 'nprogress';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
@@ -141,7 +140,6 @@ const AddCircle = () => {
   const renderDetails = (
     <Card>
       <CardHeader title="Details" sx={{ mb: 3 }} />
-
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>

@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -12,6 +12,12 @@ import PlanCard from './PlanCard';
 
 export function PlanList() {
   const { data, isLoading } = useGetAllPlans();
+
+  const result = data
+    ? Object.groupBy(data, (item) => {
+        return item.planGrp;
+      })
+    : {};
 
   return (
     <>
@@ -38,10 +44,37 @@ export function PlanList() {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <Stack direction="row" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, border: 'none' }}>
-          {data && data.length > 0
-            ? data.map((plan, i) => <PlanCard key={i} url={imgUrl} plan={plan} />)
-            : 'No Data Found'}
+        <Stack spacing={4}>
+          {Object.keys(result).length > 0 ? (
+            Object.entries(result).map(([groupName, plans], index) => (
+              <Box key={index} sx={{ mb: 4 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ backgroundColor: '#f5f5f5', padding: '0.5rem', borderRadius: '8px' }}
+                  component="div"
+                  gutterBottom
+                >
+                  {groupName}
+                </Typography>
+                <Divider sx={{ mb: 1 }} />
+
+                <Stack
+                  direction="row"
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 2,
+                  }}
+                >
+                  {plans &&
+                    plans.length > 0 &&
+                    plans.map((plan, i) => <PlanCard key={i} url={imgUrl} plan={plan} />)}
+                </Stack>
+              </Box>
+            ))
+          ) : (
+            <Typography>No Plans Found</Typography>
+          )}
         </Stack>
       )}
     </>

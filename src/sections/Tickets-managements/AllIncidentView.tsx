@@ -1,6 +1,6 @@
 import type { IUserItem } from 'src/types/user';
 
-import { Card, Table, TableBody } from '@mui/material';
+import { Card, Table, TableBody, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -17,14 +17,19 @@ import {
 import { paths } from 'src/routes/paths';
 import { AllIncidentList } from './AllIncidentList';
 import { useGetAllIncidentMutation } from './http/useGetAllIncidentMutation';
+import { InputAdornment } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 
 const TABLE_HEAD = [
-  { id: 'incGroup', label: 'Inc Group', width: 130 },
-  { id: 'incType', label: 'Inc Type', width: 130 },
-  { id: 'status', label: 'Status', width: 130 },
-  { id: 'initTime', label: 'Initial Date', width: 130 },
-  { id: 'endTime', label: 'End Date', width: 130 },
-  { id: 'createdAt', label: 'Created At', width: 130 },
+  { id: 'incGroup', label: 'Inc Group' },
+  { id: 'incType', label: 'Inc Type' },
+  { id: 'title', label: 'Inc Title' },
+  { id: 'status', label: 'Status' },
+  { id: 'severity', label: 'Severity' },
+  { id: 'initTime', label: 'Initial Date' },
+  { id: 'endTime', label: 'End Date' },
+  { id: 'createdAt', label: 'Created At' },
   { id: 'actions', label: 'Action', width: 88 },
 ];
 
@@ -32,8 +37,11 @@ export function AllIncidentView() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_incidentList, setIncidentList] = useState<IUserItem[]>([]);
+  const [search, setSearch] = useState('');
 
-  const { data, isLoading } = useGetAllIncidentMutation();
+  const debounceSearch = useDebounce(search, 800);
+
+  const { data, isLoading } = useGetAllIncidentMutation(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -52,7 +60,20 @@ export function AllIncidentView() {
       <CustomBreadcrumbs
         heading="All Incident List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Incident List' }]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        sx={{ mb: 2 }}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By Incident Title, Group or Type..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
       />
       {isLoading ? (
         <LoadingScreen />

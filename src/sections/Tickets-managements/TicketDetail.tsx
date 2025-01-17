@@ -25,6 +25,7 @@ export const NewTicketSchema = zod.object({
   email: zod.string().optional(),
   ticketType: zod.string().min(1, { message: 'Type is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),
+  priority: zod.string().min(1, { message: 'Priority is required!' }),
   message: zod.string().min(1, { message: 'Message is required!' }),
   ticketImg: zod.any().optional(),
 });
@@ -35,7 +36,7 @@ export function TicketDetailView() {
   const { data: reply, isLoading: replyLoading } = useGetTicketReply(id);
   const { mutateAsync, isPending } = useAddReplyMutation();
 
-  const picklist = RenderAllPicklists(['Ticket Status', 'Ticket Type']);
+  const picklist = RenderAllPicklists(['Ticket Status', 'Ticket Type', 'Ticket Priority']);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
     acc[item?.fieldName] = item?.picklist;
@@ -44,6 +45,7 @@ export function TicketDetailView() {
 
   const status = picklistMap['Ticket Status'];
   const ticketType = picklistMap['Ticket Type'];
+  const priority = picklistMap['Ticket Priority'];
 
   const popover = usePopover();
   const defaultValues = useMemo(
@@ -51,6 +53,7 @@ export function TicketDetailView() {
       email: data?.user?.email || '',
       ticketType: data?.ticketType || '',
       status: data?.status || '',
+      priority: data?.priority || '',
       ticketImg: null,
       message: '',
     }),
@@ -70,6 +73,7 @@ export function TicketDetailView() {
         email: data?.user?.email || '',
         ticketType: data?.ticketType || '',
         status: data?.status || '',
+        priority: data?.priority || '',
         ticketImg: null,
         message: '',
       });
@@ -131,41 +135,46 @@ export function TicketDetailView() {
             label="Status"
             options={status ? status : []}
           />
-          {methods.watch('ticketImg') && methods.getValues('ticketImg') ? (
-            <Box
-              sx={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <FileThumbnail
-                sx={{ cursor: 'pointer' }}
-                onClick={() =>
-                  window.open(URL.createObjectURL(methods.getValues('ticketImg')), '_blank')
-                }
-                file={methods.getValues('ticketImg')?.name}
-              />
-
-              <span
-                onClick={handleRemoveDocument}
-                className="ml-[3rem] text-[14px] absolute bg-red-100 text-red-500 rounded-md px-2 py-1 cursor-pointer"
-              >
-                Remove Document
-              </span>
-            </Box>
-          ) : (
-            <>
-              <input
-                className="border border-gray-200 rounded-md px-2 py-3 hover:border-gray-600"
-                required
-                type="file"
-                accept="file/*"
-                onChange={(e) => handleFileChange(e)}
-              />
-            </>
-          )}
+          <Field.SingelSelect
+            name="priority"
+            label="Ticket Priority"
+            options={priority ? priority : []}
+          />
         </Box>
+        {methods.watch('ticketImg') && methods.getValues('ticketImg') ? (
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <FileThumbnail
+              sx={{ cursor: 'pointer' }}
+              onClick={() =>
+                window.open(URL.createObjectURL(methods.getValues('ticketImg')), '_blank')
+              }
+              file={methods.getValues('ticketImg')?.name}
+            />
+
+            <span
+              onClick={handleRemoveDocument}
+              className="ml-[3rem] text-[14px] absolute bg-red-100 text-red-500 rounded-md px-2 py-1 cursor-pointer"
+            >
+              Remove Document
+            </span>
+          </Box>
+        ) : (
+          <>
+            <input
+              className="border border-gray-200 rounded-md px-2 py-3 hover:border-gray-600"
+              required
+              type="file"
+              accept="file/*"
+              onChange={(e) => handleFileChange(e)}
+            />
+          </>
+        )}
         <Field.Text name="message" required label="Reply about Ticket" multiline rows={4} />
       </Stack>
     </>
@@ -204,19 +213,19 @@ export function TicketDetailView() {
               <MenuList>
                 <MenuItem>
                   <Iconify icon="tabler:urgent" />
-                  Urgency - {data?.urgency}
+                  Urgency - {data?.urgency || 'N/A'}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="flat-color-icons:high-priority" />
-                  Priority - {data?.priority}
+                  Priority - {data?.priority || 'N/A'}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="game-icons:gooey-impact" />
-                  Impact - {data?.impact}
+                  Impact - {data?.impact || 'N/A'}
                 </MenuItem>
                 <MenuItem>
                   <Iconify icon="gridicons:status" />
-                  Status - {data?.status}
+                  Status - {data?.status || 'N/A'}
                 </MenuItem>
               </MenuList>
             </CustomPopover>

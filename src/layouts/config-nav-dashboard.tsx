@@ -143,15 +143,6 @@ export const navData = [
         path: paths.dashboard.order.list,
         icon: ICONS.order,
       },
-      // {
-      //   title: 'Order',
-      //   path: paths.dashboard.order.Root,
-      //   icon: ICONS.order,
-      //   children: [
-      //     { title: 'Subsciption order', path: paths.dashboard.order.subscribe },
-      //     // { title: 'Purchase order', path: paths.dashboard.order.purchese },
-      //   ],
-      // },
       {
         title: 'Invoice',
         path: paths.dashboard.invoice.Root,
@@ -195,7 +186,7 @@ export const navData = [
         icon: ICONS.blank,
         children: [
           { title: 'Add Coupon', path: paths.dashboard.couponandpromotions.add },
-          { title: 'List of Coupon', path: paths.dashboard.couponandpromotions.list },
+          { title: 'Coupon List', path: paths.dashboard.couponandpromotions.list },
         ],
       },
       {

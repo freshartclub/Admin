@@ -49,10 +49,13 @@ export const NewPostSchema = zod.object({
     .min(0, { message: 'Months Discount Subscription is required!' }),
   planImg: schemaHelper.file({ message: { required_error: 'Plan Image is required!' } }),
   status: zod.string().min(1, { message: 'Status is required!' }),
+  defaultPlan: zod.boolean().optional(),
   planData: zod.array(
     zod.object({
-      size: zod.string().min(1, { message: 'Size is required!' }),
-      minSubTime: zod.string().min(1, { message: 'Minimum Subscription Time is required!' }),
+      length: zod.number().min(1, { message: 'Length is required!' }),
+      width: zod.number().min(1, { message: 'Width is required!' }),
+      height: zod.number().min(1, { message: 'Height is required!' }),
+      minSubTime: zod.number().min(1, { message: 'Minimum Subscription Time is required!' }),
     })
   ),
 });
@@ -88,7 +91,8 @@ export function AddPlanForm() {
       monthsDiscountSubscription: data?.monthsDiscountSubscription || 5,
       planImg: data?.planImg || null,
       status: data?.status || '',
-      planData: data?.planData || [{ size: '', minSubTime: '' }],
+      defaultPlan: data?.defaultPlan || false,
+      planData: data?.planData || [{ length: '', width: '', height: '', minSubTime: '' }],
     }),
     [data]
   );
@@ -122,8 +126,10 @@ export function AddPlanForm() {
 
   const haddCv = () => {
     append({
-      size: '',
-      minSubTime: '',
+      length: 0,
+      width: 0,
+      height: 0,
+      minSubTime: 0,
     });
   };
 
@@ -131,28 +137,37 @@ export function AddPlanForm() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await mutate(data);
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key] = JSON.stringify(data[key]);
+        }
+        formData.append(key, data[key]);
+      });
+
+      await mutate(formData);
     } catch (error) {
       console.error(error);
     }
   });
 
-  const handleRemoveFile = useCallback(() => {
+  const handleRemoveFile = () => {
     setValue('planImg', null);
-  }, [setValue]);
+  };
 
   if (isLoading) return <LoadingScreen />;
 
   const renderDetails = (
     <Card>
-      <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect name="planGrp" options={plans ? plans : []} label="Plan Group" />
         <Field.Text name="planName" label="Plan Name" />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Commercial Description</Typography>
+          <Typography variant="subtitle2">
+            Commercial Description (Please use "Bullet Point" format for "List")
+          </Typography>
           <Field.Editor name="planDesc" sx={{ maxHeight: 480 }} />
         </Stack>
 
@@ -216,10 +231,13 @@ export function AddPlanForm() {
               columnGap={2}
               rowGap={2}
               display="grid"
-              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
             >
-              <Field.Text name={`planData[${index}].size`} label="Size (WxHxD)" />
+              <Field.Text type="number" name={`planData[${index}].length`} label="Depth (cm)" />
+              <Field.Text type="number" name={`planData[${index}].width`} label="Width (cm)" />
+              <Field.Text type="number" name={`planData[${index}].height`} label="Height (cm)" />
               <Field.Text
+                type="number"
                 name={`planData[${index}].minSubTime`}
                 label="Min. Subscription Times (Months)"
               />
@@ -244,14 +262,15 @@ export function AddPlanForm() {
         >
           Add Row
         </Button>
+        <Field.Checkbox name="defaultPlan" label="Main/Default Plan in Group" />
       </Stack>
     </Card>
   );
 
   const renderProperties = (
     <Card sx={{ mb: 3 }}>
-      <Divider />
       <CardHeader title="Select Catalogs" />
+
       <Stack spacing={2} alignItems="center" direction="row" sx={{ p: 2 }}>
         <Field.Autocomplete
           fullWidth

@@ -1,204 +1,115 @@
-import type { IPostItem } from 'src/types/blog';
-
-import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useEffect, useCallback, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z as zod } from 'zod';
 
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { _tags, _restriction,
-  COUPON_USEGE_OPTIONS,
-  COUPON_SUBSCRIPTIONPLAN_OPTIONS,
-  _catalog,
-  COUPON_EXTENTION_OPTIONS,
-  COUPON_DISCOUNT_OPTIONS,
-} from 'src/_mock';
-
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
- 
-import {
-    FAQ_GROUP_OPTIONS,
-} from "src/_mock"
+import { Avatar, Box } from '@mui/material';
+import { useNavigate } from 'react-router';
+import { _restriction } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Checkbox, FormGroup, Radio, RadioGroup } from '@mui/material';
-
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
+import { useSearchParams } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
+import { useGetAllPlans } from '../Subscription-Plans/http/useGetAllPlans';
+import useAddCoupon from './http/useAddCoupon';
+import { useGetCouponById } from './http/useGetCouponById';
 
 // ----------------------------------------------------------------------
-const SUBTASKS = [
-  'Subscription',
-  'Direct Purchase',
-];
-export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
+
+type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-    code: zod.string().min(1, { message: 'code is required!' }),
-    name: zod.string().min(1, { message: 'Name is required!' }),
-    note: zod.string().min(1, { message: 'Discount Note is required!' }),
-    validFrom: schemaHelper.date({ message: { required_error: 'date is required!' } }),
-    validTo: schemaHelper.date({ message: { required_error: 'date is required!' } }),
-    images: schemaHelper.file({ message: { required_error: 'Images is required!' } }),
-    restriction: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    usage: zod.string().min(1, { message: 'Usage is required!' }),
-    subscriptionPlan: zod.string().min(1, { message: 'Plan is required!' }),
-    catalog: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-    minAmount: zod.string().min(1, { message: 'Amount is required!' }),
-    extension: zod.string().min(1, { message: 'Extension is required!' }),
-    discount: zod.string().min(1, { message: 'discount is required!' }),
-    disAmount: zod.string().min(1, { message: 'discount is required!' }),
-   
-    
+  code: zod.string().min(1, { message: 'code is required!' }),
+  name: zod.string().min(1, { message: 'Name is required!' }),
+  note: zod.string().min(1, { message: 'Discount Note is required!' }),
+  validFrom: schemaHelper.date({ message: { required_error: 'Valid From Date is required!' } }),
+  validTo: schemaHelper.date({ message: { required_error: 'Valid To Date is required!' } }),
+  restriction: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
+  usage: zod.number().min(1, { message: 'Usage is required!' }),
+  subscriptionPlan: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  catalogs: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  extension: zod.number().min(1, { message: 'Extension is required!' }),
+  discount: zod.number().min(1, { message: 'Discount Percentage is required!' }),
+  disAmount: zod.number().min(1, { message: 'Discount Amount is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  currentPost?: IPostItem;
-};
+export function AddCouponForm() {
+  const navigate = useNavigate();
+  const id = useSearchParams().get('id');
 
-export function AddCouponForm({ currentPost }: Props) {
-  // const [value, setValue] = useState(true)
-  const router = useRouter();
-  
+  const { data: catalogData } = useGetAllCatalog();
+  const { data: planData } = useGetAllPlans();
 
-  const preview = useBoolean();
+  const { data, isLoading } = useGetCouponById(id);
 
   const defaultValues = useMemo(
     () => ({
-      code: currentPost?.code || '',
-      name:currentPost?.name || '',
-      note:currentPost?.note || '',
-      validFrom: currentPost?.validFrom || null,
-      validTo: currentPost?.validTo || null,
-      images: currentPost?.images || [],
-      restriction: currentPost?.restriction || [],
-      usage:currentPost?.usage || '',
-      subscriptionPlan:currentPost?.subscriptionPlan || '',
-      catalog: currentPost?.catalog || [], 
-      minAmount:currentPost?.minAmount||  '',
-      extension:currentPost?.extension||  '',
-      discount:currentPost?.discount||  '',
-      disAmount:currentPost?.disAmount||  '',
-
+      code: data?.code || '',
+      name: data?.name || '',
+      note: data?.note || '',
+      validFrom: data?.validFrom || null,
+      validTo: data?.validTo || null,
+      restriction: data?.restriction || [],
+      usage: data?.usage || 0,
+      subscriptionPlan: data?.subscriptionPlan || [],
+      catalogs: data?.catalogs || [],
+      // minAmount: data?.minAmount || '',
+      extension: data?.extension || 0,
+      discount: data?.discount || 0,
+      disAmount: data?.disAmount || 0,
     }),
-    [currentPost]
+    [data]
   );
 
   const methods = useForm<NewPostSchemaType>({
-    mode: 'all',
     resolver: zodResolver(NewPostSchema),
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = methods;
-
+  const { reset, watch, setValue, handleSubmit } = methods;
   const values = watch();
 
   useEffect(() => {
-    if (currentPost) {
+    if (data) {
       reset(defaultValues);
     }
-  }, [currentPost, defaultValues, reset]);
+  }, [data]);
+
+  const { mutate, isPending } = useAddCoupon(id);
 
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      preview.onFalse();
-      toast.success(currentPost ? 'Update success!' : 'Create success!');
-      console.info('DATA', data);
-    } catch (error) {
-      console.error(error);
-    }
+    mutate(data);
   });
-  
-  const handleRemoveFileDetails = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
 
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', [], { shouldValidate: true });
-  }, [setValue]);
+  if (isLoading) return <LoadingScreen />;
 
-  
   const renderDetails = (
     <Card>
-
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Text required name="code" label="Coupon Code" />
+        <Field.Text required name="name" label="Coupon Name" />
+        <Field.Text required name="note" label="Coupon Note" multiline rows={4} />
 
-        
-        <Field.Text name="code" label="Discount Code" />
-        
-        <Field.Text name="name" label="Discount Name" />
-
-        <Field.Text name="faqQuestion" label="Faq Question" />
-
-        <Field.Text name="note" label="Discount Note" multiline rows={4} />
-        
-        {/* <Field.Autocomplete
-          name="tags"
-          label="Tags"
-          placeholder="+ Tags"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={_tags.map((option) => option)}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <Chip
-                {...getTagProps({ index })}
-                key={option}
-                label={option}
-                size="small"
-                color="info"
-                variant="soft"
-              />
-            ))
-          }
-        /> */}
-
-        <Field.DatePicker name="validFrom" label="ValidFrom" />
-
-        <Field.DatePicker name="validTo" label="ValidTo" />
+        <Field.DatePicker required name="validFrom" label="Valid From *" />
+        <Field.DatePicker required name="validTo" label="Valid To *" />
 
         <Field.Autocomplete
+          required
           name="restriction"
-          label="Restrictions"
+          label="Restrictions *"
           placeholder="+ Restrict"
           multiple
           freeSolo
@@ -223,126 +134,146 @@ export function AddCouponForm({ currentPost }: Props) {
             ))
           }
         />
-        <Field.SingelSelect 
-         checkbox
-         name="usage"
-         label="Usage"
-         options={COUPON_USEGE_OPTIONS}
-        />
-        <Field.SingelSelect 
-         checkbox
-         name="subscriptionPlan"
-         label="For Subsciption Plan"
-         options={COUPON_SUBSCRIPTIONPLAN_OPTIONS}
-        />
+        <Field.Text type="number" required name="usage" label="Coupon Usage" />
 
         <Field.Autocomplete
-          name="catalog"
-          label="Choose Catalog"
-          placeholder="+ Catalog"
+          fullWidth
+          required
+          name="subscriptionPlan"
+          label="Select Subscription Plan *"
+          placeholder="Select Subscription Plan"
           multiple
-          freeSolo
           disableCloseOnSelect
-          options={_catalog.map((option) => option)}
-          getOptionLabel={(option) => option}
+          options={
+            planData && planData.length > 0
+              ? planData.map((item) => ({
+                  _id: item._id,
+                  planGrp: item.planGrp,
+                  planName: item.planName,
+                  planImg: item.planImg,
+                }))
+              : []
+          }
+          getOptionLabel={(option) => option.planName}
+          isOptionEqualToValue={(option, value) => option._id === value._id}
           renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
+            <Stack {...props} key={option._id} spacing={1} direction="row">
+              <Avatar alt={option?.planName} src={`${imgUrl}/users/${option?.planImg}`} />
+              <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+                <Box component="span">{option.planName}</Box>
+                <Box component="span" sx={{ color: 'text.disabled' }}>
+                  {option.planGrp}
+                </Box>
+              </Stack>
+            </Stack>
           )}
           renderTags={(selected, getTagProps) =>
             selected.map((option, index) => (
               <Chip
                 {...getTagProps({ index })}
-                key={option}
-                label={option}
+                key={index}
+                label={option.planName}
                 size="small"
                 color="info"
                 variant="soft"
               />
             ))
           }
+          onChange={(event, value) => {
+            const selectedIds = value.map((item) => item._id);
+            setValue('subscriptionPlan', selectedIds);
+          }}
+          value={
+            planData && planData.length > 0
+              ? planData.filter((item) => watch('subscriptionPlan')?.includes(item._id))
+              : []
+          }
         />
-      <CardHeader title="BENEFITS " sx={{mb:1}}/>
 
-      <Field.Text name='minAmount' label='Minimum Amount'/>
-     
-      <Field.SingelSelect 
-         checkbox
-         name="extension"
-         label="Subscription Extension"
-         options={COUPON_EXTENTION_OPTIONS}
-        /> 
+        <Field.Autocomplete
+          fullWidth
+          name="catalogs"
+          required
+          label="Select Catalogs *"
+          placeholder="Select Catalogs"
+          multiple
+          disableCloseOnSelect
+          options={
+            catalogData && catalogData.length > 0
+              ? catalogData.map((item) => ({
+                  _id: item._id,
+                  catalogName: item.catalogName,
+                  catalogImg: item.catalogImg,
+                }))
+              : []
+          }
+          getOptionLabel={(option) => option.catalogName}
+          isOptionEqualToValue={(option, value) => option._id === value._id}
+          renderOption={(props, option) => (
+            <div className="flex items-center gap-4" {...props} key={option._id}>
+              <Avatar alt={option?.catalogName} src={`${imgUrl}/users/${option?.catalogImg}`} />
+              <span className="ml-2">{option.catalogName}</span>
+            </div>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={index}
+                label={option.catalogName}
+                size="small"
+                color="info"
+                variant="soft"
+              />
+            ))
+          }
+          onChange={(event, value) => {
+            const selectedIds = value.map((item) => item._id);
+            setValue('catalogs', selectedIds);
+          }}
+          value={
+            catalogData && catalogData.length > 0
+              ? catalogData.filter((item) => watch('catalogs')?.includes(item._id))
+              : []
+          }
+        />
+        <CardHeader title="BENEFITS" sx={{ mb: 1 }} />
 
-        <Field.SingelSelect 
-         checkbox
-         name="discount"
-         label="Discount Percentage"
-         options={COUPON_DISCOUNT_OPTIONS}
-        />        
-        <Field.Text name='disAmount' label='Discount Amount'/>
+        <Field.Text required type="number" name="extension" label="Subscription Extension" />
+        <Field.Text required type="number" name="discount" label="Discount Percentage" />
+        <Field.Text required type="number" name="disAmount" label="Discount Amount" />
       </Stack>
     </Card>
   );
-
-  const renderProperties = (
-    <Card>
-      <Divider />
-       <Stack spacing={3} sx={{ p: 3 }}>
-       <Stack spacing={1.5}>
-       <Typography variant="subtitle2">images</Typography>
-          <Field.Upload
-            multiple
-            thumbnail
-            name="images"
-            maxSize={3145728}
-            onRemove={handleRemoveFileDetails}
-            onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
-          />
-          <FormGroup>
-        
-      </FormGroup>
-        </Stack>
-       </Stack>
-    </Card>
-  );
-
-  
 
   return (
     <div>
-        <CustomBreadcrumbs
+      <CustomBreadcrumbs
         heading="Coupon & Promotion"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-        //   { name: 'Coupon & Promotions', href: paths.dashboard.couponandpromotions.Root},
-          { name: 'Add' },
-        ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add' }]}
+        sx={{ mb: 3 }}
       />
-   
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={5}> 
-       <div className='grid grid-cols-3 gap-3'>
 
-        <div className='col-span-2'>
-        {renderDetails}
-        <div className='flex flex-row justify-end gap-3 mt-8'>
-        <button type='button' className='bg-white text-black border py-2 px-3 rounded-md'>Cencel</button>
-        <button type='submit' className='bg-black text-white py-2 px-3 rounded-md'>Save</button>
-      </div>
-        </div>
-
-        <div className='col-span-1'>
-        {renderProperties}
-        </div>
-        </div>
-       
-      </Stack>
-
-      
-    </Form>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={5}>
+          {renderDetails}
+          <div className="flex justify-end gap-2">
+            <span
+              onClick={() => navigate(paths.dashboard.couponandpromotions.list)}
+              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+            >
+              Cancel
+            </span>
+            <button
+              disabled={isPending}
+              type="submit"
+              className="px-3 py-2 text-white bg-black rounded-md"
+            >
+              {isPending ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </Stack>
+      </Form>
     </div>
   );
 }

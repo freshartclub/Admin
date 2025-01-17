@@ -146,6 +146,8 @@ export interface ArtistListType {
   zipCode: string;
   country?: string;
   incGroup: string;
+  severity: string;
+  title: string;
   incType: string;
   status: string;
   initTime: string;

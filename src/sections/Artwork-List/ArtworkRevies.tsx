@@ -18,7 +18,7 @@ import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
-export function ArtworkRevies({}) {
+export function ArtworkRevies() {
   const [validateChange, setValidateChange] = useState(false);
   const [isApproveLoading, setIsApproveLoading] = useState(false);
   const [isRejectLoading, setIsRejectLoading] = useState(false);
@@ -1391,6 +1391,8 @@ export function ArtworkRevies({}) {
     </Card>
   );
 
+  console.log(data);
+
   const restriction = (
     <Card>
       <CardHeader title="Restriction" sx={{ mb: 2 }} />
@@ -1446,13 +1448,13 @@ export function ArtworkRevies({}) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
             disabled={isReadOnly}
-            value={data?.promotions?.promotion}
+            value={data?.promotions?.promotion || ''}
             name="promotion"
             label="Promotion"
           />
           <Field.Text
             disabled={isReadOnly}
-            value={data?.promotions?.promotionScore}
+            value={data?.promotions?.promotionScore || ''}
             name="promotionScore"
             label="Promotion Score"
           />
@@ -1465,7 +1467,7 @@ export function ArtworkRevies({}) {
                 data?.promotions?.promotion
               ) && isReadOnly
             }
-            value={data?.reviewDetails?.promotions?.promotion}
+            value={data?.reviewDetails?.promotions?.promotion || ''}
             name="updatedPromotion"
             label="Promotion"
           />
@@ -1476,7 +1478,7 @@ export function ArtworkRevies({}) {
                 data?.promotions?.promotionScore
               ) && isReadOnly
             }
-            value={data?.reviewDetails?.promotions?.promotionScore}
+            value={data?.reviewDetails?.promotions?.promotionScore || ''}
             name="updatedPromotionScore"
             label="Promotion Score"
           />
@@ -1541,7 +1543,7 @@ export function ArtworkRevies({}) {
           </div>
           <div>
             <Typography>Updated Main Video</Typography>
-            <Field.Upload disabled={isReadOnly} name="updatedMainVideo" />
+            <Field.MultiVideo disabled={isReadOnly} name="updatedMainVideo" />
           </div>
           <div>
             <Typography>Updated Other Video</Typography>

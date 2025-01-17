@@ -1,295 +1,141 @@
-import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IInvoice } from 'src/types/invoice';
 
-import { useState, useCallback } from 'react';
-
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { sumBy } from 'src/utils/helper';
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS, FAQ_GROUP_OPTIONS } from 'src/_mock';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
+import { Box, Card, InputAdornment, Table, TableBody, TextField } from '@mui/material';
+import { saveAs } from 'file-saver';
+import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Iconify } from 'src/components/iconify';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { Scrollbar } from 'src/components/scrollbar';
 import {
-  useTable,
   emptyRows,
-  rowInPage,
-  TableNoData,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  useTable,
 } from 'src/components/table';
-
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { RouterLink } from 'src/routes/components';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { paths } from 'src/routes/paths';
 import { CouponTableRow } from './coupon-table-row';
-import { CouponTableToolbar } from './coupon-table-toolbar';
-import { CouponFiltersResult } from './coupon-table-filters-result';
+import { useGetCouponList } from './http/useGetCouponList';
+import axiosInstance from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Coupon Name' },
-  { id: 'createDate', label: 'Vali dFrom' },
-  { id: 'dueDate', label: 'Valid To' },
-  { id: 'price', label: 'Coupon Amount' },
-  { id: 'sent', label: 'User Sent' },
-  { id: 'status', label: 'Status' },
-  { id: '' },
+  { id: 'code', label: 'Coupon Code' },
+  { id: 'name', label: 'Coupon Name' },
+  { id: 'validFrom', label: 'Valid From' },
+  { id: 'validTo', label: 'Valid To' },
+  { id: 'usage', label: 'Usage' },
+  { id: 'discount', label: 'Discount %' },
+  { id: 'disAmount', label: 'Discount Amount' },
+  { id: 'action', label: 'Action' },
 ];
 
 // ----------------------------------------------------------------------
 
 export function CouponListView() {
-  const theme = useTheme();
+  const table = useTable();
+  const [notFound, setNotFound] = useState(false);
+  const [_couponList, setCouponList] = useState<IInvoice[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const debounceSearch = useDebounce(search, 800);
+  const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
+  const { data, isLoading } = useGetCouponList(debounceSearch);
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
-
-  const confirm = useBoolean();
-
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
-
-  const filters = useSetState<IInvoiceTableFilters>({
-    name: '',
-    service: [],
-    status: 'all',
-    startDate: null,
-    endDate: null,
-  });
-
-  const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+  useEffect(() => {
+    if (data) {
+      setCouponList(data);
+      setNotFound(data?.length === 0);
+    }
+  }, [data]);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: _couponList,
     comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
   });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
+  const downloadArtistExcel = async () => {
+    try {
+      setLoading(true);
 
-  const canReset =
-    !!filters.state.name ||
-    filters.state.service.length > 0 ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
+      const response = await axiosInstance.get(`${ARTIST_ENDPOINTS.downloadCoupon}?s=${search}`, {
+        responseType: 'blob',
+      });
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const getInvoiceLength = (status: string) =>
-    tableData.filter((item) => item.status === status).length;
-
-  const getTotalAmount = (status: string) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      (invoice) => invoice.totalAmount
-    );
-
-  const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / tableData.length) * 100;
-
-  const TABS = [
-    {
-      value: 'all',
-      label: 'All',
-      color: 'default',
-      count: tableData.length,
-    },
-    {
-      value: 'paid',
-      label: 'Paid',
-      color: 'success',
-      count: getInvoiceLength('paid'),
-    },
-    {
-      value: 'pending',
-      label: 'Pending',
-      color: 'warning',
-      count: getInvoiceLength('pending'),
-    },
-    {
-      value: 'overdue',
-      label: 'Overdue',
-      color: 'error',
-      count: getInvoiceLength('overdue'),
-    },
-    {
-      value: 'draft',
-      label: 'Draft',
-      color: 'default',
-      count: getInvoiceLength('draft'),
-    },
-  ] as const;
-
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      table.onResetPage();
-      filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'Coupon_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <DashboardContent>
-        <CustomBreadcrumbs
-          heading="Coupon & Promotion List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Coupon List', href: paths.dashboard.couponandpromotions.list },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.couponandpromotions.add}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
+      <CustomBreadcrumbs
+        heading="Coupon & Promotion List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Coupon List', href: paths.dashboard.couponandpromotions.list },
+        ]}
+        action={
+          <div className="bread-links flex gap-2">
+            <RouterLink href={`${paths.dashboard.couponandpromotions.add}`}>
+              <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2">
+                <Iconify icon="mingcute:add-line" /> Add Coupon
+              </span>
+            </RouterLink>
+            <span
+              onClick={() => downloadArtistExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
             >
-              Add Coupon
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
+          </div>
+        }
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        sx={{ mb: 2 }}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By Coupon Name/Code..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
         <Card>
-          <CouponTableToolbar
-            filters={filters}
-            dateError={dateError}
-            onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
-          />
-
-          {canReset && (
-            <CouponFiltersResult
-              filters={filters}
-              onResetPage={table.onResetPage}
-              totalResults={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
-
           <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) => {
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                );
-              }}
-              action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="iconamoon:send-fill" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="solar:printer-minimalistic-bold" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            />
-
             <Scrollbar sx={{ minHeight: 444 }}>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
                   onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
                 />
 
                 <TableBody>
@@ -299,15 +145,7 @@ export function CouponListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <CouponTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
+                      <CouponTableRow key={row._id} row={row} />
                     ))}
 
                   <TableEmptyRows
@@ -327,34 +165,10 @@ export function CouponListView() {
             count={dataFiltered.length}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
             onRowsPerPageChange={table.onChangeRowsPerPage}
           />
         </Card>
-      </DashboardContent>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
+      )}
     </>
   );
 }
@@ -362,15 +176,11 @@ export function CouponListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  dateError: boolean;
   inputData: IInvoice[];
-  filters: IInvoiceTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { name, status, service, startDate, endDate } = filters;
-
+function applyFilter({ inputData, comparator }: ApplyFilterProps) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -380,30 +190,6 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
-  }
-
-  if (service.length) {
-    inputData = inputData.filter((invoice) =>
-      invoice.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => fIsBetween(invoice.createDate, startDate, endDate));
-    }
-  }
 
   return inputData;
 }

@@ -1,15 +1,7 @@
 import type { IInvoice } from 'src/types/invoice';
 
-import {
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import { useEffect, useState } from 'react';
@@ -29,9 +21,11 @@ import {
 import { RouterLink } from 'src/routes/components';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
-import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import { KbTableRow } from './Kb-table-row';
 import { useGetAllKB } from './http/useGetAllKB';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { saveAs } from 'file-saver';
 
 // ----------------------------------------------------------------------
 
@@ -48,11 +42,10 @@ export function KbListView() {
   const [notFound, setNotFound] = useState(false);
   const [_kbList, setKBList] = useState<IInvoice[]>([]);
   const [search, setSearch] = useState<string>('');
-  const [grp, setGrp] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
-  const picklist = RenderAllPicklist('KB Group');
+  const debounceSearch = useDebounce(search, 800);
+  const [loading, setLoading] = useState(false);
 
-  const { data, isLoading } = useGetAllKB(debounceSearch, grp);
+  const { data, isLoading } = useGetAllKB(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -66,55 +59,66 @@ export function KbListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
+  const downloadArtistExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(`${ARTIST_ENDPOINTS.downloadKB}?s=${search}`, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'KB_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <CustomBreadcrumbs
         heading="KB List"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'KB List' }]}
         action={
-          <RouterLink href={`${paths.dashboard.kbdatabase.add}`}>
-            <span className="bg-black text-white justify-center rounded-md flex items-center px-2 py-3 gap-2">
-              <Iconify icon="mingcute:add-line" /> Add KB
+          <div className="bread-links flex gap-2">
+            <RouterLink href={`${paths.dashboard.kbdatabase.add}`}>
+              <span className="bg-black text-white justify-center rounded-md flex items-center px-2 py-3 gap-2">
+                <Iconify icon="mingcute:add-line" /> Add KB
+              </span>
+            </RouterLink>
+            <span
+              onClick={() => downloadArtistExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
             </span>
-          </RouterLink>
+          </div>
         }
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 2 }}
       />
-      <Stack direction={{ xs: 'column', md: 'row', lg: 'row' }} spacing={2} mb={2}>
-        <TextField
-          fullWidth
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By KB Title/Tags..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
-          <InputLabel htmlFor="KB Group">KB Group</InputLabel>
-          <Select
-            label="KB Group"
-            inputProps={{ id: 'faq' }}
-            onChange={(e) => setGrp(e.target.value)}
-            value={grp}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            <MenuItem key={'All'} value={'All'}>
-              {'All'}
-            </MenuItem>
-            {picklist &&
-              picklist.length > 0 &&
-              picklist.map((option: any) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-      </Stack>
+      <TextField
+        fullWidth
+        sx={{ mb: 2 }}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By KB Title, Group or Tags..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
 
       {isLoading ? (
         <LoadingScreen />

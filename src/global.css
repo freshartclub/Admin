@@ -132,6 +132,12 @@ input[type='number']::-webkit-inner-spin-button {
   }
 }
 
+@media screen and (max-width: 450px) {
+  .nav-img{
+    display: none !important;
+  }
+}
+
 @media screen and (max-width: 320px) {
   .bread-links{
     flex-direction: column !important;

@@ -20,21 +20,14 @@ import {
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 
-import {
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import { FaqTableRow } from './faq-table-row';
 import { useGetAllFAQ } from './http/useGetAllFAQ';
+import axiosInstance from 'src/utils/axios';
+import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
+import { saveAs } from 'file-saver';
 
 // ----------------------------------------------------------------------
 
@@ -53,11 +46,10 @@ export function FaqListView() {
   const [notFound, setNotFound] = useState(false);
   const [_faqList, setFAQList] = useState<IInvoice[]>([]);
   const [search, setSearch] = useState<string>('');
-  const [grp, setGrp] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
-  const picklist = RenderAllPicklist('FAQ Group');
+  const debounceSearch = useDebounce(search, 800);
+  const [loading, setLoading] = useState(false);
 
-  const { data, isLoading } = useGetAllFAQ(debounceSearch, grp);
+  const { data, isLoading } = useGetAllFAQ(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -71,6 +63,25 @@ export function FaqListView() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
+  const downloadArtistExcel = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(`${ARTIST_ENDPOINTS.downloadFAQ}?s=${search}`, {
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'FAQ_List.xlsx');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <CustomBreadcrumbs
@@ -83,50 +94,35 @@ export function FaqListView() {
                 <Iconify icon="mingcute:add-line" /> Add FAQ
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+            <span
+              onClick={() => downloadArtistExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       />
-      <Stack mb={2} direction={{ xs: 'column', md: 'row', lg: 'row' }} spacing={2}>
-        <TextField
-          fullWidth
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By FAQ Question/Tags..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
-          <InputLabel htmlFor="FAQ Group">FAQ Group</InputLabel>
-          <Select
-            input={<OutlinedInput label="FAQ Group" />}
-            inputProps={{ id: 'faq' }}
-            onChange={(e) => setGrp(e.target.value)}
-            value={grp}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            <MenuItem key={'All'} value={'All'}>
-              {'All'}
-            </MenuItem>
-            {picklist &&
-              picklist.length > 0 &&
-              picklist.map((option: any) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-      </Stack>
+      <TextField
+        fullWidth
+        sx={{marginBottom: 2}}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search By FAQ Question, Group or Tags..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
 
       {isLoading ? (
         <LoadingScreen />
@@ -178,7 +174,6 @@ export function FaqListView() {
 
 type ApplyFilterProps = {
   inputData: IInvoice[];
-
   comparator: (a: any, b: any) => number;
 };
 

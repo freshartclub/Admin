@@ -35,17 +35,7 @@ export function KbTableRow({ row }: Props) {
   return (
     <>
       <TableRow hover>
-        <TableCell>
-          <ListItemText
-            disableTypography
-            primary={
-              <Typography variant="body2" noWrap>
-                {row.kbGrp}
-              </Typography>
-            }
-          />
-        </TableCell>
-
+      <TableCell>{row?.kbGrp}</TableCell>
         <TableCell>{row.kbTitle}</TableCell>
         <TableCell>{list(row?.tags) === '' ? 'N/A' : list(row?.tags)}</TableCell>
         <TableCell>{fDate(row.createdAt)}</TableCell>

@@ -129,7 +129,7 @@ export function HeaderBase({
 
             {/* -- Logo -- */}
             {/* <Logo data-slot="logo" /> */}
-            <img width={150} height={50} src={logo} alt="logo" />
+            <img className="nav-img" width={150} height={50} src={logo} alt="logo" />
 
             {/* -- Divider -- */}
             <StyledDivider data-slot="divider" />

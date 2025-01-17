@@ -35,7 +35,14 @@ export function TicketTableToolbar({
 }: Props) {
   const [picklistArr, setPicklistArr] = useState([]);
   const weeks = ['All', '1 Day', '1 Week', '1 Month', '1 Quarter', '1 Year'];
-  const filterBy = ['All', 'Ticket Urgency', 'Ticket Priority', 'Ticket Impact', 'Ticket Type'];
+  const filterBy = [
+    'All',
+    'Ticket Urgency',
+    'Ticket Priority',
+    'Ticket Impact',
+    'Ticket Type',
+    'Ticket FeedBack',
+  ];
 
   const picklist = RenderAllPicklists([
     'Ticket Status',
@@ -55,6 +62,10 @@ export function TicketTableToolbar({
   const priority = picklistMap['Ticket Priority'];
   const impact = picklistMap['Ticket Impact'];
   const ticketType = picklistMap['Ticket Type'];
+  const feedback: any = [
+    { value: true, label: 'Positive' },
+    { value: false, label: 'Negative' },
+  ];
 
   useEffect(() => {
     if (filter === 'Ticket Urgency') {
@@ -65,6 +76,8 @@ export function TicketTableToolbar({
       setPicklistArr(impact);
     } else if (filter === 'Ticket Type') {
       setPicklistArr(ticketType);
+    } else if (filter === 'Ticket FeedBack') {
+      setPicklistArr(feedback);
     } else if (filter === 'All') {
       setFilterOption('');
     }
@@ -151,7 +164,7 @@ export function TicketTableToolbar({
               {picklistArr && picklistArr.length > 0 ? (
                 picklistArr.map((option: any, i) => (
                   <MenuItem key={i} value={option.value}>
-                    {option.value}
+                    {option.label}
                   </MenuItem>
                 ))
               ) : (
@@ -165,7 +178,7 @@ export function TicketTableToolbar({
           <TextField
             fullWidth
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search By Ticket Id..."
+            placeholder="Search By Ticket Id/Title or User Name/Email"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

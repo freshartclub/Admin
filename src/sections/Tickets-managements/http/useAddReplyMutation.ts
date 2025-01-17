@@ -14,8 +14,10 @@ const useAddReplyMutation = () => {
       status: data.data.status,
       message: data.data.message,
       ticketImg: data.data.ticketImg,
+      priority: data.data.priority,
       userType: 'admin',
     };
+
     return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -27,7 +29,11 @@ const useAddReplyMutation = () => {
     mutationFn: ReplyTicket,
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
-        queryKey: [`${ARTIST_ENDPOINTS.getTicketReply}/${id}`],
+        queryKey: [ARTIST_ENDPOINTS.getTicketReply, id],
+        refetchType: 'all',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [ARTIST_ENDPOINTS.getTicketDetail, id],
         refetchType: 'all',
       });
 
