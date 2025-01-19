@@ -62,7 +62,7 @@ const AddCircle = () => {
       title: data?.title || '',
       description: data?.description || '',
       content: data?.content || '',
-      backImage: data?.backImage || null,
+      backImage: data?.coverImage || null,
       mainImage: data?.mainImage || null,
       categories: data?.categories || [],
       managers: data?.managers || [],
@@ -86,6 +86,8 @@ const AddCircle = () => {
     if (data) {
       const updatedData = {
         ...data,
+        mainImage: `${imgUrl}/users/${data?.mainImage}`,
+        backImage: `${imgUrl}/users/${data?.coverImage}`,
         managers: data.managers ? data.managers.map((item) => item._id) : [],
         managerInfo: data.managers
           ? data?.managers?.map((item) => {
@@ -139,7 +141,7 @@ const AddCircle = () => {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" sx={{ mb: 3 }} />
+      <CardHeader title="Circle Details" sx={{ mb: 3 }} />
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>

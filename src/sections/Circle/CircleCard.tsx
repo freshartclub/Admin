@@ -10,9 +10,13 @@ export function CircleCard({ url, data }) {
   return (
     <div className="p-2 pb-2 border gap-3 w-full flex rounded-md mb-4">
       <div className="relative">
-        <Image src={`${url}/users/${data?.mainImage}`} alt="Main" width={150} height={140} />
+        <img
+          src={`${url}/users/${data?.mainImage}`}
+          width={'200px'}
+          className="max-h-[130px] h-full rounded object-cover"
+        />
         <Avatar
-          sx={{ position: 'absolute', top: '10px', right: '10px' }}
+          sx={{ border: '2px solid white', position: 'absolute', top: '10px', right: '10px' }}
           alt="Cover"
           src={`${url}/users/${data?.coverImage}`}
         />
@@ -50,7 +54,11 @@ export function CircleCard({ url, data }) {
         <div>
           <span className="text-[#a7a7a7] text-[14px]">{fDateTime(data?.createdAt)}</span>
           <Typography variant="h6">{data?.title}</Typography>
-          <Typography variant="body2">{data?.description}</Typography>
+          <Typography variant="body2">
+            {data?.description?.length < 140
+              ? data?.description.slice(0, 140)
+              : data?.description.slice(0, 140).concat('...')}
+          </Typography>
         </div>
       </div>
     </div>
