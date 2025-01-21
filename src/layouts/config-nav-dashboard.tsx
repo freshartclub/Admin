@@ -66,6 +66,20 @@ export const navData = [
         icon: ICONS.paintBrush,
         children: [
           {
+            title: 'Home Artwork',
+            path: paths.dashboard.artwork.homeArtwork.root,
+            children: [
+              {
+                title: 'Add Home Artwork',
+                path: paths.dashboard.artwork.homeArtwork.add,
+              },
+              {
+                title: 'Home Artwork List',
+                path: paths.dashboard.artwork.homeArtwork.list,
+              },
+            ],
+          },
+          {
             title: 'Catalog',
             path: paths.dashboard.artwork.catalog.root,
             children: [

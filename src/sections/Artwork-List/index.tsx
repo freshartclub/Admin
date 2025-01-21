@@ -1,44 +1,36 @@
-import type { IInvoice } from 'src/types/user';
-
 import {
+  Box,
+  Card,
   FormControl,
+  FormControlLabel,
+  IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
   TextField,
+  Typography,
 } from '@mui/material';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import { saveAs } from 'file-saver';
 import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
-import {
-  emptyRows,
-  getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TablePaginationCustom,
-  useTable,
-} from 'src/components/table';
+import { getComparator, TableHeadCustom, TableNoData, useTable } from 'src/components/table';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { RouterLink } from 'src/routes/components';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
-import { imgUrl } from 'src/utils/BaseUrls';
 import axiosInstance from 'src/utils/axios';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { ArtworkTableRow } from './Artwork-table-row';
 import { useGetArtworkList } from './http/useGetArtworkList';
-
-// ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'artworkName', label: 'Artwork Name', width: 180 },
@@ -46,24 +38,39 @@ const TABLE_HEAD = [
   { id: 'discipline', label: 'Discipline', width: 100 },
   { id: 'activeTab', label: 'Commercialization', width: 100 },
   { id: 'createdAt', label: 'Created At', width: 100 },
-  { id: 'comingSoon', label: 'Comming Soon', width: 100 },
+  { id: 'comingSoon', label: 'Coming Soon', minWidth: 120 },
   { id: 'status', label: 'Status', width: 100 },
   { id: 'action', label: 'Action', width: 100 },
 ];
 
-// ----------------------------------------------------------------------
-
 export function ArtworkListView() {
+  const [artworks, setArtworks] = useState([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [prevCursor, setPrevCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState({
+    cursor: '',
+    direction: '',
+    limit: 10,
+    currPage: 1,
+  });
+  const [search, setSearch] = useState('');
+  const [notFound, setNotFound] = useState(false);
+
   const table = useTable();
   const [sStatus, setStatus] = useState<string>('All');
   const [days, setDays] = useState<string>('All');
-  const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 1000);
-  const [notFound, setNotFound] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [_artworkList, setArtworkList] = useState<IInvoice[]>([]);
+  const debounceSearch = useDebounce(search, 800);
 
-  const { data, isLoading } = useGetArtworkList(debounceSearch, sStatus, days);
+  const { data, isLoading } = useGetArtworkList(
+    debounceSearch,
+    sStatus,
+    days,
+    options.currPage,
+    options.cursor,
+    options.direction,
+    options.limit
+  );
 
   const weeks = ['All', '1 Day', '1 Week', '1 Month', '1 Quarter', '1 Year'];
   const statusOptions = [
@@ -76,15 +83,12 @@ export function ArtworkListView() {
 
   useEffect(() => {
     if (data) {
-      setArtworkList(data);
-      setNotFound(data?.length === 0);
+      setArtworks(data.data || []);
+      setNextCursor(data.nextCursor || '');
+      setPrevCursor(data.prevCursor || '');
+      setNotFound(data.data?.length === 0);
     }
   }, [data]);
-
-  const dataFiltered = applyFilter({
-    inputData: _artworkList,
-    comparator: getComparator(table.order, table.orderBy),
-  });
 
   const downloadArtworkExcel = async () => {
     try {
@@ -108,6 +112,11 @@ export function ArtworkListView() {
     }
   };
 
+  const dataFiltered = applyFilter({
+    inputData: artworks,
+    comparator: getComparator(table.order, table.orderBy),
+  });
+
   return (
     <>
       <CustomBreadcrumbs
@@ -124,9 +133,15 @@ export function ArtworkListView() {
             <RouterLink href={`#`}>
               <span
                 onClick={() => downloadArtworkExcel()}
-                className="bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1"
+                className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
               >
-                <Iconify icon="mingcute:add-line" /> {loading ? 'Downloading...' : 'Export CSV'}
+                {loading ? (
+                  'Downloading...'
+                ) : (
+                  <>
+                    <Iconify icon="mingcute:add-line" /> Export CSV
+                  </>
+                )}
               </span>
             </RouterLink>
           </div>
@@ -138,6 +153,18 @@ export function ArtworkListView() {
         alignItems={'center'}
         spacing={2}
       >
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Artwork Id/Name or Artist Id/Name..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
         <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="Status">Status</InputLabel>
 
@@ -177,73 +204,110 @@ export function ArtworkListView() {
             ))}
           </Select>
         </FormControl>
-        <TextField
-          fullWidth
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Artwork Id/Name or Artist Id/Name..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
       </Stack>
       {isLoading ? (
         <LoadingScreen />
       ) : (
         <Card>
-          <Box sx={{ position: 'relative' }}>
-            <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  onSort={table.onSort}
-                />
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                onSort={table.onSort}
+              />
+              <TableBody>
+                {dataFiltered.map((artwork, i) => (
+                  <ArtworkTableRow key={i} url={imgUrl} row={artwork} />
+                ))}
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row, i) => (
-                      <ArtworkTableRow key={i} row={row} url={imgUrl} />
-                    ))}
+          <Stack direction="row" justifyContent="space-between">
+            <FormControlLabel
+              sx={{ pl: 2 }}
+              label="Dense"
+              control={<Switch name="dense" checked={table.dense} onChange={table.onChangeDense} />}
+            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Typography variant="body2">Rows per page:</Typography>
 
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
+                <Select
+                  onChange={(e) =>
+                    setOptions({ ...options, cursor: '', currPage: 1, limit: e.target.value })
+                  }
+                  value={options.limit}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                >
+                  {[5, 10, 25].map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Typography variant="body2">
+                {`${(options.currPage - 1) * options.limit + 1} - ${Math.min(options.currPage * options.limit, data?.totalCount)} of ${data?.totalCount}`}
+              </Typography>
 
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </Box>
-
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton
+                  disabled={!prevCursor || isLoading}
+                  sx={{
+                    bgcolor: 'default.light',
+                    color: `${prevCursor ? 'black' : 'text.disabled'}`,
+                    width: 32,
+                    height: 32,
+                  }}
+                  onClick={() => {
+                    setOptions({
+                      ...options,
+                      cursor: prevCursor,
+                      direction: 'prev',
+                      currPage: options.currPage === 1 ? 1 : options.currPage - 1,
+                    });
+                  }}
+                >
+                  <Iconify icon="weui:back-filled" />
+                </IconButton>
+                <IconButton
+                  sx={{
+                    bgcolor: 'default.light',
+                    color: `${nextCursor ? 'black' : 'text.disabled'}`,
+                    width: 32,
+                    height: 32,
+                  }}
+                  onClick={() => {
+                    setOptions({
+                      ...options,
+                      cursor: nextCursor,
+                      direction: 'next',
+                      currPage: options.currPage + 1,
+                    });
+                  }}
+                  disabled={!nextCursor || isLoading}
+                >
+                  <Iconify sx={{ transform: 'rotate(180deg)' }} icon="weui:back-filled" />
+                </IconButton>
+              </Box>
+            </Box>
+          </Stack>
         </Card>
       )}
     </>
   );
 }
 
-// ----------------------------------------------------------------------
-
 type ApplyFilterProps = {
-  inputData: IInvoice[];
+  inputData: any[];
   comparator: (a: any, b: any) => number;
 };
 

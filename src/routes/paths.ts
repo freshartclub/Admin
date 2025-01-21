@@ -116,10 +116,15 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/artwork/catalog/add`,
         list: `${ROOTS.DASHBOARD}/artwork/catalog/list`,
       },
+      homeArtwork:{
+        root: `${ROOTS.DASHBOARD}/home-artwork`,
+        add: `${ROOTS.DASHBOARD}/artwork/home-artwork/add`,
+        list: `${ROOTS.DASHBOARD}/artwork/home-artwork/list`,
+      },
       collection_management: {
-        root: `${ROOTS.DASHBOARD}/collection_management`,
-        add: `${ROOTS.DASHBOARD}/artwork/collection_management/add`,
-        list: `${ROOTS.DASHBOARD}/artwork/collection_management/list`,
+        root: `${ROOTS.DASHBOARD}/collection-management`,
+        add: `${ROOTS.DASHBOARD}/artwork/collection-management/add`,
+        list: `${ROOTS.DASHBOARD}/artwork/collection-management/list`,
       },
       addArtwork: `${ROOTS.DASHBOARD}/artwork/addartwork`,
       reviewArtwork: (id: string) => `${ROOTS.DASHBOARD}/artwork/review/${id}`,

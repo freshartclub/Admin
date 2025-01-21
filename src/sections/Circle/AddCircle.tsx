@@ -141,7 +141,7 @@ const AddCircle = () => {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Circle Details" sx={{ mb: 3 }} />
+      <CardHeader title="Circle Details" sx={{ mb: 2 }} />
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -328,16 +328,14 @@ const AddCircle = () => {
     </Card>
   );
 
-  if (id && isLoading) {
-    return <LoadingScreen />;
-  }
+  if (id && isLoading) return <LoadingScreen />;
 
   return (
     <>
       <CustomBreadcrumbs
         heading="Add Circle"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Circle' }]}
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>

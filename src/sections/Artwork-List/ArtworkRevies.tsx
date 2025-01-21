@@ -1511,7 +1511,7 @@ export function ArtworkRevies() {
           </div>
           <div>
             <Typography>Main Video</Typography>
-            <Field.Upload disabled={isReadOnly} name="mainVideo" />
+            <Field.MultiVideo disabled={isReadOnly} name="mainVideo" />
           </div>
           <div>
             <Typography>Other Video</Typography>

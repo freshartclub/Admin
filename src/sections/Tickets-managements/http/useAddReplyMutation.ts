@@ -18,24 +18,20 @@ const useAddReplyMutation = () => {
       userType: 'admin',
     };
 
-    return axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData, {
+    const response = axiosInstance.post(`${ARTIST_ENDPOINTS.replyTicket}/${id}`, newData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+
+    return response;
   }
 
   return useMutation({
     mutationFn: ReplyTicket,
     onSuccess: async (res, body) => {
-      queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getTicketReply, id],
-        refetchType: 'all',
-      });
-      queryClient.invalidateQueries({
-        queryKey: [ARTIST_ENDPOINTS.getTicketDetail, id],
-        refetchType: 'all',
-      });
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getTicketReply, id] });
+      queryClient.invalidateQueries({ queryKey: [ARTIST_ENDPOINTS.getTicketDetail, id] });
 
       toast.success(res.data.message);
     },

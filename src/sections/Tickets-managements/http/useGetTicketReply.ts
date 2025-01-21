@@ -9,7 +9,7 @@ async function fetchData(id) {
 
 export const useGetTicketReply = (id) => {
   return useQuery({
-    queryKey: [`${ARTIST_ENDPOINTS.getTicketReply}/${id}`],
+    queryKey: [ARTIST_ENDPOINTS.getTicketReply, id],
     queryFn: () => fetchData(id),
   });
 };

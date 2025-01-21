@@ -19,9 +19,9 @@ import { useGetTicketReply } from './http/useGetTicketReply';
 import { Divider } from '@mui/material';
 import { imgUrl } from 'src/utils/BaseUrls';
 
-export type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
+type NewPostSchemaType = zod.infer<typeof NewTicketSchema>;
 
-export const NewTicketSchema = zod.object({
+const NewTicketSchema = zod.object({
   email: zod.string().optional(),
   ticketType: zod.string().min(1, { message: 'Type is required!' }),
   status: zod.string().min(1, { message: 'Status is required!' }),

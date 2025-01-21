@@ -166,6 +166,9 @@ export interface ArtistDisciplineType {
   spanishMediaName: string;
   disciplineName: string;
   styleName: string;
+  artworkName: string;
+  artworkId: string;
+  img: string;
   spanishStyleName: string;
   technicName: string;
   spanishTechnicName: string;

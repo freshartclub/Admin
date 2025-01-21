@@ -35,13 +35,9 @@ import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 type Props = {
   row: ArtistListType;
   url: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function AllArtistList({ row, url }: Props) {
   const confirm = useBoolean();
   const popover = usePopover();
   const [showPop, setShowPop] = useState(false);
@@ -234,7 +230,11 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
             <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link
+                color="inherit"
+                onClick={() => navigate(`${paths.dashboard.artist.addArtist}?id=${row?._id}`)}
+                sx={{ cursor: 'pointer' }}
+              >
                 {name(row)}
               </Link>
               <a href={`mailto:${row.email}`}>
@@ -330,7 +330,7 @@ export function AllArtistList({ row, url, selected, onEditRow, onSelectRow, onDe
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error">
             Delete
           </Button>
         }

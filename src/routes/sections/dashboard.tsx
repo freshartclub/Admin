@@ -87,6 +87,8 @@ const ReviewArtist = lazy(() => import('src/pages/dashboard/Artist/ArtistReview'
 const ReviewArtwork = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkReview'));
 const AddEmail = lazy(() => import('src/pages/dashboard/EmailSettings/AddEmailType'));
 const AllEmailType = lazy(() => import('src/pages/dashboard/EmailSettings/EmailList'));
+const AddHomeArt = lazy(() => import('src/pages/dashboard/HomeArtwork/AddHomeArt'));
+const HomeArtList = lazy(() => import('src/pages/dashboard/HomeArtwork/HomeArtList'));
 
 // ----------------------------------------------------------------------
 
@@ -192,7 +194,14 @@ export const dashboardRoutes = [
             ],
           },
           {
-            path: 'collection_management',
+            path: 'home-artwork',
+            children: [
+              { path: 'add', element: <AddHomeArt /> },
+              { path: 'list', element: <HomeArtList /> },
+            ],
+          },
+          {
+            path: 'collection-management',
             children: [
               { path: 'add', element: <AddCollection /> },
               { path: 'list', element: <CollectionList /> },
@@ -203,10 +212,6 @@ export const dashboardRoutes = [
           { path: 'review/:id', element: <ReviewArtwork /> },
           { path: 'artworkDetail', element: <ArtworkDetail /> },
         ],
-        // children: [
-        // { path: 'addArtwork', element: <AddArtwork /> },
-        // { path: 'artworkList', element: <div>artworkList</div> },
-        // ],
       },
       {
         path: 'order',
