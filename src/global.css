@@ -93,12 +93,13 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 @media screen and (max-width: 600px) {
+  .css-u4p24i,
   .css-1d9cypr-MuiStack-root {
     flex-direction: column !important;
     align-items: start !important;
     gap: 1rem;
   }
-  .css-6su6fj{
+  .css-6su6fj {
     width: 100%;
   }
 
@@ -106,40 +107,40 @@ input[type='number']::-webkit-inner-spin-button {
     width: 100%;
   }
 
-  .bread-links > a{
+  .bread-links > a {
     width: 100%;
   }
 
-  .bread-links > span{
+  .bread-links > span {
     width: 100%;
   }
 }
 
 @media screen and (max-width: 500px) {
-  .ticket-id > p > span{
+  .ticket-id > p > span {
     display: none !important;
   }
 }
 
 @media screen and (max-width: 440px) {
-  .ticket-box{
+  .ticket-box {
     flex-direction: column !important;
     align-items: start !important;
   }
-  .ticket-box > span{
+  .ticket-box > span {
     width: 100%;
     justify-content: center !important;
   }
 }
 
 @media screen and (max-width: 450px) {
-  .nav-img{
+  .nav-img {
     display: none !important;
   }
 }
 
 @media screen and (max-width: 320px) {
-  .bread-links{
+  .bread-links {
     flex-direction: column !important;
   }
 }
