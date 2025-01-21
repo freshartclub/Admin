@@ -117,6 +117,14 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 @media screen and (max-width: 500px) {
+  .dense-table {
+    display: none !important;
+  }
+  .row-table {
+    width: 100% !important;
+    justify-content: space-between;
+    padding: 0 10px;
+  }
   .ticket-id > p > span {
     display: none !important;
   }
@@ -136,6 +144,13 @@ input[type='number']::-webkit-inner-spin-button {
 @media screen and (max-width: 450px) {
   .nav-img {
     display: none !important;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .row-table {
+    flex-direction: column !important;
+    gap: 0 !important;
   }
 }
 

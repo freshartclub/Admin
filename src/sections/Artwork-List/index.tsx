@@ -228,11 +228,12 @@ export function ArtworkListView() {
 
           <Stack direction="row" justifyContent="space-between">
             <FormControlLabel
+              className="dense-table"
               sx={{ pl: 2 }}
               label="Dense"
               control={<Switch name="dense" checked={table.dense} onChange={table.onChangeDense} />}
             />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box className="row-table" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <Typography variant="body2">Rows per page:</Typography>
 
@@ -254,49 +255,51 @@ export function ArtworkListView() {
                   ))}
                 </Select>
               </FormControl>
-              <Typography variant="body2">
-                {`${(options.currPage - 1) * options.limit + 1} - ${Math.min(options.currPage * options.limit, data?.totalCount)} of ${data?.totalCount}`}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">
+                  {`${(options.currPage - 1) * options.limit + 1} - ${Math.min(options.currPage * options.limit, data?.totalCount)} of ${data?.totalCount}`}
+                </Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton
-                  disabled={!prevCursor || isLoading}
-                  sx={{
-                    bgcolor: 'default.light',
-                    color: `${prevCursor ? 'black' : 'text.disabled'}`,
-                    width: 32,
-                    height: 32,
-                  }}
-                  onClick={() => {
-                    setOptions({
-                      ...options,
-                      cursor: prevCursor,
-                      direction: 'prev',
-                      currPage: options.currPage === 1 ? 1 : options.currPage - 1,
-                    });
-                  }}
-                >
-                  <Iconify icon="weui:back-filled" />
-                </IconButton>
-                <IconButton
-                  sx={{
-                    bgcolor: 'default.light',
-                    color: `${nextCursor ? 'black' : 'text.disabled'}`,
-                    width: 32,
-                    height: 32,
-                  }}
-                  onClick={() => {
-                    setOptions({
-                      ...options,
-                      cursor: nextCursor,
-                      direction: 'next',
-                      currPage: options.currPage + 1,
-                    });
-                  }}
-                  disabled={!nextCursor || isLoading}
-                >
-                  <Iconify sx={{ transform: 'rotate(180deg)' }} icon="weui:back-filled" />
-                </IconButton>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    disabled={!prevCursor || isLoading}
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${prevCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: prevCursor,
+                        direction: 'prev',
+                        currPage: options.currPage === 1 ? 1 : options.currPage - 1,
+                      });
+                    }}
+                  >
+                    <Iconify icon="weui:back-filled" />
+                  </IconButton>
+                  <IconButton
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${nextCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: nextCursor,
+                        direction: 'next',
+                        currPage: options.currPage + 1,
+                      });
+                    }}
+                    disabled={!nextCursor || isLoading}
+                  >
+                    <Iconify sx={{ transform: 'rotate(180deg)' }} icon="weui:back-filled" />
+                  </IconButton>
+                </Box>
               </Box>
             </Box>
           </Stack>
