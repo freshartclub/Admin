@@ -1,7 +1,8 @@
 import type { IUserItem } from 'src/types/user';
 
-import { Card, Table, TableBody } from '@mui/material';
+import { Card, InputAdornment, Stack, Table, TableBody, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
@@ -13,16 +14,10 @@ import {
   TablePaginationCustom,
   useTable,
 } from 'src/components/table';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { ArtistPendingRequest } from '../artistPendingRequest-table-row';
 import { useGetPendingArtist } from '../http/useGetAllPendingArtist';
-import { Stack } from '@mui/material';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { Iconify } from 'src/components/iconify';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { useNavigate } from 'react-router';
-import { paths } from 'src/routes/paths';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 const TABLE_HEAD = [
   { id: 'artistName', label: 'Artist Name​', width: 180 },
@@ -35,7 +30,7 @@ const TABLE_HEAD = [
 
 export function ArtistsPendingRequest() {
   const table = useTable();
-  const navigate = useNavigate();
+
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
@@ -54,11 +49,6 @@ export function ArtistsPendingRequest() {
     inputData: _userList,
     comparator: getComparator(table.order, table.orderBy),
   });
-
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {
-    navigate(`${paths.dashboard.artist.addArtist}?id=${id}`);
-  };
 
   return (
     <>
@@ -95,15 +85,7 @@ export function ArtistsPendingRequest() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <ArtistPendingRequest
-                      key={row._id}
-                      row={row}
-                      url={imgUrl}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
-                    />
+                    <ArtistPendingRequest key={row._id} row={row} url={imgUrl} />
                   ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

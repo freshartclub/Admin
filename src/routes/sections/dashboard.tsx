@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-
 import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { AuthGuard } from 'src/auth/guard';
@@ -8,8 +7,6 @@ import { AuthGuard } from 'src/auth/guard';
 // ----------------------------------------------------------------------
 
 const IndexPage = lazy(() => import('src/pages/dashboard/Dashboard'));
-const PageTwo = lazy(() => import('src/pages/dashboard/two'));
-const PageThree = lazy(() => import('src/pages/dashboard/three'));
 const AddArtistFormIndex = lazy(() => import('src/sections/artist/addArtist/index'));
 const PageFive = lazy(() => import('src/pages/dashboard/five'));
 const PageSix = lazy(() => import('src/pages/dashboard/six'));
@@ -34,7 +31,6 @@ const InvoiceDetails = lazy(() => import('src/pages/dashboard/invoice/details'))
 const InvoiceEdit = lazy(() => import('src/pages/dashboard/invoice/edit'));
 const InvoiceNew = lazy(() => import('src/pages/dashboard/invoice/new'));
 const OrderList = lazy(() => import('src/pages/dashboard/order/subscriptionlist'));
-const OrderPurcheseList = lazy(() => import('src/pages/dashboard/order/purcheseList'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
 const ArtistList = lazy(() => import('src/pages/dashboard/Artist/ArtistList'));
 const ArtistRequest = lazy(() => import('src/pages/dashboard/Artist/ArtistRequest'));
@@ -42,8 +38,6 @@ const ArtistPendingRequest = lazy(() => import('src/pages/dashboard/Artist/Aarti
 const CreateArtist = lazy(() => import('src/pages/dashboard/Artist/CreateArtist'));
 const AddCircle = lazy(() => import('src/pages/dashboard/Circle/new'));
 const CircleList = lazy(() => import('src/pages/dashboard/Circle/list'));
-const CircleDetails = lazy(() => import('src/pages/dashboard/Circle/details'));
-const CircleEdit = lazy(() => import('src/pages/dashboard/Circle/edit'));
 const CreateContent = lazy(() => import('src/pages/dashboard/Content-Management/CreateContent'));
 const ContentList = lazy(() => import('src/pages/dashboard/Content-Management/ContentList'));
 const Mail = lazy(() => import('src/pages/dashboard/Mail'));
@@ -78,7 +72,6 @@ const AddCollection = lazy(
 const CollectionList = lazy(
   () => import('src/pages/dashboard/AddArtwok/Collection-Management/CollectionList')
 );
-
 const ArtworkList = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkList'));
 const ArtworkDetail = lazy(() => import('src/pages/dashboard/AddArtwok/ArtworkDetail'));
 const AddPickList = lazy(() => import('src/pages/dashboard/PickList/AddPicklist'));
@@ -234,10 +227,7 @@ export const dashboardRoutes = [
         path: 'user',
         children: [
           { path: 'Profile', element: <UserProfile /> },
-          // { path: 'cards', element: <div>user cards page</div> },
           { path: 'list', element: <UserList /> },
-          // { path: 'create', element: <CreaetUser /> },
-          // { path: 'edit', element: <div>edit page</div> },
           { path: 'account', element: <UserAccount /> },
         ],
       },
@@ -245,13 +235,11 @@ export const dashboardRoutes = [
         path: 'circle',
         children: [
           { path: 'list', element: <CircleList /> },
-          { path: ':title', element: <CircleDetails /> },
-          { path: ':title/edit', element: <CircleEdit /> },
           { path: 'add', element: <AddCircle /> },
         ],
       },
 
-      { path: 'logistics', element: <div>This is Logistics page</div> },
+      // { path: 'logistics', element: <div>This is Logistics page</div> },
 
       {
         path: 'couponandpromotions',

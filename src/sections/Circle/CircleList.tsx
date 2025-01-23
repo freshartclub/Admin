@@ -61,7 +61,13 @@ export function CircleList() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Circle List' }]}
         sx={{ mb: 3 }}
       />
-      <Stack direction="row" gap={2} alignItems="center" justifyContent="space-between" marginBottom={2}>
+      <Stack
+        direction={{ xs: 'column', md: 'row', lg: 'row' }}
+        gap={2}
+        alignItems="center"
+        justifyContent="space-between"
+        marginBottom={2}
+      >
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
@@ -74,8 +80,8 @@ export function CircleList() {
             ),
           }}
         />
-        <RouterLink href={`${paths.dashboard.circle.add}`}>
-          <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 md:w-[9rem]">
+        <RouterLink className='md:w-[9rem] w-full' href={`${paths.dashboard.circle.add}`}>
+          <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 w-full md:w-[9rem]">
             <Iconify icon="mingcute:add-line" /> Add Circle
           </span>
         </RouterLink>

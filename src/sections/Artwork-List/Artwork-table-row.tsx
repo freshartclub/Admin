@@ -116,7 +116,7 @@ export function ArtworkTableRow({ row, url }: Props) {
           onClick={movePendingArtwork}
           className="text-white bg-orange-700 rounded-lg px-5 py-2 hover:bg-orange-700 font-medium"
         >
-          {isPending ? 'Move...' : 'Move To Pending'}
+          {pendingPending ? 'Move...' : 'Move To Pending'}
         </button>
       </DialogActions>
     </Dialog>

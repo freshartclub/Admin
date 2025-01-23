@@ -23,13 +23,9 @@ import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
 type Props = {
   row: ArtistListType;
   url: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function ListArtist({ row, url, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ListArtist({ row, url }: Props) {
   const popover = usePopover();
   const [showPop, setShowPop] = useState(false);
   const [showPasswordPop, setShowPasswordPop] = useState(false);
@@ -188,7 +184,11 @@ export function ListArtist({ row, url, selected, onEditRow, onSelectRow, onDelet
           <Stack spacing={1} direction="row" alignItems="center">
             <Avatar alt={row?.artistName} src={`${url}/users/${row?.profile?.mainImage}`} />
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link
+                color="inherit"
+                onClick={() => navigate(`${paths.dashboard.artist.addArtist}?id=${row?._id}`)}
+                sx={{ cursor: 'pointer' }}
+              >
                 {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>

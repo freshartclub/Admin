@@ -22,14 +22,15 @@ import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
 import { useGetSearchCollection } from './http/useGetSearchCollection';
+import P from '../Artwork-details-view/comman/P';
 
 // ----------------------------------------------------------------------
 
 export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
-  catalogName: zod.string().min(1, { message: 'catalogName is required!' }),
-  catalogDesc: zod.string().min(1, { message: ' catalogDesc is required!' }),
+  catalogName: zod.string().min(1, { message: 'Catalog Name is required!' }),
+  catalogDesc: zod.string().min(1, { message: 'Catalog Description is required!' }),
   artworkList: zod.any(),
   artworkNames: zod.string().array().optional(),
   catalogCollection: zod.string().array().optional(),
@@ -59,7 +60,7 @@ export function AddCatalogForm() {
 
   const picklist = RenderAllPicklist('Catalog Status');
   const searchCollDebounce = useDebounce(searchColl, 800);
-  
+
   const { data: collData } = useGetSearchCollection(searchCollDebounce);
   const { data, isLoading } = useGetCatalogById(id);
 
@@ -255,6 +256,7 @@ export function AddCatalogForm() {
 
   const renderDetails = (
     <Card sx={{ mb: 2 }}>
+      <CardHeader title="Catalog Details" sx={{ mb: 2 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text required name="catalogName" label="Catalog Name" />
@@ -532,23 +534,34 @@ export function AddCatalogForm() {
       <CustomBreadcrumbs
         heading="Add Catalog"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Catalog' }]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
-          <div className="grid grid-cols-3  gap-3">
-            <div className="col-span-1">
-              {renderProperties}
-              {subscription}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="col-span-2">
               {renderDetails}
               {AdditinalInfo}
-              <div className="flex flex-row justify-end gap-3 mt-8">
+              <div className="flex-row justify-end gap-3 mt-8 hidden md:flex">
                 <span
                   onClick={() => navigate(paths.dashboard.artwork.catalog.list)}
-                  className="bg-white text-black border py-2 px-3 rounded-md"
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </div>
+            <div className="col-span-1">
+              {renderProperties}
+              {subscription}
+              <div className="flex flex-row justify-end gap-3 mt-8 md:hidden">
+                <span
+                  onClick={() => navigate(paths.dashboard.artwork.catalog.list)}
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
                 >
                   Cancel
                 </span>

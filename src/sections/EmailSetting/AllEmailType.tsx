@@ -61,14 +61,13 @@ export function EmailList() {
                 <Iconify icon="mingcute:add-line" /> Add Email Type
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
-                <Iconify icon="mingcute:add-line" /> Export CSV
-              </span>
-            </RouterLink>
+
+            <span className="bg-green-600 text-white rounded-md flex items-center px-2 py-3 gap-1">
+              <Iconify icon="mingcute:add-line" /> Export CSV
+            </span>
           </div>
         }
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
       <TextField
         sx={{ mb: 2 }}

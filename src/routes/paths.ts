@@ -1,10 +1,3 @@
-import { _id, _postTitles } from 'src/_mock/assets';
-import { list } from 'src/theme/core/components/list';
-import { paramCase } from 'src/utils/change-case';
-
-const MOCK_ID = _id[1];
-const MOCK_TITLE = _postTitles[2];
-
 const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
@@ -116,7 +109,7 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/artwork/catalog/add`,
         list: `${ROOTS.DASHBOARD}/artwork/catalog/list`,
       },
-      homeArtwork:{
+      homeArtwork: {
         root: `${ROOTS.DASHBOARD}/home-artwork`,
         add: `${ROOTS.DASHBOARD}/artwork/home-artwork/add`,
         list: `${ROOTS.DASHBOARD}/artwork/home-artwork/list`,
@@ -148,25 +141,16 @@ export const paths = {
     user: {
       Root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
-      // cards: `${ROOTS.DASHBOARD}/user/cards`,
       list: `${ROOTS.DASHBOARD}/user/list`,
-      // create: `${ROOTS.DASHBOARD}/user/create`,
-      // edit: `${ROOTS.DASHBOARD}/user/edit`,
       account: `${ROOTS.DASHBOARD}/user/account`,
     },
     circle: {
       root: `${ROOTS.DASHBOARD}/circle`,
       add: `${ROOTS.DASHBOARD}/circle/add`,
       list: `${ROOTS.DASHBOARD}/circle/list`,
-      details: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}`,
-      edit: (title: string) => `${ROOTS.DASHBOARD}/circle/${paramCase(title)}/edit`,
-      demo: {
-        details: `${ROOTS.DASHBOARD}/circle/${paramCase(MOCK_TITLE)}`,
-        edit: `${ROOTS.DASHBOARD}/circle/${paramCase(MOCK_TITLE)}/edit`,
-      },
     },
 
-    logistics: `${ROOTS.DASHBOARD}/logistics`,
+    // logistics: `${ROOTS.DASHBOARD}/logistics`,
 
     couponandpromotions: {
       Root: `${ROOTS.DASHBOARD}/couponandpromotions`,

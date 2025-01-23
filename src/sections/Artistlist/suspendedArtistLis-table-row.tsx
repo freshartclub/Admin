@@ -21,13 +21,9 @@ import { useUnsuspendArtistMutation } from './http/useUnsuspendArtistMutation';
 
 type Props = {
   row: ArtistListType;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function SuspendedArtistList({ row }: Props) {
   const [showPop, setShowPop] = useState(false);
   const { mutateAsync, isPending } = useUnsuspendArtistMutation(row._id);
 
@@ -66,7 +62,7 @@ export function SuspendedArtistList({ row, selected, onEditRow, onSelectRow, onD
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link color="inherit" sx={{ cursor: 'pointer' }}>
                 {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>

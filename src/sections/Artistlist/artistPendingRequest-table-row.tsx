@@ -1,45 +1,33 @@
-import { Button } from '@mui/material';
-import { Avatar } from '@mui/material';
+import {
+  Avatar, Button, Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from '@mui/material';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 import { phoneNo } from 'src/utils/change-case';
 import { fDate } from 'src/utils/format-time';
 import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
-import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: ArtistListType;
   url: string;
-  selected: boolean;
-  onEditRow: () => void;
-  onSelectRow: () => void;
-  onDeleteRow: () => void;
 };
 
-export function ArtistPendingRequest({
-  row,
-  url,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export function ArtistPendingRequest({ row, url }: Props) {
+  const navigate = useNavigate();
   const [showPop, setShowPop] = useState(false);
   const { mutateAsync, isPending } = useSuspendArtistMutation();
 
@@ -90,7 +78,11 @@ export function ArtistPendingRequest({
               className=" cursor-pointer"
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+              <Link
+                color="inherit"
+                onClick={() => navigate(`${paths.dashboard.artist.addArtist}?id=${row?._id}`)}
+                sx={{ cursor: 'pointer' }}
+              >
                 {name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
@@ -101,13 +93,9 @@ export function ArtistPendingRequest({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.userId}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNo(row?.phone)}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap', display: 'flex', gap: 2 }}>
           <RouterLink
             href={`${paths.dashboard.artist.addArtist}?id=${row._id}`}

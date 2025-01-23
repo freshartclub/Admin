@@ -129,7 +129,7 @@ const DiscoverContent = ({ data, preview }) => {
           className="text-[14px] text-[#999999]"
         >
           {data?.additionalInfo?.length} x {data?.additionalInfo?.width} x{' '}
-          {data?.additionalInfo?.height}
+          {data?.additionalInfo?.height} cm
         </P>
       </div>
 
@@ -167,7 +167,7 @@ const DiscoverContent = ({ data, preview }) => {
       )}
 
       <div className="flex flex-col justify-between gap-4 my-4">
-        {preview ? null : (
+        {/* {preview ? null : (
           <div
             className={`flex w-full justify-between gap-1 flex-wrap ${preview && 'pointer-events-none opacity-50'}`}
           >
@@ -201,7 +201,7 @@ const DiscoverContent = ({ data, preview }) => {
               </P>
             </div>
           </div>
-        )}
+        )} */}
         <div className="flex flex-wrap w-full justify-between">
           <div className="flex gap-1">
             <P variant={{ size: 'small', theme: 'dark', weight: 'medium' }} className="uppercase">

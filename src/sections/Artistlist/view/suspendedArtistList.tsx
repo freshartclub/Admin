@@ -34,9 +34,9 @@ export function SuspendedArtist() {
   const [notFound, setNotFound] = useState(false);
   const [_userList, setUserList] = useState<IUserItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debounceSearch = useDebounce(search, 500);
+  const debounceSearch = useDebounce(search, 800);
 
-  const { data, isLoading, isError, error } = useGetSuspendedArtistList(debounceSearch);
+  const { data, isLoading } = useGetSuspendedArtistList(debounceSearch);
 
   useEffect(() => {
     if (data) {
@@ -49,9 +49,6 @@ export function SuspendedArtist() {
     inputData: _userList,
     comparator: getComparator(table.order, table.orderBy),
   });
-
-  const handleDeleteRow = (id: string) => {};
-  const handleEditRow = (id: string) => {};
 
   return (
     <>
@@ -88,14 +85,7 @@ export function SuspendedArtist() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <SuspendedArtistList
-                      key={row._id}
-                      row={row}
-                      selected={table.selected.includes(row._id)}
-                      onSelectRow={() => table.onSelectRow(row._id)}
-                      onDeleteRow={() => handleDeleteRow(row._id)}
-                      onEditRow={() => handleEditRow(row._id)}
-                    />
+                    <SuspendedArtistList key={row._id} row={row} />
                   ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

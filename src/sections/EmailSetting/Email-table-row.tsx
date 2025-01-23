@@ -21,16 +21,9 @@ type Props = {
 
 export function EmailTableRow({ row }: Props) {
   const navigate = useNavigate();
-  //   const { mutate, isPending } = useDeleteInsignia();
 
   const confirm = useBoolean();
   const popover = usePopover();
-
-  const deleteInsigna = async () => {
-    // await mutate(row._id);
-    popover.onClose();
-    confirm.onFalse();
-  };
 
   return (
     <>
@@ -88,9 +81,9 @@ export function EmailTableRow({ row }: Props) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content="Are you sure want to delete this credential?"
+        content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={deleteInsigna}>
+          <Button variant="contained" color="error">
             Delete
           </Button>
         }

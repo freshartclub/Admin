@@ -130,20 +130,18 @@ export function ArtworkListView() {
                 <Iconify icon="mingcute:add-line" /> Add Artwork
               </span>
             </RouterLink>
-            <RouterLink href={`#`}>
-              <span
-                onClick={() => downloadArtworkExcel()}
-                className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
-              >
-                {loading ? (
-                  'Downloading...'
-                ) : (
-                  <>
-                    <Iconify icon="mingcute:add-line" /> Export CSV
-                  </>
-                )}
-              </span>
-            </RouterLink>
+            <span
+              onClick={() => downloadArtworkExcel()}
+              className={`${loading ? 'cursor-not-allowed opacity-50' : ''} cursor-pointer bg-green-600 justify-center text-white rounded-md flex items-center px-2 py-3 gap-1`}
+            >
+              {loading ? (
+                'Downloading...'
+              ) : (
+                <>
+                  <Iconify icon="mingcute:add-line" /> Export CSV
+                </>
+              )}
+            </span>
           </div>
         }
       />

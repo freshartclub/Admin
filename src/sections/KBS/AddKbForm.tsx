@@ -136,7 +136,7 @@ export function AddKbForm() {
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: `${id ? 'Edit' : 'Add'} KB` },
         ]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>

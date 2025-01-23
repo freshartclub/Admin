@@ -1694,9 +1694,9 @@ export function ArtworkAdd() {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 3 }}>
-        <div className="grid md:grid-cols-3 gap-2">
-          <div className="col-span-2">
+      <Stack spacing={{ mb: 3 }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="grid-cols-1 md:col-span-2">
             {renderDetails}
             {media}
             {additionalInformation}

@@ -3,7 +3,7 @@ import { CIRCLE_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
 async function fetchData(id) {
-  if (!id) return {};
+  if (!id) return;
   const { data } = await axiosInstance.get(`${CIRCLE_ENDPOINTS.getCircle}/${id}`);
   return data.data;
 }

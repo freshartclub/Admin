@@ -3,12 +3,11 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-import { Alert, Chip } from '@mui/material';
+import { Alert } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -100,6 +99,7 @@ export function AddEmailType() {
               <li>- %otp%</li>
               <li>- %password% (To send a password changed by admin)</li>
               <li>- %gender%</li>
+              <li>- %newDate%</li>
             </ol>
           </Alert>
           <Field.Editor

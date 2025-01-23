@@ -174,10 +174,7 @@ export const navData = [
         icon: ICONS.user,
         children: [
           { title: 'Profile', path: paths.dashboard.user.profile },
-          // { title: 'Cards', path: paths.dashboard.user.cards },
-          { title: 'List', path: paths.dashboard.user.list },
-          // { title: 'Create', path: paths.dashboard.user.create },
-          // { title: 'Edit', path: paths.dashboard.user.edit },
+          { title: 'All User', path: paths.dashboard.user.list },
           { title: 'Account', path: paths.dashboard.user.account },
         ],
       },
@@ -186,13 +183,11 @@ export const navData = [
         path: paths.dashboard.circle.root,
         icon: ICONS.blog,
         children: [
-          { title: 'List', path: paths.dashboard.circle.list },
-          { title: 'Details', path: paths.dashboard.circle.demo.details },
-          { title: 'Create', path: paths.dashboard.circle.add },
-          { title: 'Edit', path: paths.dashboard.circle.demo.edit },
+          { title: 'Circle List', path: paths.dashboard.circle.list },
+          { title: 'Add Circle', path: paths.dashboard.circle.add },
         ],
       },
-      { title: 'Logistics', path: paths.dashboard.logistics, icon: ICONS.file },
+      // { title: 'Logistics', path: paths.dashboard.logistics, icon: ICONS.file },
 
       {
         title: 'Coupon & Promotions',

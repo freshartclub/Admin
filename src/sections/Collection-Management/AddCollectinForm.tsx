@@ -483,7 +483,9 @@ export function AddCollectionForm() {
               </Box>
             </Stack>
           ))}
-          {errors.artworkList && <Alert severity="error">{errors.artworkList.message}</Alert>}
+          {errors.artworkList?.length === 0 && (
+            <Alert severity="error">{errors.artworkList.message}</Alert>
+          )}
         </Stack>
 
         <Typography variant="subtitle2">Experts Details</Typography>
@@ -662,10 +664,11 @@ export function AddCollectionForm() {
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={5}>
-          <div className="grid grid-cols-3  gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="col-span-2">
               {renderDetails}
-              <div className="flex flex-row justify-end gap-3 mt-8">
+              {/* Save and Cancel for md and larger screens */}
+              <div className="flex-row justify-end gap-3 mt-8 hidden md:flex">
                 <span
                   onClick={() => navigate(paths.dashboard.artwork.collection_management.list)}
                   className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
@@ -682,10 +685,23 @@ export function AddCollectionForm() {
               {subscription}
               {renderProperties}
               {exclusive}
+              {/* Save and Cancel for below md screens */}
+              <div className="flex flex-row justify-end gap-3 mt-8 md:hidden">
+                <span
+                  onClick={() => navigate(paths.dashboard.artwork.collection_management.list)}
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Saving...' : 'Save'}
+                </button>
+              </div>
             </div>
           </div>
         </Stack>
       </Form>
+
       {handleDeleteOption}
     </div>
   );

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo } from 'react';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
 import { Avatar, Chip } from '@mui/material';
@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router';
 import { PLAN_NUMOFARTWORK_OPTIONS, PLAN_SHIPMENTS_OPTIONS, PLAN_STATUS_OPTIONS } from 'src/_mock';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Field, schemaHelper } from 'src/components/hook-form';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useGetAllCatalog } from 'src/http/createArtist/useGetAllCatalog';
@@ -160,6 +160,8 @@ export function AddPlanForm() {
 
   const renderDetails = (
     <Card>
+      <CardHeader title="Plan Details" sx={{ mb: 2 }} />
+      <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.SingelSelect name="planGrp" options={plans ? plans : []} label="Plan Group" />
         <Field.Text name="planName" label="Plan Name" />
@@ -269,8 +271,8 @@ export function AddPlanForm() {
 
   const renderProperties = (
     <Card sx={{ mb: 3 }}>
-      <CardHeader title="Select Catalogs" />
-
+      <CardHeader title="Select Catalogs" sx={{ mb: 2 }} />
+      <Divider />
       <Stack spacing={2} alignItems="center" direction="row" sx={{ p: 2 }}>
         <Field.Autocomplete
           fullWidth
@@ -325,8 +327,8 @@ export function AddPlanForm() {
 
   const media = (
     <Card sx={{ mb: 3 }}>
+      <CardHeader title="Image" sx={{ mb: 2 }} />
       <Divider />
-      <CardHeader title="Image" />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Upload name="planImg" maxSize={3145728} onDelete={handleRemoveFile} />
       </Stack>
@@ -335,8 +337,8 @@ export function AddPlanForm() {
 
   const status = (
     <Card sx={{ mb: 3 }}>
+      <CardHeader title="Status" sx={{ mb: 2 }} />
       <Divider />
-      <CardHeader title="Status" />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Field.SingelSelect name="status" label="Status" options={PLAN_STATUS_OPTIONS} />
@@ -356,34 +358,43 @@ export function AddPlanForm() {
         sx={{ mb: 3 }}
       />
 
-      <FormProvider {...formProps}>
-        <form onSubmit={onSubmit}>
-          <Stack spacing={5}>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-2">
-                {renderDetails}
-                <div className="flex flex-row justify-end gap-3 mt-8">
-                  <span
-                    onClick={() => navigate(paths.dashboard.subscriptionplan.list)}
-                    className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
-                  >
-                    Cancel
-                  </span>
-                  <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                    {isPending ? 'Saving...' : 'Save'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                {renderProperties}
-                {media}
-                {status}
+      <Form methods={formProps} onSubmit={onSubmit}>
+        <Stack spacing={5}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="col-span-1 md:col-span-2">
+              {renderDetails}
+              <div className="flex-row justify-end gap-3 mt-8 hidden md:flex">
+                <span
+                  onClick={() => navigate(paths.dashboard.subscriptionplan.list)}
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Saving...' : 'Save'}
+                </button>
               </div>
             </div>
-          </Stack>
-        </form>
-      </FormProvider>
+
+            <div className="col-span-1">
+              {renderProperties}
+              {media}
+              {status}
+              <div className="flex flex-row justify-end gap-3 mt-8 md:hidden">
+                <span
+                  onClick={() => navigate(paths.dashboard.subscriptionplan.list)}
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Stack>
+      </Form>
     </div>
   );
 }

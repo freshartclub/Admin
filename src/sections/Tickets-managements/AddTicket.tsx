@@ -153,6 +153,8 @@ export function AddTicket() {
 
   const renderDetails = (
     <Card>
+      <CardHeader title="Ticket Details" sx={{ mb: 2 }} />
+      <Divider />
       <Stack spacing={3} sx={{ p: 2 }}>
         <Field.Text
           name="userId"
@@ -284,24 +286,37 @@ export function AddTicket() {
       <CustomBreadcrumbs
         heading="Add Ticket"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Ticket' }]}
-        sx={{ mb: { xs: 3, md: 3 } }}
+        sx={{ mb: 3 }}
       />
 
       <Form methods={methods} onSubmit={onSubmit}>
         <Stack spacing={3}>
-          <div className="grid grid-cols-3  gap-3">
-            <div className="col-span-1">{renderImage}</div>
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="col-span-1 md:col-span-2">
               {renderDetails}
-              <div className="flex flex-row justify-end gap-3 mt-8">
+              <div className="flex-row justify-end gap-3 mt-8 hidden md:flex">
                 <span
                   onClick={() => navigate(paths.dashboard.tickets.allList)}
-                  className="bg-white text-black border py-2 px-3 cursor-pointer rounded-md"
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
                 >
                   Cancel
                 </span>
                 <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
-                  {isPending ? 'Saving...' : 'Add Ticket'}
+                  {isPending ? 'Adding...' : 'Add Ticket'}
+                </button>
+              </div>
+            </div>
+            <div className="col-span-1">
+              {renderImage}{' '}
+              <div className="flex flex-row justify-end gap-3 mt-8 md:hidden">
+                <span
+                  onClick={() => navigate(paths.dashboard.tickets.allList)}
+                  className="bg-white text-black border py-2 px-3 rounded-md cursor-pointer"
+                >
+                  Cancel
+                </span>
+                <button type="submit" className="bg-black text-white py-2 px-3 rounded-md">
+                  {isPending ? 'Adding...' : 'Add Ticket'}
                 </button>
               </div>
             </div>
