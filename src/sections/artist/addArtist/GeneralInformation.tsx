@@ -143,7 +143,7 @@ export function GeneralInformation({
   }, [artistFormData?.residentialAddress]);
 
   const placesSelected = (places: google.maps.places.PlaceResult) => {
-    const address_comp = ['route', 'street_number'];
+    const address_comp = ['route', 'street_number', 'sublocality_level_1'];
 
     const comp = address_comp
       .map((type) => places.address_components?.find((c) => c.types.includes(type))?.long_name)

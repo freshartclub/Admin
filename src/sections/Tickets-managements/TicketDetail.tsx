@@ -258,7 +258,7 @@ export function TicketDetailView() {
           )}
         </Stack>
         <Box className="p-5">
-          <div className="max-h-[60vh] overflow-y-scroll">
+          <div className="max-h-[60vh] pb-4 overflow-y-scroll">
             {replyLoading ? (
               <LoadingScreen />
             ) : (
@@ -295,7 +295,7 @@ export function TicketDetailView() {
                   </Stack>
                   <Box className="ml-7 py-2">{reply?.message}</Box>
                   {reply.ticketImg && (
-                    <span className="flex bg-slate-100 ml-7 py-2 rounded-md items-center gap-2">
+                    <span className="flex border bg-slate-100 ml-7 p-2 rounded-md items-center gap-2">
                       <p className="text-[#3d3d3d]">View Attachment</p> -
                       {reply.ticketImg.includes('.pdf') || reply.ticketImg.includes('.docx') ? (
                         <FileThumbnail

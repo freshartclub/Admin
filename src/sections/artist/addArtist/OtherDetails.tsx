@@ -34,6 +34,7 @@ import { z as zod } from 'zod';
 import { FormHelperText } from '@mui/material';
 import { AddressAutoComplete } from './AddressAutoComplete';
 import { imgUrl } from 'src/utils/BaseUrls';
+import countryFile from './country.json';
 
 // ----------------------------------------------------------------------
 
@@ -96,9 +97,11 @@ export function OtherDetails({
   const id = useSearchParams().get('id');
 
   const [searchResult, setSearchResult] = useState('');
+  const [managerSearchResult, setManagerSearchResult] = useState('');
   const [reValidate, setReValidate] = useState(false);
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
+  const [code, setCode] = useState('');
 
   const picklist = RenderAllPicklists([
     'Artist Internal Tags',
@@ -323,12 +326,52 @@ export function OtherDetails({
 
   useEffect(() => {
     setSearchResult(artistFormData?.emergencyContactAddress || '');
-  }, [artistFormData?.emergencyContactAddress]);
+    setManagerSearchResult(artistFormData?.managerAddress || '');
+  }, [artistFormData?.emergencyContactAddress, artistFormData?.managerAddress]);
 
   const placesSelected = (places: google.maps.places.PlaceResult) => {
     setValue('emergencyContactAddress', places.formatted_address);
     setSearchResult(places.formatted_address);
   };
+
+  const managerPlacesSelected = (places: google.maps.places.PlaceResult) => {
+    const postal_code = places.address_components.find((c) =>
+      c.types.includes('postal_code')
+    )?.long_name;
+    const city = places.address_components.find((c) => c.types.includes('locality'))?.long_name;
+    const state = places.address_components.find((c) =>
+      c.types.includes('administrative_area_level_1')
+    )?.long_name;
+    const country = places.address_components.find((c) => c.types.includes('country'))?.long_name;
+
+    setValue('managerCountry', country || '');
+    setValue('managerState', state || '');
+    setValue('managerCity', city || '');
+    setValue('managerZipCode', postal_code || '');
+
+    const address_comp = [
+      'route',
+      'street_number',
+      'sublocality_level_1',
+      'administrative_area_level_2',
+    ];
+
+    const comp = address_comp
+      .map((type) => places.address_components?.find((c) => c.types.includes(type))?.long_name)
+      .filter(Boolean);
+
+    const fullAddress = comp.filter(Boolean).join(', ');
+
+    setValue('address', fullAddress);
+    setManagerSearchResult(fullAddress);
+  };
+
+  useEffect(() => {
+    if (artistFormData?.phone) {
+      const findCode = countryFile.find((item) => artistFormData?.phone?.includes(item.idd));
+      setCode(findCode?.cca2 || '');
+    }
+  });
 
   const document = (
     <Card>
@@ -614,11 +657,25 @@ export function OtherDetails({
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
-            <Field.Phone disabled={isReadOnly} name="managerArtistPhone" label="Manager Phone" />
+            <Field.Phone
+              fetchCode={!methods.getValues('managerArtistPhone') && code ? code : ''}
+              disabled={isReadOnly}
+              name="managerArtistPhone"
+              label="Manager Phone"
+            />
             <Field.Text disabled={isReadOnly} name="managerArtistEmail" label="Manager Email" />
           </Box>
 
-          <Field.Text disabled={isReadOnly} name="address" label="Manager Address" />
+          <AddressAutoComplete
+            name="address"
+            disabled={isReadOnly}
+            label="Manager Address"
+            value={managerSearchResult}
+            onChange={(e) => {
+              setManagerSearchResult(e.target.value);
+            }}
+            onPlaceSelected={managerPlacesSelected}
+          />
 
           <Box
             columnGap={2}
@@ -676,6 +733,7 @@ export function OtherDetails({
         />
         <Field.Phone
           disabled={isReadOnly}
+          fetchCode={!methods.getValues('emergencyContactPhone') && code ? code : ''}
           name="emergencyContactPhone"
           label="Emergency Contact Phone"
         />

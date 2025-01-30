@@ -1455,7 +1455,7 @@ export function ArtworkAdd() {
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
               <Field.Text
                 name="dpersentage"
-                label="Discount Percentage"
+                label="Discount Percentage (%)"
                 placeholder="0.00%"
                 type="number"
               />
@@ -1479,7 +1479,7 @@ export function ArtworkAdd() {
           <Field.Text
             name="artistFees"
             required
-            label="Artist Fees"
+            label="Artist Fees (%)"
             placeholder="Artist Fees (%)"
             InputLabelProps={{ shrink: true }}
           />
@@ -1534,7 +1534,7 @@ export function ArtworkAdd() {
           </Stack>
           <Field.Text
             name="dpersentage"
-            label="Discount Percentage"
+            label="Discount Percentage (%)"
             placeholder="0.00%"
             type="number"
           />
@@ -1550,7 +1550,7 @@ export function ArtworkAdd() {
           <Field.Text
             required
             name="artistFees"
-            label="Artist Fees"
+            label="Artist Fees (%)"
             placeholder="Artist Fees (%)"
             InputLabelProps={{ shrink: true }}
           />

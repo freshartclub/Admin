@@ -59,7 +59,7 @@ export function ArtworkDetailView() {
 
   const generateQRCode = () => {
     if (!id) return toast.error('Publish the artwork first');
-    const url = `${import.meta.env.VITE_SERVER_BASE_URL}/all-artworks?type=${data?.commercialization?.activeTab}&code=true`;
+    const url = `${import.meta.env.VITE_SERVER_BASE_URL}/all-artworks?type=${data?.commercialization?.activeTab}&referral=QR`;
     setQrCode(url);
     setOpenQR(true);
   };
@@ -69,7 +69,7 @@ export function ArtworkDetailView() {
     const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
     const link = document.createElement('a');
     link.href = pngUrl;
-    link.download = 'qr-code.png';
+    link.download = `QR Code - ${data?.artworkName}.png`;
     link.click();
   };
 

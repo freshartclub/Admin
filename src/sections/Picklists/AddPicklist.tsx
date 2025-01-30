@@ -158,7 +158,9 @@ export function AddPicklist() {
         <Stack spacing={{ xs: 3, md: 3 }}>
           <div className="flex justify-end gap-2">
             <span
-              onClick={() => navigate(paths.dashboard.category.picklist.list)}
+              onClick={() =>
+                navigate(`${paths.dashboard.category.picklist.list}?selectedType=${selectedType}`)
+              }
               className="px-3 py-2 text-white bg-red-500 rounded-md cursor-pointer"
             >
               Cancel

@@ -243,7 +243,16 @@ export function ArtworkTableRow({ row, url }: Props) {
             <Iconify icon="hugeicons:view" />
             View Artwork
           </MenuItem>
-          {row?.status === 'draft' || row?.status === 'rejected' ? null : (
+          {row?.status === 'rejected' ? null : row?.status === 'draft' ? (
+            <MenuItem
+              onClick={() =>
+                navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}`)
+              }
+            >
+              <Iconify icon="material-symbols:edit" />
+              Edit Artwork
+            </MenuItem>
+          ) : (
             <MenuItem
               onClick={() =>
                 navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}&modify=true`)
@@ -267,13 +276,6 @@ export function ArtworkTableRow({ row, url }: Props) {
               Approve Changes
             </MenuItem>
           ) : null}
-
-          {/* {row?.status === 'draft' || row?.status === 'rejected' ? null : (
-            <MenuItem>
-              <Iconify icon="line-md:circle-twotone-to-confirm-circle-transition" />
-              ReValidate
-            </MenuItem>
-          )} */}
           <MenuItem>
             <Iconify icon="iconoir:info-empty" />
             Not Available
