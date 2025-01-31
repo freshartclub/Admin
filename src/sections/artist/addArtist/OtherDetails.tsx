@@ -255,6 +255,7 @@ export function OtherDetails({
     data.count = 7;
     data.isContainsImage = true;
     data.isManagerDetails = false;
+    data.isActivated = true;
 
     if (searchResult === '') {
       return toast.error('Emergency Contact Address is required');

@@ -29,6 +29,7 @@ export function EmailTableRow({ row }: Props) {
     <>
       <TableRow hover>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.emailType}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.emailLang || 'EN'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
             className={`w-fit flex items-center rounded-2xl px-2 py-1 ${!row?.isDeleted ? 'bg-[#E7F4EE] text-[#0D894F]' : 'bg-[#FEEDEC] text-[#F04438]'}`}

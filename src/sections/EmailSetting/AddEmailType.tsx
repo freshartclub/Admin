@@ -23,6 +23,7 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 export const NewProductSchema = zod.object({
   emailType: zod.string().min(1, { message: 'Email Type is required!' }),
   emailHead: zod.string().min(1, { message: 'Email Heading is required!' }),
+  emailLang: zod.string().min(1, { message: 'Email Language is required!' }),
   emailDesc: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
   //   images: zod.any().optional(),
 });
@@ -39,6 +40,7 @@ export function AddEmailType() {
     () => ({
       emailType: '',
       emailHead: '',
+      emailLang: '',
       emailDesc: '',
     }),
     [data]
@@ -56,6 +58,7 @@ export function AddEmailType() {
       reset({
         emailType: data?.emailType || '',
         emailHead: data?.emailHead || '',
+        emailLang: data?.emailLang || '',
         emailDesc: data?.emailDesc || '',
       });
     }
@@ -71,6 +74,21 @@ export function AddEmailType() {
     }
   });
 
+  const flags = [
+    {
+      label: 'Spanish',
+      value: 'ES',
+    },
+    {
+      label: 'English',
+      value: 'EN',
+    },
+    {
+      label: 'Catalan',
+      value: 'CAT',
+    },
+  ];
+
   if (isLoading) return <LoadingScreen />;
 
   const renderDetails = (
@@ -84,6 +102,7 @@ export function AddEmailType() {
         >
           <Field.Text disabled={id ? true : false} required name="emailType" label="Email Type" />
           <Field.Text required name="emailHead" label="Email Heading/Title" />
+          <Field.SingelSelect options={flags} required name="emailLang" label="Email Language" />
           <Alert severity="info">
             The value which will come dynamically from server should be enclosed within '%' Eg:
             Hello %name%, It will be replaced by actual value from server when the email is sent.

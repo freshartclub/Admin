@@ -23,6 +23,7 @@ import { useGetAllEmailType } from './http/useGetAllEmailType';
 
 const TABLE_HEAD = [
   { id: 'emailType', label: 'Email Type', width: 200 },
+  { id: 'emailLang', label: 'Email Language', width: 100 },
   { id: 'isActive', label: 'Status', width: 130 },
   { id: 'createdAt', label: 'Created At', width: 130 },
   { id: 'actions', label: 'Action', width: 100 },
