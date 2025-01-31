@@ -35,6 +35,7 @@ import { FormHelperText } from '@mui/material';
 import { AddressAutoComplete } from './AddressAutoComplete';
 import { imgUrl } from 'src/utils/BaseUrls';
 import countryFile from './country.json';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
@@ -232,6 +233,12 @@ export function OtherDetails({
     data.isContainsImage = true;
     data.isManagerDetails = false;
 
+    if (searchResult === '') {
+      return toast.error('Emergency Contact Address is required');
+    }
+
+    if (managerSearchResult === '') data.address = '';
+
     if (isOn) {
       data.isManagerDetails = true;
     }
@@ -248,6 +255,12 @@ export function OtherDetails({
     data.count = 7;
     data.isContainsImage = true;
     data.isManagerDetails = false;
+
+    if (searchResult === '') {
+      return toast.error('Emergency Contact Address is required');
+    }
+
+    if (managerSearchResult === '') data.address = '';
 
     if (isOn) {
       data.isManagerDetails = true;
@@ -658,7 +671,7 @@ export function OtherDetails({
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
           >
             <Field.Phone
-              fetchCode={!methods.getValues('managerArtistPhone') && code ? code : ''}
+              fetchCode={code ? code : ''}
               disabled={isReadOnly}
               name="managerArtistPhone"
               label="Manager Phone"
@@ -727,17 +740,20 @@ export function OtherDetails({
       <Divider />
       <Stack spacing={3} mb={2} padding={2}>
         <Field.Text
+          required
           disabled={isReadOnly}
           name="emergencyContactName"
           label="Emergency Contact Name"
         />
         <Field.Phone
+          required
           disabled={isReadOnly}
-          fetchCode={!methods.getValues('emergencyContactPhone') && code ? code : ''}
+          fetchCode={code ? code : ''}
           name="emergencyContactPhone"
           label="Emergency Contact Phone"
         />
         <Field.Text
+          required
           disabled={isReadOnly}
           name="emergencyContactEmail"
           label="Emergency Contact Email"
@@ -756,6 +772,7 @@ export function OtherDetails({
           <FormHelperText error>{errors.emergencyContactAddress.message}</FormHelperText>
         )}
         <Field.Text
+          required
           disabled={isReadOnly}
           name="emergencyContactRelation"
           label="Emergency Contact Relation"

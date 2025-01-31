@@ -15,6 +15,7 @@ import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponen
 import { z as zod } from 'zod';
 import { AddressAutoComplete, getCityStateFromZipCountry } from './AddressAutoComplete';
 import { FormHelperText } from '@mui/material';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
@@ -111,6 +112,10 @@ export function GeneralInformation({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
+    
+    if(!searchResult){
+      return toast.error('Residential Address is required!');
+    }
     data.residentialAddress = searchResult;
     data.count = 1;
     mutate({ body: data });
@@ -219,7 +224,9 @@ export function GeneralInformation({
           onPlaceSelected={placesSelected}
         />
         {errors.residentialAddress && (
-          <FormHelperText error>{errors.residentialAddress.message}</FormHelperText>
+          <FormHelperText sx={{ mt: 0 }} error>
+            {errors.residentialAddress.message}
+          </FormHelperText>
         )}
 
         <Box
