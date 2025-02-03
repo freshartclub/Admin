@@ -12,6 +12,7 @@ const useActivateArtistMutation = (handleSuccess) => {
 
   async function activateArtist({ body }: { body: any }) {
     let headers;
+
     if (body?.isContainsImage) {
       const formData = new FormData();
 
@@ -45,11 +46,13 @@ const useActivateArtistMutation = (handleSuccess) => {
     });
 
     if (result.status === 200) {
-      const response = await axiosInstance.post(`${ARTIST_ENDPOINTS.activateArtist}/${id}`);
+      const response = await axiosInstance.post(
+        `${ARTIST_ENDPOINTS.activateArtist}/${id}?lang=${body?.selectedLang}`
+      );
       return response;
     }
   }
-  
+
   return useMutation({
     mutationFn: activateArtist,
     onSuccess: async (res, body) => {

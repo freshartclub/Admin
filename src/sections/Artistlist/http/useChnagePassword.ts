@@ -6,7 +6,6 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 // User id mogodb
 export const useChnagePassword = (setShowPasswordPop: any) => {
   async function chnagePassword(input: any) {
-    console.log(input.data);
     const response = await axiosInstance.patch(
       `${ARTIST_ENDPOINTS.chnageArtistPasswoed}/${input.id}`,
       input.data
@@ -14,6 +13,7 @@ export const useChnagePassword = (setShowPasswordPop: any) => {
 
     return response;
   }
+  
   return useMutation({
     mutationFn: chnagePassword,
     onSuccess: async (res, body) => {

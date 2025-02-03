@@ -16,6 +16,7 @@ import { ArtistListType } from 'src/types/artist/ArtistDetailType';
 import { phoneNo } from 'src/utils/change-case';
 import { fDate } from 'src/utils/format-time';
 import { useUnsuspendArtistMutation } from './http/useUnsuspendArtistMutation';
+import lang from '../artist/addArtist/lang.json';
 
 // ----------------------------------------------------------------------
 
@@ -25,10 +26,15 @@ type Props = {
 
 export function SuspendedArtistList({ row }: Props) {
   const [showPop, setShowPop] = useState(false);
-  const { mutateAsync, isPending } = useUnsuspendArtistMutation(row._id);
+
+  const language = row?.language || 'Spanish';
+  const selectedLang = lang.find((item) => item.name === language);
+
+  const { mutate, isPending } = useUnsuspendArtistMutation(row._id, selectedLang?.code || 'ES');
 
   const handleUnsuspend = (id) => {
-    mutateAsync().then(() => setShowPop(false));
+    mutate();
+    setShowPop(false);
   };
 
   const dialogBox = (

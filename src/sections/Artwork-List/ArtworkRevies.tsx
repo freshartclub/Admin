@@ -15,6 +15,7 @@ import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleLi
 import { useApproveArtworkChanges } from './http/useApproveArtworkChanges';
 import { useGetReviewArtwork } from './http/useGetReviewArtwork';
 import { imgUrl } from 'src/utils/BaseUrls';
+import lang from '../artist/addArtist/lang.json';
 
 // ----------------------------------------------------------------------
 
@@ -132,9 +133,13 @@ export function ArtworkRevies() {
     const note = formProps.getValues('note');
     if (!note) return toast.error('Note is required');
 
+    const language = data?.owner?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
     let bodyData = data?.reviewDetails;
     bodyData.isApproved = isApproved;
     bodyData.note = note;
+    bodyData.lang = selectedLang?.code || 'ES';
     bodyData.id = id;
 
     if (isApproved) {

@@ -7,7 +7,7 @@ import axiosInstance from 'src/utils/axios';
 
 async function approveArtworkChanges(data) {
   const response = await axiosInstance.patch(
-    `${ARTIST_ENDPOINTS.approveArtworkChanges}/${data.id}`,
+    `${ARTIST_ENDPOINTS.approveArtworkChanges}/${data.id}?lang=${data.lang}`,
     data
   );
   return response;

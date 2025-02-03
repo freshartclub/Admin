@@ -6,8 +6,11 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 export const useSuspendArtistMutation = () => {
   const queryClient = useQueryClient();
 
-  async function suspendArtist(id) {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.suspendArtist}/${id}`);
+  async function suspendArtist(newData) {
+    console.log(newData);
+    const response = await axiosInstance.patch(
+      `${ARTIST_ENDPOINTS.suspendArtist}/${newData?.id}?lang=${newData?.selectedLang}`
+    );
     return response;
   }
 

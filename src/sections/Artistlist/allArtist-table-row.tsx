@@ -29,6 +29,7 @@ import { phoneNo } from 'src/utils/change-case';
 import { fDate } from 'src/utils/format-time';
 import { useChnagePassword } from './http/useChnagePassword';
 import { useSuspendArtistMutation } from './http/useSuspendArtistMutation';
+import lang from '../artist/addArtist/lang.json';
 
 // ----------------------------------------------------------------------
 
@@ -58,16 +59,28 @@ export function AllArtistList({ row, url }: Props) {
     useChnagePassword(setShowPasswordPop);
 
   const handleSuspend = async (id) => {
-    mutate(id);
+    const language = row?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
+    const newData = {
+      id: row._id,
+      selectedLang: selectedLang?.code || 'ES',
+    };
+
+    mutate(newData);
     setShowPop(false);
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    const language = row?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
     const newData = {
       id: row._id,
       data: {
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
+        selectedLang: selectedLang?.code || 'ES',
       },
     };
 

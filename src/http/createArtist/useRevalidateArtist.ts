@@ -5,8 +5,10 @@ import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import { paths } from 'src/routes/paths';
 import axiosInstance from 'src/utils/axios';
 
-async function revalidateArtist(id) {
-  const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.revalidateArtist}/${id}`);
+async function revalidateArtist(newData) {
+  const response = await axiosInstance.patch(
+    `${ARTIST_ENDPOINTS.revalidateArtist}/${newData?.id}?lang=${newData?.selectedLang}`
+  );
   return response;
 }
 

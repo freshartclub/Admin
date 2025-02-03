@@ -14,6 +14,7 @@ import { useApproveArtistChanges } from './http/useApproveArtistChanges';
 import { useGetReviewArtist } from './http/useGetReviewArtist';
 import { useGetStyleListMutation } from '../StyleListCategory/http/useGetStyleListMutation';
 import { imgUrl } from 'src/utils/BaseUrls';
+import lang from '../artist/addArtist/lang.json';
 
 // ----------------------------------------------------------------------
 
@@ -113,8 +114,12 @@ export function ArtistReview({}) {
     const note = formProps.getValues('note');
     if (!note) return toast.error('Note is required');
 
+    const language = data?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
     let bodyData = data?.reviewDetails;
     bodyData.isApproved = isApproved;
+    bodyData.lang = selectedLang?.code || 'ES';
     bodyData.note = note;
     bodyData.id = id;
 
@@ -131,8 +136,6 @@ export function ArtistReview({}) {
       },
     });
   };
-
-  console.log(data);
 
   useEffect(() => {
     if (data) {

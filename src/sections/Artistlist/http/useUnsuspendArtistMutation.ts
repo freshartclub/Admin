@@ -3,15 +3,18 @@ import axiosInstance from 'src/utils/axios';
 import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 
-export const useUnsuspendArtistMutation = (id) => {
+async function UnSuspendArtist(id, selectedLang) {
+  const response = await axiosInstance.patch(
+    `${ARTIST_ENDPOINTS.unSuspendArtist}/${id}?lang=${selectedLang}`
+  );
+  return response;
+}
+
+export const useUnsuspendArtistMutation = (id, selectedLang) => {
   const queryClient = useQueryClient();
-  async function UnSuspendArtist() {
-    const response = await axiosInstance.patch(`${ARTIST_ENDPOINTS.unSuspendArtist}/${id}`);
-    return response;
-  }
 
   return useMutation({
-    mutationFn: UnSuspendArtist,
+    mutationFn: () => UnSuspendArtist(id, selectedLang),
     onSuccess: async (res, body) => {
       queryClient.invalidateQueries({
         queryKey: [`${ARTIST_ENDPOINTS.suspendedArtist}`],

@@ -36,6 +36,7 @@ import { AddressAutoComplete } from './AddressAutoComplete';
 import { imgUrl } from 'src/utils/BaseUrls';
 import countryFile from './country.json';
 import { toast } from 'sonner';
+import lang from './lang.json';
 
 // ----------------------------------------------------------------------
 
@@ -267,12 +268,25 @@ export function OtherDetails({
       data.isManagerDetails = true;
     }
 
+    const language = artistFormData?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
+    data.selectedLang = selectedLang?.code || 'ES';
+
     await trigger(undefined, { shouldFocus: true });
     activeMutate({ body: data });
   });
 
   const onReValidateSubmit = () => {
-    validateMutate(id);
+    const language = artistFormData?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
+    const newData = {
+      id: artistFormData?._id,
+      selectedLang: selectedLang?.code || 'ES',
+    };
+
+    validateMutate(newData);
   };
 
   const handleIntSave = (item) => {

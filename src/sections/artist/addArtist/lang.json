@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Arabic",
+    "code": "AR",
+    "status": "Active"
+  },
+  {
+    "name": "Catalan",
+    "code": "CAT",
+    "status": "Active"
+  },
+  {
+    "name": "English",
+    "code": "EN",
+    "status": "Active"
+  },
+  {
+    "name": "French",
+    "code": "FR",
+    "status": "Active"
+  },
+  {
+    "name": "Mandarin Chinese",
+    "code": "ZH",
+    "status": "Active"
+  },
+  {
+    "name": "Portuguese",
+    "code": "PT",
+    "status": "Active"
+  },
+  {
+    "name": "Spanish",
+    "code": "ES",
+    "status": "Active"
+  }
+]

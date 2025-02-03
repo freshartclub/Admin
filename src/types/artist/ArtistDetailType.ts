@@ -154,6 +154,7 @@ export interface ArtistListType {
   endTime: string;
   nextRevalidationDate: string;
   lastRevalidationDate: string;
+  language: string;
 }
 
 export interface ArtistDisciplineType {
