@@ -58,11 +58,15 @@ export function ListArtist({ row, url }: Props) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    const language = row?.language || 'Spanish';
+    const selectedLang = lang.find((item) => item.name === language);
+
     const newData = {
       id: row._id,
       data: {
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
+        selectedLang: selectedLang?.code || 'ES',
       },
     };
 
