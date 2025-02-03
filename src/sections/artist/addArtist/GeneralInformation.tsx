@@ -90,7 +90,7 @@ export function GeneralInformation({
       phone: artistFormData?.phone || '',
       email: artistFormData?.email || '',
       language: artistFormData?.language || '',
-      currency: artistFormData?.currency || 'EUR',
+      currency: artistFormData?.currency || 'EUR (Euro)',
       gender: artistFormData?.gender || '',
       notes: artistFormData?.notes || '',
       count: 1,

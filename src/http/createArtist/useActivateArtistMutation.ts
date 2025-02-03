@@ -10,7 +10,7 @@ const useActivateArtistMutation = (handleSuccess) => {
   const navigate = useNavigate();
   const id = useSearchParams().get('id');
 
-  async function activateArtist({ body }: { body: any }) {
+  async function activateArtist({ body, selectedLang }: { body: any; selectedLang: string }) {
     let headers;
 
     if (body?.isContainsImage) {
@@ -47,7 +47,7 @@ const useActivateArtistMutation = (handleSuccess) => {
 
     if (result.status === 200) {
       const response = await axiosInstance.post(
-        `${ARTIST_ENDPOINTS.activateArtist}/${id}?lang=${body?.selectedLang}`
+        `${ARTIST_ENDPOINTS.activateArtist}/${id}?lang=${selectedLang}`
       );
       return response;
     }

@@ -271,10 +271,8 @@ export function OtherDetails({
     const language = artistFormData?.language || 'Spanish';
     const selectedLang = lang.find((item) => item.name === language);
 
-    data.selectedLang = selectedLang?.code || 'ES';
-
     await trigger(undefined, { shouldFocus: true });
-    activeMutate({ body: data });
+    activeMutate({ body: data, selectedLang: selectedLang?.code || 'ES' });
   });
 
   const onReValidateSubmit = () => {
