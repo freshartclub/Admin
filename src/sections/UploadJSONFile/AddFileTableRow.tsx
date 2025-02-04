@@ -1,32 +1,24 @@
-import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  MenuItem,
-  MenuList,
   TableCell,
-  TableRow,
+  TableRow
 } from '@mui/material';
 import { useState } from 'react';
-import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
+import { imgUrl } from 'src/utils/BaseUrls';
 import * as XLSX from 'xlsx';
 import useAddFile from './http/useAddFile';
-import { useGetSingleFile } from './http/useGetSingleFile';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 const AddFileTableRow = (row) => {
-  const popover = usePopover();
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [jsonData, setJsonData] = useState(null);
 
   // const { data, isLoading } = useGetSingleFile(row?.row);
-  const { mutate, isPending } = useAddFile(jsonData, row?.row);
+  const { mutate, isPending } = useAddFile();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -41,7 +33,7 @@ const AddFileTableRow = (row) => {
 
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const data = e.target.result;
       const workbook = XLSX.read(data, { type: 'binary' });
 
@@ -57,8 +49,10 @@ const AddFileTableRow = (row) => {
         }
       });
 
-      setJsonData(result);
-      mutate();
+      mutate({ body: result, row: row?.row });
+
+      setShow(false);
+      setSelectedFile(null);
     };
 
     reader.readAsArrayBuffer(selectedFile);
@@ -70,7 +64,6 @@ const AddFileTableRow = (row) => {
       onClose={() => {
         setShow(false);
         setSelectedFile(null);
-        setJsonData(null);
       }}
     >
       <DialogTitle>
@@ -78,7 +71,7 @@ const AddFileTableRow = (row) => {
         File
       </DialogTitle>
       <DialogContent>
-        <input type="file" accept=".xlsx" onChange={handleFileChange} />
+        <input type="file" accept=".xlsx" onChange={(e) => handleFileChange(e)} />
       </DialogContent>
       <DialogActions>
         <button

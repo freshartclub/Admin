@@ -3,14 +3,17 @@ import { toast } from 'src/components/snackbar';
 import { ARTIST_ENDPOINTS } from 'src/http/apiEndPoints/Artist';
 import axiosInstance from 'src/utils/axios';
 
-async function AddFile(body: any, row: string) {
-  const response = axiosInstance.post(`${ARTIST_ENDPOINTS.addFile}?fileType=${row}`, body);
+async function AddFile(data: any) {
+  const response = axiosInstance.post(
+    `${ARTIST_ENDPOINTS.addFile}?fileType=${data?.row}`,
+    data.body
+  );
   return response;
 }
 
-const useAddFile = (body, row) => {
+const useAddFile = () => {
   return useMutation({
-    mutationFn: () => AddFile(body, row),
+    mutationFn: (data) => AddFile(data),
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
     },
