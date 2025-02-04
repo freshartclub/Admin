@@ -282,7 +282,7 @@ export function AddTicket() {
   );
 
   return (
-    <div>
+    <>
       <CustomBreadcrumbs
         heading="Add Ticket"
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Add Ticket' }]}
@@ -323,6 +323,6 @@ export function AddTicket() {
           </div>
         </Stack>
       </Form>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { Children, lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -82,6 +82,7 @@ const AddEmail = lazy(() => import('src/pages/dashboard/EmailSettings/AddEmailTy
 const AllEmailType = lazy(() => import('src/pages/dashboard/EmailSettings/EmailList'));
 const AddHomeArt = lazy(() => import('src/pages/dashboard/HomeArtwork/AddHomeArt'));
 const HomeArtList = lazy(() => import('src/pages/dashboard/HomeArtwork/HomeArtList'));
+const UploadFile = lazy(() => import('src/pages/dashboard/UploadFile/AddFile'));
 
 // ----------------------------------------------------------------------
 
@@ -166,6 +167,10 @@ export const dashboardRoutes = [
               { path: 'add', element: <AddEmail /> },
               { path: 'list', element: <AllEmailType /> },
             ],
+          },
+          {
+            path: 'file',
+            children: [{ path: 'add', element: <UploadFile /> }],
           },
         ],
       },

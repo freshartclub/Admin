@@ -145,6 +145,7 @@ export const navData = [
             title: 'Email Settings',
             path: paths.dashboard.category.email.list,
           },
+          { title: 'Add File', path: paths.dashboard.category.file.add },
         ],
       },
       {

@@ -96,6 +96,10 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/category/email/add`,
         list: `${ROOTS.DASHBOARD}/category/email/list`,
       },
+      file: {
+        root: `${ROOTS.DASHBOARD}/file`,
+        add: `${ROOTS.DASHBOARD}/category/file/add`,
+      },
     },
     creadentialsAndInsigniasArea: {
       root: `${ROOTS.DASHBOARD}/creadentialsAndInsigniasArea`,
