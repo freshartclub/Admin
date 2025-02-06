@@ -33,7 +33,7 @@ const TABLE_HEAD = [
   { id: 'isArtistRequestStatus', label: 'Status' },
   { id: 'cv', label: 'CV' },
   { id: 'referralCode', label: 'Referred' },
-  { id: 'createdAt', label: 'Requested At' },
+  { id: 'createdAt', label: 'Requested At' ,minWidth:130},
   { id: 'buttons', label: 'Button' },
   { id: 'action', label: 'Action' },
 ];

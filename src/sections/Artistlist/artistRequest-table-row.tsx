@@ -404,7 +404,9 @@ export function ArtistRequest({ row, url }: Props) {
           </Stack>
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.state}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.state?.length > 15 ? `${row?.state?.slice(0, 15)}...` : row?.state}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span
@@ -422,16 +424,25 @@ export function ArtistRequest({ row, url }: Props) {
             <Iconify icon="mdi:eye-outline" />
           </span>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {row?.referralCode ? (
+        {row?.referralCode !== 'null' ? (
+          <TableCell
+            sx={{
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
             <>
               <span>Yes</span>
-              <span>{row?.referralCode}</span>
+              <span className="bg-black text-white text-[12px] px-2 rounded-full">
+                {row?.referralCode}
+              </span>
             </>
-          ) : (
-            'No'
-          )}
-        </TableCell>
+          </TableCell>
+        ) : (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>No</TableCell>
+        )}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.isArtistRequestStatus === 'pending' ? (
