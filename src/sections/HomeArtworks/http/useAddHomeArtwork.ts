@@ -19,7 +19,7 @@ const useAddHomeArtwork = (id) => {
     mutationFn: addCircle,
     onSuccess: async (res, body) => {
       toast.success(res.data.message);
-      navigate(paths.dashboard.artwork.homeArtwork.list);
+      navigate(paths.dashboard.customise.homeArtwork.list);
     },
 
     onError: (res) => {

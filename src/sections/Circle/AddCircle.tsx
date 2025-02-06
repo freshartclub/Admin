@@ -1,31 +1,21 @@
-import { Avatar, CardHeader, CircularProgress, Link, Stack, TableRow } from '@mui/material';
-import { Divider } from '@mui/material';
-import { Typography } from '@mui/material';
-import { Chip } from '@mui/material';
-import { Card } from '@mui/material';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Field, Form } from 'src/components/hook-form';
-import { paths } from 'src/routes/paths';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z as zod } from 'zod';
-import { schemaHelper } from 'src/components/hook-form';
-import { useForm } from 'react-hook-form';
+import { Avatar, Box, Card, CardHeader, Chip, CircularProgress, Divider, IconButton, Link, ListItemText, Stack, TableCell, TableRow, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { _tags } from 'src/_mock';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import useAddCircle from './http/useAddCircle';
-import { useSearchParams } from 'src/routes/hooks';
 import { toast } from 'sonner';
-import { useGetCircleById } from './http/useGetCircleById';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { TableCell } from '@mui/material';
-import { ListItemText } from '@mui/material';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { useGetArtistById } from '../ArtworkAdd/http/useGetArtistById';
-import { imgUrl } from 'src/utils/BaseUrls';
-import { Box } from '@mui/material';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
-import { IconButton } from '@mui/material';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useSearchParams } from 'src/routes/hooks';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
+import { z as zod } from 'zod';
+import { useGetAllUser } from '../user/http/useGetAllUser';
+import useAddCircle from './http/useAddCircle';
+import { useGetCircleById } from './http/useGetCircleById';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
@@ -77,7 +67,7 @@ const AddCircle = () => {
   });
 
   const debounceArtistId = useDebounce(search, 800);
-  const { data: artistData, isLoading: artistLoading } = useGetArtistById(debounceArtistId);
+  const { data: artistData, isLoading: artistLoading } = useGetAllUser(debounceArtistId);
 
   const { reset, watch, handleSubmit } = methods;
   const values = watch();
@@ -93,7 +83,7 @@ const AddCircle = () => {
           ? data?.managers?.map((item) => {
               return {
                 _id: item?._id,
-                artistId: item?.artistId,
+                userId: item?.userId,
                 name: name(item),
                 img: `${imgUrl}/users/${item?.img}`,
               };
@@ -223,7 +213,7 @@ const AddCircle = () => {
                             ...getManagersInfo,
                             {
                               _id: i?._id,
-                              artistId: i?.artistId,
+                              userId: i?.userId,
                               name: name(i),
                               img: `${imgUrl}/users/${i?.mainImage}`,
                             },
@@ -246,7 +236,7 @@ const AddCircle = () => {
                           disableTypography
                           primary={
                             <Typography variant="body2" noWrap>
-                              {name(i)} - {i?.artistId}
+                              {name(i)} - {i?.userId}
                             </Typography>
                           }
                           secondary={<Link sx={{ color: 'text.disabled' }}>{i?.email}</Link>}
@@ -287,7 +277,7 @@ const AddCircle = () => {
                     {option?.name}
                   </Link>
                   <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
-                    {option?.artistId}
+                    {option?.userId}
                   </Box>
                 </Stack>
                 <IconButton

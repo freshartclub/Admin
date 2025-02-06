@@ -1,6 +1,5 @@
 import { Avatar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { Image } from 'src/components/image';
 import { paths } from 'src/routes/paths';
 import { fDateTime } from 'src/utils/format-time';
 

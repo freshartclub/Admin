@@ -5,7 +5,7 @@ const AddArtistForm = () => {
   return (
     <div>
       <DashboardContent maxWidth="xl">
-        <Typography variant="h4"> Add Artist </Typography>
+        <Typography variant="h4">Add Artist </Typography>
       </DashboardContent>
     </div>
   );

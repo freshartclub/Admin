@@ -75,7 +75,7 @@ export function GetAllHomeArtwork() {
         links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'All Home Artworks' }]}
         sx={{ mb: 3 }}
         action={
-          <RouterLink href={paths.dashboard.artwork.homeArtwork.add}>
+          <RouterLink href={paths.dashboard.customise.homeArtwork.add}>
             <span className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1">
               <Iconify icon="mingcute:add-line" /> Add Home Artwork
             </span>

@@ -422,6 +422,16 @@ export function ArtistRequest({ row, url }: Props) {
             <Iconify icon="mdi:eye-outline" />
           </span>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {row?.referralCode ? (
+            <>
+              <span>Yes</span>
+              <span>{row?.referralCode}</span>
+            </>
+          ) : (
+            'No'
+          )}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row?.createdAt)}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row?.isArtistRequestStatus === 'pending' ? (

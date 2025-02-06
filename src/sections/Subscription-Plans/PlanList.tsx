@@ -15,9 +15,16 @@ export function PlanList() {
 
   const result = data
     ? Object.groupBy(data, (item) => {
-        return item.planGrp;
+        return item.priority.slice(0, 1);
       })
     : {};
+
+  const sortOjectItem = Object.keys(result).sort((a, b) => a.localeCompare(b));
+
+  const sortResult = sortOjectItem.reduce((obj, key) => {
+    obj[key] = result[key];
+    return obj;
+  }, {});
 
   return (
     <>
@@ -45,8 +52,8 @@ export function PlanList() {
         <LoadingScreen />
       ) : (
         <Stack spacing={4}>
-          {Object.keys(result).length > 0 ? (
-            Object.entries(result).map(([groupName, plans], index) => (
+          {Object.keys(sortResult).length > 0 ? (
+            Object.entries(sortResult).map(([groupName, plans], index) => (
               <Box key={index} sx={{ mb: 4 }}>
                 <Typography
                   variant="h6"
@@ -54,7 +61,7 @@ export function PlanList() {
                   component="div"
                   gutterBottom
                 >
-                  {groupName}
+                  {plans[0].planGrp}
                 </Typography>
                 <Divider sx={{ mb: 1 }} />
 

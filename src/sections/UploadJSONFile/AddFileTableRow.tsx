@@ -1,23 +1,24 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   TableCell,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import { useState } from 'react';
 import { Iconify } from 'src/components/iconify';
 import { imgUrl } from 'src/utils/BaseUrls';
 import * as XLSX from 'xlsx';
 import useAddFile from './http/useAddFile';
+import { toast } from 'sonner';
 
 const AddFileTableRow = (row) => {
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // const { data, isLoading } = useGetSingleFile(row?.row);
   const { mutate, isPending } = useAddFile();
 
   const handleFileChange = (event) => {
@@ -27,8 +28,7 @@ const AddFileTableRow = (row) => {
 
   const handleUpload = () => {
     if (!selectedFile) {
-      alert('Please select a file first.');
-      return;
+      return toast.error('Please select a file first.');
     }
 
     const reader = new FileReader();
@@ -40,10 +40,15 @@ const AddFileTableRow = (row) => {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonResult = XLSX.utils.sheet_to_json(worksheet);
 
+      if (!jsonResult[0]?.EN || !jsonResult[0]?.TS) {
+        return toast.error('File should have 2 mandatory columns i.e. "EN" and "TS"');
+      }
+
       const result = {};
       jsonResult.forEach((row) => {
         const key = `"${row['EN']?.trim()}"`;
-        const value = row['ES']?.trim();
+        const value = row['TS']?.trim();
+
         if (key && value) {
           result[key] = value;
         }
@@ -68,10 +73,20 @@ const AddFileTableRow = (row) => {
     >
       <DialogTitle>
         Add New <span className="capitalize text-red-600">"{row?.row?.replace('.json', '')}"</span>{' '}
-        File
+        Version
       </DialogTitle>
-      <DialogContent>
-        <input type="file" accept=".xlsx" onChange={(e) => handleFileChange(e)} />
+      <DialogContent className="flex flex-col gap-2">
+        <input
+          className="p-2 border outline-none rounded border-gray-400 w-full"
+          type="file"
+          accept=".xlsx, .xls, .csv"
+          onChange={(e) => handleFileChange(e)}
+        />
+        <Alert severity="info">
+          Make sure file should have 2 mandatory columns i.e. "EN" and "TS". "EN" is for English
+          Words and "TS" is for Translated Words.
+        </Alert>
+        <Alert severity="warning">Select .csv, .xlsx or .xls file only</Alert>
       </DialogContent>
       <DialogActions>
         <button
@@ -98,7 +113,6 @@ const AddFileTableRow = (row) => {
             icon="si:json-fill"
           />
         </TableCell>
-
         <TableCell>
           <Button
             variant="contained"
@@ -106,7 +120,7 @@ const AddFileTableRow = (row) => {
             onClick={() => setShow(true)}
           >
             <Iconify color="orange" icon="si:json-fill" />
-            Add New File
+            Add New Version
           </Button>
         </TableCell>
       </TableRow>

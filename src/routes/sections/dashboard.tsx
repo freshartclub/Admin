@@ -83,6 +83,8 @@ const AllEmailType = lazy(() => import('src/pages/dashboard/EmailSettings/EmailL
 const AddHomeArt = lazy(() => import('src/pages/dashboard/HomeArtwork/AddHomeArt'));
 const HomeArtList = lazy(() => import('src/pages/dashboard/HomeArtwork/HomeArtList'));
 const UploadFile = lazy(() => import('src/pages/dashboard/UploadFile/AddFile'));
+const AddCarousel = lazy(() => import('src/pages/dashboard/Carousel/AddCarousel'));
+const AllCarousel = lazy(() => import('src/pages/dashboard/Carousel/AllCarousel'));
 
 // ----------------------------------------------------------------------
 
@@ -168,6 +170,25 @@ export const dashboardRoutes = [
               { path: 'list', element: <AllEmailType /> },
             ],
           },
+        ],
+      },
+      {
+        path: 'customise',
+        children: [
+          {
+            path: 'home-artwork',
+            children: [
+              { path: 'add', element: <AddHomeArt /> },
+              { path: 'list', element: <HomeArtList /> },
+            ],
+          },
+          {
+            path: 'carousel',
+            children: [
+              { path: 'add', element: <AddCarousel /> },
+              { path: 'list', element: <AllCarousel /> },
+            ],
+          },
           {
             path: 'file',
             children: [{ path: 'add', element: <UploadFile /> }],
@@ -191,13 +212,7 @@ export const dashboardRoutes = [
               { path: 'list', element: <CatalogList /> },
             ],
           },
-          {
-            path: 'home-artwork',
-            children: [
-              { path: 'add', element: <AddHomeArt /> },
-              { path: 'list', element: <HomeArtList /> },
-            ],
-          },
+
           {
             path: 'collection-management',
             children: [

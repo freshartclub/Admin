@@ -50,6 +50,7 @@ export const NewPostSchema = zod.object({
   planImg: schemaHelper.file({ message: { required_error: 'Plan Image is required!' } }),
   status: zod.string().min(1, { message: 'Status is required!' }),
   defaultPlan: zod.boolean().optional(),
+  priority: zod.string().min(1, { message: 'Priority is required!' }),
   planData: zod.array(
     zod.object({
       length: zod.number().min(1, { message: 'Length is required!' }),
@@ -92,6 +93,7 @@ export function AddPlanForm() {
       planImg: data?.planImg || null,
       status: data?.status || '',
       defaultPlan: data?.defaultPlan || false,
+      priority: data?.priority || '',
       planData: data?.planData || [{ length: '', width: '', height: '', minSubTime: '' }],
     }),
     [data]
@@ -340,9 +342,17 @@ export function AddPlanForm() {
       <CardHeader title="Status" sx={{ mb: 2 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Field.SingelSelect name="status" label="Status" options={PLAN_STATUS_OPTIONS} />
-        </Stack>
+        <Field.SingelSelect name="status" label="Status" options={PLAN_STATUS_OPTIONS} />
+      </Stack>
+    </Card>
+  );
+
+  const priority = (
+    <Card sx={{ mb: 3 }}>
+      <CardHeader title="Priority" sx={{ mb: 2 }} />
+      <Divider />
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.Text required name="priority" label="Priority" placeholder='Like A1, A2 etc' />
       </Stack>
     </Card>
   );
@@ -380,6 +390,7 @@ export function AddPlanForm() {
               {renderProperties}
               {media}
               {status}
+              {priority}
               <div className="flex flex-row justify-end gap-3 mt-8 md:hidden">
                 <span
                   onClick={() => navigate(paths.dashboard.subscriptionplan.list)}

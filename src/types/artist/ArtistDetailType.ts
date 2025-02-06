@@ -127,6 +127,7 @@ export interface ArtistListType {
   avatar: string;
   discipline: any[];
   links: any[];
+  referralCode: string;
   documents: any[];
   isActivated: Boolean;
   profileStatus: string;
@@ -186,4 +187,7 @@ export interface ArtistDisciplineType {
   credentialPriority: string;
   credentialGroup: string;
   isActive: Boolean;
+  type: string;
+  title: string;
+  subtitle: string;
 }

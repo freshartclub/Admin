@@ -1,24 +1,21 @@
+import { currencies } from 'src/_mock/_currency';
+import { RouterLink } from 'src/routes/components';
+import { paths } from 'src/routes/paths';
 import cart from './assets/cart.png';
 import mark from './assets/offer.png';
-import wishlist from './assets/wishlist.png';
-import like from './assets/like.png';
-import question from './assets/question.png';
 import Button from './comman/Button';
 import Header from './comman/Header';
 import P from './comman/P';
-import { RouterLink } from 'src/routes/components';
 import usePublishArtworkMutation from './http/usePublishArtworkMutation';
-import { paths } from 'src/routes/paths';
-import { currencies } from 'src/_mock/_currency';
 
-const DiscoverContent = ({ data, preview }) => {
+const DiscoverContent = ({ data, preview, name1, name2, name3, status }) => {
   const { mutate, isPending } = usePublishArtworkMutation(data?._id);
 
-  const name = (val) => {
-    let fullName = val?.artistName || '';
+  const name = (name1, name2, name3) => {
+    let fullName = name1 || '';
 
-    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
-    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+    if (name2) fullName += ' ' + name2;
+    if (name3) fullName += ' ' + name3;
 
     return fullName.trim();
   };
@@ -43,37 +40,37 @@ const DiscoverContent = ({ data, preview }) => {
               Author :
             </Header>
             <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
-              {name(data?.owner)}
+              {name(name1, name2, name3)}
             </P>
           </div>
         </div>
         <div className="flex gap-2 w-full lg:w-fit">
-          {data?.status === 'draft' ? (
+          {status === 'draft' ? (
             <button className="w-full lg:w-fit" onClick={publishArtwork}>
               <span className="font-bold block text-center rounded-full bg-black text-white px-5 py-3">
                 {isPending ? 'Sending...' : 'Publish'}
               </span>
             </button>
-          ) : data?.status === 'rejected' ? (
+          ) : status === 'rejected' ? (
             <button className="w-full lg:w-fit pointer-events-none">
               <span className="font-bold block text-center rounded-full bg-red-700 text-white px-5 py-3">
                 Rejected
               </span>
             </button>
-          ) : data?.status === 'published' ? (
+          ) : status === 'published' ? (
             <button className="w-full lg:w-fit pointer-events-none">
               <span className="font-bold block text-center rounded-full bg-green-700 text-white px-5 py-3">
                 Published
               </span>
             </button>
-          ) : data?.status === 'modified' ? (
+          ) : status === 'modified' ? (
             <button className="w-full lg:w-fit pointer-events-none">
               <span className="font-bold block text-center rounded-full bg-purple-700 text-white px-5 py-3">
                 Modified
               </span>
             </button>
           ) : null}
-          {preview && data?.status === 'draft' ? (
+          {preview && status === 'draft' ? (
             <RouterLink
               className="w-full lg:w-fit"
               href={`${paths.dashboard.artwork.addArtwork}?id=${data?._id}`}

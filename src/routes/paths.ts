@@ -96,9 +96,21 @@ export const paths = {
         add: `${ROOTS.DASHBOARD}/category/email/add`,
         list: `${ROOTS.DASHBOARD}/category/email/list`,
       },
+    },
+    customise: {
+      Root: `${ROOTS.DASHBOARD}/customise`,
       file: {
         root: `${ROOTS.DASHBOARD}/file`,
-        add: `${ROOTS.DASHBOARD}/category/file/add`,
+        add: `${ROOTS.DASHBOARD}/customise/file/add`,
+      },
+      homeArtwork: {
+        root: `${ROOTS.DASHBOARD}/home-artwork`,
+        add: `${ROOTS.DASHBOARD}/customise/home-artwork/add`,
+        list: `${ROOTS.DASHBOARD}/customise/home-artwork/list`,
+      },
+      carousel: {
+        add: `${ROOTS.DASHBOARD}/customise/carousel/add`,
+        list: `${ROOTS.DASHBOARD}/customise/carousel/list`,
       },
     },
     creadentialsAndInsigniasArea: {
@@ -112,11 +124,6 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/catalog`,
         add: `${ROOTS.DASHBOARD}/artwork/catalog/add`,
         list: `${ROOTS.DASHBOARD}/artwork/catalog/list`,
-      },
-      homeArtwork: {
-        root: `${ROOTS.DASHBOARD}/home-artwork`,
-        add: `${ROOTS.DASHBOARD}/artwork/home-artwork/add`,
-        list: `${ROOTS.DASHBOARD}/artwork/home-artwork/list`,
       },
       collection_management: {
         root: `${ROOTS.DASHBOARD}/collection-management`,
@@ -153,8 +160,6 @@ export const paths = {
       add: `${ROOTS.DASHBOARD}/circle/add`,
       list: `${ROOTS.DASHBOARD}/circle/list`,
     },
-
-    // logistics: `${ROOTS.DASHBOARD}/logistics`,
 
     couponandpromotions: {
       Root: `${ROOTS.DASHBOARD}/couponandpromotions`,

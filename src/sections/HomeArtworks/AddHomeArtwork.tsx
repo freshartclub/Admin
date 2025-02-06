@@ -258,7 +258,7 @@ export function AddHomeArtwork() {
         <Stack spacing={3}>
           <div className="flex justify-end gap-2">
             <span
-              onClick={() => navigate(paths.dashboard.artwork.homeArtwork.list)}
+              onClick={() => navigate(paths.dashboard.customise.homeArtwork.list)}
               className="px-3 py-2 text-white bg-red-500 rounded-md cursor-pointer"
             >
               Cancel

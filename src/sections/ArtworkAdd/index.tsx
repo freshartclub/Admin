@@ -52,7 +52,7 @@ import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useSearchParams } from 'src/routes/hooks';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { z as zod } from 'zod';
+import { any, z as zod } from 'zod';
 import { useGetArtworkById } from '../Artwork-details-view/http/useGetArtworkById';
 import { useGetDisciplineMutation } from '../DisciplineListCategory/http/useGetDisciplineMutation';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
@@ -68,6 +68,9 @@ import useDeleteSeries from './http/useDeleteSeries';
 import { useGetMediaListMutation } from '../MediaSupportListCategor/http/useGetMediaListMutation';
 import { currencies } from 'src/_mock/_currency';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { Label } from 'src/components/label';
+import { NavLink } from 'react-router-dom';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -144,15 +147,14 @@ export const NewProductSchema = zod.object({
 export function ArtworkAdd() {
   const [year, setYear] = useState('');
   const [modified, setModified] = useState(false);
-  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [intValue, setIntValue] = useState('');
   const [extValue, setExtValue] = useState('');
   const [dSerise, setDSerise] = useState('');
   const [currencySymbol, setCurrencySymbol] = useState('€');
   const [slide, setSlide] = useState(0);
-
-  const modify = useSearchParams().get('modify');
+  const [data, setData] = useState<any>({});
+  const [type, setType] = useState('Old');
 
   const { data: disciplineData } = useGetDisciplineMutation();
   const { data: technicData } = useGetTechnicMutation();
@@ -294,7 +296,7 @@ export function ArtworkAdd() {
       : [];
 
   const id = useSearchParams().get('id');
-  const { data, isLoading } = useGetArtworkById(id);
+  const { data: artData, isLoading } = useGetArtworkById(id);
 
   const [mongoDBId, setmongoDBId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -320,10 +322,10 @@ export function ArtworkAdd() {
   const defaultValues = useMemo(
     () => ({
       artworkName: data?.artworkName || '',
-      artistID: data?.owner?.artistId || '',
+      artistID: artData?.owner?.artistId || '',
       intTags: data?.tags?.intTags || [],
       extTags: data?.tags?.extTags || [],
-      artistName: data?.owner?.artistName || '',
+      artistName: artData?.owner?.artistName || '',
       isArtProvider: data?.isArtProvider || 'No',
       provideArtistName: data?.provideArtistName || '',
       artworkCreationYear: data?.artworkCreationYear || new Date().getFullYear().toString(),
@@ -407,7 +409,7 @@ export function ArtworkAdd() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  console.log('errors', errors);
+
   const values = watch();
 
   const selectedDisciplines = useWatch({
@@ -423,10 +425,14 @@ export function ArtworkAdd() {
   const { data: artworkData, refetch } = useGetSeriesList(mongoDBId);
 
   useEffect(() => {
-    if (data && !isLoading) {
+    if (artData && type === 'New' && artData?.status === 'modified' && !isLoading) {
+      setData(artData?.reviewDetails);
+      reset(defaultValues);
+    } else if (artData && !isLoading) {
+      setData(artData);
       reset(defaultValues);
     }
-  }, [data, isLoading]);
+  }, [data, type, isLoading]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -604,13 +610,12 @@ export function ArtworkAdd() {
 
   useEffect(() => {
     if (id) {
-      setOpen(false);
-      setmongoDBId(data?.owner?._id);
+      setmongoDBId(artData?.owner?._id);
       setSelectedOption(data?.commercialization?.activeTab);
       setYear(data?.artworkCreationYear);
       setSlide(data?.promotions?.promotionScore);
     }
-  }, [data]);
+  }, [artData, data]);
 
   useEffect(() => {
     setValue('vatAmount', artworkData?.vatAmount);
@@ -787,7 +792,26 @@ export function ArtworkAdd() {
 
   const renderDetails = (
     <Card sx={{ mb: 3, position: 'relative' }}>
-      <CardHeader title="General Informations" sx={{ mb: 3 }} />
+      <CardHeader
+        title={
+          <>
+            General Informations{' '}
+            <Label
+              variant="soft"
+              color={
+                (artData?.status === 'published' && 'success') ||
+                (artData?.status === 'modified' && 'secondary') ||
+                (artData?.status === 'pending' && 'warning') ||
+                (artData?.status === 'rejected' && 'error') ||
+                'default'
+              }
+            >
+              {artData?.status}
+            </Label>
+          </>
+        }
+        sx={{ mb: 3 }}
+      />
 
       <Divider />
 
@@ -1695,6 +1719,42 @@ export function ArtworkAdd() {
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ mb: 3 }}>
+        {artData?.status == 'modified' ? (
+          <div className="flex gap-2 flex-col translate-y-[-12px]">
+            <div className="flex gap-2">
+              <span
+                onClick={() => setType('Old')}
+                className={`sm:w-max w-full p-2 rounded font-semibold cursor-pointer bg-purple-200 ${type === 'Old' ? 'border text-purple-950 border-purple-950 shadow-md' : 'text-gray-500'} `}
+              >
+                Old Version
+              </span>
+              <span
+                onClick={() => setType('New')}
+                className={`sm:w-max w-full p-2 rounded font-semibold cursor-pointer bg-purple-200 border  ${type === 'New' ? 'border text-purple-950 border-purple-950 shadow-md' : 'text-gray-500'}`}
+              >
+                Latest Version
+              </span>
+            </div>
+            <Alert severity="warning">
+              Select "Latest Version" if you want to make changes in the modified artwork.
+            </Alert>
+            <Alert severity="info">
+              Artwork has been modified. The changes you will made will be applied to the latest
+              version. The old version will be kept for reference. For the changes to be visible to
+              all user, you need to approve those changes from "Approve Changes" screen →{' '}
+              <NavLink
+                className={'underline text-blue-900'}
+                to={`${paths.dashboard.artwork.reviewArtwork(artData?._id)}`}
+              >
+                Approve Changes
+              </NavLink>
+            </Alert>
+            <Alert severity="error">
+              If you "Reject" the changes the old version will be restored and the Artwork will go
+              to "Pending" status where you need to publish it again with old changes.
+            </Alert>
+          </div>
+        ) : null}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div className="grid-cols-1 md:col-span-2">
             {renderDetails}
@@ -1712,18 +1772,25 @@ export function ArtworkAdd() {
           </div>
         </div>
         <div className="flex justify-end mb-6 mr-6">
-          {data && data?.status === 'published' && modify == 'true' ? (
+          {artData && type === 'New' && artData?.status === 'modified' ? (
             <span
               onClick={() => setModified(true)}
               className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
             >
               Modify Artwork
             </span>
-          ) : (
+          ) : artData && type === 'Old' && artData?.status === 'published' ? (
+            <span
+              onClick={() => setModified(true)}
+              className="text-white bg-black rounded-md px-3 py-2 cursor-pointer"
+            >
+              Modify Artwork
+            </span>
+          ) : artData && type === 'Old' && artData?.status === 'draft' ? (
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
               {isPending ? 'Processing ' + percent + '%' : 'Preview Artwork'}
             </button>
-          )}
+          ) : null}
         </div>
       </Stack>
       {addSeriesDialogBox}

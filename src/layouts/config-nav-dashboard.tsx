@@ -66,20 +66,6 @@ export const navData = [
         icon: ICONS.paintBrush,
         children: [
           {
-            title: 'Home Artwork',
-            path: paths.dashboard.artwork.homeArtwork.root,
-            children: [
-              {
-                title: 'Add Home Artwork',
-                path: paths.dashboard.artwork.homeArtwork.add,
-              },
-              {
-                title: 'Home Artwork List',
-                path: paths.dashboard.artwork.homeArtwork.list,
-              },
-            ],
-          },
-          {
             title: 'Catalog',
             path: paths.dashboard.artwork.catalog.root,
             children: [
@@ -111,7 +97,45 @@ export const navData = [
           { title: 'Artwork List', path: paths.dashboard.artwork.artworkList },
         ],
       },
-
+      {
+        title: 'Customise',
+        path: paths.dashboard.customise.Root,
+        icon: ICONS.folder,
+        children: [
+          {
+            title: 'Add File',
+            path: paths.dashboard.customise.file.add,
+          },
+          {
+            title: 'Home Artwork',
+            path: paths.dashboard.customise.homeArtwork.root,
+            children: [
+              {
+                title: 'Add Home Artwork',
+                path: paths.dashboard.customise.homeArtwork.add,
+              },
+              {
+                title: 'Home Artwork List',
+                path: paths.dashboard.customise.homeArtwork.list,
+              },
+            ],
+          },
+          {
+            title: 'Carousel',
+            path: paths.dashboard.customise.carousel.list,
+            children: [
+              {
+                title: 'Add Carousel',
+                path: paths.dashboard.customise.carousel.add,
+              },
+              {
+                title: 'Carousel List',
+                path: paths.dashboard.customise.carousel.list,
+              },
+            ],
+          },
+        ],
+      },
       {
         title: 'Categories',
         path: paths.dashboard.category.root,
@@ -145,7 +169,6 @@ export const navData = [
             title: 'Email Settings',
             path: paths.dashboard.category.email.list,
           },
-          { title: 'Add File', path: paths.dashboard.category.file.add },
         ],
       },
       {

@@ -18,6 +18,7 @@ import { Box } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Button } from '@mui/material';
 import { toast } from 'sonner';
+import { useGetCatalogsName } from './http/useGetCatalogsName';
 
 export function ArtworkDetailView() {
   const preview = useSearchParams().get('preview');
@@ -25,8 +26,21 @@ export function ArtworkDetailView() {
   const [images, setImages] = useState<any>([]);
   const [openQR, setOpenQR] = useState(false);
   const [qrCode, setQrCode] = useState('');
+  const [data, setData] = useState<any>({});
+  const [type, setType] = useState('Old');
 
-  const { data, isPending } = useGetArtworkById(id);
+  const { data: artData, isPending } = useGetArtworkById(id);
+  const { data: catalogName } = useGetCatalogsName();
+
+  useEffect(() => {
+    if (artData && type === 'Old') {
+      setData(artData);
+    }
+
+    if (artData && type === 'New') {
+      setData(artData?.reviewDetails);
+    }
+  }, [artData, type]);
 
   useEffect(() => {
     const arr = [
@@ -85,7 +99,7 @@ export function ArtworkDetailView() {
           { name: '#' + data?.artworkId },
         ]}
         action={
-          data && data?.status === 'published' ? (
+          artData && artData?.status === 'published' ? (
             <div className="bread-links flex gap-2 items-center">
               <span
                 onClick={generateQRCode}
@@ -95,6 +109,21 @@ export function ArtworkDetailView() {
               </span>
               <span className="bg-black cursor-pointer text-white rounded-md justify-center flex items-center px-2 py-3 gap-2">
                 <Iconify icon="mingcute:add-line" /> Generate Certificate Of Authenticity
+              </span>
+            </div>
+          ) : artData && artData?.status === 'modified' ? (
+            <div className="bread-links flex gap-2 items-center">
+              <span
+                onClick={() => setType('Old')}
+                className={`sm:w-max w-full p-2 rounded font-semibold cursor-pointer bg-purple-200 ${type === 'Old' ? 'border text-purple-950 border-purple-950 shadow-md' : 'text-gray-500'} `}
+              >
+                Old Version
+              </span>
+              <span
+                onClick={() => setType('New')}
+                className={`sm:w-max w-full p-2 rounded font-semibold cursor-pointer bg-purple-200 border  ${type === 'New' ? 'border text-purple-950 border-purple-950 shadow-md' : 'text-gray-500'}`}
+              >
+                Latest Version
               </span>
             </div>
           ) : null
@@ -181,11 +210,18 @@ export function ArtworkDetailView() {
           </div>
 
           <div className="lg:w-[50%] w-full">
-            <DiscoverContent data={data} preview={preview} />
+            <DiscoverContent
+              data={data}
+              preview={preview}
+              name1={artData?.owner?.artistName}
+              name2={artData?.owner?.artistSurname1}
+              name3={artData?.owner?.artistSurname2}
+              status={artData?.status}
+            />
           </div>
         </div>
 
-        <ProductInfo data={data} preview={preview} />
+        <ProductInfo type={type} data={data} preview={preview} catalogName={catalogName} />
       </div>
       {!preview && <SelectedSection />}
       <Modal open={openQR} onClose={() => setOpenQR(false)}>

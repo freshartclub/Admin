@@ -8,12 +8,26 @@ import P from './comman/P';
 import Header from './comman/Header';
 import { currencies } from 'src/_mock/_currency';
 import { fDateTime } from 'src/utils/format-time';
+import { useEffect, useState } from 'react';
 
-const ProductInfo = ({ data, preview }) => {
+const ProductInfo = ({ type, data, preview, catalogName }) => {
+  const [name, setName] = useState('');
+
   const mapData = (val) => {
     if (!val || val.length === 0) return '';
     return val.join(' | ');
   };
+
+  useEffect(() => {
+    if (type == 'New') {
+      const catalog = data?.commercialization?.purchaseCatalog
+        ? data?.commercialization?.purchaseCatalog
+        : data?.commercialization?.subscriptionCatalog;
+      const findId = catalogName.find((item) => item._id == catalog);
+
+      setName(findId?.catalogName);
+    }
+  }, [type, data]);
 
   return (
     <div className="mt-10">
@@ -179,7 +193,11 @@ const ProductInfo = ({ data, preview }) => {
               <>
                 <PreviewData
                   head="Purchase Catalog"
-                  val={data?.commercialization?.publishingCatalog?.catalogName}
+                  val={
+                    data?.commercialization?.publishingCatalog?.catalogName
+                      ? data?.commercialization?.publishingCatalog?.catalogName
+                      : name
+                  }
                 />
                 <PreviewData head="Purchase Type" val={data?.commercialization?.purchaseType} />
               </>
@@ -187,7 +205,11 @@ const ProductInfo = ({ data, preview }) => {
               <>
                 <PreviewData
                   head="Subscription Catalog"
-                  val={data?.commercialization?.publishingCatalog?.catalogName}
+                  val={
+                    data?.commercialization?.publishingCatalog?.catalogName
+                      ? data?.commercialization?.publishingCatalog?.catalogName
+                      : name
+                  }
                 />
                 <PreviewData head="Purchase Option" val={data?.commercialization?.purchaseOption} />
               </>
