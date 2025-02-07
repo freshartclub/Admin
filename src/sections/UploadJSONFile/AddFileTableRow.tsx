@@ -86,7 +86,7 @@ const AddFileTableRow = (row) => {
           Make sure file should have 2 mandatory columns i.e. "EN" and "TS". "EN" is for English
           Words and "TS" is for Translated Words.
         </Alert>
-        <Alert severity="warning">Select .csv, .xlsx or .xls file only</Alert>
+        <Alert severity="warning">Select .csv or .xlsx file only</Alert>
       </DialogContent>
       <DialogActions>
         <button

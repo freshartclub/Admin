@@ -1,19 +1,24 @@
-import type { IUserItem } from 'src/types/user';
-
-import { Card, InputAdornment, Stack, Table, TableBody, TextField } from '@mui/material';
+import {
+  Box,
+  Card,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Select,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
-import {
-  emptyRows,
-  getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TablePaginationCustom,
-  useTable,
-} from 'src/components/table';
+import { getComparator, TableHeadCustom, TableNoData, useTable } from 'src/components/table';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { imgUrl } from 'src/utils/BaseUrls';
 import { ListArtist } from '../activeArtist-table-row';
@@ -31,16 +36,33 @@ const TABLE_HEAD = [
 export function ListArtists() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
-  const [_userList, setUserList] = useState<IUserItem[]>([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [prevCursor, setPrevCursor] = useState(null);
+  const [options, setOptions] = useState({
+    cursor: '',
+    direction: '',
+    limit: 10,
+    currPage: 1,
+  });
+
+  const [_userList, setUserList] = useState([]);
   const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 800);
 
-  const { data, isLoading } = useGetAllActiveArtist(debounceSearch);
+  const { data, isLoading } = useGetAllActiveArtist(
+    debounceSearch,
+    options.currPage,
+    options.cursor,
+    options.direction,
+    options.limit
+  );
 
   useEffect(() => {
     if (data) {
-      setUserList(data);
-      setNotFound(data.length === 0);
+      setUserList(data.data || []);
+      setNextCursor(data.nextCursor || '');
+      setPrevCursor(data.prevCursor || '');
+      setNotFound(data.data?.length === 0);
     }
   }, [data]);
 
@@ -78,31 +100,91 @@ export function ListArtists() {
                 onSort={table.onSort}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row) => (
-                    <ListArtist key={row._id} row={row} url={imgUrl} />
-                  ))}
-                <TableEmptyRows
-                  height={table.dense ? 56 : 76}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                />
+                {dataFiltered.map((row) => (
+                  <ListArtist key={row._id} row={row} url={imgUrl} />
+                ))}
+
                 <TableNoData notFound={notFound} />
               </TableBody>
             </Table>
           </Scrollbar>
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
+          <Stack direction="row" justifyContent="space-between">
+            <FormControlLabel
+              className="dense-table"
+              sx={{ pl: 2 }}
+              label="Dense"
+              control={<Switch name="dense" checked={table.dense} onChange={table.onChangeDense} />}
+            />
+            <Box className="row-table" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Typography variant="body2">Rows per page:</Typography>
+
+                <Select
+                  onChange={(e) =>
+                    setOptions({ ...options, cursor: '', currPage: 1, limit: e.target.value })
+                  }
+                  value={options.limit}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                >
+                  {[5, 10, 25].map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">
+                  {`${(options.currPage - 1) * options.limit + 1} - ${Math.min(options.currPage * options.limit, data?.totalCount)} of ${data?.totalCount}`}
+                </Typography>
+
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    disabled={!prevCursor || isLoading}
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${prevCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: prevCursor,
+                        direction: 'prev',
+                        currPage: options.currPage === 1 ? 1 : options.currPage - 1,
+                      });
+                    }}
+                  >
+                    <Iconify icon="weui:back-filled" />
+                  </IconButton>
+                  <IconButton
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${nextCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: nextCursor,
+                        direction: 'next',
+                        currPage: options.currPage + 1,
+                      });
+                    }}
+                    disabled={!nextCursor || isLoading}
+                  >
+                    <Iconify sx={{ transform: 'rotate(180deg)' }} icon="weui:back-filled" />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Box>
+          </Stack>
         </Card>
       )}
     </>
@@ -110,7 +192,7 @@ export function ListArtists() {
 }
 
 type ApplyFilterProps = {
-  inputData: IUserItem[];
+  inputData: any[];
   comparator: (a: any, b: any) => number;
 };
 

@@ -14,9 +14,10 @@ import useDeleteArtworkItem from './http/useDeleteArtworkItem';
 type Props = {
   row: ArtistDisciplineType;
   _id: string;
+  type: string;
 };
 
-export function HomeArtworkRow({ row, _id }: Props) {
+export function HomeArtworkRow({ row, type, _id }: Props) {
   const { mutateAsync, isPending } = useDeleteArtworkItem(_id, row?._id);
   const confirm = useBoolean();
 
@@ -44,6 +45,7 @@ export function HomeArtworkRow({ row, _id }: Props) {
             />
           </Stack>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{type}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <span className="w-fit flex items-center rounded-2xl px-2 py-1 bg-[#E7F4EE] text-[#0D894F]">
             Active

@@ -107,7 +107,7 @@ const AddFile = () => {
           Make sure file should have 2 mandatory columns i.e. "EN" and "TS". "EN" is for English
           Words and "TS" is for Translated Words.
         </Alert>
-        <Alert severity="warning">Select .csv, .xlsx or .xls file only</Alert>
+        <Alert severity="warning">Select .csv or .xlsx file only</Alert>
       </DialogContent>
       <DialogActions>
         <button
@@ -130,7 +130,7 @@ const AddFile = () => {
         action={
           <span
             onClick={() => setShow(true)}
-            className="bg-black text-white rounded-md justify-center flex items-center px-2 py-3 gap-2 md:w-[9rem]"
+            className="bg-black cursor-pointer text-white rounded-md justify-center flex items-center px-2 py-3 gap-2 md:w-[9rem]"
           >
             <Iconify icon="mingcute:add-line" /> Add New File
           </span>

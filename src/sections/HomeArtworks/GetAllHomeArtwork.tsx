@@ -8,7 +8,7 @@ import {
   Select,
   Stack,
   Table,
-  TableBody
+  TableBody,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -33,6 +33,7 @@ import { useGetHomeArtworks } from './http/useGetHomeArtworks';
 
 const TABLE_HEAD = [
   { id: 'artworkName', label: 'Artwork Name', width: 150 },
+  { id: 'type', label: 'Type', width: 130 },
   { id: 'status', label: 'Status', width: 130 },
   { id: 'actions', label: 'Actions', width: 150 },
 ];
@@ -41,7 +42,7 @@ export function GetAllHomeArtwork() {
   const table = useTable();
   const [notFound, setNotFound] = useState(false);
   const [_list, setList] = useState([]);
-  const [item, setItem] = useState({ _id: '', name: '' });
+  const [item, setItem] = useState({ _id: '', name: '', type: '' });
 
   const { data, isLoading } = useGetHomeArtworks();
 
@@ -57,6 +58,7 @@ export function GetAllHomeArtwork() {
       setItem({
         _id: selectedItem?._id,
         name: selectedItem?.artworksTitle,
+        type: selectedItem?.type,
       });
       setList(selectedItem?.artworks || []);
       setNotFound(data?.length === 0);
@@ -112,7 +114,7 @@ export function GetAllHomeArtwork() {
         </FormControl>
 
         <span
-          onClick={() => navigate(`${paths.dashboard.artwork.homeArtwork.add}?id=${item._id}`)}
+          onClick={() => navigate(`${paths.dashboard.customise.homeArtwork.add}?id=${item._id}`)}
           className="bg-black text-white rounded-md flex justify-center items-center px-2 py-3 gap-1 cursor-pointer w-full md:w-[15rem]"
         >
           <Iconify icon="solar:pen-bold" /> Edit Artwork Section
@@ -133,7 +135,7 @@ export function GetAllHomeArtwork() {
               />
               <TableBody>
                 {dataFiltered.map((row) => (
-                  <HomeArtworkRow key={row._id} row={row} _id={item._id} />
+                  <HomeArtworkRow key={row._id} type={item.type} row={row} _id={item._id} />
                 ))}
                 <TableEmptyRows
                   height={table.dense ? 56 : 76}

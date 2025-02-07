@@ -1,3 +1,6 @@
+
+import type { AddArtistComponentProps } from 'src/types/artist/AddArtistComponentTypes';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -5,15 +8,8 @@ import { useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
 
 import { varAlpha, bgGradient } from 'src/theme/styles';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
-interface AddArtistComponentProps {
-  name: string;
-  avatarUrl: string;
-  role: string;
-  coverUrl: string;
-}
 
 export function ProfileCover({ name, avatarUrl, role, coverUrl }: AddArtistComponentProps) {
   const theme = useTheme();
@@ -23,7 +19,7 @@ export function ProfileCover({ name, avatarUrl, role, coverUrl }: AddArtistCompo
       sx={{
         ...bgGradient({
           color: `0deg, ${varAlpha(theme.vars.palette.primary.darkerChannel, 0.8)}, ${varAlpha(theme.vars.palette.primary.darkerChannel, 0.8)}`,
-          imgUrl: coverUrl ? `${imgUrl}/users/${coverUrl}` : `${imgUrl}/users/${avatarUrl}`,
+          imgUrl: coverUrl,
         }),
         height: 1,
         color: 'common.white',
@@ -41,7 +37,7 @@ export function ProfileCover({ name, avatarUrl, role, coverUrl }: AddArtistCompo
       >
         <Avatar
           alt={name}
-          src={`${imgUrl}/users/${avatarUrl}`}
+          src={avatarUrl}
           sx={{
             mx: 'auto',
             width: { xs: 64, md: 128 },

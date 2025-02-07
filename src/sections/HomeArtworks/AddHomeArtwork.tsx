@@ -36,6 +36,8 @@ type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
 const NewProductSchema = zod.object({
   artworksTitle: zod.string().min(1, { message: 'Artwork Section Name is required!' }),
+  type: zod.string().min(1, { message: 'Type is required!' }),
+  text: zod.string().optional(),
   artworks: zod.any(),
 });
 
@@ -51,6 +53,8 @@ export function AddHomeArtwork() {
   const defaultValues = useMemo(
     () => ({
       artworksTitle: data?.artworksTitle || '',
+      type: data?.type || '',
+      text: data?.text || '',
       artworks: data?.artworks || [],
     }),
     [data]
@@ -71,6 +75,8 @@ export function AddHomeArtwork() {
     if (id && data) {
       reset({
         artworksTitle: data?.artworksTitle || '',
+        type: data?.type || '',
+        text: data?.text || '',
         artworks: data.artworks
           ? data?.artworks?.map((item) => {
               return {
@@ -104,6 +110,11 @@ export function AddHomeArtwork() {
     return fullName.trim();
   };
 
+  const artType = [
+    { value: 'Home-Page', label: 'Home Page' },
+    { value: 'Main-Page', label: 'Main Page' },
+  ];
+
   if (id && isLoading) return <LoadingScreen />;
 
   const renderDetails = (
@@ -116,6 +127,10 @@ export function AddHomeArtwork() {
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(1, 1fr)' }}
         >
           <Field.Text required name="artworksTitle" label="Artwork Section Title" />
+          <Field.SingelSelect required name="type" label="Select Type" options={artType} />
+          {methods.watch('type') === 'Main-Page' && (
+            <Field.Text required name="text" label="Text" />
+          )}
           <div className={`relative ${search ? 'h-[49vh]' : ''}`}>
             <Field.Text
               name="artSearch"

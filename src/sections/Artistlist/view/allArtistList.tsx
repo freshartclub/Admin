@@ -110,33 +110,15 @@ export function AllArtist() {
   });
 
   const profileStatus = [
-    {
-      value: 'All',
-      label: 'All',
-    },
-    {
-      value: 'under-review',
-      label: 'Under Review',
-    },
+    { value: 'All', label: 'All' },
+    { value: 'under-review', label: 'Under Review' },
   ];
 
   const dropDown = [
-    {
-      value: 'All',
-      label: 'All',
-    },
-    {
-      value: 1,
-      label: 'Less than 1 Week',
-    },
-    {
-      value: 2,
-      label: 'Btw 1 and 2 Week',
-    },
-    {
-      value: 3,
-      label: 'More than 2 Week',
-    },
+    { value: 'All', label: 'All' },
+    { value: 1, label: 'Less than 1 Week' },
+    { value: 2, label: 'Btw 1 and 2 Week' },
+    { value: 3, label: 'More than 2 Week' },
   ];
 
   return (

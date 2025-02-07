@@ -61,7 +61,6 @@ export const CreateExistingArtistFormSchema = zod.object({
   existingAvatar: schemaHelper.file({
     message: { required_error: 'Avatar is required!', required: false },
   }),
-  // existingId: zod.string().min(1, { message: 'Id is required!' }),
   existingName: zod.string().min(1, { message: 'Name is required!' }),
   existingArtistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
   existingArtistSurname2: zod.string(),
@@ -327,10 +326,7 @@ export function CreateArtistForm() {
                             }}
                           >
                             <Stack spacing={2} direction="row" alignItems="center">
-                              <Avatar
-                                alt={i?.artistName}
-                                src={`${i?.url}/users/${i?.profile?.mainImage}`}
-                              />
+                              <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
 
                               <ListItemText
                                 disableTypography

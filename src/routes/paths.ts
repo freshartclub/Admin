@@ -151,9 +151,8 @@ export const paths = {
     },
     user: {
       Root: `${ROOTS.DASHBOARD}/user`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`,
       list: `${ROOTS.DASHBOARD}/user/list`,
-      account: `${ROOTS.DASHBOARD}/user/account`,
+      profile: (id: string) => `${ROOTS.DASHBOARD}/user/profile/${id}`,
     },
     circle: {
       root: `${ROOTS.DASHBOARD}/circle`,

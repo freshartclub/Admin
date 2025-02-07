@@ -96,7 +96,7 @@ export function ArtworkDetailView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: preview ? 'Artwork Preview' : 'Artwork Details' },
-          { name: '#' + data?.artworkId },
+          { name: '#' + artData?.artworkId },
         ]}
         action={
           artData && artData?.status === 'published' ? (
@@ -213,6 +213,7 @@ export function ArtworkDetailView() {
             <DiscoverContent
               data={data}
               preview={preview}
+              artworkId={artData?.artworkId}
               name1={artData?.owner?.artistName}
               name2={artData?.owner?.artistSurname1}
               name3={artData?.owner?.artistSurname2}

@@ -405,7 +405,7 @@ export function ArtistRequest({ row, url }: Props) {
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row?.state?.length > 15 ? `${row?.state?.slice(0, 15)}...` : row?.state}
+          {row?.state?.length > 20 ? `${row?.state?.slice(0, 20)}...` : row?.state}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -515,7 +515,7 @@ export function ArtistRequest({ row, url }: Props) {
               <MenuItem
                 onClick={() => {
                   popover.onClose();
-                  setUnRejectPopUp(true);
+                  setUnBanPopUp(true);
                 }}
               >
                 <Iconify icon="jam:refresh-reverse" />

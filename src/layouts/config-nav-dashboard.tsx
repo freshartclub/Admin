@@ -193,14 +193,9 @@ export const navData = [
         ],
       },
       {
-        title: 'User',
-        path: paths.dashboard.user.Root,
+        title: 'All User',
+        path: paths.dashboard.user.list,
         icon: ICONS.user,
-        children: [
-          { title: 'Profile', path: paths.dashboard.user.profile },
-          { title: 'All User', path: paths.dashboard.user.list },
-          { title: 'Account', path: paths.dashboard.user.account },
-        ],
       },
       {
         title: 'Circle Managemant',

@@ -8,7 +8,7 @@ import Header from './comman/Header';
 import P from './comman/P';
 import usePublishArtworkMutation from './http/usePublishArtworkMutation';
 
-const DiscoverContent = ({ data, preview, name1, name2, name3, status }) => {
+const DiscoverContent = ({ data, preview, artworkId, name1, name2, name3, status }) => {
   const { mutate, isPending } = usePublishArtworkMutation(data?._id);
 
   const name = (name1, name2, name3) => {
@@ -87,7 +87,7 @@ const DiscoverContent = ({ data, preview, name1, name2, name3, status }) => {
           Artwork ID :
         </Header>
         <P variant={{ size: 'base', weight: 'normal' }} className="text-[14px] text-[#999999]">
-          {data?.artworkId}
+          {artworkId}
         </P>
       </div>
       <div className="flex gap-1 lg:mt-2 mt-1">

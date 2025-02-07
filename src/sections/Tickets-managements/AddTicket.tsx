@@ -21,11 +21,11 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Field, Form, schemaHelper } from 'src/components/hook-form';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { z as zod } from 'zod';
+import { useGetUserByIdMutation } from '../Artistlist/http/userGetUserByIdMutation';
 import { RenderAllPicklists } from '../Picklists/RenderAllPicklist';
 import useAddTicketMutation from './http/useAddTicketMutation';
-import { useGetUesrByQueryInput } from './http/useGetUserMutation';
-import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ export function AddTicket() {
   const values = watch();
 
   const debounceUserInput = useDebounce(search, 800);
-  const { data: artistData, isLoading: artistLoading } = useGetUesrByQueryInput(debounceUserInput);
+  const { data: artistData, isLoading: artistLoading } = useGetUserByIdMutation(debounceUserInput);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -182,7 +182,7 @@ export function AddTicket() {
           }}
         />
         {search !== '' && (
-          <div className="absolute top-20 w-[95.5%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
+          <div className="absolute top-[9rem] w-[95.5%] rounded-lg z-10 h-[30vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto ">
             <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {artistLoading ? (
                 <TableCell>
@@ -207,7 +207,7 @@ export function AddTicket() {
                         disableTypography
                         primary={
                           <Typography variant="body2" noWrap>
-                            {name(i)} - {i?.userId}
+                            {name(i)} ({i?.userId})
                           </Typography>
                         }
                         secondary={

@@ -264,7 +264,7 @@ export function AllArtistList({ row, url }: Props) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.state}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}> {row?.state?.length > 20 ? `${row?.state?.slice(0, 20)}...` : row?.state}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
 
