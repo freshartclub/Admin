@@ -63,6 +63,7 @@ export const ARTIST_ENDPOINTS = {
   getAllKB: `${ADMIN_BASE_URL}/get-all-kb`,
   getKBById: `${ADMIN_BASE_URL}/get-kb-by-id`,
   getUserList: `${ADMIN_BASE_URL}/get-all-users`,
+  getUserOnSearch: `${ADMIN_BASE_URL}/get-user-on-search`,
   getUser: `${ADMIN_BASE_URL}/get-user`,
   getNotification: `${ADMIN_BASE_URL}/get-notification-history`,
   validateArtwork: `${ADMIN_BASE_URL}/validate-artwork`,

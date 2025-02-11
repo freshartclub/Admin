@@ -1,5 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Avatar, Box, Card, CardHeader, Chip, CircularProgress, Divider, IconButton, Link, ListItemText, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Card,
+  CardHeader,
+  Chip,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Link,
+  ListItemText,
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -16,17 +31,19 @@ import { z as zod } from 'zod';
 import { useGetAllUser } from '../user/http/useGetAllUser';
 import useAddCircle from './http/useAddCircle';
 import { useGetCircleById } from './http/useGetCircleById';
+import { useGetUserOnSearch } from './http/useGetUserOnSearch';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
 export const NewPostSchema = zod.object({
   title: zod.string().min(1, { message: 'Title is required!' }),
   description: zod.string().min(1, { message: 'Description is required!' }),
+  foradmin: zod.boolean(),
   content: schemaHelper.editor({ message: { required_error: 'Content is required!' } }),
   backImage: schemaHelper.file({ message: { required_error: 'Cover Image is required!' } }),
   mainImage: schemaHelper.file({ message: { required_error: 'Main Image is required!' } }),
   categories: zod.string().array().min(2, { message: 'Must have at least 2 Categories!' }),
-  managers: zod.string().array().min(1, { message: 'Must assign at least 1 Manager!' }),
+  managers: zod.string().array().optional(),
   managerInfo: zod.any(),
   status: zod.string().min(1, { message: 'Status is required!' }),
 });
@@ -52,6 +69,7 @@ const AddCircle = () => {
       title: data?.title || '',
       description: data?.description || '',
       content: data?.content || '',
+      foradmin: data?.foradmin || false,
       backImage: data?.coverImage || null,
       mainImage: data?.mainImage || null,
       categories: data?.categories || [],
@@ -67,7 +85,7 @@ const AddCircle = () => {
   });
 
   const debounceArtistId = useDebounce(search, 800);
-  const { data: artistData, isLoading: artistLoading } = useGetAllUser(debounceArtistId);
+  const { data: artistData, isLoading: artistLoading } = useGetUserOnSearch(debounceArtistId);
 
   const { reset, watch, handleSubmit } = methods;
   const values = watch();
@@ -110,10 +128,18 @@ const AddCircle = () => {
         toast.error('Main Image is required');
         return;
       }
+
+      if (data.foradmin == false) {
+        if (data.managers.length == 0) {
+          return toast.error('Managers is required');
+        }
+      }
+
       const formData = new FormData();
 
       formData.append('title', data.title);
       formData.append('description', data.description);
+      formData.append('foradmin', data.foradmin);
       formData.append('content', data.content);
       formData.append('backImage', data.backImage);
       formData.append('mainImage', data.mainImage);
@@ -128,6 +154,10 @@ const AddCircle = () => {
   });
 
   const statusOptions = ['Draft', 'Published'];
+  const foradminOptions = [
+    { label: 'Yes', value: true },
+    { label: 'No', value: false },
+  ];
 
   const renderDetails = (
     <Card>
@@ -135,12 +165,13 @@ const AddCircle = () => {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="title" label="Circle Title" />
-        <Field.Text name="description" label="Circle Description" multiline rows={3} />
+        <Field.Text name="title" required label="Circle Title" />
+        <Field.SingelSelect name="foradmin" label="For Admin" required options={foradminOptions} />
+        <Field.Text name="description" required label="Circle Description" multiline rows={3} />
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Content</Typography>
-          <Field.Editor name="content" sx={{ maxHeight: 480 }} />
+          <Field.Editor name="content" required sx={{ maxHeight: 480 }} />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -150,7 +181,7 @@ const AddCircle = () => {
 
         <Field.Autocomplete
           name="categories"
-          label="Categories"
+          label="Categories *"
           placeholder="+ Categories"
           multiple
           freeSolo
@@ -175,132 +206,134 @@ const AddCircle = () => {
             ))
           }
         />
-        <div className="relative">
-          <Field.Text
-            name="artistSearch"
-            label="Search Artist"
-            placeholder="Search by Artist ID/Name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {search && (
-            <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[40vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto">
-              <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {artistLoading ? (
-                  <TableCell>
-                    <CircularProgress size={30} />
-                  </TableCell>
-                ) : artistData && artistData?.length > 0 ? (
-                  artistData.map((i, j) => (
-                    <TableCell
-                      className={`${methods.getValues('managers').includes(i?._id) && 'bg-zinc-300'}`}
+        {methods.watch('foradmin') === false ? (
+          <>
+            <div className="relative">
+              <Field.Text
+                name="artistSearch"
+                label="Search Artist"
+                placeholder="Search by User ID/Name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <div className="absolute top-16 w-[100%] rounded-lg z-10 h-[40vh] bottom-[14vh] border-[1px] border-zinc-700 backdrop-blur-sm overflow-auto">
+                  <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {artistLoading ? (
+                      <TableCell>
+                        <CircularProgress size={30} />
+                      </TableCell>
+                    ) : artistData && artistData?.length > 0 ? (
+                      artistData.map((i, j) => (
+                        <TableCell
+                          className={`${methods.getValues('managers').includes(i?._id) && 'bg-zinc-300'}`}
+                          onClick={() => {
+                            const getManagers = methods.getValues('managers');
+                            const getManagersInfo = methods.getValues('managerInfo');
+
+                            if (getManagers?.includes(i?._id)) {
+                              methods.setValue(
+                                'managers',
+                                getManagers.filter((id) => id !== i?._id)
+                              );
+                              methods.setValue(
+                                'managerInfo',
+                                getManagersInfo.filter((a) => a?._id !== i?._id)
+                              );
+                            } else {
+                              methods.setValue('managers', [...getManagers, i?._id]);
+                              methods.setValue('managerInfo', [
+                                ...getManagersInfo,
+                                {
+                                  _id: i?._id,
+                                  userId: i?.userId,
+                                  name: name(i),
+                                  img: `${imgUrl}/users/${i?.mainImage}`,
+                                },
+                              ]);
+                            }
+                            setSearch('');
+                          }}
+                          key={j}
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            },
+                          }}
+                        >
+                          <Stack spacing={2} direction="row" alignItems="center">
+                            <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
+
+                            <ListItemText
+                              disableTypography
+                              primary={
+                                <Typography variant="body2" noWrap>
+                                  {name(i)} - {i?.userId}
+                                </Typography>
+                              }
+                              secondary={<Link sx={{ color: 'text.disabled' }}>{i?.email}</Link>}
+                            />
+                          </Stack>
+                        </TableCell>
+                      ))
+                    ) : (
+                      <TableCell>No Data Available</TableCell>
+                    )}
+                  </TableRow>
+                </div>
+              )}
+            </div>
+            <Field.Autocomplete
+              name="managerInfo"
+              label="Assign Managers"
+              placeholder="+ Assign Managers"
+              multiple
+              options={[]}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <div
+                    className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
+                    key={option?._id}
+                  >
+                    <Avatar sx={{ width: 24, height: 24 }} alt={option?._id} src={option?.img} />
+                    <Stack sx={{ fontSize: '12px', gap: 2 }}>
+                      <Link color="inherit" sx={{ cursor: 'pointer', lineHeight: 0 }}>
+                        {option?.name}
+                      </Link>
+                      <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
+                        {option?.userId}
+                      </Box>
+                    </Stack>
+                    <IconButton
+                      size="small"
                       onClick={() => {
                         const getManagers = methods.getValues('managers');
                         const getManagersInfo = methods.getValues('managerInfo');
-
-                        if (getManagers?.includes(i?._id)) {
-                          methods.setValue(
-                            'managers',
-                            getManagers.filter((id) => id !== i?._id)
-                          );
-                          methods.setValue(
-                            'managerInfo',
-                            getManagersInfo.filter((a) => a?._id !== i?._id)
-                          );
-                        } else {
-                          methods.setValue('managers', [...getManagers, i?._id]);
-                          methods.setValue('managerInfo', [
-                            ...getManagersInfo,
-                            {
-                              _id: i?._id,
-                              userId: i?.userId,
-                              name: name(i),
-                              img: `${imgUrl}/users/${i?.mainImage}`,
-                            },
-                          ]);
-                        }
-                        setSearch('');
-                      }}
-                      key={j}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                        },
+                        methods.setValue(
+                          'managers',
+                          getManagers.filter((id) => id !== option?._id)
+                        );
+                        methods.setValue(
+                          'managerInfo',
+                          getManagersInfo.filter((a) => a?._id !== option?._id)
+                        );
                       }}
                     >
-                      <Stack spacing={2} direction="row" alignItems="center">
-                        <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.mainImage}`} />
-
-                        <ListItemText
-                          disableTypography
-                          primary={
-                            <Typography variant="body2" noWrap>
-                              {name(i)} - {i?.userId}
-                            </Typography>
-                          }
-                          secondary={<Link sx={{ color: 'text.disabled' }}>{i?.email}</Link>}
-                        />
-                      </Stack>
-                    </TableCell>
-                  ))
-                ) : (
-                  <TableCell>No Data Available</TableCell>
-                )}
-              </TableRow>
-            </div>
-          )}
-        </div>
-        <Field.Autocomplete
-          name="managerInfo"
-          label="Assign Managers"
-          placeholder="+ Assign Managers"
-          multiple
-          freeSolo
-          disableCloseOnSelect
-          options={[]}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option) => (
-            <li {...props} key={option}>
-              {option}
-            </li>
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => (
-              <div
-                className="flex items-center gap-2 bg-slate-200 py-1 px-2 pl-[4px] rounded-full"
-                key={option?._id}
-              >
-                <Avatar sx={{ width: 24, height: 24 }} alt={option?._id} src={option?.img} />
-                <Stack sx={{ fontSize: '12px', gap: 2 }}>
-                  <Link color="inherit" sx={{ cursor: 'pointer', lineHeight: 0 }}>
-                    {option?.name}
-                  </Link>
-                  <Box component="span" sx={{ color: 'text.disabled', lineHeight: 0 }}>
-                    {option?.userId}
-                  </Box>
-                </Stack>
-                <IconButton
-                  size="small"
-                  onClick={() => {
-                    const getManagers = methods.getValues('managers');
-                    const getManagersInfo = methods.getValues('managerInfo');
-                    methods.setValue(
-                      'managers',
-                      getManagers.filter((id) => id !== option?._id)
-                    );
-                    methods.setValue(
-                      'managerInfo',
-                      getManagersInfo.filter((a) => a?._id !== option?._id)
-                    );
-                  }}
-                >
-                  <Iconify icon="eva:close-fill" />
-                </IconButton>
-              </div>
-            ))
-          }
-        />
+                      <Iconify icon="eva:close-fill" />
+                    </IconButton>
+                  </div>
+                ))
+              }
+            />
+          </>
+        ) : null}
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Cover Image</Typography>
