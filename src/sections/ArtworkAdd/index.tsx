@@ -707,6 +707,8 @@ export function ArtworkAdd() {
     },
   ];
 
+  console.log(data?.artworkCreationYear);
+
   const addSeriesDialogBox = (
     <Dialog
       open={dialogOpen}
@@ -904,19 +906,35 @@ export function ArtworkAdd() {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <DatePicker
-            name="artworkCreationYear"
-            label="Artwork Year *"
-            // value={dayjs(data?.artworkCreationYear) || currentYear}
-            maxDate={currentYear}
-            defaultValue={dayjs(data?.artworkCreationYear)}
-            views={['year']}
-            openTo="year"
-            onChange={(e) => {
-              const selectedYear = (e as any).$y.toString();
-              setYear(selectedYear);
-            }}
-          />
+          {id ? (
+            <DatePicker
+              name="artworkCreationYear"
+              label="Artwork Year *"
+              value={dayjs(data?.artworkCreationYear) || currentYear}
+              maxDate={currentYear}
+              // defaultValue={dayjs(data?.artworkCreationYear)}
+              views={['year']}
+              openTo="year"
+              onChange={(e) => {
+                const selectedYear = (e as any).$y.toString();
+                setYear(selectedYear);
+              }}
+            />
+          ) : (
+            <DatePicker
+              name="artworkCreationYear"
+              label="Artwork Year *"
+              // value={dayjs(data?.artworkCreationYear) || currentYear}
+              maxDate={currentYear}
+              defaultValue={dayjs(data?.artworkCreationYear)}
+              views={['year']}
+              openTo="year"
+              onChange={(e) => {
+                const selectedYear = (e as any).$y.toString();
+                setYear(selectedYear);
+              }}
+            />
+          )}
 
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
             <Field.Autocomplete
