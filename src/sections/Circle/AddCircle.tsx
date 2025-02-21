@@ -28,7 +28,6 @@ import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
 import { imgUrl } from 'src/utils/BaseUrls';
 import { z as zod } from 'zod';
-import { useGetAllUser } from '../user/http/useGetAllUser';
 import useAddCircle from './http/useAddCircle';
 import { useGetCircleById } from './http/useGetCircleById';
 import { useGetUserOnSearch } from './http/useGetUserOnSearch';
@@ -43,6 +42,7 @@ export const NewPostSchema = zod.object({
   backImage: schemaHelper.file({ message: { required_error: 'Cover Image is required!' } }),
   mainImage: schemaHelper.file({ message: { required_error: 'Main Image is required!' } }),
   categories: zod.string().array().min(2, { message: 'Must have at least 2 Categories!' }),
+  type: zod.string().min(1, { message: 'Visibility is Required' }),
   managers: zod.string().array().optional(),
   managerInfo: zod.any(),
   status: zod.string().min(1, { message: 'Status is required!' }),
@@ -72,6 +72,7 @@ const AddCircle = () => {
       foradmin: data?.foradmin || false,
       backImage: data?.coverImage || null,
       mainImage: data?.mainImage || null,
+      type: data?.type || 'Public',
       categories: data?.categories || [],
       managers: data?.managers || [],
       managerInfo: data?.managers || [],
@@ -141,6 +142,7 @@ const AddCircle = () => {
       formData.append('description', data.description);
       formData.append('foradmin', data.foradmin);
       formData.append('content', data.content);
+      formData.append('type', data.type);
       formData.append('backImage', data.backImage);
       formData.append('mainImage', data.mainImage);
       formData.append('categories', JSON.stringify(data.categories));
@@ -167,6 +169,12 @@ const AddCircle = () => {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text name="title" required label="Circle Title" />
         <Field.SingelSelect name="foradmin" label="For Admin" required options={foradminOptions} />
+        <Field.SingelSelect
+          name="type"
+          label="Visiblity"
+          required
+          options={['Private', 'Public'].map((item, i) => ({ value: item, label: item }))}
+        />
         <Field.Text name="description" required label="Circle Description" multiline rows={3} />
 
         <Stack spacing={1.5}>
