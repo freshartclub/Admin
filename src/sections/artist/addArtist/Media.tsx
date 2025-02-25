@@ -73,6 +73,8 @@ export function Media({
       );
   }
 
+  console.log(imgUrl);
+
   const defaultValues = useMemo(
     () => ({
       profileImage: artistFormData?.profileImage
@@ -97,6 +99,7 @@ export function Media({
     defaultValues,
   });
 
+  console.log(formProps.getValues('mainVideo'));
   const { setValue, trigger, handleSubmit } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
@@ -263,7 +266,7 @@ export function Media({
                     <source src={`${formProps.getValues('mainVideo')}`} type="video/mp4" />
                   ) : (
                     <source
-                      src={imgUrl.createObjectURL(formProps.getValues('mainVideo'))}
+                      src={URL.createObjectURL(formProps.getValues('mainVideo'))}
                       type="video/mp4"
                     />
                   )}
