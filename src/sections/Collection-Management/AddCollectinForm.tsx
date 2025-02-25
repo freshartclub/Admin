@@ -149,6 +149,7 @@ export function AddCollectionForm() {
     handleSubmit,
     formState: { errors },
   } = methods;
+
   const values = watch();
 
   useEffect(() => {
@@ -157,15 +158,27 @@ export function AddCollectionForm() {
         collectionName: data?.collectionName || '',
         collectionDesc: data?.collectionDesc || '',
         artworkList:
-          data?.artworkList.map((item) => ({
-            artwork: item?.artworkId?.artworkName,
-            artworkDesc: item.artworkDesc,
-            pCode: item.artworkId?.artworkId,
-            artworkId: item.artworkId?._id,
-            artistName: name(item.artworkId?.owner),
-            artworkImg: `${imgUrl}/users/${item.artworkId?.media?.mainImage}` || null,
-            isBackend: true,
-          })) || [],
+          data?.artworkList.length > 0
+            ? data?.artworkList.map((item) => ({
+                artwork: item?.artworkId?.artworkName,
+                artworkDesc: item.artworkDesc,
+                pCode: item.artworkId?.artworkId,
+                artworkId: item.artworkId?._id,
+                artistName: name(item.artworkId?.owner),
+                artworkImg: `${imgUrl}/users/${item.artworkId?.media?.mainImage}` || null,
+                isBackend: true,
+              }))
+            : [
+                {
+                  artwork: '',
+                  artworkDesc: '',
+                  pCode: '',
+                  artworkId: '',
+                  artistName: '',
+                  artworkImg: null,
+                  isBackend: false,
+                },
+              ],
         expertDesc: data?.expertDetails?.expertDesc || '',
         expertImg: `${imgUrl}/users/${data?.expertDetails?.expertImg}` || null,
         createdBy: data?.expertDetails?.createdBy || '',
