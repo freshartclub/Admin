@@ -10,7 +10,7 @@ async function fetchData(id) {
 
 export const useGetCircleById = (id) => {
   return useQuery({
-    queryKey: ['circle', id],
+    queryKey: [CIRCLE_ENDPOINTS.getCircle, id],
     queryFn: () => fetchData(id),
   });
 };

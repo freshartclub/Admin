@@ -31,6 +31,8 @@ import { z as zod } from 'zod';
 import useAddCircle from './http/useAddCircle';
 import { useGetCircleById } from './http/useGetCircleById';
 import { useGetUserOnSearch } from './http/useGetUserOnSearch';
+import { useGetMemeberList } from './http/useGetMemberList';
+import { fDate } from 'src/utils/format-time';
 
 type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
@@ -63,6 +65,9 @@ const AddCircle = () => {
   };
 
   const { data, isLoading } = useGetCircleById(id);
+  const { data: memberData, isLoading: memberLoading } = useGetMemeberList(id);
+
+  console.log(memberData);
 
   const defaultValues = useMemo(
     () => ({
@@ -219,7 +224,7 @@ const AddCircle = () => {
             <div className="relative">
               <Field.Text
                 name="artistSearch"
-                label="Search Artist"
+                label="Add artist/users to this circle"
                 placeholder="Search by User ID/Name"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -294,8 +299,8 @@ const AddCircle = () => {
             </div>
             <Field.Autocomplete
               name="managerInfo"
-              label="Assign Managers"
-              placeholder="+ Assign Managers"
+              label="Managers"
+              placeholder="Managers"
               multiple
               options={[]}
               getOptionLabel={(option) => option}
@@ -355,6 +360,55 @@ const AddCircle = () => {
             return { value: i, label: i };
           })}
         />
+        {id ? (
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle2">Member List ({memberData?.length})</Typography>
+            <TableRow sx={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {memberLoading ? (
+                <TableCell>
+                  <CircularProgress size={30} />
+                </TableCell>
+              ) : memberData && memberData?.length > 0 ? (
+                memberData.map((i, j) => (
+                  <TableCell
+                    key={j}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    <Stack spacing={2} direction="row" alignItems="center">
+                      <Avatar alt={i?.artistName} src={`${imgUrl}/users/${i?.user?.img}`} />
+
+                      <ListItemText
+                        disableTypography
+                        primary={
+                          <Typography variant="body2" noWrap>
+                            {name(i?.user)} - {i?.user?.userId}
+                          </Typography>
+                        }
+                        secondary={
+                          <>
+                            <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                              {i?.user?.email}
+                            </Link>
+                          </>
+                        }
+                      />
+                      <Link noWrap variant="body2" sx={{ color: 'text.disabled' }}>
+                        Followed On - {fDate(i?.createdAt)}
+                      </Link>
+                    </Stack>
+                  </TableCell>
+                ))
+              ) : (
+                <TableCell>No Members Available</TableCell>
+              )}
+            </TableRow>
+          </Stack>
+        ) : null}
       </Stack>
     </Card>
   );
@@ -375,7 +429,7 @@ const AddCircle = () => {
           <div className="flex justify-end gap-2">
             <span
               onClick={() => navigate(paths.dashboard.category.discipline.list)}
-              className="px-3 py-2 text-white bg-black rounded-md cursor-pointer"
+              className="px-3 py-2 text-black border rounded-md cursor-pointer"
             >
               Cancel
             </span>

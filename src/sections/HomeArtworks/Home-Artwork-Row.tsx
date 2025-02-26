@@ -66,7 +66,7 @@ export function HomeArtworkRow({ row, type, _id }: Props) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content="Are you sure want to delete this artwork from this section. This action cannot be reversed and artwork will removed permanently?"
+        content="Are you sure want to delete this artwork from this section?"
         action={
           <Button variant="contained" color="error" onClick={deleteStyle}>
             {isPending ? 'Deleting...' : 'Delete'}

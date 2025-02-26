@@ -1,6 +1,6 @@
 import type { IOrderItem } from 'src/types/order';
 
-import { InputAdornment, Stack, TextField } from '@mui/material';
+import { FormControl, InputAdornment, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tab from '@mui/material/Tab';
@@ -26,12 +26,17 @@ import { varAlpha } from 'src/theme/styles';
 import { imgUrl } from 'src/utils/BaseUrls';
 import { CircleCard } from './CircleCard';
 import { useGetAllCircles } from './http/useGetAllCircles';
+import { InputLabel } from '@mui/material';
+import { Select } from '@mui/material';
+import { OutlinedInput } from '@mui/material';
+import { MenuItem } from '@mui/material';
 
 export function CircleList() {
   const [search, setSearch] = useState<string>('');
+  const [sort, setSortType] = useState<string>('none');
 
   const debounceSearch = useDebounce(search, 800);
-  const { data, isLoading } = useGetAllCircles(debounceSearch);
+  const { data, isLoading } = useGetAllCircles({ search: debounceSearch, sort });
 
   const [selectedTab, setSelectedTab] = useState('All');
   const table = useTable();
@@ -54,6 +59,29 @@ export function CircleList() {
     comparator: getComparator(table.order, table.orderBy),
   });
 
+  const sortType = [
+    {
+      value: 'none',
+      label: 'No Sort',
+    },
+    {
+      value: 'post',
+      label: 'Most Post',
+    },
+    {
+      value: 'name',
+      label: 'Circle Title',
+    },
+    {
+      value: 'follower',
+      label: 'Most Follower',
+    },
+    {
+      value: 'view',
+      label: 'Most Viewed',
+    },
+  ];
+
   return (
     <>
       <CustomBreadcrumbs
@@ -71,7 +99,7 @@ export function CircleList() {
         <TextField
           fullWidth
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search By Circle Name"
+          placeholder="Search By Circle Name/Categories"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -80,8 +108,25 @@ export function CircleList() {
             ),
           }}
         />
-        <RouterLink className='md:w-[9rem] w-full' href={`${paths.dashboard.circle.add}`}>
-          <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 w-full md:w-[9rem]">
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+          <InputLabel htmlFor="Status">Status</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Status" />}
+            inputProps={{ id: 'Status' }}
+            onChange={(e) => setSortType(e.target.value)}
+            value={sort}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {sortType.map((option, i) => (
+              <MenuItem key={i} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <RouterLink className="md:w-[9rem] w-full" href={`${paths.dashboard.circle.add}`}>
+          <span className="bg-black justify-center text-white rounded-md flex items-center px-2 py-3 gap-2 w-full text-nowrap">
             <Iconify icon="mingcute:add-line" /> Add Circle
           </span>
         </RouterLink>

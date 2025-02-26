@@ -121,6 +121,8 @@ export const CIRCLE_ENDPOINTS = {
   addCircle: `${CIRCLE_BASE_URL}/add-circle`,
   getCircle: `${CIRCLE_BASE_URL}/get-circle`,
   allCircles: `${CIRCLE_BASE_URL}/get-all-circles`,
+  getMembers: `${CIRCLE_BASE_URL}/get-all-follower-circles`,
+  deleteCircle: `${CIRCLE_BASE_URL}/delete-circle`,
 };
 
 export const GENERAL_ENDPOINTS = {

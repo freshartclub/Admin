@@ -103,7 +103,7 @@ export const navData = [
         icon: ICONS.folder,
         children: [
           {
-            title: 'Add File',
+            title: 'Translation File',
             path: paths.dashboard.customise.file.add,
           },
           {
