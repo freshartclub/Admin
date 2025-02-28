@@ -170,6 +170,7 @@ export function ArtworkAdd() {
     'Colors',
     'Artwork Available To',
     'Artwork Discount Options',
+    'Artwork Orientation',
   ]);
 
   const picklistMap = picklist.reduce((acc, item: any) => {
@@ -184,6 +185,7 @@ export function ArtworkAdd() {
   const colors = picklistMap['Colors'];
   const availableTo = picklistMap['Artwork Available To'];
   const discountAcceptation = picklistMap['Artwork Discount Options'];
+  const orientation = picklistMap['Artwork Orientation'];
 
   const PRODUCT_CATAGORYONE_OPTIONS =
     disciplineData && disciplineData.length > 0
@@ -346,10 +348,10 @@ export function ArtworkAdd() {
       artworkTheme: data?.additionalInfo?.artworkTheme || '',
       artworkOrientation: data?.additionalInfo?.artworkOrientation || '',
       material: data?.additionalInfo?.material || '',
-      weight: String(data?.additionalInfo?.weight) || '',
-      lenght: String(data?.additionalInfo?.length) || '',
-      height: String(data?.additionalInfo?.height) || '',
-      width: String(data?.additionalInfo?.width) || '',
+      weight: data?.additionalInfo?.weight ? String(data?.additionalInfo?.weight) : '',
+      lenght: data?.additionalInfo?.length ? String(data?.additionalInfo?.length) : '',
+      height: data?.additionalInfo?.height ? String(data?.additionalInfo?.height) : '',
+      width: data?.additionalInfo?.width ? String(data?.additionalInfo?.width) : '',
       hangingAvailable: data?.additionalInfo?.hangingAvailable || '',
       hangingDescription: data?.additionalInfo?.hangingDescription || ' ',
       framed: data?.additionalInfo?.framed || '',
@@ -365,7 +367,7 @@ export function ArtworkAdd() {
       purchaseType: data?.commercialization?.purchaseType || '',
       purchaseOption: data?.commercialization?.purchaseOption || '',
       activeTab: data?.commercialization?.activeTab || '',
-      basePrice: String(data?.pricing?.basePrice) || '',
+      basePrice: data?.pricing?.basePrice ? String(data?.pricing?.basePrice) : '',
       currency: data?.pricing?.currency || 'EUR (Euro)',
       dpersentage: data?.pricing?.dpersentage || 0,
       vatAmount: data?.pricing?.vatAmount || 0,
@@ -707,8 +709,6 @@ export function ArtworkAdd() {
     },
   ];
 
-  console.log(data?.artworkCreationYear);
-
   const addSeriesDialogBox = (
     <Dialog
       open={dialogOpen}
@@ -798,18 +798,20 @@ export function ArtworkAdd() {
         title={
           <>
             General Informations{' '}
-            <Label
-              variant="soft"
-              color={
-                (artData?.status === 'published' && 'success') ||
-                (artData?.status === 'modified' && 'secondary') ||
-                (artData?.status === 'pending' && 'warning') ||
-                (artData?.status === 'rejected' && 'error') ||
-                'default'
-              }
-            >
-              {artData?.status}
-            </Label>
+            {id ? (
+              <Label
+                variant="soft"
+                color={
+                  (artData?.status === 'published' && 'success') ||
+                  (artData?.status === 'modified' && 'secondary') ||
+                  (artData?.status === 'pending' && 'warning') ||
+                  (artData?.status === 'rejected' && 'error') ||
+                  'default'
+                }
+              >
+                {artData?.status}
+              </Label>
+            ) : null}
           </>
         }
         sx={{ mb: 3 }}
@@ -1321,7 +1323,7 @@ export function ArtworkAdd() {
           required
           name="artworkOrientation"
           label="Artwork Orientation"
-          options={ARTWORK_ORIENTATION_OPTIONS}
+          options={orientation ? orientation : []}
         />
       </Stack>
     </Card>
@@ -1478,7 +1480,7 @@ export function ArtworkAdd() {
             required
             name="basePrice"
             label="Base Price"
-            value={methods.getValues('basePrice')}
+            value={String(methods.getValues('basePrice'))}
             placeholder="Base Price"
             InputLabelProps={{ shrink: true }}
             InputProps={{
@@ -1543,7 +1545,7 @@ export function ArtworkAdd() {
               name="basePrice"
               label="Base Price"
               required
-              value={methods.getValues('basePrice')}
+              value={String(methods.getValues('basePrice'))}
               placeholder="Base Price"
               InputLabelProps={{ shrink: true }}
               InputProps={{
