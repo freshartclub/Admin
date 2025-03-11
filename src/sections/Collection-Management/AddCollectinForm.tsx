@@ -533,7 +533,7 @@ export function AddCollectionForm() {
 
   const renderProperties = (
     <Card sx={{ mb: 2 }}>
-      <CardHeader title="Upload File" sx={{ mb: 1 }} />
+      <CardHeader title="Collection Image" sx={{ mb: 1 }} />
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         {mainVi ? (
