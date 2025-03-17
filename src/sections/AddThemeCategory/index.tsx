@@ -20,12 +20,13 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
+type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 
-export const NewProductSchema = zod.object({
+const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Title is required!' }),
   discipline: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   isDeleted: zod.boolean(),
+  isMain: zod.boolean(),
 });
 
 // ----------------------------------------------------------------------
@@ -42,6 +43,7 @@ export function AddThemeCategory() {
       name: styleData?.name || '',
       discipline: (styleData?.discipline && styleData?.discipline.map((item) => item._id)) || [],
       isDeleted: styleData?.isDeleted || false,
+      isMain: styleData?.isMain || false,
     }),
     [styleData]
   );
@@ -58,6 +60,7 @@ export function AddThemeCategory() {
       reset({
         name: styleData?.themeName || '',
         isDeleted: styleData?.isDeleted || false,
+        isMain: styleData?.isMain || false,
         discipline: styleData?.discipline.map((item) => item._id) || [],
       });
     }
@@ -139,6 +142,16 @@ export function AddThemeCategory() {
             options={optionsIn}
             name="isDeleted"
             label="Status"
+          />
+          <Field.SingelSelect
+            required
+            sx={{ width: 1 }}
+            options={[
+              { label: 'Yes', value: true },
+              { label: 'No', value: false },
+            ]}
+            name="isMain"
+            label="Main Theme"
           />
         </Box>
       </Stack>

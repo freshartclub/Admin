@@ -25,6 +25,7 @@ export type NewProductSchemaType = zod.infer<typeof NewProductSchema>;
 export const NewProductSchema = zod.object({
   disciplineImage: schemaHelper.file({ required: false }).optional(),
   name: zod.string().min(1, { message: 'Title is required!' }),
+  isMain: zod.boolean(),
   description: zod.string().min(1, { message: 'Discription is required!' }),
   isDeleted: zod.boolean(),
 });
@@ -41,6 +42,7 @@ export function AddDisciline() {
   const defaultValues = useMemo(
     () => ({
       disciplineImage: data?.disciplineImage || null,
+      isMain: data?.isMain || false,
       name: data?.disciplineName || '',
       isDeleted: data?.isDeleted || false,
       description: data?.disciplineDescription || '',
@@ -61,6 +63,7 @@ export function AddDisciline() {
         disciplineImage: `${imgUrl}/users/${data?.disciplineImage}` || null,
         name: data?.disciplineName || '',
         isDeleted: data?.isDeleted || false,
+        isMain: data?.isMain || false,
         description: data?.disciplineDescription || '',
       });
     }
@@ -88,6 +91,7 @@ export function AddDisciline() {
       formData.append('spanishName', data.spanishName);
       formData.append('description', data.description);
       formData.append('isDeleted', data.isDeleted);
+      formData.append('isMain', data.isMain);
 
       mutate(formData);
     } catch (error) {
@@ -124,6 +128,16 @@ export function AddDisciline() {
           <div className="form flex gap-2 flex-col w-full">
             <Field.Text required name="name" label="Title" />
             <Field.Text required name="description" label="Description" multiline rows={3} />
+            <Field.SingelSelect
+              required
+              sx={{ width: 1 }}
+              options={[
+                { label: 'Yes', value: true },
+                { label: 'No', value: false },
+              ]}
+              name="isMain"
+              label="Main Discipline"
+            />
             <Field.SingelSelect
               helperText="Select if this discipline should be active or not"
               required
