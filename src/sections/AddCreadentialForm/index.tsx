@@ -27,6 +27,7 @@ export const NewUserSchema = zod.object({
   credentialName: zod.string().min(1, { message: 'Name is required!' }),
   credentialGroup: zod.string().min(1, { message: 'Group is required!' }),
   credentialPriority: zod.string().min(1, { message: 'Display Priority is required!' }),
+  isMain: zod.boolean(),
   isActive: zod.boolean(),
 });
 
@@ -44,6 +45,7 @@ export function AddCreadentialForm() {
     () => ({
       insigniaImage: data?.insigniaImage || null,
       isActive: data?.isActive || true,
+      isMain: data?.isMain || false,
       credentialName: data?.credentialName || '',
       credentialGroup: data?.credentialGroup || '',
       credentialPriority: data?.credentialPriority || '',
@@ -63,6 +65,7 @@ export function AddCreadentialForm() {
       reset({
         insigniaImage: `${imgUrl}/users/${data?.insigniaImage}` || null,
         isActive: data?.isActive,
+        isMain: data?.isMain,
         credentialName: data?.credentialName || '',
         credentialGroup: data?.credentialGroup || '',
         credentialPriority: data?.credentialPriority || '',
@@ -76,7 +79,9 @@ export function AddCreadentialForm() {
         toast.error('Image is required');
         return;
       }
+
       const formData = new FormData();
+
       if (typeof data.insigniaImage === 'string' && !data.insigniaImage.includes('https')) {
         formData.append('insigniaImage', data.insigniaImage);
       } else if (data.insigniaImage instanceof File) {
@@ -87,6 +92,7 @@ export function AddCreadentialForm() {
       formData.append('credentialName', data.credentialName);
       formData.append('credentialPriority', data.credentialPriority);
       formData.append('isActive', data.isActive);
+      formData.append('isMain', data.isMain);
 
       mutate(formData);
     } catch (error) {
@@ -157,6 +163,16 @@ export function AddCreadentialForm() {
                 options={picklist ? picklist : []}
               />
               <Field.Text required name="credentialPriority" label="Display Priority" />
+              <Field.SingelSelect
+                required
+                sx={{ width: 1 }}
+                options={[
+                  { label: 'Yes', value: true },
+                  { label: 'No', value: false },
+                ]}
+                name="isMain"
+                label="Main Insignia"
+              />
               <Field.SingelSelect
                 helperText="Select if this credential should be active or not"
                 required
