@@ -134,6 +134,7 @@ export const NewProductSchema = zod.object({
   existingImages: zod.any().array().optional(),
   existingVideos: zod.any().array().optional(),
   currency: zod.string().min(1, { message: 'Currency is required!' }),
+  exclusive: zod.boolean(),
   comingSoon: zod.boolean().optional(),
   packageHeight: zod.string().min(1, { message: 'Package Height is required!' }),
   packageLength: zod.string().min(1, { message: 'Package Lenght is required!' }),
@@ -333,7 +334,7 @@ export function ArtworkAdd() {
       artworkCreationYear: data?.artworkCreationYear || new Date().getFullYear().toString(),
       artworkSeries: data?.artworkSeries || '',
       productDescription: data?.productDescription || '',
-
+      exclusive: data?.exclusive || false,
       mainImage: data?.media?.mainImage ? `${imgUrl}/users/${data?.media?.mainImage}` : null,
       backImage: data?.media?.backImage ? `${imgUrl}/users/${data?.media?.backImage}` : null,
       inProcessImage: data?.media?.inProcessImage
@@ -1324,6 +1325,16 @@ export function ArtworkAdd() {
           name="artworkOrientation"
           label="Artwork Orientation"
           options={orientation ? orientation : []}
+        />
+        <Field.SingelSelect
+          required
+          sx={{ width: 1 }}
+          options={[
+            { label: 'Yes', value: true },
+            { label: 'No', value: false },
+          ]}
+          name="exclusive"
+          label="Exclusive Artwork"
         />
       </Stack>
     </Card>
