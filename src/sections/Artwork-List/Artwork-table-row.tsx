@@ -155,7 +155,9 @@ export function ArtworkTableRow({ row, url }: Props) {
               disableTypography
               primary={
                 <Typography variant="body2" noWrap>
-                  {row?.artworkName}
+                  {row?.artworkName.length > 17
+                    ? row?.artworkName.slice(0, 17) + '...'
+                    : row?.artworkName}
                 </Typography>
               }
               secondary={
@@ -245,9 +247,7 @@ export function ArtworkTableRow({ row, url }: Props) {
           </MenuItem>
           {row?.status === 'rejected' ? null : row?.status === 'draft' ? (
             <MenuItem
-              onClick={() =>
-                navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}`)
-              }
+              onClick={() => navigate(`${paths.dashboard.artwork.addArtwork}?id=${row?._id}`)}
             >
               <Iconify icon="material-symbols:edit" />
               Edit Artwork
