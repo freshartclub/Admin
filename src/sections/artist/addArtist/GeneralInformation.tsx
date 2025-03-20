@@ -19,11 +19,12 @@ import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
-export const NewProductSchema = zod.object({
+const NewProductSchema = zod.object({
   artistName: zod.string().min(1, { message: 'Artist Name is required!' }),
   artistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),
   artistSurname2: zod.string(),
   nickName: zod.string(),
+  dob: zod.string().min(1, { message: 'Date of Birth is required!' }),
   country: zod.string().min(1, { message: 'Country is required!' }),
   language: zod.string().min(1, { message: 'Langage is required' }),
   currency: zod.string().min(1, { message: 'Currency is required' }),
@@ -82,6 +83,7 @@ export function GeneralInformation({
       artistSurname1: artistFormData?.artistSurname1 || '',
       artistSurname2: artistFormData?.artistSurname2 || '',
       nickName: artistFormData?.nickName || '',
+      dob: artistFormData?.dob || '',
       country: artistFormData?.country || '',
       zipCode: artistFormData?.zipCode || '',
       city: artistFormData?.city || '',
@@ -112,8 +114,8 @@ export function GeneralInformation({
 
   const onSubmit = handleSubmit(async (data) => {
     await trigger(undefined, { shouldFocus: true });
-    
-    if(!searchResult){
+
+    if (!searchResult) {
       return toast.error('Residential Address is required!');
     }
     data.residentialAddress = searchResult;
@@ -189,7 +191,8 @@ export function GeneralInformation({
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text disabled={isReadOnly} name="nickName" label="Artist Nickname" />
+          <Field.Text disabled={isReadOnly} name="nickName" label="Artist Display Name" />
+          <Field.DatePicker required disabled={isReadOnly} name="dob" label="Date of Birth" />
         </Box>
 
         <Field.CountrySelect

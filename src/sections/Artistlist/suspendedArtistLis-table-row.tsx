@@ -37,6 +37,16 @@ export function SuspendedArtistList({ row }: Props) {
     setShowPop(false);
   };
 
+  const name = (val) => {
+    let fullName = val?.artistName || '';
+
+    if (val?.nickName) fullName += ' ' + `"${val?.nickName}"`;
+    if (val?.artistSurname1) fullName += ' ' + val?.artistSurname1;
+    if (val?.artistSurname2) fullName += ' ' + val?.artistSurname2;
+
+    return fullName.trim();
+  };
+
   const dialogBox = (
     <Dialog
       open={showPop}
@@ -69,7 +79,7 @@ export function SuspendedArtistList({ row }: Props) {
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
               <Link color="inherit" sx={{ cursor: 'pointer' }}>
-                {row?.artistName} {row?.artistSurname1} {row?.artistSurname2}
+                {name(row).length > 20 ? name(row).slice(0, 20) + '...' : name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}

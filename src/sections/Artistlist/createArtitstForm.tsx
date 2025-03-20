@@ -1,36 +1,40 @@
-import { z as zod } from 'zod';
-import { useCallback, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
+import { z as zod } from 'zod';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
 import { useSearchParams } from 'src/routes/hooks';
 
-import { fData } from 'src/utils/format-number';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { CircularProgress, FormControl } from '@mui/material';
-import { RadioGroup } from '@mui/material';
-import { Radio } from '@mui/material';
-import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
-import { LoadingScreen } from 'src/components/loading-screen';
-import { useGetExistingUserDetails } from './http/useGetExistingUserDetails';
-import CreateNewUser from './createNewUser';
-import { TableRow, Link } from '@mui/material';
-import { TableCell } from '@mui/material';
-import { Avatar } from '@mui/material';
-import { ListItemText } from '@mui/material';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
-import { useGetUserByIdMutation } from './http/userGetUserByIdMutation';
+import {
+  Avatar,
+  CircularProgress,
+  FormControl,
+  Link,
+  ListItemText,
+  Radio,
+  RadioGroup,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import axios from 'axios';
-import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
+import { Field, Form, schemaHelper } from 'src/components/hook-form';
+import { LoadingScreen } from 'src/components/loading-screen';
+import useCreateArtistMutation from 'src/http/createArtist/useCreateArtistMutation';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { imgUrl } from 'src/utils/BaseUrls';
+import { fData } from 'src/utils/format-number';
+import { getCityStateFromZipCountry } from '../artist/addArtist/AddressAutoComplete';
+import CreateNewUser from './createNewUser';
+import { useGetExistingUserDetails } from './http/useGetExistingUserDetails';
+import { useGetUserByIdMutation } from './http/userGetUserByIdMutation';
 
 // ----------------------------------------------------------------------
 

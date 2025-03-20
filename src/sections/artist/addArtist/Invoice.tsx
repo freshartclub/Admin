@@ -547,7 +547,7 @@ export function Invoice({
           ]}
         />
         <Field.Text disabled={isReadOnly} name="scoreProfessional" label="Score Professional" />
-        <Field.Text disabled={isReadOnly} name="scorePlatform" label="Score Platform" />
+        <Field.Text disabled={isReadOnly} name="scorePlatform" label="Promotional Score" />
         <Field.SingelSelect
           disabled={isReadOnly}
           required

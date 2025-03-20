@@ -392,7 +392,7 @@ export function ArtistRequest({ row, url }: Props) {
               sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}
             >
               <Link color="inherit" sx={{ cursor: 'pointer' }}>
-                {name(row)}
+                {name(row).length > 20 ? name(row).slice(0, 20) + '...' : name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}

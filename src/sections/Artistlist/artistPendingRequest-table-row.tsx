@@ -1,9 +1,11 @@
 import {
-  Avatar, Button, Dialog,
+  Avatar,
+  Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -83,7 +85,7 @@ export function ArtistPendingRequest({ row, url }: Props) {
                 onClick={() => navigate(`${paths.dashboard.artist.addArtist}?id=${row?._id}`)}
                 sx={{ cursor: 'pointer' }}
               >
-                {name(row)}
+                {name(row).length > 20 ? name(row).slice(0, 20) + '...' : name(row)}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row?.email}

@@ -12,6 +12,7 @@ export interface ArtistDetailType {
   currency: string;
   previousRevalidationDate: [];
   managerAddress: string;
+  dob: string;
 
   nickName?: string;
   ArtistId: string;

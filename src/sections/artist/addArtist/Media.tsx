@@ -99,7 +99,6 @@ export function Media({
     defaultValues,
   });
 
-  console.log(formProps.getValues('mainVideo'));
   const { setValue, trigger, handleSubmit } = formProps;
 
   const onSubmit = handleSubmit(async (data) => {
@@ -211,7 +210,7 @@ export function Media({
           </div>
 
           <div>
-            <Typography>Additional Image</Typography>
+            <Typography>In Action (Studio/Events Images)</Typography>
             <Field.Upload
               required
               multiple
@@ -223,18 +222,10 @@ export function Media({
               onRemove={handleRemoveIndividualAdditionalImage}
               onRemoveAll={handleRemoveAdditionalImages}
             />
-            {/* <Field.Upload
-              disabled={isReadOnly}
-              multiple
-              onRemove={handleRemoveIndividualAdditionalImage}
-              name="additionalImage"
-              maxSize={3145728}
-              onRemoveAll={handleRemoveAdditionalImages}
-            /> */}
           </div>
 
           <div>
-            <Typography>Inprocess Photo</Typography>
+            <Typography>Main Artwork</Typography>
             <Field.Upload
               disabled={isReadOnly}
               name="inProcessImage"
@@ -303,18 +294,7 @@ export function Media({
             )}
           </div>
           <div>
-            <Typography>Additional Video</Typography>
-            {/* <Field.Upload
-              required
-              multiple
-              disabled={isReadOnly}
-              thumbnail
-              helperText="Only 3 files are allowed"
-              name="additionalVideo"
-              maxSize={3145728}
-              onRemove={handleRemoveIndividualAdditionalVideo}
-              onRemoveAll={handleRemoveAdditionalVideos}
-            /> */}
+            <Typography>In Action (Studio/Events Videos)</Typography>
             <Field.MultiVideo
               disabled={isReadOnly}
               thumbnail

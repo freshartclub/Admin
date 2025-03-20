@@ -248,7 +248,7 @@ export function AllArtistList({ row, url }: Props) {
                 onClick={() => navigate(`${paths.dashboard.artist.addArtist}?id=${row?._id}`)}
                 sx={{ cursor: 'pointer' }}
               >
-                {name(row)}
+                {name(row).length > 20 ? name(row).slice(0, 20) + '...' : name(row)}
               </Link>
               <a href={`mailto:${row.email}`}>
                 <Box component="span" sx={{ color: 'text.disabled' }}>
@@ -264,7 +264,9 @@ export function AllArtistList({ row, url }: Props) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.city}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}> {row?.state?.length > 20 ? `${row?.state?.slice(0, 20)}...` : row?.state}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row?.state?.length > 20 ? `${row?.state?.slice(0, 20)}...` : row?.state}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.country}</TableCell>
 

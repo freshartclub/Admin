@@ -52,6 +52,7 @@ function AddArtistIndex() {
         obj.documents = data.data?.documents;
         obj.link = data?.data?.links;
         obj.profileStatus = data.data.profileStatus;
+        obj.dob = data.data.dob;
 
         // delete data.data.address;
         // delete data.data.links;

@@ -67,8 +67,6 @@ const AddCircle = () => {
   const { data, isLoading } = useGetCircleById(id);
   const { data: memberData, isLoading: memberLoading } = useGetMemeberList(id);
 
-  console.log(memberData);
-
   const defaultValues = useMemo(
     () => ({
       title: data?.title || '',
@@ -224,7 +222,7 @@ const AddCircle = () => {
             <div className="relative">
               <Field.Text
                 name="artistSearch"
-                label="Add artist/users to this circle"
+                label="Add manager to this circle"
                 placeholder="Search by User ID/Name"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
