@@ -229,6 +229,7 @@ export function ArtworkRevies() {
   };
 
   if (isLoading) return <LoadingScreen />;
+
   const validateChangeDialogBox = (
     <Dialog
       sx={{ width: '100vw' }}
@@ -585,6 +586,12 @@ export function ArtworkRevies() {
             name="artworkOrientation"
             label="Artwork Orientation"
           />
+          <Field.Text
+            disabled={isReadOnly}
+            value={data?.exclusive == true ? 'Yes' : 'No'}
+            name="exclusive"
+            label="Exclusive"
+          />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }} gap={2}>
           <Field.Text
@@ -895,6 +902,15 @@ export function ArtworkRevies() {
             required
             name="updateArtworkOrientation"
             label="Artwork Orientation"
+          />
+          <Field.Text
+            disabled={
+              !checkIsChanged(data?.reviewDetails?.exclusive, data?.exclusive) && isReadOnly
+            }
+            value={data?.reviewDetails?.exclusive == true ? 'Yes' : 'No'}
+            required
+            name="updateExclusive"
+            label="Exclusive"
           />
         </Box>
       </Stack>
@@ -1395,8 +1411,6 @@ export function ArtworkRevies() {
       </Stack>
     </Card>
   );
-
-  console.log(data);
 
   const restriction = (
     <Card>
