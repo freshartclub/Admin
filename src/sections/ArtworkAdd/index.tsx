@@ -1821,7 +1821,11 @@ export function ArtworkAdd() {
             <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
               {isPending ? 'Processing ' + percent + '%' : 'Preview Artwork'}
             </button>
-          ) : null}
+          ) : (
+            <button className="text-white bg-black rounded-md px-3 py-2" type="submit">
+              {isPending ? 'Processing ' + percent + '%' : 'Preview Artwork'}
+            </button>
+          )}
         </div>
       </Stack>
       {addSeriesDialogBox}
