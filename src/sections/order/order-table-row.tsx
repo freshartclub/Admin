@@ -1,6 +1,7 @@
 import type { IOrderItem } from 'src/types/order';
 
 import Avatar from '@mui/material/Avatar';
+import Text from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -30,7 +31,7 @@ export function OrderTableRow({ row, url }: Props) {
   const navigate = useNavigate();
 
   const currencySymbol = currencies.find(
-    (item) => item.code === row?.items[0]?.artWork?.pricing?.currency?.split(' ')[0]
+    (item) => item.code === row?.items[0]?.artwork?.pricing?.currency?.split(' ')[0]
   )?.symbol;
 
   const name = (val) => {
@@ -48,12 +49,12 @@ export function OrderTableRow({ row, url }: Props) {
         <Link
           color="inherit"
           onClick={() =>
-            navigate(paths.dashboard.order.details + `/${row?._id}?orderType=${row?.orderType}`)
+            navigate(paths.dashboard.order.details + `/${row?._id}?orderType=${row?.type}`)
           }
           underline="always"
           sx={{ cursor: 'pointer' }}
         >
-          {row?.orderID}
+          #{row?.orderId.length > 17 ? row?.orderId.slice(0, 17) + '...' : row?.orderId}
         </Link>
       </TableCell>
 
@@ -72,7 +73,7 @@ export function OrderTableRow({ row, url }: Props) {
         <Label
           variant="soft"
           color={
-            (row.status === 'success' && 'success') ||
+            (row.status === 'successfull' && 'success') ||
             (row.status === 'pending' && 'warning') ||
             (row.status === 'cancelled' && 'error') ||
             'default'
@@ -111,7 +112,7 @@ export function OrderTableRow({ row, url }: Props) {
           sx={{ bgcolor: 'background.neutral' }}
         >
           <Paper sx={{ m: 1.5 }}>
-            {row.items.map((item, i) => (
+            {row.items.map((item, i: number) => (
               <Stack
                 key={i}
                 direction="row"
@@ -124,21 +125,36 @@ export function OrderTableRow({ row, url }: Props) {
                 }}
               >
                 <Avatar
-                  src={`${url}/users/${item?.artWork?.media}`}
+                  src={`${url}/users/${item?.artwork?.media}`}
                   variant="rounded"
                   sx={{ width: 48, height: 48, mr: 2 }}
                 />
 
                 <ListItemText
-                  primary={item?.artWork?.artworkName + ` (${item?.type})`}
-                  secondary={item?.artWork?.artworkId}
+                  primary={item?.artwork?.artworkName + ` (${row?.type})`}
+                  secondary={item?.artwork?.artworkId}
                   primaryTypographyProps={{ typography: 'body2' }}
                   secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
                 />
-                <span>x{item.quantity} </span>
+
+                <Text
+                  sx={{
+                    width: 'fit-content',
+                    padding: '3px 5px',
+                    borderRadius: '5px',
+                    color: 'error.main',
+                    fontSize: 12,
+                    marginRight: 1,
+                    backgroundColor: 'rgba(255, 0, 0, 0.05)',
+                  }}
+                >
+                  {item?.other?.isCancelled && 'Cancelled By Artist'}
+                </Text>
+
+                <span>x{1} </span>
 
                 <Box sx={{ width: 110, textAlign: 'right' }}>
-                  {currencySymbol + ' ' + item?.artWork?.pricing?.basePrice}
+                  {currencySymbol + ' ' + item?.artwork?.pricing?.basePrice}
                 </Box>
               </Stack>
             ))}

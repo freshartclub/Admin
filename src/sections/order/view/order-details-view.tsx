@@ -21,7 +21,7 @@ export function OrderDetailsView() {
     <DashboardContent>
       <OrderDetailsToolbar
         backLink={paths.dashboard.order.list}
-        orderNumber={order?.orderID}
+        orderNumber={order?.orderId}
         createdAt={order?.createdAt}
         status={order?.status}
         onChangeStatus={handleChangeStatus}
@@ -38,6 +38,7 @@ export function OrderDetailsView() {
                 items={order?.items}
                 url={imgUrl}
                 taxes={order?.tax}
+                type={order?.type}
                 shipping={order?.shipping}
                 discount={order?.discount}
                 subtotal={order?.subTotal}

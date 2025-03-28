@@ -43,11 +43,13 @@ export function OrderDetailsToolbar({
 
           <Stack spacing={0.5}>
             <Stack spacing={1} direction="row" alignItems="center">
-              <Typography variant="h4"> OrderID - #{orderNumber} </Typography>
+              <Typography variant="body2" fontWeight={600}>
+                OrderId - #{orderNumber}
+              </Typography>
               <Label
                 variant="soft"
                 color={
-                  (status === 'completed' && 'success') ||
+                  (status === 'successfull' && 'success') ||
                   (status === 'pending' && 'warning') ||
                   (status === 'cancelled' && 'error') ||
                   'default'

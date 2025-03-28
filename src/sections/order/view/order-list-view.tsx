@@ -1,32 +1,32 @@
 import type { IOrderItem } from 'src/types/order';
-
+import {
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Select,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import { useEffect, useState } from 'react';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
-import {
-  emptyRows,
-  getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TablePaginationCustom,
-  useTable,
-} from 'src/components/table';
+import { getComparator, TableHeadCustom, TableNoData, useTable } from 'src/components/table';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { paths } from 'src/routes/paths';
-import { OrderTableRow } from '../order-table-row';
 import { imgUrl } from 'src/utils/BaseUrls';
 import { useGetAllOrders } from '../http/useGetAllOrder';
-import { Stack } from '@mui/material';
-import { TextField } from '@mui/material';
-import { InputAdornment } from '@mui/material';
-import { Iconify } from 'src/components/iconify';
-import { useDebounce } from 'src/routes/hooks/use-debounce';
+import { OrderTableRow } from '../order-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -50,16 +50,33 @@ export function OrderListView() {
   const table = useTable();
 
   const [notFound, setNotFound] = useState(false);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [prevCursor, setPrevCursor] = useState(null);
+  const [options, setOptions] = useState({
+    cursor: '',
+    direction: '',
+    limit: 10,
+    currPage: 1,
+  });
+
   const [search, setSearch] = useState('');
   const [_orderList, setOrderList] = useState<IOrderItem[]>([]);
-  const debounceSearch = useDebounce(search, 800);
 
-  const { data, isLoading } = useGetAllOrders(debounceSearch);
+  const debounceSearch = useDebounce(search, 800);
+  const { data, isLoading } = useGetAllOrders(
+    debounceSearch,
+    options.currPage,
+    options.cursor,
+    options.direction,
+    options.limit
+  );
 
   useEffect(() => {
     if (data) {
-      setOrderList(data);
-      setNotFound(data?.length === 0);
+      setOrderList(data.data);
+      setNextCursor(data.nextCursor || '');
+      setPrevCursor(data.prevCursor || '');
+      setNotFound(data.data?.length === 0);
     }
   }, [data]);
 
@@ -93,46 +110,101 @@ export function OrderListView() {
         <LoadingScreen />
       ) : (
         <Card>
-          <Box sx={{ position: 'relative' }}>
-            <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  onSort={table.onSort}
-                />
+          <Scrollbar sx={{ minHeight: 444 }}>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                onSort={table.onSort}
+              />
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow key={row._id} row={row} url={imgUrl} />
-                    ))}
+              <TableBody>
+                {dataFiltered.map((row) => (
+                  <OrderTableRow key={row._id} row={row} url={imgUrl} />
+                ))}
 
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+          <Stack direction="row" justifyContent="space-between">
+            <FormControlLabel
+              className="dense-table"
+              sx={{ pl: 2 }}
+              label="Dense"
+              control={<Switch name="dense" checked={table.dense} onChange={table.onChangeDense} />}
+            />
+            <Box className="row-table" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Typography variant="body2">Rows per page:</Typography>
 
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </Box>
+                <Select
+                  onChange={(e) =>
+                    setOptions({ ...options, cursor: '', currPage: 1, limit: e.target.value })
+                  }
+                  value={options.limit}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                  }}
+                >
+                  {[5, 10, 25].map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">
+                  {`${(options.currPage - 1) * options.limit + 1} - ${Math.min(options.currPage * options.limit, data?.totalCount)} of ${data?.totalCount}`}
+                </Typography>
 
-          <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    disabled={!prevCursor || isLoading}
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${prevCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: prevCursor,
+                        direction: 'prev',
+                        currPage: options.currPage === 1 ? 1 : options.currPage - 1,
+                      });
+                    }}
+                  >
+                    <Iconify icon="weui:back-filled" />
+                  </IconButton>
+                  <IconButton
+                    sx={{
+                      bgcolor: 'default.light',
+                      color: `${nextCursor ? 'black' : 'text.disabled'}`,
+                      width: 32,
+                      height: 32,
+                    }}
+                    onClick={() => {
+                      setOptions({
+                        ...options,
+                        cursor: nextCursor,
+                        direction: 'next',
+                        currPage: options.currPage + 1,
+                      });
+                    }}
+                    disabled={!nextCursor || isLoading}
+                  >
+                    <Iconify sx={{ transform: 'rotate(180deg)' }} icon="weui:back-filled" />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Box>
+          </Stack>
         </Card>
       )}
     </DashboardContent>

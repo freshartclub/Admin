@@ -43,7 +43,7 @@ export function OrderDetailsInfo({ url, customer, delivery, payment, shippingAdd
       <Stack direction="row" sx={{ p: 3 }}>
         <Avatar
           alt={customer?.artistName}
-          src={`${url}/users/${customer?.profile?.mainImage}`}
+          src={`${url}/users/${customer?.mainImage}`}
           sx={{ width: 48, height: 48, mr: 2 }}
         />
 

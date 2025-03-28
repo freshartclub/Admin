@@ -14,6 +14,7 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 type Props = {
   taxes?: number;
+  type?: string;
   shipping?: number;
   discount?: number;
   subtotal?: number;
@@ -25,6 +26,7 @@ type Props = {
 
 export function OrderDetailsItems({
   taxes,
+  type,
   shipping,
   discount,
   subtotal,
@@ -33,7 +35,7 @@ export function OrderDetailsItems({
   totalAmount,
 }: Props) {
   const currencySymbol = currencies.find(
-    (item) => item.code === items[0]?.artWork?.pricing?.currency?.split(' ')[0]
+    (item) => item.code === items[0]?.artwork?.pricing?.currency?.split(' ')[0]
   )?.symbol;
 
   const renderTotal = (
@@ -88,14 +90,14 @@ export function OrderDetailsItems({
             }}
           >
             <Avatar
-              src={`${url}/users/${item?.artWork?.media}`}
+              src={`${url}/users/${item?.artwork?.media}`}
               variant="rounded"
               sx={{ width: 48, height: 48, mr: 2 }}
             />
 
             <ListItemText
-              primary={item?.artWork.artworkName + " (" + item?.type + ")"}
-              secondary={item?.artWork?.artworkId}
+              primary={item?.artwork.artworkName + ' (' + type + ')'}
+              secondary={item?.artwork?.artworkId}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
             />
@@ -114,16 +116,17 @@ export function OrderDetailsItems({
                   borderRadius: '5px',
                   color: 'error.main',
                   fontSize: 12,
+                  marginRight: 1,
                   backgroundColor: 'rgba(255, 0, 0, 0.05)',
                 }}
               >
-                {item?.isCancelled && 'Cancelled'}
+                {item?.other?.isCancelled && 'Cancelled By Artist'}
               </Text>
             </Box>
-            <Box sx={{ typography: 'body2' }}>x{item.quantity}</Box>
+            <Box sx={{ typography: 'body2' }}>x{1}</Box>
 
             <Box sx={{ width: 110, textAlign: 'right', typography: 'subtitle2' }}>
-              {currencySymbol + ' ' + item?.artWork.pricing?.basePrice}
+              {currencySymbol + ' ' + item?.artwork.pricing?.basePrice}
             </Box>
           </Stack>
         ))}
