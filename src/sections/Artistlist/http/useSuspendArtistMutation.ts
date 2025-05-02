@@ -7,7 +7,6 @@ export const useSuspendArtistMutation = () => {
   const queryClient = useQueryClient();
 
   async function suspendArtist(newData) {
-    console.log(newData);
     const response = await axiosInstance.patch(
       `${ARTIST_ENDPOINTS.suspendArtist}/${newData?.id}?lang=${newData?.selectedLang}`
     );

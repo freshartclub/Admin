@@ -57,8 +57,8 @@ export function Media({
 
   const { isPending, mutate } = useAddArtistMutation(handleSuccess);
 
-  let imgArr = [];
-  let videoArr = [];
+  let imgArr: any = [];
+  let videoArr: any = [];
 
   if (id && artistFormData) {
     artistFormData.additionalImage &&
@@ -72,8 +72,6 @@ export function Media({
         videoArr.push(`${imgUrl}/videos/${item}`)
       );
   }
-
-  console.log(imgUrl);
 
   const defaultValues = useMemo(
     () => ({
@@ -110,6 +108,16 @@ export function Media({
     let hasMainImg = formProps.getValues('profileImage') ? true : false;
     let hasMainVideo = formProps.getValues('mainVideo') ? true : false;
     let hasInProcessImg = formProps.getValues('inProcessImage') ? true : false;
+
+    ['profileImage', 'inProcessImage'].forEach((key) => {
+      if (data?.[key] && typeof data[key] === 'string') {
+        data[key] = data[key].replace(`${imgUrl}/users/`, '');
+      }
+    });
+
+    if (data?.mainVideo && typeof data.mainVideo === 'string') {
+      data.mainVideo = data.mainVideo.replace(`${imgUrl}/videos/`, '');
+    }
 
     data.count = 4;
     data.isContainsImage = true;

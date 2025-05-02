@@ -315,11 +315,17 @@ export function ArtworkAdd() {
   if (id && data) {
     data?.media?.images &&
       data?.media?.images.length > 0 &&
-      data?.media?.images.map((item) => arr.push(`${imgUrl}/users/${item}`));
+      data?.media?.images.map((item) => {
+        const isFullUrl = item.startsWith('http');
+        arr.push(isFullUrl ? item : `${imgUrl}/users/${item}`);
+      });
 
     data?.media?.otherVideo &&
       data?.media?.otherVideo.length > 0 &&
-      data?.media?.otherVideo.map((item) => videoArr.push(`${imgUrl}/videos/${item}`));
+      data?.media?.otherVideo.map((item) => {
+        const isFullUrl = item.startsWith('http');
+        videoArr.push(isFullUrl ? item : `${imgUrl}/videos/${item}`);
+      });
   }
 
   const defaultValues = useMemo(
@@ -343,8 +349,12 @@ export function ArtworkAdd() {
       mainVideo: data?.media?.mainVideo ? `${imgUrl}/videos/${data?.media?.mainVideo}` : null,
       images: arr || [],
       otherVideo: videoArr || [],
-      existingImages: data?.media?.images || [],
-      existingVideos: data?.media?.otherVideo || [],
+      existingImages: data?.media?.images
+        ? data.media.images.map((img) => img.split('/').pop())
+        : [],
+      existingVideos: data?.media?.otherVideo
+        ? data.media.otherVideo.map((vid) => vid.split('/').pop())
+        : [],
       artworkTechnic: data?.additionalInfo?.artworkTechnic || '',
       artworkTheme: data?.additionalInfo?.artworkTheme || '',
       artworkOrientation: data?.additionalInfo?.artworkOrientation || '',
@@ -463,6 +473,16 @@ export function ArtworkAdd() {
       let hasBackImg = methods.getValues('backImage') ? true : false;
       let hasInProcessImg = methods.getValues('inProcessImage') ? true : false;
 
+      ['mainImage', 'backImage', 'inProcessImage'].forEach((key) => {
+        if (data?.[key] && typeof data[key] === 'string') {
+          data[key] = data[key].replace(`${imgUrl}/users/`, '');
+        }
+      });
+
+      if (data?.mainVideo && typeof data.mainVideo === 'string') {
+        data.mainVideo = data.mainVideo.replace(`${imgUrl}/videos/`, '');
+      }
+
       data.artworkCreationYear = methods.getValues('artworkCreationYear');
       data.artistFees = methods.getValues('artistFees');
       data.activeTab = methods.getValues('activeTab');
@@ -495,9 +515,18 @@ export function ArtworkAdd() {
 
   const handleRemoveFileDetails = useCallback(
     (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
+      const filename = inputFile.split('/').pop();
+      const filtered =
+        values.images &&
+        values.images?.filter((file) => {
+          const fileToCompare = file.split('/').pop();
+          return fileToCompare !== filename;
+        });
       setValue('images', filtered);
-      setValue('existingImages', filtered);
+      setValue(
+        'existingImages',
+        filtered.map((f) => f.split('/').pop())
+      );
     },
     [setValue, values.images]
   );
@@ -525,9 +554,18 @@ export function ArtworkAdd() {
 
   const handleRemoveotherVideo = useCallback(
     (inputFile) => {
-      const filtered = values.otherVideo && values.otherVideo?.filter((file) => file !== inputFile);
+      const filename = inputFile.split('/').pop();
+      const filtered =
+        values.otherVideo &&
+        values.otherVideo?.filter((file) => {
+          const fileToCompare = file.split('/').pop();
+          return fileToCompare !== filename;
+        });
       setValue('otherVideo', filtered);
-      setValue('existingVideos', filtered);
+      setValue(
+        'existingVideos',
+        filtered.map((f) => f.split('/').pop())
+      );
     },
     [setValue, values.otherVideo]
   );

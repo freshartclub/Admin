@@ -17,11 +17,12 @@ const useCreateArtworkMutation = (id) => {
   }) {
     const formData = new FormData();
 
-    newData?.data?.images && newData?.data?.images?.forEach((item: any) => {
-      if (typeof item === 'object') {
-        formData.append('images', item);
-      }
-    })
+    newData?.data?.images &&
+      newData?.data?.images?.forEach((item: any) => {
+        if (typeof item === 'object') {
+          formData.append('images', item);
+        }
+      });
 
     delete newData?.data?.images;
 

@@ -1,5 +1,3 @@
-import type { IInvoice } from 'src/types/invoice';
-
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
@@ -31,7 +29,7 @@ import { useMoveToPending } from './http/useMoveToPending';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IInvoice;
+  row: any;
   url: string;
 };
 
@@ -180,7 +178,7 @@ export function ArtworkTableRow({ row, url }: Props) {
             disableTypography
             primary={
               <Typography variant="body2" noWrap>
-                {name(row)}
+                {name(row)?.length > 17 ? name(row).slice(0, 17) + '...' : name(row)}
               </Typography>
             }
             secondary={
