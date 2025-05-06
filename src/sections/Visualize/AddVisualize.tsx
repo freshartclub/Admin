@@ -27,12 +27,12 @@ const NewPostSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
   group: zod.string().min(1, { message: 'Group is required!' }),
   image: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
-  dimension_weight: zod.string().min(1, { message: 'Dimension Weight is required!' }),
-  dimension_height: zod.string().min(1, { message: 'Dimension Height is required!' }),
-  area_x1: zod.string().min(1, { message: 'Area X1 is required!' }),
-  area_y1: zod.string().min(1, { message: 'Area Y1 is required!' }),
-  area_x2: zod.string().min(1, { message: 'Area X2 is required!' }),
-  area_y2: zod.string().min(1, { message: 'Area Y2 is required!' }),
+  dimension_weight: zod.coerce.number().min(0, { message: 'Dimension Weight is required!' }),
+  dimension_height: zod.coerce.number().min(0, { message: 'Dimension Height is required!' }),
+  area_x1: zod.coerce.number().min(0, { message: 'Area X1 is required!' }),
+  area_y1: zod.coerce.number().min(0, { message: 'Area Y1 is required!' }),
+  area_x2: zod.coerce.number().min(0, { message: 'Area X2 is required!' }),
+  area_y2: zod.coerce.number().min(0, { message: 'Area Y2 is required!' }),
   tags: zod.string().array().optional(),
 });
 
