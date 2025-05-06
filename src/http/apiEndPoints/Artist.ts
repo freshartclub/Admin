@@ -95,6 +95,10 @@ export const ARTIST_ENDPOINTS = {
   deleteCarousel: `${ADMIN_BASE_URL}/delete-carousel`,
   addCarousel: `${ADMIN_BASE_URL}/add-carousel`,
   activateCarousel: `${ADMIN_BASE_URL}/activate-carousel`,
+  getSubscriptions: `${ADMIN_BASE_URL}/get-subscriptions`,
+  addVisualizer: `${ADMIN_BASE_URL}/add-visualize`,
+  getAllVisualize: `${ADMIN_BASE_URL}/get-all-visualize`,
+  getVisualizeById: `${ADMIN_BASE_URL}/get-visualize`,
 
   downloadArtwork: `${ADMIN_BASE_URL}/download-artwork-list`,
   downloadAllArtist: `${ADMIN_BASE_URL}/download-all-artist-list`,

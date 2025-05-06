@@ -22,13 +22,12 @@ import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddCatalogMutation from './http/useAddCatalogMutation';
 import { useGetCatalogById } from './http/useGetCatalogById';
 import { useGetSearchCollection } from './http/useGetSearchCollection';
-import P from '../Artwork-details-view/comman/P';
 
 // ----------------------------------------------------------------------
 
-export type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
+type NewPostSchemaType = zod.infer<typeof NewPostSchema>;
 
-export const NewPostSchema = zod.object({
+const NewPostSchema = zod.object({
   catalogName: zod.string().min(1, { message: 'Catalog Name is required!' }),
   catalogDesc: zod.string().min(1, { message: 'Catalog Description is required!' }),
   artworkList: zod.any(),

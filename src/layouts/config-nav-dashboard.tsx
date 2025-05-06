@@ -137,6 +137,11 @@ export const navData = [
         ],
       },
       {
+        title: 'Visualization',
+        path: paths.dashboard.visualize.list,
+        icon: ICONS.analytics,
+      },
+      {
         title: 'Categories',
         path: paths.dashboard.category.root,
         icon: ICONS.menuItem,

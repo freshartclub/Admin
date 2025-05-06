@@ -10,6 +10,7 @@ async function fetchData(search) {
 export const useGetAllFAQ = (search) => {
   return useQuery({
     queryKey: [ARTIST_ENDPOINTS.getAllFAQ, search],
+    refetchOnWindowFocus: false,
     queryFn: () => fetchData(search),
   });
 };

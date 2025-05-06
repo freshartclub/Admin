@@ -2,40 +2,30 @@ import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { DashboardContent } from 'src/layouts/dashboard';
+import { _ecommerceSalesOverview } from 'src/_mock';
 import { MotivationIllustration } from 'src/assets/illustrations';
-import {
-  _ecommerceNewProducts,
-  _ecommerceBestSalesman,
-  _ecommerceSalesOverview,
-  _ecommerceLatestProducts,
-} from 'src/_mock';
-
-import { useMockedUser } from 'src/auth/hooks';
-
-import { EcommerceWelcome } from '../ecommerce-welcome';
-import { EcommerceNewProducts } from '../ecommerce-new-products';
-import { EcommerceYearlySales } from '../ecommerce-yearly-sales';
-import { EcommerceBestSalesman } from '../ecommerce-best-salesman';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { useAppSelector } from 'src/store/typedReduxHooks';
+import { EcommerceCurrentBalance } from '../ecommerce-current-balance';
 import { EcommerceSaleByGender } from '../ecommerce-sale-by-gender';
 import { EcommerceSalesOverview } from '../ecommerce-sales-overview';
+import { EcommerceWelcome } from '../ecommerce-welcome';
 import { EcommerceWidgetSummary } from '../ecommerce-widget-summary';
-import { EcommerceLatestProducts } from '../ecommerce-latest-products';
-import { EcommerceCurrentBalance } from '../ecommerce-current-balance';
+import { EcommerceYearlySales } from '../ecommerce-yearly-sales';
 
 // ----------------------------------------------------------------------
 
 export function OverviewEcommerceView() {
-  const { user } = useMockedUser();
+  const user = useAppSelector((state) => state.user.user);
 
   const theme = useTheme();
 
   return (
     <DashboardContent maxWidth="xl">
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid>
           <EcommerceWelcome
-            title={`Congratulations 🎉  \n ${user?.displayName}`}
+            title={`Congratulations 🎉  \n ${user?.firstName} ${user?.lastName}!`}
             description="Best seller of the month you have done 57.6% more sales today."
             img={<MotivationIllustration hideBackground />}
             action={
@@ -44,10 +34,6 @@ export function OverviewEcommerceView() {
               </Button>
             }
           />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <EcommerceNewProducts list={_ecommerceNewProducts} />
         </Grid>
 
         <Grid xs={12} md={4}>
@@ -165,24 +151,6 @@ export function OverviewEcommerceView() {
             orderTotal={287650}
             currentBalance={187650}
           />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <EcommerceBestSalesman
-            title="Best salesman"
-            tableData={_ecommerceBestSalesman}
-            headLabel={[
-              { id: 'name', label: 'Seller' },
-              { id: 'category', label: 'Product' },
-              { id: 'country', label: 'Country', align: 'center' },
-              { id: 'totalAmount', label: 'Total', align: 'right' },
-              { id: 'rank', label: 'Rank', align: 'right' },
-            ]}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <EcommerceLatestProducts title="Latest products" list={_ecommerceLatestProducts} />
         </Grid>
       </Grid>
     </DashboardContent>

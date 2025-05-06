@@ -85,6 +85,8 @@ const HomeArtList = lazy(() => import('src/pages/dashboard/HomeArtwork/HomeArtLi
 const UploadFile = lazy(() => import('src/pages/dashboard/UploadFile/AddFile'));
 const AddCarousel = lazy(() => import('src/pages/dashboard/Carousel/AddCarousel'));
 const AllCarousel = lazy(() => import('src/pages/dashboard/Carousel/AllCarousel'));
+const AddVisualize = lazy(() => import('src/pages/dashboard/Visualizer/AddVisualize'));
+const AllVisualize = lazy(() => import('src/pages/dashboard/Visualizer/VisualizeList'));
 
 // ----------------------------------------------------------------------
 
@@ -248,6 +250,13 @@ export const dashboardRoutes = [
         children: [
           { path: 'list', element: <UserList /> },
           { path: 'profile/:id', element: <UserProfile /> },
+        ],
+      },
+      {
+        path: 'visualize',
+        children: [
+          { path: 'list', element: <AllVisualize /> },
+          { path: 'add', element: <AddVisualize /> },
         ],
       },
       {

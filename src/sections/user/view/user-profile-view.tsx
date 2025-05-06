@@ -18,7 +18,7 @@ import countryFile from '../../artist/addArtist/country.json';
 
 // ----------------------------------------------------------------------
 
-export const NewProductSchema = zod.object({
+const NewProductSchema = zod.object({
   userId: zod.string().min(1, { message: 'User ID is required!' }),
   artistName: zod.string().min(1, { message: 'Artist Name is required!' }),
   artistSurname1: zod.string().min(1, { message: 'Surname 1 is required!' }),

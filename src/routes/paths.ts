@@ -160,6 +160,12 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/circle/list`,
     },
 
+    visualize: {
+      root: `${ROOTS.DASHBOARD}/visualize`,
+      add: `${ROOTS.DASHBOARD}/visualize/add`,
+      list: `${ROOTS.DASHBOARD}/visualize/list`,
+    },
+
     couponandpromotions: {
       Root: `${ROOTS.DASHBOARD}/couponandpromotions`,
       add: `${ROOTS.DASHBOARD}/couponandpromotions/add`,
