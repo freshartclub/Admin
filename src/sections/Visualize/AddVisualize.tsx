@@ -17,6 +17,7 @@ import { z as zod } from 'zod';
 import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 import useAddVisualize from './http/useAddVisualize';
 import { useGetVisualizeById } from './http/useGetVisualizeById';
+import { imgUrl } from 'src/utils/BaseUrls';
 
 // ----------------------------------------------------------------------
 
@@ -66,20 +67,14 @@ export function AddVisualize() {
     defaultValues,
   });
 
-  const {
-    reset,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = methods;
-  console.log(errors);
+  const { reset, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (id && data) {
       reset({
         name: data?.name || '',
         group: data?.group || '',
-        image: data?.image || '',
+        image: data?.image ? `${imgUrl}/users/${data?.image}` : null,
         dimension_weight: data?.dimension_weight || 0,
         dimension_height: data?.dimension_height || 0,
         area_x1: data?.area_x1 || 0,

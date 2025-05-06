@@ -18,11 +18,16 @@ import {
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, Select, TextField } from '@mui/material';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useDebounce } from 'src/routes/hooks/use-debounce';
 import { useGetAllVisualize } from './http/useGetAllVisualize';
 import { VisualizeTableRow } from './table-row-visualize';
+import { FormControl } from '@mui/material';
+import { InputLabel } from '@mui/material';
+import { OutlinedInput } from '@mui/material';
+import { MenuItem } from '@mui/material';
+import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +52,7 @@ export function AllVisualize() {
   const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllVisualize(debounceSearch, group);
+  const picklist = RenderAllPicklist('Visualize');
 
   useEffect(() => {
     if (data) {
@@ -74,19 +80,42 @@ export function AllVisualize() {
         }
         sx={{ mb: 2 }}
       />
-      <TextField
-        fullWidth
-        sx={{ marginBottom: 2 }}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search By Name or Tags..."
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <div className="flex mb-4 justify-between gap-2 items-center">
+        <TextField
+          fullWidth
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search By Name or Tags..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+          <InputLabel htmlFor="Status">Status</InputLabel>
+
+          <Select
+            input={<OutlinedInput label="Group" />}
+            inputProps={{ id: 'Status' }}
+            onChange={(e) => setGroup(e.target.value)}
+            value={group}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            <MenuItem value="All">All</MenuItem>
+            {picklist && picklist.length > 0 ? (
+              picklist.map((option, i) => (
+                <MenuItem key={i} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="All">No Data</MenuItem>
+            )}
+          </Select>
+        </FormControl>
+      </div>
 
       {isLoading ? (
         <LoadingScreen />
