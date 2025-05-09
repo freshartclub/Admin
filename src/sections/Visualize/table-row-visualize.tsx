@@ -35,7 +35,7 @@ export function VisualizeTableRow({ row }: Props) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.name}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.group}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_height}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_weight}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_width}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {list(row?.tags) === '' ? 'N/A' : list(row?.tags)}
         </TableCell>

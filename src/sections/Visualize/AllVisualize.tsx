@@ -35,7 +35,7 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'group', label: 'Group' },
   { id: 'dimension_height', label: 'Dimension Height' },
-  { id: 'dimension_weight', label: 'Dimension Weight' },
+  { id: 'dimension_width', label: 'Dimension Weight' },
   { id: 'tags', label: 'Tags' },
   { id: 'createdAt', label: 'Created At' },
   { id: 'actions', label: 'Action' },

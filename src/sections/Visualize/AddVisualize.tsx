@@ -27,7 +27,7 @@ const NewPostSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
   group: zod.string().min(1, { message: 'Group is required!' }),
   image: schemaHelper.file({ message: { required_error: 'Image is required!' } }),
-  dimension_weight: zod.coerce.number().min(0, { message: 'Dimension Weight is required!' }),
+  dimension_width: zod.coerce.number().min(0, { message: 'Dimension Width is required!' }),
   dimension_height: zod.coerce.number().min(0, { message: 'Dimension Height is required!' }),
   area_x1: zod.coerce.number().min(0, { message: 'Area X1 is required!' }),
   area_y1: zod.coerce.number().min(0, { message: 'Area Y1 is required!' }),
@@ -51,7 +51,7 @@ export function AddVisualize() {
       name: data?.name || '',
       group: data?.group || '',
       image: data?.image || null,
-      dimension_weight: data?.dimension_weight || 0,
+      dimension_width: data?.dimension_width || 0,
       dimension_height: data?.dimension_height || 0,
       area_x1: data?.area_x1 || 0,
       area_y1: data?.area_y1 || 0,
@@ -75,7 +75,7 @@ export function AddVisualize() {
         name: data?.name || '',
         group: data?.group || '',
         image: data?.image ? `${imgUrl}/users/${data?.image}` : null,
-        dimension_weight: data?.dimension_weight || 0,
+        dimension_width: data?.dimension_width || 0,
         dimension_height: data?.dimension_height || 0,
         area_x1: data?.area_x1 || 0,
         area_y1: data?.area_y1 || 0,
@@ -134,7 +134,7 @@ export function AddVisualize() {
           label="Select Group"
           options={picklist ? picklist : []}
         />
-        <Field.Text required name="dimension_weight" label="Dimension Weight" />
+        <Field.Text required name="dimension_width" label="Dimension Width" />
         <Field.Text required name="dimension_height" label="Dimension Height" />
         <Field.Text required name="area_x1" label="Area X1" />
         <Field.Text required name="area_y1" label="Area Y1" />
