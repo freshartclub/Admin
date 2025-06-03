@@ -607,7 +607,7 @@ export function AddVisualize() {
 
   const { data, isLoading } = useGetVisualizeById(id);
 
-  const picklist = RenderAllPicklist('Visualize');
+  const picklist = RenderAllPicklist('Visualize Group');
   const navigate = useNavigate();
 
   const defaultValues = useMemo(

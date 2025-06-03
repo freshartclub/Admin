@@ -1,3 +1,4 @@
+import { Avatar } from '@mui/material';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,6 +12,7 @@ import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { paths } from 'src/routes/paths';
+import { imgUrl } from 'src/utils/BaseUrls';
 import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
@@ -29,13 +31,31 @@ export function VisualizeTableRow({ row }: Props) {
     return val.join(', ');
   };
 
+
+
+  const handleNavigate = (id: any) => {
+    navigate(`${paths.dashboard.visualize.add}?id=${id}`)
+  }
+
   return (
     <>
       <TableRow hover>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.name}</TableCell>
+
+        <TableCell
+          onClick={() => handleNavigate(row?._id)}
+          sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
+          <Avatar
+            variant="rounded"
+            src={row?.image ? `${imgUrl}/users/${row.image}` : undefined}
+            alt={row?.name}
+            sx={{ width: 48, height: 48, objectFit: 'cover' }}
+          />
+          {row?.name}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.group}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_height}</TableCell>
+        
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_width}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.dimension_height}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {list(row?.tags) === '' ? 'N/A' : list(row?.tags)}
         </TableCell>

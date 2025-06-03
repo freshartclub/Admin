@@ -34,8 +34,9 @@ import { RenderAllPicklist } from '../Picklists/RenderAllPicklist';
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'group', label: 'Group' },
-  { id: 'dimension_height', label: 'Dimension Height' },
-  { id: 'dimension_width', label: 'Dimension Weight' },
+  
+  { id: 'dimension_width', label: 'Dimension Width (cm)' },
+  { id: 'dimension_height', label: 'Dimension Height (cm)' },
   { id: 'tags', label: 'Tags' },
   { id: 'createdAt', label: 'Created At' },
   { id: 'actions', label: 'Action' },
@@ -52,7 +53,7 @@ export function AllVisualize() {
   const debounceSearch = useDebounce(search, 800);
 
   const { data, isLoading } = useGetAllVisualize(debounceSearch, group);
-  const picklist = RenderAllPicklist('Visualize');
+  const picklist = RenderAllPicklist('Visualize Group');
 
   useEffect(() => {
     if (data) {
@@ -94,7 +95,7 @@ export function AllVisualize() {
           }}
         />
         <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
-          <InputLabel htmlFor="Status">Status</InputLabel>
+          <InputLabel htmlFor="Status">Group</InputLabel>
 
           <Select
             input={<OutlinedInput label="Group" />}
