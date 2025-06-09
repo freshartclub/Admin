@@ -524,7 +524,7 @@ const ImageRuler = ({ imageUrl, onAreaSelect, currentArea, wallDimensions }) => 
   }
 
   const ratio = getPixelToCmRatio();
-  const availableWidthCm = currentArea ? wallDimensions.width - currentArea.x1 - currentArea.x2 : 0;
+  const availableWidthCm = currentArea ? wallDimensions?.width - currentArea.x1 - currentArea.x2 : 0;
   const availableHeightCm = currentArea ? wallDimensions.height - currentArea.y1 - currentArea.y2 : 0;
 
   return (
@@ -532,14 +532,14 @@ const ImageRuler = ({ imageUrl, onAreaSelect, currentArea, wallDimensions }) => 
     <>
       <Box sx={{ mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          <strong>Wall Dimensions:</strong> {wallDimensions.width}cm × {wallDimensions.height}cm
+          <strong>Wall Dimensions:</strong> {wallDimensions?.width}cm × {wallDimensions?.height}cm
         </Typography>
         <Typography variant="body2" sx={{ mb: 1 }}>
           <strong>Scale:</strong> 1cm = {(1 / ratio.x).toFixed(1)} pixels (width) | 1cm = {(1 / ratio.y).toFixed(1)} pixels (height)
         </Typography>
         {currentArea && (
           <Typography variant="body2" color="success.main">
-            <strong>Available Artwork Area:</strong> {availableWidthCm.toFixed(1)}cm × {availableHeightCm.toFixed(1)}cm
+            <strong>Available Artwork Area:</strong> {availableWidthCm?.toFixed(1)}cm × {availableHeightCm?.toFixed(1)}cm
           </Typography>
         )}
       
@@ -794,14 +794,14 @@ export function AddVisualize() {
         </Stack>
 
         {availableArea && (
-          <Box sx={{ p: 2, bgcolor: availableArea.width > 0 && availableArea.height > 0 ? 'success.light' : 'error.light', borderRadius: 1 }}>
+          <Box sx={{ p: 2, bgcolor: availableArea?.width > 0 && availableArea?.height > 0 ? 'success.light' : 'error.light', borderRadius: 1 }}>
             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              Available Artwork Area: {availableArea.width.toFixed(1)}cm × {availableArea.height.toFixed(1)}cm
+              Available Artwork Area: {availableArea?.width?.toFixed(1)}cm × {availableArea?.height?.toFixed(1)}cm
             </Typography>
             <Typography variant="body2">
-              Total Area: {availableArea.area.toFixed(1)}cm²
+              Total Area: {availableArea?.area?.toFixed(1)}cm²
             </Typography>
-            {(availableArea.width <= 0 || availableArea.height <= 0) && (
+            {(availableArea?.width <= 0 || availableArea?.height <= 0) && (
               <Typography variant="body2" color="error">
                 ⚠️ Invalid area! Margins are too large for the wall dimensions.
               </Typography>

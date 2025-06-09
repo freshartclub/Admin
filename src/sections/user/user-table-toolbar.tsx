@@ -35,7 +35,7 @@ export function UserTableToolbar({ filters, options, onResetPage }: Props) {
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onResetPage();
-      filters.setState({ name: event.target.value });
+      filters.setState({ name: event?.target?.value });
     },
     [filters, onResetPage]
   );
@@ -43,8 +43,7 @@ export function UserTableToolbar({ filters, options, onResetPage }: Props) {
   const handleFilterRole = useCallback(
     (event: SelectChangeEvent<string[]>) => {
       const newValue =
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
-
+        typeof event?.target?.value === 'string' ? event?.target?.value.split(',') : event?.target?.value;
       onResetPage();
       filters.setState({ role: newValue });
     },
@@ -63,19 +62,19 @@ export function UserTableToolbar({ filters, options, onResetPage }: Props) {
           <InputLabel htmlFor="user-filter-role-select-label">Role</InputLabel>
           <Select
             multiple
-            value={filters.state.role}
+            value={filters?.state?.role}
             onChange={handleFilterRole}
             input={<OutlinedInput label="Role" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            renderValue={(selected) => selected?.map((value) => value).join(', ')}
             inputProps={{ id: 'user-filter-role-select-label' }}
             MenuProps={{ PaperProps: { sx: { maxHeight: 240 } } }}
           >
-            {options.roles.map((option) => (
+            {options?.roles?.map((option) => (
               <MenuItem key={option} value={option}>
                 <Checkbox
                   disableRipple
                   size="small"
-                  checked={filters.state.role.includes(option)}
+                  checked={filters?.state?.role?.includes(option)}
                 />
                 {option}
               </MenuItem>
